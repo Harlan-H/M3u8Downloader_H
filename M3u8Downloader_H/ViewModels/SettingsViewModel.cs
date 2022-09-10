@@ -63,11 +63,11 @@ namespace M3u8Downloader_H.ViewModels
             IsActive = true;
             try
             {
-                HttpClientHandler clientHandler = new()
+                using HttpClientHandler clientHandler = new()
                 {
                     Proxy = new WebProxy(proxy)
                 };
-                HttpClient httpclient = new(clientHandler)
+                using HttpClient httpclient = new(clientHandler)
                 {
                     Timeout = TimeSpan.FromSeconds(5)
                 };
