@@ -1,0 +1,10 @@
+﻿<config>
+	<plugins>
+		<!--   
+         title  是在设置中选择插件中显示的名称
+         filepath 必须包含扩展名  如果是aaa.dll  则必须将此dll放到当前得plugin目录下  如果是绝对路径 则不受限制 
+         实例如下：
+        <pluginItem title="aaaa" filepath="aaa.dll" /> 
+        -->
+	</plugins>
+</config>

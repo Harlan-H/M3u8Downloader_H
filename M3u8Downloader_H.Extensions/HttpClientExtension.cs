@@ -24,7 +24,7 @@ namespace M3u8Downloader_H.Extensions
 
             return await httpClient.GetStreamAsync(request, true, cancellationToken);
         }
-
+        
         public static async Task<Stream> GetStreamAsync(this HttpClient httpClient,string uri, IEnumerable<KeyValuePair<string, string>> headers = default, CancellationToken cancellationToken = default)
         {
             return await httpClient.GetStreamAsync(new Uri(uri, UriKind.Absolute), headers, cancellationToken);

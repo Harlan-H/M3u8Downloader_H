@@ -225,26 +225,61 @@
                       WithSeconds="True" />
                 </DockPanel>
 
-                <TextBlock Text="批量下载配置" Margin="10" HorizontalAlignment="Center" FontSize="20" FontWeight="Bold" />
+                <!--<TextBlock Text="批量下载配置" Margin="10" HorizontalAlignment="Center" FontSize="20" FontWeight="Bold" />
 
                 <DockPanel Margin="8 0 8 0">
                     <TextBlock Text="分隔符 " Style="{StaticResource TextBlockStyle}" />
                     <TextBox FontSize="15"  Margin="5" Text="{Binding Separator}" />
-                </DockPanel>
+                </DockPanel>-->
 
                 <TextBlock Text="网络配置"  Margin="10" HorizontalAlignment="Center"  FontSize="20" FontWeight="Bold" />
 
-               <!-- <DockPanel Margin="8 0 8 0">
-                    <TextBlock Text="http代理 " Style="{StaticResource TextBlockStyle}"/>
+               <DockPanel Margin="8 0 8 0">
+                    <DockPanel.ToolTip>
+                        <TextBlock>
+                            <Run Text="必须是http代理 例如：http://127.0.0.1:7890  注意冒号是英文得冒号" />
+                            <LineBreak />
+                            <Run Text="设置代理时有两种方案：" />
+                            <LineBreak />
+                            <Run Text="1.当程序启动的时候没有进行过任何下载得时候设置代理" />
+                            <LineBreak />
+                            <Run Text="2.当程序已经下载过得，设置代理需要重新启动程序才能生效" />
+                            <LineBreak />
+                            <Run Text="同理取消代理也跟设置方法一样" />
+                            <LineBreak />
+                            <Run Text="1.当程序没有进行过任何下载得时候删除代理得字符串保存,即可直接生效" />
+                            <LineBreak />
+                            <Run Text="2.当程序已经进行过下载，删除代理得字符串之后需要重新启动程序才能生效" />
+                        </TextBlock>
+                    </DockPanel.ToolTip>
+                    <TextBlock Text="代理地址" Style="{StaticResource TextBlockStyle}"/>
                     <Button DockPanel.Dock="Right"
+                            Command="{s:Action TryConnectProxy}"
+                            CommandParameter="{Binding ElementName=proxyTextBox,Path=Text}"
                             materialDesign:ButtonProgressAssist.IsIndicatorVisible="True"
-                            materialDesign:ButtonProgressAssist.IsIndeterminate="True"
-                            Content="测试可用" />
-                    <TextBox FontSize="15"  Margin="5" Text="{Binding ProxyAddress}" />
-                </DockPanel>-->
+                            materialDesign:ButtonProgressAssist.IsIndeterminate="{Binding DataContext.IsActive,RelativeSource={RelativeSource AncestorType=UserControl}}" >
+                        <materialDesign:PackIcon Height="24" Width="24">
+                            <materialDesign:PackIcon.Style>
+                                <Style TargetType="materialDesign:PackIcon">
+                                    <Setter  Property="Kind" Value="Sync"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding DataContext.Status,RelativeSource={RelativeSource AncestorType=UserControl}}"  Value="True">
+                                            <Setter  Property="Kind" Value="Check" />
+                                        </DataTrigger>
+
+                                        <DataTrigger Binding="{Binding DataContext.Status,RelativeSource={RelativeSource AncestorType=UserControl}}" Value="False">
+                                            <Setter  Property="Kind" Value="WindowClose" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </materialDesign:PackIcon.Style>
+                        </materialDesign:PackIcon>
+                    </Button>
+                    <TextBox Name="proxyTextBox" FontSize="15"   Margin="5" Text="{Binding ProxyAddress}" />
+                </DockPanel>
 
                 <DockPanel Margin="8 0 8 0">
-                    <TextBlock Text="请求头 " Style="{StaticResource TextBlockStyle}"/>
+                    <TextBlock Text="请求头部" Style="{StaticResource TextBlockStyle}"/>
                     <TextBox FontSize="16" Text="{Binding Headers}" 
                          Style="{StaticResource MaterialDesignOutlinedTextBox}"
                          VerticalAlignment="Stretch"

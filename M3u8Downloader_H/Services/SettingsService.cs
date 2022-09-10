@@ -1,10 +1,10 @@
 ﻿using Settings;
 using System.IO;
-using System.Net;
-using System.Net.Http;
 using M3u8Downloader_H.Extensions;
 using M3u8Downloader_H.Models;
-using M3u8Downloader_H.Utils;
+using Newtonsoft.Json;
+using System.Net.Http;
+using System.Net;
 
 namespace M3u8Downloader_H.Services
 {
@@ -35,9 +35,10 @@ namespace M3u8Downloader_H.Services
         public bool IsResetAddress { get; set; } = true;
         public bool IsResetName { get; set; } = true;
 
+        [JsonIgnore]
         public string Separator { get; set; } = "----";
 
-    //    public string ProxyAddress { get; set; } = string.Empty;
+        public string ProxyAddress { get; set; } = string.Empty;
         public string Headers { get; set; } = string.Empty;
 
 #if DEBUG
@@ -62,7 +63,7 @@ namespace M3u8Downloader_H.Services
             RetryCount = RetryCount.Range(0, 10);
             Timeouts = Timeouts.Range(10, 300);
 
-            //HttpClient.DefaultProxy = new WebProxy(ProxyAddress);
+            HttpClient.DefaultProxy = string.IsNullOrWhiteSpace(ProxyAddress)? new WebProxy() : new WebProxy(ProxyAddress);
         }
 
     }
