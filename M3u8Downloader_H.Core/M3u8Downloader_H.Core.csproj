@@ -8,6 +8,11 @@
     <AssemblyVersion>3.9.6.0</AssemblyVersion>
   </PropertyGroup>
 
+	<PropertyGroup Condition="'$(Configuration)'=='Release'">
+		<DebugSymbols>False</DebugSymbols>
+		<DebugType>None</DebugType>
+	</PropertyGroup>
+	
   <ItemGroup>
     <PackageReference Include="CliWrap" Version="3.4.3" />
   </ItemGroup>

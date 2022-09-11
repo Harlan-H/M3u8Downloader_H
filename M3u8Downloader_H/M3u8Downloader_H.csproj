@@ -21,7 +21,19 @@
     <StartupObject />
   </PropertyGroup>
 
-  <ItemGroup>
+	<Target Name="Download FFmpeg before publish" BeforeTargets="PrepareForPublish">
+		<Exec Command="powershell -ExecutionPolicy Bypass -File &quot;$(ProjectDir)/DownloadFFmpeg.ps1&quot;" />
+		<Copy SourceFiles="$(ProjectDir)/ffmpeg.exe" DestinationFiles="$(PublishDir)/ffmpeg.exe" />
+	</Target>
+	
+	<PropertyGroup Condition="'$(Configuration)'=='Release'">
+		<DebugSymbols>False</DebugSymbols>
+		<DebugType>None</DebugType>
+	</PropertyGroup>
+
+
+
+	<ItemGroup>
     <None Remove="icon.ico" />
   </ItemGroup>
 
