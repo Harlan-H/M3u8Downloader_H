@@ -33,7 +33,7 @@ jobs:
           path: M3u8Downloader_H/bin/Publish
 
   deploy:
-
+    if: ${{ github.event_name == 'push' && github.ref_type == 'tag' }}
     needs: package
     runs-on: ubuntu-latest
 
@@ -57,8 +57,8 @@ jobs:
           tag_name: ${{ github.ref }}
           release_name: ${{ github.ref }}
           body: |
-            - 增加代理功能
-            - 删除设置中得分隔符设置，分隔符默认为 ----
+            - ✈✈✈✈✈✈
+            - ✈✈✈✈✈✈
           draft: false
           prerelease: false
 

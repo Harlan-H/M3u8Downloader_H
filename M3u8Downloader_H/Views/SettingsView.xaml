@@ -178,7 +178,7 @@
                                 <Run Text="建议开次此项时，同时开启强制合并" />
                             </TextBlock>
                         </DockPanel.ToolTip>
-                        <TextBlock Style="{StaticResource TextBlockStyle}"  Text="跳过失败"/>
+                        <TextBlock Style="{StaticResource TextBlockStyle}"  Text="强制下载"/>
                         <ToggleButton  HorizontalAlignment="Left"  Margin="10 0 0 0" Style="{StaticResource MaterialDesignSwitchToggleButton}"  ToolTip="{Binding SkipRequestError,Converter={x:Static converters:BoolToStringConverters.Instance}}" IsChecked="{Binding SkipRequestError}" >
                             <i:Interaction.Behaviors>
                                 <behavior:CoordinateToggleButtonBehavior Target="{Binding ElementName=forceMergerButton}" />

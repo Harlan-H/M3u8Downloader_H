@@ -32,6 +32,7 @@ namespace M3u8Downloader_H.Behaviors
 
         private void AssociatedObject_Checked(object sender, RoutedEventArgs e)
         {
+            if (Target is null) return;
             if (AssociatedObject.IsChecked is not null && AssociatedObject.IsChecked == true)
             {
                 Target.IsChecked = true;
