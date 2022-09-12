@@ -8,7 +8,7 @@
     <RootNamespace>M3u8Downloader_H</RootNamespace>
     <Platforms>AnyCPU;x64</Platforms>
     <AssemblyVersion>3.9.6.0</AssemblyVersion>
-    <Version>3.9.6.0</Version>
+    <Version>3.9.7.0</Version>
     <PackageId>m3u8视频下载器</PackageId>
     <Product>m3u8视频下载器</Product>
     <ApplicationIcon>icon.ico</ApplicationIcon>
