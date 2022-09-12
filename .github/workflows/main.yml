@@ -27,6 +27,7 @@ jobs:
         run : remove-item M3u8Downloader_H/bin/Publish/*.deps.json
 
       - name: Upload artifacts
+        if: ${{ github.event_name == 'push' && github.ref_type == 'tag' }}
         uses: actions/upload-artifact@v3
         with:
           name: M3u8Downloader_H
