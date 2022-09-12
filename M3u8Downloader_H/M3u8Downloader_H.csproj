@@ -8,17 +8,13 @@
     <RootNamespace>M3u8Downloader_H</RootNamespace>
     <Platforms>AnyCPU;x64</Platforms>
     <AssemblyVersion>3.9.6.0</AssemblyVersion>
-    <FileVersion></FileVersion>
     <Version>3.9.6.0</Version>
     <PackageId>m3u8视频下载器</PackageId>
     <Product>m3u8视频下载器</Product>
     <ApplicationIcon>icon.ico</ApplicationIcon>
-    <Win32Resource />
     <Authors>Harlan</Authors>
     <Nullable>enable</Nullable>
 	<GenerateBootstrapperOnBuild>true</GenerateBootstrapperOnBuild>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <StartupObject />
   </PropertyGroup>
 
 	<Target Name="Download FFmpeg before publish" BeforeTargets="PrepareForPublish">
@@ -33,9 +29,9 @@
 
 
 
-	<ItemGroup>
-    <None Remove="icon.ico" />
-  </ItemGroup>
+    <ItemGroup>
+        <None Remove="icon.ico" />
+    </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="DotnetRuntimeBootstrapper" Version="2.3.1">
