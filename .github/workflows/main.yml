@@ -1,0 +1,73 @@
+name: main
+
+on: push
+
+jobs:
+  package:
+    runs-on: windows-latest
+
+    env:
+      DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+      DOTNET_NOLOGO: true
+      DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install .NET
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: 6.0.100
+
+      - name: Publish
+        run: dotnet publish M3u8Downloader_H/ -o M3u8Downloader_H/bin/Publish --configuration Release
+
+      - name: Delete file
+        run : remove-item M3u8Downloader_H/bin/Publish/*.deps.json
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: M3u8Downloader_H
+          path: M3u8Downloader_H/bin/Publish
+
+  deploy:
+
+    needs: package
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: M3u8Downloader_H
+          path: M3u8Downloader_H
+
+      - name: Create package
+        run: Compress-Archive -Path M3u8Downloader_H/* -DestinationPath M3u8Downloader_H.zip -Force
+        shell: pwsh
+
+      - name: Create release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: ${{ github.ref }}
+          body: |
+            - 增加代理功能
+            - 删除设置中得分隔符设置，分隔符默认为 ----
+          draft: false
+          prerelease: false
+
+      - name: Upload release asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_name: M3u8Downloader_H.zip
+          asset_path: M3u8Downloader_H.zip
+          asset_content_type: application/zip
