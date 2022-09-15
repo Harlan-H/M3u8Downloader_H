@@ -30,6 +30,6 @@
  所以如果你下载的视频是fmp4的格式的，请不要转码成mp4
 
 # 截图
-![list](https://github.com/Harlan-H/M3u8Downloader_H/blob/master/.assets/list.png)
-![list](https://github.com/Harlan-H/M3u8Downloader_H/blob/master/.assets/setting1.png)
-![list](https://github.com/Harlan-H/M3u8Downloader_H/blob/master/.assets/setting2.png)
+![list](https://user-images.githubusercontent.com/39378318/190357782-117bb79d-a7f3-43bb-9e16-aa7af88e5da8.png)
+![setting1](https://user-images.githubusercontent.com/39378318/190357793-04773f9e-e02f-4fd3-ba01-f0af040cef75.png)
+![setting2](https://user-images.githubusercontent.com/39378318/190357801-0035792a-76f3-49ca-a90b-08802fd63b43.png)
