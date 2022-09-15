@@ -131,28 +131,17 @@ namespace M3u8Downloader_H.ViewModels
                 IsFirst = false;
             }
 
-
             if (!isFile && isLive)
             {
-                Progress<double> GetProgress()
-                {
-                    Status = DownloadStatus.StartedLive;
-                    RecordDuration = 0;
-                    return new(d => RecordDuration += d);
-                }
-                await downloadService.LiveDownloadAsync(RequestUrl, m3UFileInfo, Headers, VideoFullPath, VideoFullName, GetProgress, cancellationToken);
+                Status = DownloadStatus.StartedLive;
+                await downloadService.LiveDownloadAsync(RequestUrl, m3UFileInfo, Headers, VideoFullPath, VideoFullName, () => new Progress<double>(d => RecordDuration = d) , cancellationToken);
             }
             else
             {
                 if (!isFile && IsDownloaded == false)
                 {
-                    Progress<double> GetProgress()
-                    {
-                        Status = DownloadStatus.StartedVod;
-                        return new(d => ProgressNum = d);
-                    }
-
-                    await downloadService.DownloadAsync(m3UFileInfo, Headers, VideoFullPath, GetProgress, cancellationToken);
+                    Status = DownloadStatus.StartedVod;
+                    await downloadService.DownloadAsync(m3UFileInfo, Headers, VideoFullPath, () => new Progress<double>(d => ProgressNum = d), cancellationToken);
                     IsDownloaded = true;
                 }
 

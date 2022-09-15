@@ -7,7 +7,7 @@
     <UseWindowsForms>true</UseWindowsForms>
     <RootNamespace>M3u8Downloader_H</RootNamespace>
     <Platforms>AnyCPU;x64</Platforms>
-    <AssemblyVersion>3.9.6.0</AssemblyVersion>
+    <AssemblyVersion>3.9.7.0</AssemblyVersion>
     <Version>3.9.7.0</Version>
     <PackageId>m3u8视频下载器</PackageId>
     <Product>m3u8视频下载器</Product>
@@ -17,18 +17,22 @@
 	<GenerateBootstrapperOnBuild>true</GenerateBootstrapperOnBuild>
   </PropertyGroup>
 
-	<Target Name="Download FFmpeg before publish" BeforeTargets="PrepareForPublish">
-		<Exec Command="powershell -ExecutionPolicy Bypass -File &quot;$(ProjectDir)/DownloadFFmpeg.ps1&quot;" />
-		<Copy SourceFiles="$(ProjectDir)/ffmpeg.exe" DestinationFiles="$(PublishDir)/ffmpeg.exe" />
-	</Target>
-	
 	<PropertyGroup Condition="'$(Configuration)'=='Release'">
 		<DebugSymbols>False</DebugSymbols>
 		<DebugType>None</DebugType>
 	</PropertyGroup>
 
 
+	<Target Name="Download FFmpeg before publish" BeforeTargets="PrepareForPublish">
+		<Exec Command="powershell -ExecutionPolicy Bypass -File &quot;$(ProjectDir)/DownloadFFmpeg.ps1&quot;" />
+		<Copy SourceFiles="$(ProjectDir)/ffmpeg.exe" DestinationFiles="$(PublishDir)/ffmpeg.exe" />
+	</Target>
 
+	<Target Name="Delete Files" AfterTargets="Publish">
+		<Message Text="Delete $(PublishDir)$(ProjectName).deps.json" Importance="high" />
+		<Delete Files="$(PublishDir)$(ProjectName).deps.json" />
+	</Target>
+	
     <ItemGroup>
         <None Remove="icon.ico" />
     </ItemGroup>

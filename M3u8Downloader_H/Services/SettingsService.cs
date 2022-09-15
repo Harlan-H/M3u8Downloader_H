@@ -20,7 +20,7 @@ namespace M3u8Downloader_H.Services
         /// </summary>
         public int MaxConcurrentDownloadCount { get; set; } = 1;
 
-        public int RetryCount { get; set; }
+        public int RetryCount { get; set; } 
 #if DEBUG
         public string SavePath { get; set; } = @"E:\desktop\download";
 #else

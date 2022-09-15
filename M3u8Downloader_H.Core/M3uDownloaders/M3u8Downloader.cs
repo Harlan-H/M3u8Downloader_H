@@ -19,6 +19,7 @@ namespace M3u8Downloader_H.Core.M3uDownloaders
         private readonly object balanceLock = new();
         private readonly IProgress<double> progress;
         private int downloadedCount;
+        private double recordDuration;
         private int CurIndex = -1;
 
         public int TimeOut { get; set; } = 5 * 1000;
@@ -74,18 +75,17 @@ namespace M3u8Downloader_H.Core.M3uDownloaders
 
         public async Task<double> Start(M3UFileInfo m3UFileInfo, string savePath, int reserve0, bool skipRequestError = false, CancellationToken cancellationToken = default)
         {
-            double duration = 0;
             foreach (var mediaFile in m3UFileInfo.MediaFiles)
             {
                 string mediaPath = Path.Combine(savePath, mediaFile.Title);
                 bool isSuccessful = await DownloadAsynInternal(mediaFile.Uri, headers, mediaFile.RangeValue, mediaPath, skipRequestError, cancellationToken);
                 if(isSuccessful)
                 {
-                    progress.Report(mediaFile.Duration);
-                    duration += mediaFile.Duration;
+                    recordDuration += mediaFile.Duration;
+                    progress.Report(recordDuration);
                 }
             }
-            return duration;
+            return recordDuration;
         }
 
 

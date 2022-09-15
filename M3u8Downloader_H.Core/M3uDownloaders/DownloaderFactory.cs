@@ -61,7 +61,6 @@ namespace M3u8Downloader_H.Core.M3uDownloaders
             }
 
             M3UFileInfo previousMediaInfo = m3UFileInfo;
-            double durationCount = 0;
             while (true)
             {
                 var duration = await m3U8Downloader.Start(previousMediaInfo, filePath, 0, skipRequestError, cancellationToken);
@@ -70,8 +69,7 @@ namespace M3u8Downloader_H.Core.M3uDownloaders
                 await m3UCombiner.Start(previousMediaInfo, ForceMerge);
                 actionCallback(previousMediaInfo);
 
-                durationCount += (double)duration;
-                if (previousMediaInfo.IsVod() || durationCount > maxRecordDuration)
+                if (previousMediaInfo.IsVod() || duration > maxRecordDuration)
                     break;
 
                 await Task.Delay(TimeSpan.FromSeconds(previousMediaInfo.MediaFiles.Last().Duration), cancellationToken);

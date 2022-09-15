@@ -136,7 +136,7 @@ namespace M3u8Downloader_H.Core.M3u8Analyzers
                 IEnumerable<M3UMediaInfo> newMediaInfos = m3ufileinfo.MediaFiles.Skip(m => m == oldMediafile).ToList();
                 if (!newMediaInfos.Any())
                 {
-                    //当计数为0 说明新的数据 跟旧的数据完全一致  则延迟上次最后一项数据的Duration
+                    //当newMediaInfos数量为0 说明新的数据 跟旧的数据完全一致  则延迟上次最后一项数据的Duration
                     double delayTime = m3ufileinfo.MediaFiles.Last().Duration;
                     await Task.Delay(TimeSpan.FromSeconds(delayTime), cancellationToken);
                     continue;
