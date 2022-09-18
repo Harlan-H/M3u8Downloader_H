@@ -33,3 +33,8 @@
 ![list](https://user-images.githubusercontent.com/39378318/190357782-117bb79d-a7f3-43bb-9e16-aa7af88e5da8.png)
 ![setting1](https://user-images.githubusercontent.com/39378318/190357793-04773f9e-e02f-4fd3-ba01-f0af040cef75.png)
 ![setting2](https://user-images.githubusercontent.com/39378318/190357801-0035792a-76f3-49ca-a90b-08802fd63b43.png)
+
+# 支持作者
+|微信|支付宝|
+|:--:|:--:|
+|![weixin](https://user-images.githubusercontent.com/39378318/190890312-ab314b1e-24e8-4237-aa24-2f49752b49ab.png)|![zhi](https://user-images.githubusercontent.com/39378318/190890316-d16156a1-88bb-487a-a7a4-664cf0a5e4da.png)|
