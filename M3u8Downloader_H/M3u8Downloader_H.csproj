@@ -7,14 +7,13 @@
     <UseWindowsForms>true</UseWindowsForms>
     <RootNamespace>M3u8Downloader_H</RootNamespace>
     <Platforms>AnyCPU;x64</Platforms>
-    <AssemblyVersion>3.9.7.0</AssemblyVersion>
-    <Version>3.9.7.0</Version>
+    <AssemblyVersion>3.9.8.0</AssemblyVersion>
+    <Version>3.9.8.0</Version>
     <PackageId>m3u8视频下载器</PackageId>
     <Product>m3u8视频下载器</Product>
     <ApplicationIcon>icon.ico</ApplicationIcon>
     <Authors>Harlan</Authors>
     <Nullable>enable</Nullable>
-	<GenerateBootstrapperOnBuild>true</GenerateBootstrapperOnBuild>
   </PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)'=='Release'">
@@ -38,10 +37,6 @@
     </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="DotnetRuntimeBootstrapper" Version="2.3.1">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
     <PackageReference Include="MaterialDesignThemes" Version="4.3.0" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.39" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
