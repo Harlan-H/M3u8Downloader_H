@@ -2,6 +2,9 @@
 **M3u8Downloader_H** 是一个操作非常简单，同时功能比较强大的应用程序，你只需要复制需要下载的m3u8地址或者文件既可完成自动下载，合并，转码等操作    
 首次运行如果提示安装 .net 请选择 .NET Desktop Runtime下载进行安装
 
+# 支付宝领红包
+![IMG_0302](https://user-images.githubusercontent.com/39378318/192124889-5b1f5932-98aa-4896-9ec1-fbc962a7a72e.PNG)
+
 # 特点
  - 简单的ui操作
  - 自动检测下载.net环境及依赖
