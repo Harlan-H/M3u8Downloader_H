@@ -169,6 +169,7 @@
                             <MenuItem Header="复制错误信息" Command="{s:Action CopyFailReason}"  CommandParameter="{Binding}" />
                             <Separator />
                             <MenuItem Header="删除" Command="{s:Action RemoveDownload}"  CommandParameter="{Binding}" />
+                            <MenuItem Header="删除同时删除缓存" Command="{s:Action RemoveDownloadAndCache}"  CommandParameter="{Binding}" />
                             <MenuItem Header="删除所有失败的下载" Command="{s:Action RemoveFailedDownloads}" />
                             <MenuItem Header="删除所有闲置下载" Command="{s:Action RemoveInactiveDownloads}" />
                             <MenuItem Header="删除所有已完成记录" Command="{s:Action RemoveSuccessDownloads}" />

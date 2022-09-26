@@ -223,6 +223,20 @@ namespace M3u8Downloader_H.ViewModels
             Downloads.Remove(download);
         }
 
+        public void RemoveDownloadAndCache(DownloadViewModel download)
+        {
+            try
+            {
+                download.OnCancel();
+                download.DeleteCache();
+                Downloads.Remove(download);
+            }catch(DirectoryNotFoundException)
+            {
+
+            }
+        }
+        
+
         public void RemoveInactiveDownloads()
         {
             var inactiveDownloads = Downloads.Where(c => !c.IsActive).ToArray();

@@ -133,21 +133,31 @@ namespace M3u8Downloader_H.ViewModels
 
             if (!isFile && isLive)
             {
-                Status = DownloadStatus.StartedLive;
-                await downloadService.LiveDownloadAsync(RequestUrl, m3UFileInfo, Headers, VideoFullPath, VideoFullName, () => new Progress<double>(d => RecordDuration = d) , cancellationToken);
+                Progress<double> GetProgress()
+                {
+                    Status = DownloadStatus.StartedLive;
+                    return new(d => RecordDuration = d);
+                }
+                await downloadService.LiveDownloadAsync(RequestUrl, m3UFileInfo, Headers, VideoFullPath, VideoFullName, GetProgress, cancellationToken);
             }
             else
             {
                 if (!isFile && IsDownloaded == false)
                 {
-                    Status = DownloadStatus.StartedVod;
-                    await downloadService.DownloadAsync(m3UFileInfo, Headers, VideoFullPath, () => new Progress<double>(d => ProgressNum = d), cancellationToken);
+                    Progress<double> GetProgress()
+                    {
+                        Status = DownloadStatus.StartedVod;
+                        return new(d => ProgressNum = d);
+                    }
+                    await downloadService.DownloadAsync(m3UFileInfo, Headers, VideoFullPath, GetProgress, cancellationToken);
                     IsDownloaded = true;
                 }
 
                 await downloadService.VideoMerge(m3UFileInfo, VideoFullPath, VideoFullName, isFile);
             }
         }
+
+
 
 
         public bool CanOnShowFile => Status == DownloadStatus.Completed;
@@ -178,6 +188,14 @@ namespace M3u8Downloader_H.ViewModels
 
         public bool CanOnRestart => CanOnStart && Status != DownloadStatus.Completed;
         public void OnRestart() => OnStart();
+
+
+        public void DeleteCache()
+        {
+            DirectoryInfo directory = new(VideoFullPath);
+            if (directory.Exists)
+                directory.Delete(true);
+        }
 
     }
 
