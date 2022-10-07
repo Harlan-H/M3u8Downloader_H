@@ -54,7 +54,7 @@ namespace M3u8Downloader_H.Services
                 string? url = (string?)jObj.SelectToken("url");
                 if (string.IsNullOrEmpty(url))
                 {
-                    response.Json(new Response(1, "url不能为空"));
+                    response.Json(Response.Error("url不能为空"));
                     return;
                 }
 
@@ -62,7 +62,7 @@ namespace M3u8Downloader_H.Services
                 string method = ((string?)jObj.SelectToken("method"))?.ToUpper() ?? "AES-128";
                 if (method is not null && !methods.Contains(method))
                 {
-                    response.Json(new Response(1, "不可用的key方法，必须是AES-128,AES-192,AES-256其中之一"));
+                    response.Json(Response.Error("不可用的key方法，必须是AES-128,AES-192,AES-256其中之一"));
                     return;
                 }
 

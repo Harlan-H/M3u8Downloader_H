@@ -46,7 +46,7 @@ namespace M3u8Downloader_H.Core.Utils
             int curPos = 0;
             do
             {
-                bytesRead = await stream.ReadAsync(_buffer,curPos, _length - curPos, cancellationToken);
+                bytesRead = await stream.ReadAsync(_buffer.AsMemory(curPos, _length - curPos), cancellationToken);
                 curPos += bytesRead;
             } while (curPos < _length);
 
