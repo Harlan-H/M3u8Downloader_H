@@ -24,14 +24,23 @@ jobs:
           dotnet-version: 6.0.100
 
       - name: Publish
-        run: dotnet publish M3u8Downloader_H/ -o M3u8Downloader_H/bin/Publish --configuration Release
+        run: |
+          dotnet publish M3u8Downloader_H/ -o M3u8Downloader_H/bin/Publish --configuration Release
+          dotnet publish M3u8Downloader_H/ -o M3u8Downloader_H/bin/PublishSingleFile -c Release --self-contained true -r win-x64  -p:PublishSingleFile=true
 
-      - name: Upload artifacts
+      - name: Upload artifacts normal
         if: ${{ github.event_name == 'push' && github.ref_type == 'tag' }}
         uses: actions/upload-artifact@v3
         with:
           name: M3u8Downloader_H
           path: M3u8Downloader_H/bin/Publish
+
+      - name: Upload artifacts single file
+        if: ${{ github.event_name == 'push' && github.ref_type == 'tag' }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: M3u8Downloader_H-SingleFile
+          path: M3u8Downloader_H/bin/PublishSingleFile
 
   deploy:
     if: ${{ github.event_name == 'push' && github.ref_type == 'tag' }}
@@ -39,14 +48,22 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Download artifacts
+      - name: Download artifacts normal
         uses: actions/download-artifact@v3
         with:
           name: M3u8Downloader_H
           path: M3u8Downloader_H
 
+      - name: Download artifacts single file
+        uses: actions/download-artifact@v3
+        with:
+          name: M3u8Downloader_H-SingleFile
+          path: M3u8Downloader_H-SingleFile
+
       - name: Create package
-        run: Compress-Archive -Path M3u8Downloader_H/* -DestinationPath M3u8Downloader_H.zip -Force
+        run: | 
+          Compress-Archive -Path M3u8Downloader_H/* -DestinationPath M3u8Downloader_H.zip -Force
+          Compress-Archive -Path M3u8Downloader_H-SingleFile/* -DestinationPath M3u8Downloader_H-SingleFile.zip -Force
         shell: pwsh
 
       - name: Create release
@@ -58,11 +75,11 @@ jobs:
           tag_name: ${{ github.ref }}
           release_name: ${{ github.ref }}
           body: |
-            [Changelog](https://github.com/Harlan-H/M3u8Downloader_H/blob/master/Changelog.md)
+            - [更新日志](https://github.com/Harlan-H/M3u8Downloader_H/blob/master/Changelog.md)
           draft: false
           prerelease: false
 
-      - name: Upload release asset
+      - name: Upload release normal
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -72,6 +89,12 @@ jobs:
           asset_path: M3u8Downloader_H.zip
           asset_content_type: application/zip
 
-      - uses: geekyeggo/delete-artifact@v1
+      - name: Upload release single file
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: M3u8Downloader_H
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_name: M3u8Downloader_H-SingleFile.zip
+          asset_path: M3u8Downloader_H-SingleFile.zip
+          asset_content_type: application/zip
