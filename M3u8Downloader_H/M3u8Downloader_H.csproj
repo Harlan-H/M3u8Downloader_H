@@ -31,9 +31,24 @@
 		<Message Text="Delete $(PublishDir)$(ProjectName).deps.json" Importance="high" />
 		<Delete Files="$(PublishDir)$(ProjectName).deps.json" />
 	</Target>
+
+	<ItemGroup>
+	  <Compile Remove="新文件夹1\**" />
+	  <EmbeddedResource Remove="新文件夹1\**" />
+	  <None Remove="新文件夹1\**" />
+	  <Page Remove="新文件夹1\**" />
+	</ItemGroup>
 	
     <ItemGroup>
+        <None Remove="Assets\weixin.png" />
+        <None Remove="Assets\zhifubao.png" />
         <None Remove="icon.ico" />
+    </ItemGroup>
+	
+    <ItemGroup>
+      <Resource Include="Assets\weixin.png">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      </Resource>
     </ItemGroup>
 
   <ItemGroup>
@@ -51,6 +66,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Assets\zhifubao.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="icon.ico">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
@@ -66,5 +84,4 @@
     <None Update="Sounds\success.wav">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-</Project>
+  </ItemGroup></Project>

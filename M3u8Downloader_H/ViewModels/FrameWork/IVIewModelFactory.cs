@@ -5,6 +5,7 @@
         DownloadViewModel CreateDownloadViewModel();
         SettingsViewModel CreateSettingsViewModel();
         MessageBoxViewModel CreateMessageBoxViewModel();
-
+        AboutViewModel CreateAboutViewModel();
+        SponsorViewModel CreateSponsorViewModel();
     }
 }
