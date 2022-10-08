@@ -136,7 +136,7 @@ namespace M3u8Downloader_H.ViewModels
                 if (settingsService.IsResetAddress) obj.RequestUrl = string.Empty;
                 if (settingsService.IsResetName) obj.VideoName = string.Empty;
                 obj.Key = null;
-                obj.Method = "AES-128";
+                obj.Method = null;
                 obj.Iv = null;
 
             }

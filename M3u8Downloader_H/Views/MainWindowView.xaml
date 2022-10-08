@@ -139,9 +139,8 @@
                         </i:Interaction.Triggers>
                     </TextBox>
                     <DockPanel  Margin="8" >
-                        <ComboBox SelectedValue="{Binding Method}" FontSize="18" 
+                        <ComboBox SelectedValue="{Binding Method,TargetNullValue=AES-128}" FontSize="18" 
                                   ItemsSource="{Binding DataContext.Methods,RelativeSource={RelativeSource AncestorType=Window}}" />
-
                         <TextBox Text="{Binding Key}"  Margin="5 0 0 0" FontSize="18"
                                  materialDesign:HintAssist.Hint="KEY(字符串或者base64)" />
                     </DockPanel>
