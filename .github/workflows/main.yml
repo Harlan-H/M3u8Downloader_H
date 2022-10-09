@@ -3,7 +3,11 @@ name: main
 on: 
   push:
     branches:
+<<<<<<< HEAD
     - master
+=======
+      - master
+>>>>>>> develop
     tags:
       - "*"
 

@@ -28,7 +28,7 @@
 
 # 目前的问题
  当软件下载的是fmp4格式的视频之后，没有办法转码为mp4。目前的解决方案其实是有的，可以通过命令行的方式让ffmpeg去转换成mp4,但是与此同时带来的问题是，软件本身是同时支持下载和合并的，那如果用户合并的ts流他是加密的，这个时候的视频解密就需要保存到硬盘上，但是如果是ts的格式，这个时候是内存中就解密完成同时写入到主视频上，所以这就带来了一个新的性能问题。如果你有比较好的方案可以给我提议.   
- 所以如果你下载的视频是fmp4的格式的，请不要转码成mp4
+ 所以如果你下载的视频是fmp4的格式的，请不要转码成mp4，你可以通过修改后缀名为mp4来达到转码的目的
 
 # 截图
 ![list](https://user-images.githubusercontent.com/39378318/190357782-117bb79d-a7f3-43bb-9e16-aa7af88e5da8.png)
@@ -39,4 +39,7 @@
 |微信|支付宝|支付宝领红包|
 |:--:|:--:|:--:|
 |![weixin](https://user-images.githubusercontent.com/39378318/190890312-ab314b1e-24e8-4237-aa24-2f49752b49ab.png)|![zhi](https://user-images.githubusercontent.com/39378318/190890316-d16156a1-88bb-487a-a7a4-664cf0a5e4da.png)|![QQ截图20221009091904](https://user-images.githubusercontent.com/39378318/194733110-b363c56a-7324-48e4-b41c-a98b68b41b40.png)|
+<<<<<<< HEAD
 
+=======
+>>>>>>> develop
