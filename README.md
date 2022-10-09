@@ -1,6 +1,8 @@
 # M3u8Downloader_H
 **M3u8Downloader_H** 是一个操作非常简单，同时功能比较强大的应用程序，你只需要复制需要下载的m3u8地址或者文件既可完成自动下载，合并，转码等操作    
-首次运行如果提示安装 .net 请选择 .NET Desktop Runtime下载进行安装
+软件分两个版本：
+  - M3u8Downloader_H.zip  为需要.net core的运行库的版本
+  - M3u8Downloader_H-SingleFile.zip  不需要.net core运行库 但是win7一样需要安装KB4457144更新
 
 # 特点
  - 简单的ui操作
