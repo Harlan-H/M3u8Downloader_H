@@ -3,7 +3,9 @@ name: main
 on: 
   push:
     branches:
-    - master
+      - master
+    tags:
+      - "*"
 
 jobs:
   package:
