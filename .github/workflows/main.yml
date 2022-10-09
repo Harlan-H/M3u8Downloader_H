@@ -75,29 +75,6 @@ jobs:
             - [更新日志](https://github.com/Harlan-H/M3u8Downloader_H/blob/master/Changelog.md)
           draft: false
           prerelease: false
-<<<<<<< HEAD
-
-      - name: Upload release normal
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_name: M3u8Downloader_H.zip
-          asset_path: M3u8Downloader_H.zip
-          asset_content_type: application/zip
-
-      - name: Upload release single file
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_name: M3u8Downloader_H-SingleFile.zip
-          asset_path: M3u8Downloader_H-SingleFile.zip
-          asset_content_type: application/zip
-=======
           files: |
               M3u8Downloader_H.zip
               M3u8Downloader_H-SingleFile.zip
->>>>>>> develop
