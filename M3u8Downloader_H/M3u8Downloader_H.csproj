@@ -31,13 +31,6 @@
 		<Message Text="Delete $(PublishDir)$(ProjectName).deps.json" Importance="high" />
 		<Delete Files="$(PublishDir)$(ProjectName).deps.json" />
 	</Target>
-
-	<ItemGroup>
-	  <Compile Remove="新文件夹1\**" />
-	  <EmbeddedResource Remove="新文件夹1\**" />
-	  <None Remove="新文件夹1\**" />
-	  <Page Remove="新文件夹1\**" />
-	</ItemGroup>
 	
     <ItemGroup>
         <None Remove="Assets\weixin.png" />
@@ -45,12 +38,6 @@
         <None Remove="icon.ico" />
     </ItemGroup>
 	
-    <ItemGroup>
-      <Resource Include="Assets\weixin.png">
-        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      </Resource>
-    </ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="MaterialDesignThemes" Version="4.3.0" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.39" />
@@ -65,7 +52,11 @@
     <ProjectReference Include="..\M3u8Downloader_H.M3U8\M3u8Downloader_H.M3U8.csproj" />
   </ItemGroup>
 
+
   <ItemGroup>
+	  <Resource Include="Assets\weixin.png">
+		  <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+	  </Resource>
     <Resource Include="Assets\zhifubao.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
