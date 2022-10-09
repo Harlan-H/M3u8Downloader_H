@@ -39,7 +39,3 @@
 |微信|支付宝|支付宝领红包|
 |:--:|:--:|:--:|
 |![weixin](https://user-images.githubusercontent.com/39378318/190890312-ab314b1e-24e8-4237-aa24-2f49752b49ab.png)|![zhi](https://user-images.githubusercontent.com/39378318/190890316-d16156a1-88bb-487a-a7a4-664cf0a5e4da.png)|![QQ截图20221009091904](https://user-images.githubusercontent.com/39378318/194733110-b363c56a-7324-48e4-b41c-a98b68b41b40.png)|
-<<<<<<< HEAD
-
-=======
->>>>>>> develop
