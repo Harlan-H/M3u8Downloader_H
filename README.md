@@ -2,9 +2,6 @@
 **M3u8Downloader_H** 是一个操作非常简单，同时功能比较强大的应用程序，你只需要复制需要下载的m3u8地址或者文件既可完成自动下载，合并，转码等操作    
 首次运行如果提示安装 .net 请选择 .NET Desktop Runtime下载进行安装
 
-# 支付宝领红包
-![IMG_0302](https://user-images.githubusercontent.com/39378318/192124889-5b1f5932-98aa-4896-9ec1-fbc962a7a72e.PNG)
-
 # 特点
  - 简单的ui操作
  - 自动检测下载.net环境及依赖
@@ -39,6 +36,6 @@
 ![setting2](https://user-images.githubusercontent.com/39378318/190357801-0035792a-76f3-49ca-a90b-08802fd63b43.png)
 
 # 支持作者
-|微信|支付宝|
-|:--:|:--:|
-|![weixin](https://user-images.githubusercontent.com/39378318/190890312-ab314b1e-24e8-4237-aa24-2f49752b49ab.png)|![zhi](https://user-images.githubusercontent.com/39378318/190890316-d16156a1-88bb-487a-a7a4-664cf0a5e4da.png)|
+|微信|支付宝|支付宝领红包|
+|:--:|:--:|:--:|
+|![weixin](https://user-images.githubusercontent.com/39378318/190890312-ab314b1e-24e8-4237-aa24-2f49752b49ab.png)|![zhi](https://user-images.githubusercontent.com/39378318/190890316-d16156a1-88bb-487a-a7a4-664cf0a5e4da.png)|![QQ截图20221009091904](https://user-images.githubusercontent.com/39378318/194733110-b363c56a-7324-48e4-b41c-a98b68b41b40.png)|
