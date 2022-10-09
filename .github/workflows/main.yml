@@ -21,14 +21,14 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Install .NET
-        uses: actions/setup-dotnet@v2
+        uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: 6.0.100
+          dotnet-version: 6.0.x
 
       - name: Publish
         run: |
           dotnet publish M3u8Downloader_H/ -o M3u8Downloader_H/bin/Publish --configuration Release
-          dotnet publish M3u8Downloader_H/ -o M3u8Downloader_H/bin/PublishSingleFile -c Release --self-contained true -r win-x64  -p:PublishSingleFile=true
+          dotnet publish M3u8Downloader_H/ -o M3u8Downloader_H/bin/PublishSingleFile -c Release --self-contained true -r win7-x64  -p:PublishSingleFile=true
 
       - name: Upload artifacts normal
         if: ${{ github.event_name == 'push' && github.ref_type == 'tag' }}
@@ -69,34 +69,12 @@ jobs:
         shell: pwsh
 
       - name: Create release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ github.ref }}
-          release_name: ${{ github.ref }}
           body: |
             - [更新日志](https://github.com/Harlan-H/M3u8Downloader_H/blob/master/Changelog.md)
           draft: false
           prerelease: false
-
-      - name: Upload release normal
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_name: M3u8Downloader_H.zip
-          asset_path: M3u8Downloader_H.zip
-          asset_content_type: application/zip
-
-      - name: Upload release single file
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_name: M3u8Downloader_H-SingleFile.zip
-          asset_path: M3u8Downloader_H-SingleFile.zip
-          asset_content_type: application/zip
+          files: |
+              M3u8Downloader_H.zip
+              M3u8Downloader_H-SingleFile.zip
