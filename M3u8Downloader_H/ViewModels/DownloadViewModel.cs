@@ -25,7 +25,6 @@ namespace M3u8Downloader_H.ViewModels
         private CancellationTokenSource? cancellationTokenSource;
 
         private bool IsFirst = true;
-        private bool IsDownloaded;
         private bool? IsLive;
 
         public M3UKeyInfo? KeyInfos;
@@ -87,8 +86,7 @@ namespace M3u8Downloader_H.ViewModels
                     VideoFullName = VideoFullPath + (M3uFileInfo.Map is not null ? Path.GetExtension(M3uFileInfo.Map?.Title) : ".ts");
                     Status = DownloadStatus.Enqueued;
 
-                    IsLive ??= !M3uFileInfo.IsVod();
-                    await DownloadAsync(M3uFileInfo, (bool)IsLive, cancellationTokenSource.Token);
+                    await DownloadAsync(M3uFileInfo, cancellationTokenSource.Token);
 
                     await downloadService.ConvertToMp4(VideoFullName, VideoFullName, new Progress<double>(d => ProgressNum = d), cancellationTokenSource.Token);
 
@@ -115,7 +113,7 @@ namespace M3u8Downloader_H.ViewModels
         }
 
 
-        private async Task DownloadAsync(M3UFileInfo m3UFileInfo, bool isLive, CancellationToken cancellationToken)
+        private async Task DownloadAsync(M3UFileInfo m3UFileInfo, CancellationToken cancellationToken)
         {
             //判断如果M3UMediaInfo中第一个项的请求地址不是是文件 那么则创建缓存目录
             //当uri是相对路劲的时候 这里会报错
@@ -131,7 +129,8 @@ namespace M3u8Downloader_H.ViewModels
                 IsFirst = false;
             }
 
-            if (!isFile && isLive)
+            IsLive ??= !m3UFileInfo.IsVod();
+            if (!isFile && (bool)IsLive)
             {
                 Progress<double> GetProgress()
                 {
@@ -142,7 +141,7 @@ namespace M3u8Downloader_H.ViewModels
             }
             else
             {
-                if (!isFile && IsDownloaded == false)
+                if (!isFile)
                 {
                     Progress<double> GetProgress()
                     {
@@ -150,7 +149,6 @@ namespace M3u8Downloader_H.ViewModels
                         return new(d => ProgressNum = d);
                     }
                     await downloadService.DownloadAsync(m3UFileInfo, Headers, VideoFullPath, GetProgress, cancellationToken);
-                    IsDownloaded = true;
                 }
 
                 await downloadService.VideoMerge(m3UFileInfo, VideoFullPath, VideoFullName, isFile);

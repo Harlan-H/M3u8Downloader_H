@@ -136,7 +136,7 @@ namespace M3u8Downloader_H.ViewModels
                 if (settingsService.IsResetAddress) obj.RequestUrl = string.Empty;
                 if (settingsService.IsResetName) obj.VideoName = string.Empty;
                 obj.Key = null;
-                obj.Method = "AES-128";
+                obj.Method = null;
                 obj.Iv = null;
 
             }
@@ -268,6 +268,7 @@ namespace M3u8Downloader_H.ViewModels
 
         public void CopyFailReason(DownloadViewModel download) => Clipboard.SetText(download.FailReason);
 
+
         public bool CanShowSettings => !IsShowDialog;
 
         public async void ShowSettings()
@@ -277,6 +278,34 @@ namespace M3u8Downloader_H.ViewModels
             {
                 var dialog = viewModelFactory.CreateSettingsViewModel();
                 dialog.PluginItems = pluginService.GetPluginItem();
+                await dialogManager.ShowDialogAsync(dialog);
+            }
+            finally
+            {
+                IsShowDialog = false;
+            }
+        }
+
+        public async void ShowAbout()
+        {
+            IsShowDialog = true;
+            try
+            {
+                var dialog = viewModelFactory.CreateAboutViewModel();
+                await dialogManager.ShowDialogAsync(dialog);
+            }
+            finally
+            {
+                IsShowDialog = false;
+            }
+        }
+
+        public async void ShowSponsor()
+        {
+            IsShowDialog = true;
+            try
+            {
+                var dialog = viewModelFactory.CreateSponsorViewModel();
                 await dialogManager.ShowDialogAsync(dialog);
             }
             finally

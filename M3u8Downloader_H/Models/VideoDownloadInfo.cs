@@ -8,7 +8,7 @@ namespace M3u8Downloader_H.Models
         public string RequestUrl { get; set; } = default!;
         public string VideoName { get; set; } = default!;
 
-        public string Method { get; set; } = "AES-128";
+        public string? Method { get; set; } = default!;
         public string? Key { get; set; } = default!;
         public string? Iv { get; set; } = default!;
 

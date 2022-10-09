@@ -48,8 +48,8 @@ namespace M3u8Downloader_H.Extensions
 
         public static byte[] TryParseKey(this byte[] data, string method)
         {
-            string tmpMethod = string.IsNullOrWhiteSpace(method) ? "AES-128" : method;
-            if (KeyGroup.TryGetValue(tmpMethod.ToUpper(CultureInfo.CurrentCulture).Trim(), out (int, int) tmpKey))
+            string tmpMethod = string.IsNullOrWhiteSpace(method) ? "AES-128" : method.ToUpper(CultureInfo.CurrentCulture).Trim();
+            if (KeyGroup.TryGetValue(tmpMethod, out (int, int) tmpKey))
             {
                 if (data.Length == tmpKey.Item1)
                     return data;

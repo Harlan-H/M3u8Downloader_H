@@ -16,6 +16,9 @@
         WindowStartupLocation="CenterScreen"
         ResizeMode="CanMinimize"
         Height="450" Width="600">
+    <i:Interaction.Behaviors>
+        <behavior:WindowSystemCommandBehavior />
+    </i:Interaction.Behaviors>
     <Window.Resources>
         <Style x:Key="WindowStyle1" TargetType="{x:Type Window}">
             <Setter Property="WindowChrome.WindowChrome">
@@ -62,7 +65,22 @@
                                             Orientation="Horizontal"
                                             WindowChrome.IsHitTestVisibleInChrome="True"
                                             Margin="0,-1,-1,0">
-                                        <Button 
+                                        <materialDesign:PopupBox >
+                                            <StackPanel >
+                                                <Button Content=" 设  置 "  
+                                                        FontSize="15" 
+                                                        Command="{s:Action ShowSettings}" />
+                                                <Button Content=" 关  于 " 
+                                                        FontSize="15" 
+                                                        Command="{s:Action ShowAbout}" 
+                                                        IsEnabled="{Binding CanShowSettings}" />
+                                                <Button Content=" 赞  助 " 
+                                                        FontSize="15" 
+                                                        Command="{s:Action ShowSponsor}" 
+                                                        IsEnabled="{Binding CanShowSettings}" />
+                                            </StackPanel>
+                                        </materialDesign:PopupBox>
+                                     <!--   <Button 
                                             Style="{DynamicResource MaterialDesignFlatButton}"
                                             Foreground="Black"
                                             Command="{s:Action ShowSettings}"
@@ -74,7 +92,7 @@
                                                 Width="16"
                                                 Height="16"
                                                 Kind="Settings" />
-                                        </Button>
+                                        </Button> -->
                                         <Button x:Name="Minimize"
                                             Style="{DynamicResource MaterialDesignFlatButton}"
                                             Foreground="Black"
@@ -139,9 +157,8 @@
                         </i:Interaction.Triggers>
                     </TextBox>
                     <DockPanel  Margin="8" >
-                        <ComboBox SelectedValue="{Binding Method}" FontSize="18" 
+                        <ComboBox SelectedValue="{Binding Method,TargetNullValue=AES-128}" FontSize="18" 
                                   ItemsSource="{Binding DataContext.Methods,RelativeSource={RelativeSource AncestorType=Window}}" />
-
                         <TextBox Text="{Binding Key}"  Margin="5 0 0 0" FontSize="18"
                                  materialDesign:HintAssist.Hint="KEY(字符串或者base64)" />
                     </DockPanel>
