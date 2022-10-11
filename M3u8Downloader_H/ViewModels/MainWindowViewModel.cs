@@ -51,6 +51,7 @@ namespace M3u8Downloader_H.ViewModels
             _ = Task.Run(() =>
             {
                 settingsService.Load();
+                settingsService.Validate();
                 settingsService.ServiceUpdate();
 
                 pluginService.Load();
