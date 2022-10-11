@@ -263,12 +263,12 @@
 
                                                             <DataTrigger Binding="{Binding Status}" Value="{x:Static model:DownloadStatus.Completed}" >
                                                                 <Setter Property="Foreground" Value="{DynamicResource SuccessBrush}" />
-                                                                <Setter Property="Text" Value="✓ 完成" />
+                                                                <Setter Property="Text" Value="✔ 完成" />
                                                             </DataTrigger>
 
                                                             <DataTrigger Binding="{Binding Status}" Value="{x:Static model:DownloadStatus.Canceled}" >
                                                                 <Setter Property="Foreground" Value="{DynamicResource CanceledBrush}" />
-                                                                <Setter Property="Text" Value="✗ 取消" />
+                                                                <Setter Property="Text" Value="⏹ 停止" />
                                                             </DataTrigger>
 
                                                             <DataTrigger Binding="{Binding Status}" Value="{x:Static model:DownloadStatus.Failed}" >
@@ -290,11 +290,11 @@
                                         <StackPanel s:View.ActionTarget="{Binding}"
                                         Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
 
-                                            <Button Padding="4,0,0,0" VerticalAlignment="Center"  ToolTip="取消下载" 
+                                            <Button Padding="4,0,0,0" VerticalAlignment="Center"  ToolTip="停止下载" 
                                                 Style="{DynamicResource MaterialDesignFlatButton}"
                                                 Command="{s:Action OnCancel}"
                                                 Visibility="{Binding CanOnCancel,Converter={x:Static s:BoolToVisibilityConverter.Instance}}">
-                                                <materialDesign:PackIcon Width="24" Height="24" Kind="CloseCircleOutline" />
+                                                <materialDesign:PackIcon Width="24" Height="24" Kind="StopCircleOutline" />
                                             </Button>
 
                                             <Button Padding="4,0,0,0"  VerticalAlignment="Center"  ToolTip="重新下载" 
