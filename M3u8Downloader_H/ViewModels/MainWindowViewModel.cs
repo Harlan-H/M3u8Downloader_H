@@ -13,6 +13,7 @@ using M3u8Downloader_H.Services;
 using M3u8Downloader_H.Utils;
 using M3u8Downloader_H.ViewModels.FrameWork;
 using M3u8Downloader_H.M3U8.Infos;
+using M3u8Downloader_H.Extensions;
 
 namespace M3u8Downloader_H.ViewModels
 {
@@ -98,47 +99,17 @@ namespace M3u8Downloader_H.ViewModels
         public bool CanProcessDownload => !IsBusy;
         public void ProcessDownload(VideoDownloadInfo obj)
         {
-            IsBusy = true;
-            
+            IsBusy = true;   
             try
             {
-                Uri uri = new(obj.RequestUrl, UriKind.Absolute);
-                if(uri.IsFile)
-                {
-                    string ext = Path.GetExtension(uri.OriginalString).Trim('.');
-                    switch (ext)
-                    {
-                        case "txt":
-                            HandleTxt(uri);
-                            break;
-                        case "":
-                            FileAttributes fileAttribute = File.GetAttributes(uri.OriginalString);
-                            if (fileAttribute != FileAttributes.Directory)
-                                throw new InvalidOperationException("请确认是否为文件夹");
-
-                            ProcessDownload(uri, obj.VideoName, obj.Method, obj.Key, obj.Iv);
-                            break;
-                        case "json":
-                        case "xml":
-                        case "m3u8":
-                            ProcessDownload(uri, obj.VideoName, obj.Method, obj.Key, obj.Iv);
-                            break;
-                        default:
-                            throw new InvalidOperationException("请确认是否为.m3u8或.txt或.json或.xml或文件夹");
-                    }
-                }
+                (Uri uri,string ext) = obj.Validate();
+                if(ext == "txt")
+                    HandleTxt(uri);
                 else
-                {
-                    ProcessDownload(uri, obj.VideoName,obj.Method,obj.Key,obj.Iv);
-                }
-
+                    ProcessDownload(uri, obj.VideoName, obj.Method, obj.Key, obj.Iv);
+                
                 //只有操作成功才会清空
-                if (settingsService.IsResetAddress) obj.RequestUrl = string.Empty;
-                if (settingsService.IsResetName) obj.VideoName = string.Empty;
-                obj.Key = null;
-                obj.Method = null;
-                obj.Iv = null;
-
+                obj.Reset(settingsService.IsResetAddress, settingsService.IsResetName);
             }
             catch (Exception e)
             {
