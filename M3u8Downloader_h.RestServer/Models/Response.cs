@@ -2,7 +2,7 @@
 
 namespace M3u8Downloader_H.RestServer.Models
 {
-    public class Response<T>
+    internal class Response<T>
     {
         public int Code { get; }
         public string Message { get; }
@@ -20,7 +20,7 @@ namespace M3u8Downloader_H.RestServer.Models
         public static implicit operator string(Response<T> response) => response.ToString();
     }
 
-    public class Response : Response<string>
+    internal class Response : Response<string>
     {
         public Response(int code, string message, string? data = null) : base(code, message, data)
         {
