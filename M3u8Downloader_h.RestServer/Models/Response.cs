@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace M3u8Downloader_H.Models
+namespace M3u8Downloader_H.RestServer.Models
 {
     public class Response<T>
     {

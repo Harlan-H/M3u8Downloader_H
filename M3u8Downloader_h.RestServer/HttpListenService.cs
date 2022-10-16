@@ -1,29 +1,23 @@
-﻿using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using M3u8Downloader_H.RestServer.Models;
+using M3u8Downloader_H.RestServer.Extensions;
+using M3u8Downloader_H.RestServer.Utils;
 using System.Net;
-using System.Text;
-using M3u8Downloader_H.Extensions;
-using M3u8Downloader_H.Models;
-using M3u8Downloader_H.Utils;
+using Newtonsoft.Json.Linq;
 using M3u8Downloader_H.M3U8.Infos;
-using System.Linq;
 
-namespace M3u8Downloader_H.Services
+namespace M3u8Downloader_h.RestServer
 {
     public class HttpListenService
     {
         private readonly HttpListen httpListen = new();
-        private readonly DownloadService downloadService;
         private Action<Uri, string?, string?, string?, string?, string?, IEnumerable<KeyValuePair<string, string>>?> DownloadByUrlAction = default!;
         private Action<string, Uri?, string?, string?, IEnumerable<KeyValuePair<string, string>>?> DownloadByContentAction = default!;
         private Action<M3UFileInfo, string?, string?, IEnumerable<KeyValuePair<string, string>>?> DownloadByM3uFileInfoAction = default!;
+        private Func< string, Uri, M3UFileInfo> GetM3U8FileInfoFunc = default!;
         private readonly string[] methods = { "AES-128", "AES-192", "AES-256" };
 
-        public HttpListenService(DownloadService downloadService)
+        public HttpListenService()
         {
-            this.downloadService = downloadService;
             httpListen.RegisterService("downloadbyurl", DownloadByUrl);
             httpListen.RegisterService("downloadbycontent", DownloadByContent);
             httpListen.RegisterService("downloadbyjsoncontent", DownloadByJsonContent);
@@ -31,13 +25,15 @@ namespace M3u8Downloader_H.Services
         }
 
         public void Initialization(
-            Action<Uri, string?,string?,string?,string?, string?, IEnumerable<KeyValuePair<string, string>>?> downloadByUrl,
+            Action<Uri, string?, string?, string?, string?, string?, IEnumerable<KeyValuePair<string, string>>?> downloadByUrl,
             Action<string, Uri?, string?, string?, IEnumerable<KeyValuePair<string, string>>?> downloadByContent,
-            Action<M3UFileInfo, string?, string?, IEnumerable<KeyValuePair<string, string>>?> downloadByM3uFileInfo)
+            Action<M3UFileInfo, string?, string?, IEnumerable<KeyValuePair<string, string>>?> downloadByM3uFileInfo,
+            Func<string,Uri, M3UFileInfo> getM3u8FileInfoFunc)
         {
             DownloadByUrlAction = downloadByUrl;
             DownloadByContentAction = downloadByContent;
             DownloadByM3uFileInfoAction = downloadByM3uFileInfo;
+            GetM3U8FileInfoFunc = getM3u8FileInfoFunc;
         }
 
         public void Run(string port)
@@ -72,7 +68,7 @@ namespace M3u8Downloader_H.Services
                 Dictionary<string, string>? headers = jObj.SelectToken("headers")?.ToObject<Dictionary<string, string>>();
 
                 Uri uri = new(url!, UriKind.Absolute);
-                DownloadByUrlAction(uri, videoName,method,key, iv, savePath, headers);
+                DownloadByUrlAction(uri, videoName, method, key, iv, savePath, headers);
 
                 response.Json(Response.Success());
             }
@@ -111,7 +107,7 @@ namespace M3u8Downloader_H.Services
 
                 response.Json(Response.Success());
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 response.Json(Response.Error($"请求失败,{e.Message}"));
             }
@@ -168,7 +164,7 @@ namespace M3u8Downloader_H.Services
                     uri = new Uri(url, UriKind.Absolute);
                 }
 
-                M3UFileInfo m3UFileInfo = downloadService.GetM3U8FileInfo(content, uri!);
+                M3UFileInfo m3UFileInfo = GetM3U8FileInfoFunc(content, uri!);
                 var r = new Response<M3UFileInfo>(0, "解析成功", m3UFileInfo);
                 response.Json(r);
             }

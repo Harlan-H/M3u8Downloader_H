@@ -17,6 +17,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "M3u8Downloader_H.Extensions
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "M3u8Downloader_H.M3U8", "M3u8Downloader_H.M3U8\M3u8Downloader_H.M3U8.csproj", "{1DFD59D5-742C-41FA-A360-5922665752D5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "M3u8Downloader_h.RestServer", "M3u8Downloader_h.RestServer\M3u8Downloader_h.RestServer.csproj", "{53A15C51-C1B4-40BC-BD57-B5248EC5813F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -111,6 +113,18 @@ Global
 		{1DFD59D5-742C-41FA-A360-5922665752D5}.Release|x64.Build.0 = Release|Any CPU
 		{1DFD59D5-742C-41FA-A360-5922665752D5}.Release|x86.ActiveCfg = Release|Any CPU
 		{1DFD59D5-742C-41FA-A360-5922665752D5}.Release|x86.Build.0 = Release|Any CPU
+		{53A15C51-C1B4-40BC-BD57-B5248EC5813F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{53A15C51-C1B4-40BC-BD57-B5248EC5813F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{53A15C51-C1B4-40BC-BD57-B5248EC5813F}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{53A15C51-C1B4-40BC-BD57-B5248EC5813F}.Debug|x64.Build.0 = Debug|Any CPU
+		{53A15C51-C1B4-40BC-BD57-B5248EC5813F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{53A15C51-C1B4-40BC-BD57-B5248EC5813F}.Debug|x86.Build.0 = Debug|Any CPU
+		{53A15C51-C1B4-40BC-BD57-B5248EC5813F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{53A15C51-C1B4-40BC-BD57-B5248EC5813F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{53A15C51-C1B4-40BC-BD57-B5248EC5813F}.Release|x64.ActiveCfg = Release|Any CPU
+		{53A15C51-C1B4-40BC-BD57-B5248EC5813F}.Release|x64.Build.0 = Release|Any CPU
+		{53A15C51-C1B4-40BC-BD57-B5248EC5813F}.Release|x86.ActiveCfg = Release|Any CPU
+		{53A15C51-C1B4-40BC-BD57-B5248EC5813F}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

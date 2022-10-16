@@ -1,9 +1,9 @@
-﻿using System;
+﻿using M3u8Downloader_H.RestServer.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Net;
-using M3u8Downloader_H.Extensions;
 
-namespace M3u8Downloader_H.Utils
+namespace M3u8Downloader_H.RestServer.Utils
 {
     public class HttpListen
     {

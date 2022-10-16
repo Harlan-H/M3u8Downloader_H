@@ -5,7 +5,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace M3u8Downloader_H.Extensions
+namespace M3u8Downloader_H.RestServer.Extensions
 {
     public static class HttpListenerResponseExtension
     {
