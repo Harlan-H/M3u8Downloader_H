@@ -16,7 +16,10 @@ namespace M3u8Downloader_h.RestServer
         private Func< string, Uri, M3UFileInfo> GetM3U8FileInfoFunc = default!;
         private readonly string[] methods = { "AES-128", "AES-192", "AES-256" };
 
-        public HttpListenService()
+        private readonly static HttpListenService instance = new();
+        public static HttpListenService Instance => instance;
+
+        private HttpListenService()
         {
             httpListen.RegisterService("downloadbyurl", DownloadByUrl);
             httpListen.RegisterService("downloadbycontent", DownloadByContent);

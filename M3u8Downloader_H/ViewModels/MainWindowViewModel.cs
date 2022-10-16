@@ -43,7 +43,7 @@ namespace M3u8Downloader_H.ViewModels
             this.settingsService = settingsService;
             this.downloadService = downloadService;
             this.pluginService = pluginService;
-            httpListenService = new HttpListenService();
+            httpListenService = HttpListenService.Instance;
         }
 
         protected override void OnViewLoaded()
