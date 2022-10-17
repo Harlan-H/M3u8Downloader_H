@@ -60,7 +60,7 @@ namespace M3u8Downloader_H.M3U8
                 var CompareKey = keyValuePair.Key;
 
                 if (!attributeReaders.TryGetValue(CompareKey ?? text, out AttributeReader? attributeReader))
-                    throw new InvalidDataException($"{text} 无法识别的标签");
+                    throw new InvalidDataException($"{text} 无法识别的标签,可能是非标准的标签，你可以删除此行，然后拖拽m3u8文件到请求地址，再次尝试下载");
 
                 if (attributeReader.Read(m3UFileInfo, reader, keyValuePair, baseUri))
                     break;
