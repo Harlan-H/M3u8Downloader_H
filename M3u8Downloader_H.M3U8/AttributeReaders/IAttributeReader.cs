@@ -5,8 +5,9 @@ using System;
 
 namespace M3u8Downloader_H.M3U8.AttributeReaders
 {
-    internal interface IAttributeReader
+    public interface IAttributeReader
     {
-        bool Read(M3UFileInfo m3UFileInfo, LineReader reader, KeyValuePair<string, string> keyValuePair, Uri baseUri);
+        bool ShouldTerminate { get; }
+        void Write(M3UFileInfo m3UFileInfo, string value, IEnumerator<string> reader, Uri baseUri);
     }
 }

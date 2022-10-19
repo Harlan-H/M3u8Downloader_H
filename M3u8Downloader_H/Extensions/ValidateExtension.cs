@@ -1,5 +1,6 @@
 ﻿using M3u8Downloader_H.Attributes;
 using M3u8Downloader_H.Models;
+using M3u8Downloader_H.Services;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -33,5 +34,18 @@ namespace M3u8Downloader_H.Extensions
             }
             return (default!, default!);
         }
+
+        public static void Validate(this SettingsService obj)
+        {
+            Type type = obj.GetType();
+            foreach (var prop in type.GetProperties())
+            {
+                if (!prop.IsDefined(typeof(RangeAttribute), false)) continue;
+
+                RangeAttribute attribute = (RangeAttribute)prop.GetCustomAttributes(typeof(RangeAttribute), false)[0];
+                attribute.Validate(obj, prop, prop.GetValue(obj) as int?);
+            }
+        }
+
     }
 }

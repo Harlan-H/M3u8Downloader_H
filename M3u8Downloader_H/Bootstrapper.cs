@@ -1,11 +1,10 @@
 ﻿using Stylet;
 using StyletIoC;
 using System.Net;
-using System.Windows;
-using System.Windows.Threading;
 using M3u8Downloader_H.Services;
 using M3u8Downloader_H.ViewModels;
 using M3u8Downloader_H.ViewModels.FrameWork;
+
 
 namespace M3u8Downloader_H
 {
@@ -26,8 +25,9 @@ namespace M3u8Downloader_H
             builder.Bind<SettingsService>().ToSelf().InSingletonScope();
             builder.Bind<DownloadService>().ToSelf().InSingletonScope();
             builder.Bind<SoundService>().ToSelf().InSingletonScope();
-            builder.Bind<HttpListenService>().ToSelf().InSingletonScope();
-            builder.Bind<PluginService>().ToSelf().InSingletonScope();
+           // builder.Bind<PluginService>().ToSelf().InSingletonScope();
+
+
 
             builder.Bind<IVIewModelFactory>().ToAbstractFactory();
 

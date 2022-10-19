@@ -101,7 +101,7 @@
                     <TextBox  Name="savePathTextbox"  FontSize="18"  VerticalAlignment="Center" IsReadOnly="True" Text="{Binding SavePath}" />
                 </DockPanel>
 
-                <DockPanel Margin="8 0 8 0" >
+                <!-- <DockPanel Margin="8 0 8 0" >
                     <DockPanel.ToolTip>
                         <TextBlock>
                             <Run Text="实现了IPlugin接口的类" />
@@ -122,13 +122,13 @@
                         </TextBlock>
                     </DockPanel.ToolTip>
                     <TextBlock  Text="选择插件: " Style="{StaticResource TextBlockStyle}" />
-                    <!--<Button DockPanel.Dock="Right"  Style="{DynamicResource MaterialDesignFlatButton}" Margin="2"  >
+                    <Button DockPanel.Dock="Right"  Style="{DynamicResource MaterialDesignFlatButton}" Margin="2"  >
                     <materialDesign:PackIcon Kind="FileFind" />
                     <i:Interaction.Behaviors>
                         <behavior:OpenFileDialogBehaviour IsFile="True" AttachedTextBox="{Binding ElementName=pluginPathTextbox}" FilterString="插件程序(*.dll)|*.dll|所有文件(*.*)|*.*" />
                     </i:Interaction.Behaviors>
                     </Button>
-                    <TextBox  Name="pluginPathTextbox" materialDesign:TextFieldAssist.HasClearButton="True"  FontSize="18"  VerticalAlignment="Center"  IsReadOnly="True" Text="{Binding PluginPath,UpdateSourceTrigger=PropertyChanged}" /> -->
+                    <TextBox  Name="pluginPathTextbox" materialDesign:TextFieldAssist.HasClearButton="True"  FontSize="18"  VerticalAlignment="Center"  IsReadOnly="True" Text="{Binding PluginPath,UpdateSourceTrigger=PropertyChanged}" /> 
                     <ComboBox FontSize="20" 
                               materialDesign:TextFieldAssist.HasClearButton="True"
                               SelectedItem="{Binding Pluginitem}"
@@ -139,7 +139,7 @@
                             </DataTemplate>
                         </ComboBox.ItemTemplate>
                     </ComboBox>
-                </DockPanel>
+                </DockPanel>-->
 
                 <DockPanel Margin="8 0 8 0">
                     <TextBlock  Style="{StaticResource TextBlockStyle}" Text="转码格式: "  />

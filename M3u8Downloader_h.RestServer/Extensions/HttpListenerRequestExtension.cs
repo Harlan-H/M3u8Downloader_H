@@ -1,11 +1,11 @@
 ﻿using System.IO;
 using System.Net;
 
-namespace M3u8Downloader_H.Extensions
+namespace M3u8Downloader_H.RestServer.Extensions
 {
-    public static class HttpListenerRequestExtension
+    internal static class HttpListenerRequestExtension
     {
-        public static string ReadText(this HttpListenerRequest httpListenerRequest)
+        internal static string ReadText(this HttpListenerRequest httpListenerRequest)
         {
             using StreamReader streamReader = new(httpListenerRequest.InputStream);
             string result = streamReader.ReadToEnd().Trim();

@@ -5,11 +5,11 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace M3u8Downloader_H.Extensions
+namespace M3u8Downloader_H.RestServer.Extensions
 {
-    public static class HttpListenerResponseExtension
+    internal static class HttpListenerResponseExtension
     {
-        public static void Json(this HttpListenerResponse response,string message)
+        internal static void Json(this HttpListenerResponse response,string message)
         {
             response.StatusCode = 200;
             response.ContentType = "application/json;charset=UTF-8";
@@ -22,7 +22,7 @@ namespace M3u8Downloader_H.Extensions
             response.Close();
         }
 
-        public static void Text(this HttpListenerResponse response, string message)
+        internal static void Text(this HttpListenerResponse response, string message)
         {
             response.StatusCode = 200;
             response.ContentType = "text/plain;charset=utf-8";

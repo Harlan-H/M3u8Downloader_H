@@ -12,7 +12,7 @@
         Icon="pack://application:,,,/icon.ico"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:model="clr-namespace:M3u8Downloader_H.Models"
-        d:DataContext="{d:DesignInstance local:MainWindowViewModel}"
+        d:DataContext="{d:DesignInstance Type=local:MainWindowViewModel}"
         WindowStartupLocation="CenterScreen"
         ResizeMode="CanMinimize"
         Height="450" Width="600">

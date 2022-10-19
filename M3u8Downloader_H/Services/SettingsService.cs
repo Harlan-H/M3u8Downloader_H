@@ -5,6 +5,7 @@ using M3u8Downloader_H.Models;
 using Newtonsoft.Json;
 using System.Net.Http;
 using System.Net;
+using M3u8Downloader_H.Attributes;
 
 namespace M3u8Downloader_H.Services
 {
@@ -13,13 +14,16 @@ namespace M3u8Downloader_H.Services
         /// <summary>
         /// 线程数量
         /// </summary>
+        [Range(1,200)]
         public int MaxThreadCount { get; set; } = 1;
 
         /// <summary>
         /// 同时下载的任务数量
         /// </summary>
+        [Range(1,10)]
         public int MaxConcurrentDownloadCount { get; set; } = 1;
 
+        [Range(0,10)]
         public int RetryCount { get; set; } 
 #if DEBUG
         public string SavePath { get; set; } = @"E:\desktop\download";
@@ -46,6 +50,7 @@ namespace M3u8Downloader_H.Services
 #else
         public double RecordDuration { get; set; } = 60 * 60 * 12;
 #endif
+        [Range(10,300)]
         public int Timeouts { get; set; } = 10;
 
         public SettingsService()
@@ -58,11 +63,6 @@ namespace M3u8Downloader_H.Services
 
         public void ServiceUpdate()
         {
-            MaxThreadCount = MaxThreadCount.Range(1, 200);
-            MaxConcurrentDownloadCount = MaxConcurrentDownloadCount.Range(1, 10);
-            RetryCount = RetryCount.Range(0, 10);
-            Timeouts = Timeouts.Range(10, 300);
-
             HttpClient.DefaultProxy = string.IsNullOrWhiteSpace(ProxyAddress)? new WebProxy() : new WebProxy(ProxyAddress);
         }
 
