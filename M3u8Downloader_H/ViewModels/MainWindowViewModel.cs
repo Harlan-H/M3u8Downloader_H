@@ -248,7 +248,7 @@ namespace M3u8Downloader_H.ViewModels
             try
             {
                 var dialog = viewModelFactory.CreateSettingsViewModel();
-                dialog.PluginItems = pluginService.GetPluginItem();
+               // dialog.PluginItems = pluginService.GetPluginItem();
                 await dialogManager.ShowDialogAsync(dialog);
             }
             finally
