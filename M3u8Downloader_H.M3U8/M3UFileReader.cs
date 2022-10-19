@@ -9,33 +9,23 @@ using System.IO;
 using System.Reflection;
 using M3u8Downloader_H.M3U8.Attributes;
 using System.Linq;
+using M3u8Downloader_H.M3U8.Services;
 
 namespace M3u8Downloader_H.M3U8
 {
     public class M3UFileReader
     {
-        private readonly IReadOnlyDictionary<string, AttributeReader> attributeReaders;
+        private readonly IReadOnlyDictionary<string, IAttributeReader> attributeReaders;
 
-        public M3UFileReader()
+        public M3UFileReader() : this(AttributeReaderRoot.Instance.AttributeReaders)
         {
-            attributeReaders = InitAttributeReaders();
+
         }
 
-        private static IReadOnlyDictionary<string, AttributeReader> InitAttributeReaders()
+        public M3UFileReader(IDictionary<string, IAttributeReader> attributeReaders)
         {
-            Assembly asm = typeof(M3U8ReaderAttribute).Assembly;
-            return asm.GetTypes()
-                .Where(t => t.IsDefined(typeof(M3U8ReaderAttribute), false))
-                .Select(t => (M3U8ReaderAttribute)t.GetCustomAttribute(typeof(M3U8ReaderAttribute), false)!)
-                .ToDictionary(x => x.Key!, x => (AttributeReader)Activator.CreateInstance(x.Type)!);
-
-            //             return (from t in asm.GetTypes()
-            //                     where t.IsDefined(typeof(M3U8ReaderAttribute), false)
-            //                     let attribute = (M3U8ReaderAttribute)t.GetCustomAttribute(typeof(M3U8ReaderAttribute), false)
-            //                     select (attribute.Key, attribute.Type))
-            //                    .ToDictionary(x => x.Key, x => (AttributeReader)Activator.CreateInstance(x.Type));
+            this.attributeReaders = (IReadOnlyDictionary<string, IAttributeReader>)attributeReaders;
         }
-
 
         public M3UFileInfo Read(Uri baseUri, Stream stream) => Read(baseUri,new StreamAdapter(stream));
         public M3UFileInfo Read(Uri baseUri, string text) => Read(baseUri,new TextAdapter(text));
@@ -59,11 +49,14 @@ namespace M3u8Downloader_H.M3U8
                 var keyValuePair = KV.Parse(text);
                 var CompareKey = keyValuePair.Key;
 
-                if (!attributeReaders.TryGetValue(CompareKey ?? text, out AttributeReader? attributeReader))
+                if (!attributeReaders.TryGetValue(CompareKey ?? text, out IAttributeReader? attributeReader))
+                    attributeReaders.TryGetValue("#EXT-X-DISCONTINUITY", out attributeReader);
+
+                if (attributeReader is null)
                     throw new InvalidDataException($"{text} 无法识别的标签,可能是非标准的标签，你可以删除此行，然后拖拽m3u8文件到请求地址，再次尝试下载");
 
-                if (attributeReader.Read(m3UFileInfo, reader, keyValuePair, baseUri))
-                    break;
+                attributeReader.Write(m3UFileInfo, keyValuePair.Value, reader, baseUri);
+                if(attributeReader.ShouldTerminate) break;
             }
 
             adapter?.Dispose();

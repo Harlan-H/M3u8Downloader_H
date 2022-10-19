@@ -9,10 +9,19 @@ using M3u8Downloader_H.M3U8.Infos;
 namespace M3u8Downloader_H.M3U8.AttributeReaders
 {
     [M3U8Reader("#EXTINF", typeof(MediaAttributeReader))]
-    internal class MediaAttributeReader : AttributeReader
+    internal class MediaAttributeReader : IAttributeReader
     {
+        private int currentIndex;
+        private string CurrentIndex => $"{++currentIndex}.tmp";
+
+        public bool ShouldTerminate => false;
+
+        public MediaAttributeReader()
+        {
+
+        }
      
-        private static string GetNextValue(LineReader reader)
+        private static string GetNextValue(IEnumerator<string> reader)
         {
             if (!reader.MoveNext())
                 throw new InvalidDataException("Invalid M3U file. Missing a media URI.");
@@ -23,7 +32,7 @@ namespace M3u8Downloader_H.M3U8.AttributeReaders
             return reader.Current;
         }
 
-        protected override void Write(M3UFileInfo fileInfo, string value, LineReader reader, Uri baseUri)
+        public void Write(M3UFileInfo fileInfo, string value, IEnumerator<string> reader, Uri baseUri)
         {
             fileInfo.MediaFiles ??= new List<M3UMediaInfo>();
             var m3UmediaInfo = new M3UMediaInfo();
@@ -54,7 +63,7 @@ namespace M3u8Downloader_H.M3U8.AttributeReaders
             if (relativeUri.IsAbsoluteUri)
             {
                 m3UmediaInfo.Uri = relativeUri;
-                m3UmediaInfo.Title = reader.CurrentIndex; 
+                m3UmediaInfo.Title = CurrentIndex; 
             }
             else
             {
@@ -62,7 +71,7 @@ namespace M3u8Downloader_H.M3U8.AttributeReaders
                     throw new InvalidDataException("baseuri为空");
       
                 m3UmediaInfo.Uri = new Uri(baseUri, relativeUri);
-                m3UmediaInfo.Title = reader.CurrentIndex;
+                m3UmediaInfo.Title = CurrentIndex;
             }
             
             fileInfo.MediaFiles.Add(m3UmediaInfo);

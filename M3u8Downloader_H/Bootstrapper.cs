@@ -25,7 +25,7 @@ namespace M3u8Downloader_H
             builder.Bind<SettingsService>().ToSelf().InSingletonScope();
             builder.Bind<DownloadService>().ToSelf().InSingletonScope();
             builder.Bind<SoundService>().ToSelf().InSingletonScope();
-            builder.Bind<PluginService>().ToSelf().InSingletonScope();
+           // builder.Bind<PluginService>().ToSelf().InSingletonScope();
 
 
 

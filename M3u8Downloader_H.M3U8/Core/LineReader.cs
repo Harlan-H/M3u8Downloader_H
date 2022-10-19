@@ -8,8 +8,6 @@ namespace M3u8Downloader_H.M3U8.Core
     internal sealed class LineReader : IEnumerator<string>
     {
         private readonly StreamReader _reader;
-        private int currentIndex;
-        public string CurrentIndex => $"{++currentIndex}.tmp";
 
         public IAdapter Adapter { get; }
 
