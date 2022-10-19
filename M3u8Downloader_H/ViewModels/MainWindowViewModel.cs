@@ -14,7 +14,7 @@ using M3u8Downloader_H.Utils;
 using M3u8Downloader_H.ViewModels.FrameWork;
 using M3u8Downloader_H.M3U8.Infos;
 using M3u8Downloader_H.Extensions;
-using M3u8Downloader_h.RestServer;
+using M3u8Downloader_H.RestServer;
 using System.Security.Policy;
 using System.Xml.Linq;
 

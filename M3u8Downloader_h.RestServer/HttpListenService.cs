@@ -5,7 +5,7 @@ using System.Net;
 using Newtonsoft.Json.Linq;
 using M3u8Downloader_H.M3U8.Infos;
 
-namespace M3u8Downloader_h.RestServer
+namespace M3u8Downloader_H.RestServer
 {
     public class HttpListenService
     {
