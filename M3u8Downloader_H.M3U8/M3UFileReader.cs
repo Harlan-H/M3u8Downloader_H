@@ -15,16 +15,11 @@ namespace M3u8Downloader_H.M3U8
 {
     public class M3UFileReader
     {
-        private readonly IReadOnlyDictionary<string, IAttributeReader> attributeReaders;
+        private readonly IDictionary<string, IAttributeReader> attributeReaders;
 
-        public M3UFileReader() : this(AttributeReaderRoot.Instance.AttributeReaders)
+        public M3UFileReader(IDictionary<string, IAttributeReader>? attributeReaders = default!)
         {
-
-        }
-
-        public M3UFileReader(IDictionary<string, IAttributeReader> attributeReaders)
-        {
-            this.attributeReaders = (IReadOnlyDictionary<string, IAttributeReader>)attributeReaders;
+            this.attributeReaders = attributeReaders ?? AttributeReaderRoot.Instance.AttributeReaders;
         }
 
         public M3UFileInfo Read(Uri baseUri, Stream stream) => Read(baseUri,new StreamAdapter(stream));
