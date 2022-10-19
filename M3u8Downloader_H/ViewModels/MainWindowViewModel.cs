@@ -15,6 +15,8 @@ using M3u8Downloader_H.ViewModels.FrameWork;
 using M3u8Downloader_H.M3U8.Infos;
 using M3u8Downloader_H.Extensions;
 using M3u8Downloader_h.RestServer;
+using System.Security.Policy;
+using System.Xml.Linq;
 
 namespace M3u8Downloader_H.ViewModels
 {
@@ -53,9 +55,7 @@ namespace M3u8Downloader_H.ViewModels
 
             _ = Task.Run(() =>
             {
-                settingsService.Load();
-                settingsService.Validate();
-                settingsService.ServiceUpdate();
+                settingsService.Init();
 
                 pluginService.Load();
                 for (int i = 65432; i > 1024; i--)
@@ -132,25 +132,21 @@ namespace M3u8Downloader_H.ViewModels
                 if (string.IsNullOrWhiteSpace(item)) continue;
 
                 string[] result = item.Trim().Split(settingsService.Separator, 2);
-                ProcessDownload(result[0], result.Length > 1 ? result[1] : null);
+                try
+                {
+                    ProcessDownload(new Uri(result[0], UriKind.Absolute), result.Length > 1 ? result[1] : null, null, null,null);
+                }
+                catch (UriFormatException)
+                {
+                    Notifications.Enqueue($"{result[0]} 不是正确的地址");
+                }
+                catch (FileExistsException e)
+                {
+                    Notifications.Enqueue(e);
+                }
             }
         }
 
-        private void ProcessDownload(string url, string? name)
-        {
-            try
-            {
-                ProcessDownload(new Uri(url, UriKind.Absolute), name,null,null,null);
-            }
-            catch(UriFormatException)
-            {
-                Notifications.Enqueue($"{url} 不是正确的地址");
-            }
-            catch(FileExistsException e)
-            {
-                Notifications.Enqueue(e);
-            }
-        }
 
         private void ProcessDownload(Uri uri, string? name,string? method,string? key,string? iv, string? savePath = default, IEnumerable<KeyValuePair<string,string>>? headers = default)
         {
