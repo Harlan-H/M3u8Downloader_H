@@ -9,6 +9,8 @@ using System.Collections.Generic;
 using System.Linq;
 using M3u8Downloader_H.M3U8.Infos;
 using M3u8Downloader_H.Core.M3uCombiners;
+using M3u8Downloader_H.M3U8;
+using M3u8Downloader_H.M3U8.Extensions;
 
 namespace M3u8Downloader_H.Services
 {
@@ -42,18 +44,27 @@ namespace M3u8Downloader_H.Services
         }
 
 
-        public async Task<M3UFileInfo> GetM3U8FileInfo(Uri url, IEnumerable<KeyValuePair<string, string>>? Headers, string? content = default!, M3UKeyInfo? m3UKeyInfo = default!, CancellationToken cancellationToken = default)
+        public static async Task<M3UFileInfo> GetM3U8FileInfo(Uri url, IEnumerable<KeyValuePair<string, string>>? Headers, string? content = default!, M3UKeyInfo? m3UKeyInfo = default!, CancellationToken cancellationToken = default)
         {
-            return await videoDownloadClient.AnalyzerClient.GetM3u8FileInfos(url,
-                        Headers ?? settingService.Headers.ToDictionary(),
-                        content,
-                        m3UKeyInfo,
-                        cancellationToken);
+            M3UFileReader m3UReader = new();
+            if (content is not null)
+                return m3UReader.GetM3u8FileInfo(url, content);
+            else if (url.IsFile)
+            {
+                string ext = Path.GetExtension(url.OriginalString).Trim('.');
+                return m3UReader.GetM3u8FileInfo(ext, url);
+            }
+            else
+                return await m3UReader.GetM3u8FileInfo(Http.Client, url, Headers, cancellationToken);
         }
 
-        public M3UFileInfo GetM3U8FileInfo(string content, Uri url)
+        public static M3UFileInfo GetM3U8FileInfo(string content, Uri url)
         {
-            return videoDownloadClient.AnalyzerClient.ReadFromContent(url, content);
+            M3UFileInfo m3UFileInfo = new M3UFileReader()
+                                            .GetM3u8FileInfo(url, content);
+            return m3UFileInfo.MediaFiles != null && m3UFileInfo.MediaFiles.Any()
+                    ? m3UFileInfo
+                    : throw new InvalidDataException($"'{url.OriginalString}' 没有包含任何数据");
         }
 
         public async Task LiveDownloadAsync(

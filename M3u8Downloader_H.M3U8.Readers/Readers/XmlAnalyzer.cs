@@ -4,7 +4,7 @@ using System.IO;
 using System.Xml;
 using M3u8Downloader_H.M3U8.Infos;
 
-namespace M3u8Downloader_H.Core.M3u8Analyzers
+namespace M3u8Downloader_H.M3U8.Readers
 {
     internal sealed class XmlAnalyzer : AnalyzerBase
     {

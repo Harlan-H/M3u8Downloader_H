@@ -22,11 +22,7 @@ namespace M3u8Downloader_H.M3U8
             this.attributeReaders = attributeReaders ?? AttributeReaderRoot.Instance.AttributeReaders;
         }
 
-        public M3UFileInfo Read(Uri baseUri, Stream stream) => Read(baseUri,new StreamAdapter(stream));
-        public M3UFileInfo Read(Uri baseUri, string text) => Read(baseUri,new TextAdapter(text));
-        public M3UFileInfo Read(Uri baseUri, FileInfo file) => Read(baseUri,new FileAdapter(file));
-
-        private M3UFileInfo Read(Uri baseUri, IAdapter adapter)
+        internal M3UFileInfo Read(Uri baseUri, IAdapter adapter)
         {
             M3UFileInfo m3UFileInfo = new();
             using var reader = new LineReader(adapter);

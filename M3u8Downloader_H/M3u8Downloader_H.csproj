@@ -47,6 +47,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\M3u8Downloader_H.M3U8.Readers\M3u8Downloader_H.M3U8.Readers.csproj" />
     <ProjectReference Include="..\M3u8Downloader_h.RestServer\M3u8Downloader_H.RestServer.csproj" />
     <ProjectReference Include="..\SettingsManager\Settings.csproj" />
     <ProjectReference Include="..\M3u8Downloader_H.Core\M3u8Downloader_H.Core.csproj" />

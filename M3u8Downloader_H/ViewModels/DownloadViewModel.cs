@@ -76,11 +76,11 @@ namespace M3u8Downloader_H.ViewModels
                     if (IsLive is not null and true)
                     {
                         //当islive不是null同时为真 说明重新开始了  直播只要重新开始 就重新获取数据
-                        M3uFileInfo = await downloadService.GetM3U8FileInfo(RequestUrl, Headers, null, KeyInfos, cancellationTokenSource.Token);
+                        M3uFileInfo = await DownloadService.GetM3U8FileInfo(RequestUrl, Headers, null, KeyInfos, cancellationTokenSource.Token);
                     }
                     else
                     {
-                        M3uFileInfo ??= await downloadService.GetM3U8FileInfo(RequestUrl, Headers, M3u8Content, KeyInfos, cancellationTokenSource.Token);
+                        M3uFileInfo ??= await DownloadService.GetM3U8FileInfo(RequestUrl, Headers, M3u8Content, KeyInfos, cancellationTokenSource.Token);
                     }
 
                     VideoFullName = VideoFullPath + (M3uFileInfo.Map is not null ? Path.GetExtension(M3uFileInfo.Map?.Title) : ".ts");
