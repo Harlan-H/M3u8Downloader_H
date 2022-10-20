@@ -11,15 +11,13 @@ namespace M3u8Downloader_H.Core.M3uDownloaders
 {
     internal class CryptM3uDownloader : M3u8Downloader
     {
-        private readonly HttpClient http;
-        private readonly IEnumerable<KeyValuePair<string, string>>? headers;
         private readonly M3UFileInfo m3UFileInfo;
-        public CryptM3uDownloader(HttpClient http, IEnumerable<KeyValuePair<string, string>>? headers, M3UFileInfo m3UFileInfo, IProgress<double> progress) : base(http, headers, progress)
+        public CryptM3uDownloader(M3UFileInfo m3UFileInfo) : base()
         {
-            this.http = http;
-            this.headers = headers;
             this.m3UFileInfo = m3UFileInfo;
         }
+
+
 
         public override async ValueTask Initialization(CancellationToken cancellationToken)
         {
@@ -32,7 +30,7 @@ namespace M3u8Downloader_H.Core.M3uDownloaders
                 {
                     byte[] data = m3UFileInfo.Key.Uri.IsFile
                         ? await File.ReadAllBytesAsync(m3UFileInfo.Key.Uri.OriginalString, cancellationToken)
-                        : await http.GetByteArrayAsync(m3UFileInfo.Key.Uri, headers, cancellationToken);
+                        : await HttpClient.GetByteArrayAsync(m3UFileInfo.Key.Uri, Headers, cancellationToken);
 
                     m3UFileInfo.Key.BKey = data.TryParseKey(m3UFileInfo.Key.Method);
                 }catch(HttpRequestException e) when(e.StatusCode == System.Net.HttpStatusCode.NotFound)

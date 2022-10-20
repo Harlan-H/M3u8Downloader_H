@@ -23,19 +23,22 @@ namespace M3u8Downloader_H.Core.M3uDownloaders
             this.httpClient = httpClient;
         }
 
-        private M3u8Downloader CreateDownloader(string pluginPath, M3UFileInfo m3UFileInfo, IProgress<double> progress, IEnumerable<KeyValuePair<string, string>>? headers = default)
+        private static M3u8Downloader CreateDownloader(string pluginPath, M3UFileInfo m3UFileInfo)
         {
             return !string.IsNullOrWhiteSpace(pluginPath)
-                ? new PluginM3u8Downloader(pluginPath, httpClient, headers, m3UFileInfo, progress)
+                ? new PluginM3u8Downloader(pluginPath, m3UFileInfo)
                 : m3UFileInfo.Key is not null
-                ? new CryptM3uDownloader(httpClient, headers, m3UFileInfo, progress)
-                : new M3u8Downloader(httpClient, headers, progress);
+                ? new CryptM3uDownloader(m3UFileInfo)
+                : new M3u8Downloader();
         }
 
         public async ValueTask DownloadVodAsync(string pluginPath, M3UFileInfo m3UFileInfo, string filePath, int threadnum,int timeouts, IProgress<double> progress, IEnumerable<KeyValuePair<string, string>>? headers = default, bool skipRequestError = false, CancellationToken cancellationToken = default)
         {
-            M3u8Downloader m3U8Downloader = CreateDownloader(pluginPath, m3UFileInfo, progress, headers);
+            M3u8Downloader m3U8Downloader = CreateDownloader(pluginPath, m3UFileInfo);
             m3U8Downloader.TimeOut = timeouts * 1000;
+            m3U8Downloader.HttpClient = httpClient;
+            m3U8Downloader.Progress = progress;
+            m3U8Downloader.Headers = headers;
 
             await m3U8Downloader.Initialization(cancellationToken);
             await m3U8Downloader.DownloadMapInfoAsync(m3UFileInfo.Map, filePath, skipRequestError, cancellationToken);
@@ -45,7 +48,11 @@ namespace M3u8Downloader_H.Core.M3uDownloaders
 
         public async ValueTask DownloadLiveAsync(string pluginPath, Uri uri, M3UFileInfo m3UFileInfo, string filePath, string videoName, double maxRecordDuration, IProgress<double> progress, IEnumerable<KeyValuePair<string, string>>? headers, Action<M3UFileInfo> actionCallback, bool skipRequestError = false, bool ForceMerge = false, CancellationToken cancellationToken = default)
         {
-            M3u8Downloader m3U8Downloader = CreateDownloader(pluginPath, m3UFileInfo, progress, headers);
+            M3u8Downloader m3U8Downloader = CreateDownloader(pluginPath, m3UFileInfo);
+            m3U8Downloader.HttpClient = httpClient;
+            m3U8Downloader.Progress = progress;
+            m3U8Downloader.Headers = headers;
+
             await m3U8Downloader.Initialization(cancellationToken);
 
             using M3uCombiner m3UCombiner = new(filePath, videoName, FileMode.Append);

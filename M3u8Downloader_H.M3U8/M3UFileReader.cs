@@ -6,9 +6,6 @@ using M3u8Downloader_H.M3U8.Infos;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
-using M3u8Downloader_H.M3U8.Attributes;
-using System.Linq;
 using M3u8Downloader_H.M3U8.Services;
 
 namespace M3u8Downloader_H.M3U8
