@@ -4,7 +4,8 @@ using System.Net;
 using M3u8Downloader_H.Services;
 using M3u8Downloader_H.ViewModels;
 using M3u8Downloader_H.ViewModels.FrameWork;
-
+using System.Windows.Threading;
+using System.Windows;
 
 namespace M3u8Downloader_H
 {
