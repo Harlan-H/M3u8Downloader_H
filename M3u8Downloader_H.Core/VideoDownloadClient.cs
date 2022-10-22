@@ -7,15 +7,9 @@ namespace M3u8Downloader_H.Core
 {
     public class VideoDownloadClient
     {
-        public DownloaderFactory DownloaderFactory { get; }
-        public VideoDownloadClient(HttpClient httpclient)
-        {
-            DownloaderFactory = new(httpclient);
-        }
-
-        public VideoDownloadClient() : this(Http.Client)
+        public VideoDownloadClient() 
         {
 
         }
-     }
+    }
 }

@@ -24,8 +24,4 @@
     <ProjectReference Include="..\M3u8Downloader_H.M3U8\M3u8Downloader_H.M3U8.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="DownloadConfigures\" />
-  </ItemGroup>
-
 </Project>

@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace M3u8Downloader_H.M3U8.Infos
 {
-    public class M3UFileInfo
+    public class M3UFileInfo 
     {
         public int? Version { get; set; }
 
@@ -41,7 +41,7 @@ namespace M3u8Downloader_H.M3U8.Infos
 
 
         public M3UFileInfo() { }
-
-  
+    
+    
     }
 }

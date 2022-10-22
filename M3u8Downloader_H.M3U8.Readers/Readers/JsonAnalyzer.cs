@@ -18,7 +18,7 @@ namespace M3u8Downloader_H.M3U8.Readers
         public override M3UFileInfo Read()
         {
             M3UFileInfo? m3ufileInfo = JsonSerializer.Deserialize<M3UFileInfo>(File.ReadAllText(host.OriginalString));
-            if(m3ufileInfo == null)
+            if(m3ufileInfo is null)
                 throw new InvalidDataException("不能是空的m3u8数据");
 
             if (m3ufileInfo.Key is not null)
