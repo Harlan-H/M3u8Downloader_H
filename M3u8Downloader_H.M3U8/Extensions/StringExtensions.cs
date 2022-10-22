@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace M3u8Downloader_H.M3U8.Utilities.Extensions
+namespace M3u8Downloader_H.M3U8.Extensions
 {
     public static class StringExtensions
     {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace M3u8Downloader_H.Core.Utils.Extensions
+namespace M3u8Downloader_H.M3U8.Extensions
 {
     public static class UriExtension
     {

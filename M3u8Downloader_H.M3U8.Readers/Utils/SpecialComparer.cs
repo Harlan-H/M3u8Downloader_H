@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace M3u8Downloader_H.Core.Utils
+namespace M3u8Downloader_H.M3U8.Utils
 {
     public class SpecialComparer : IComparer<string>
     {

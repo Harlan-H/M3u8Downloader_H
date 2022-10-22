@@ -1,10 +1,10 @@
 ﻿using System;
 using System.IO;
 using System.Text.Json;
-using M3u8Downloader_H.Core.Utils.Extensions;
+using M3u8Downloader_H.M3U8.Extensions;
 using M3u8Downloader_H.M3U8.Infos;
 
-namespace M3u8Downloader_H.Core.M3u8Analyzers
+namespace M3u8Downloader_H.M3U8.Readers
 {
     internal sealed class JsonAnalyzer : AnalyzerBase
     {
@@ -18,7 +18,7 @@ namespace M3u8Downloader_H.Core.M3u8Analyzers
         public override M3UFileInfo Read()
         {
             M3UFileInfo? m3ufileInfo = JsonSerializer.Deserialize<M3UFileInfo>(File.ReadAllText(host.OriginalString));
-            if(m3ufileInfo == null)
+            if(m3ufileInfo is null)
                 throw new InvalidDataException("不能是空的m3u8数据");
 
             if (m3ufileInfo.Key is not null)

@@ -4,10 +4,10 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using M3u8Downloader_H.Core.Utils;
+using M3u8Downloader_H.M3U8.Utils;
 using M3u8Downloader_H.M3U8.Infos;
 
-namespace M3u8Downloader_H.Core.M3u8Analyzers
+namespace M3u8Downloader_H.M3U8.Readers
 {
     internal class DirectoryAnalyzer : AnalyzerBase
     {

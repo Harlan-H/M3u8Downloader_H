@@ -19,7 +19,7 @@ namespace M3u8Downloader_H.M3U8.Infos
     {
         public bool Equals(M3UMediaInfo? other) => StringComparer.Ordinal.Equals(Uri, other?.Uri);
         public override bool Equals(object? obj) => obj is M3UMediaInfo other && Equals(other);
-        public override int GetHashCode() => StringComparer.Ordinal.GetHashCode(Title);
+        public override int GetHashCode() => Uri.GetHashCode();
 
         public static bool operator ==(M3UMediaInfo m3UMediaInfo, M3UMediaInfo m3UMediaInfo1) =>  m3UMediaInfo.Equals(m3UMediaInfo1);
         public static bool operator !=(M3UMediaInfo m3UMediaInfo, M3UMediaInfo m3UMediaInfo1) => !(m3UMediaInfo == m3UMediaInfo1);

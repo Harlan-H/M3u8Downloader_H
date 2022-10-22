@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Linq;
 using System.Text;
-using M3u8Downloader_H.Core.Utils.Extensions;
+using M3u8Downloader_H.M3U8.Extensions;
 using M3u8Downloader_H.M3U8.Infos;
 
-namespace M3u8Downloader_H.Core.M3u8Analyzers
+namespace M3u8Downloader_H.M3U8.Readers
 {
     public abstract class AnalyzerBase
     {

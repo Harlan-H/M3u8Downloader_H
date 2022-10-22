@@ -14,7 +14,7 @@ using M3u8Downloader_H.Utils;
 using M3u8Downloader_H.ViewModels.FrameWork;
 using M3u8Downloader_H.M3U8.Infos;
 using M3u8Downloader_H.Extensions;
-using M3u8Downloader_h.RestServer;
+using M3u8Downloader_H.RestServer;
 using System.Security.Policy;
 using System.Xml.Linq;
 
@@ -25,7 +25,6 @@ namespace M3u8Downloader_H.ViewModels
         private readonly IVIewModelFactory viewModelFactory;
         private readonly DialogManager dialogManager;
         private readonly SettingsService settingsService;
-        private readonly DownloadService downloadService;
         private readonly HttpListenService httpListenService;
         private readonly PluginService pluginService;
 
@@ -38,12 +37,11 @@ namespace M3u8Downloader_H.ViewModels
 
         public bool IsShowDialog { get; private set; }
 
-        public MainWindowViewModel(IVIewModelFactory viewModelFactory, DialogManager dialogManager, SettingsService settingsService,DownloadService downloadService ,PluginService pluginService)
+        public MainWindowViewModel(IVIewModelFactory viewModelFactory, DialogManager dialogManager, SettingsService settingsService,PluginService pluginService)
         {
             this.viewModelFactory = viewModelFactory;
             this.dialogManager = dialogManager;
             this.settingsService = settingsService;
-            this.downloadService = downloadService;
             this.pluginService = pluginService;
             httpListenService = HttpListenService.Instance;
         }
@@ -63,7 +61,7 @@ namespace M3u8Downloader_H.ViewModels
                     try
                     {
                         httpListenService.Run($"http://+:{i}/");
-                        httpListenService.Initialization(ProcessDownload, ProcessDownload, ProcessDownload,downloadService.GetM3U8FileInfo);
+                        httpListenService.Initialization(ProcessDownload, ProcessDownload, ProcessDownload, DownloadService.GetM3U8FileInfo);
                         Notifications.Enqueue($"http服务初始化成功\n监听在 {i} 端口");
                         break;
                     }

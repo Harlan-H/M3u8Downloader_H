@@ -9,17 +9,6 @@ namespace M3u8Downloader_H.Core.Utils.Extensions
 {
     internal static class StringExtensions
     {
-//         public static byte[] ToHexArray(this string s)
-//         {
-//             s = s.StartsWith("0x", true, null) ? s.Remove(0, 2) : s;
-//             byte[] returnBytes = new byte[s.Length / 2];
-//             for (int i = 0; i < returnBytes.Length; i++)
-//             {
-//                 returnBytes[i] = byte.Parse(s.Substring(i * 2, 2), NumberStyles.HexNumber, CultureInfo.CurrentCulture);
-//             }
-// 
-//             return returnBytes;
-//         }
 
         public static string? NullIfWhiteSpace(this string s) =>
             !string.IsNullOrWhiteSpace(s)
@@ -38,10 +27,6 @@ namespace M3u8Downloader_H.Core.Utils.Extensions
         {
             s = s.StartsWith("0x", StringComparison.Ordinal) ? s[2..] : s;
             return Convert.FromHexString(s);
-            //             byte[] returnBytes = new byte[s.Length / 2];
-            //             for (int i = 0; i < returnBytes.Length; i++)
-            //                 returnBytes[i] = Convert.ToByte(s.Substring(i * 2, 2), 16);
-            //             return returnBytes;
         }
     }
 }

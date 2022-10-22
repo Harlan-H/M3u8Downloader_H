@@ -1,12 +1,10 @@
-﻿using M3u8Downloader_H.M3U8.Core;
-using M3u8Downloader_H.M3U8.Utilities;
+﻿using M3u8Downloader_H.M3U8.Utilities;
 using System;
 using System.Linq;
 using M3u8Downloader_H.M3U8.Attributes;
 using M3u8Downloader_H.M3U8.Infos;
-using M3u8Downloader_H.M3U8.Utilities.Extensions;
-using System.IO;
 using System.Collections.Generic;
+using M3u8Downloader_H.M3U8.Extensions;
 
 namespace M3u8Downloader_H.M3U8.AttributeReaders
 {

@@ -8,52 +8,38 @@ using M3u8Downloader_H.M3U8.Infos;
 using M3u8Downloader_H.Services;
 using M3u8Downloader_H.Utils;
 using M3u8Downloader_H.ViewModels.FrameWork;
-using System.Linq;
 using System.Collections.Generic;
-using M3u8Downloader_H.Core.Utils.Extensions;
 using M3u8Downloader_H.Models;
-using System.Text;
-using M3u8Downloader_H.Extensions;
+using M3u8Downloader_H.Core.DownloaderManagers;
 
 namespace M3u8Downloader_H.ViewModels
 {
     public class DownloadViewModel : PropertyChangedBase
     {
         private readonly DownloadService downloadService;
-        private readonly SettingsService settingsService;
         private readonly SoundService soundService;
         private CancellationTokenSource? cancellationTokenSource;
-
-        private bool IsFirst = true;
-        private bool? IsLive;
-
-        public M3UKeyInfo? KeyInfos;
-        public string M3u8Content = default!;
-        public M3UFileInfo? M3uFileInfo;
-        public string VideoFullPath = default!;
-        public string VideoFullName = default!;
-        public IEnumerable<KeyValuePair<string, string>>? Headers;
+        public IDownloadManager _downloadManager = default!;
 
         public Uri RequestUrl { get; set; } = default!;
 
         public string VideoName { get; set; } = default!;
 
-        public double ProgressNum { get; private set; }
+        public double ProgressNum { get; set; }
 
-        public double RecordDuration { get; private set; }
+        public double RecordDuration { get; set; }
 
         public bool IsActive { get; private set; }
 
-        public DownloadStatus Status { get; private set; }
+        public DownloadStatus Status { get; set; }
 
         public bool IsProgressIndeterminate => IsActive && Status < DownloadStatus.StartedVod;
 
         public string? FailReason { get; private set; } = string.Empty;
 
-        public DownloadViewModel(DownloadService downloadService, SettingsService settingsService, SoundService soundService)
+        public DownloadViewModel(DownloadService downloadService, SoundService soundService)
         {
             this.downloadService = downloadService;
-            this.settingsService = settingsService;
             this.soundService = soundService;
         }
 
@@ -73,22 +59,10 @@ namespace M3u8Downloader_H.ViewModels
                     cancellationTokenSource = new CancellationTokenSource();
 
                     Status = DownloadStatus.Parsed;
-                    if (IsLive is not null and true)
-                    {
-                        //当islive不是null同时为真 说明重新开始了  直播只要重新开始 就重新获取数据
-                        M3uFileInfo = await downloadService.GetM3U8FileInfo(RequestUrl, Headers, null, KeyInfos, cancellationTokenSource.Token);
-                    }
-                    else
-                    {
-                        M3uFileInfo ??= await downloadService.GetM3U8FileInfo(RequestUrl, Headers, M3u8Content, KeyInfos, cancellationTokenSource.Token);
-                    }
+                    await _downloadManager.GetM3U8FileInfo(cancellationTokenSource.Token);
 
-                    VideoFullName = VideoFullPath + (M3uFileInfo.Map is not null ? Path.GetExtension(M3uFileInfo.Map?.Title) : ".ts");
                     Status = DownloadStatus.Enqueued;
-
-                    await DownloadAsync(M3uFileInfo, cancellationTokenSource.Token);
-
-                    await downloadService.ConvertToMp4(VideoFullName, VideoFullName, new Progress<double>(d => ProgressNum = d), cancellationTokenSource.Token);
+                    await downloadService.DownloadAsync(_downloadManager.Build(), cancellationTokenSource.Token);
 
                     soundService.PlaySuccess();
                     Status = DownloadStatus.Completed;
@@ -112,52 +86,6 @@ namespace M3u8Downloader_H.ViewModels
             });
         }
 
-
-        private async Task DownloadAsync(M3UFileInfo m3UFileInfo, CancellationToken cancellationToken)
-        {
-            //判断如果M3UMediaInfo中第一个项的请求地址不是是文件 那么则创建缓存目录
-            //当uri是相对路劲的时候 这里会报错
-            bool isFile = m3UFileInfo.MediaFiles.Any(m => m.Uri.IsFile);
-            if (IsFirst)
-            {
-                //当第一次合并文件的时候 没有进行过任何的下载操作 设置中的保存路径可能是不存在的
-                //所以需要创建
-                if (isFile)
-                    PathEx.CreateDirectory(settingsService.SavePath, true);
-                else
-                    PathEx.CreateDirectory(VideoFullPath, settingsService.SkipDirectoryExist);
-                IsFirst = false;
-            }
-
-            IsLive ??= !m3UFileInfo.IsVod();
-            if (!isFile && (bool)IsLive)
-            {
-                Progress<double> GetProgress()
-                {
-                    Status = DownloadStatus.StartedLive;
-                    return new(d => RecordDuration = d);
-                }
-                await downloadService.LiveDownloadAsync(RequestUrl, m3UFileInfo, Headers, VideoFullPath, VideoFullName, GetProgress, cancellationToken);
-            }
-            else
-            {
-                if (!isFile)
-                {
-                    Progress<double> GetProgress()
-                    {
-                        Status = DownloadStatus.StartedVod;
-                        return new(d => ProgressNum = d);
-                    }
-                    await downloadService.DownloadAsync(m3UFileInfo, Headers, VideoFullPath, GetProgress, cancellationToken);
-                }
-
-                await downloadService.VideoMerge(m3UFileInfo, VideoFullPath, VideoFullName, isFile);
-            }
-        }
-
-
-
-
         public bool CanOnShowFile => Status == DownloadStatus.Completed;
         public void OnShowFile()
         {
@@ -166,8 +94,7 @@ namespace M3u8Downloader_H.ViewModels
 
             try
             {
-                string videoFullName = settingsService.SelectedFormat != "mp4" ? VideoFullName : VideoFullPath + ".mp4";
-                Process.Start("explorer", $"/select, \"{videoFullName}\"");
+                Process.Start("explorer", $"/select, \"{_downloadManager.VideoFullName}\"");
             }
             catch (Exception)
             {
@@ -190,7 +117,7 @@ namespace M3u8Downloader_H.ViewModels
 
         public void DeleteCache()
         {
-            DirectoryInfo directory = new(VideoFullPath);
+            DirectoryInfo directory = new(_downloadManager.VideoFullPath);
             if (directory.Exists)
                 directory.Delete(true);
         }
@@ -209,23 +136,21 @@ namespace M3u8Downloader_H.ViewModels
             IEnumerable<KeyValuePair<string, string>>? headers,
             string cachePath)
         {
-
             DownloadViewModel viewModel = factory.CreateDownloadViewModel();
             viewModel.RequestUrl = requesturl;
-            viewModel.Headers = headers;
             viewModel.VideoName = videoname;
-            viewModel.VideoFullPath = cachePath;
+            IDownloadManager downloadManager = new DownloadManager(Http.Client, requesturl, headers, cachePath)
+                                                  .InitM3u8Reader(null)
+                                                  .WithLiveProgress(new Progress<double>(d => viewModel.RecordDuration = d))
+                                                  .WithVodProgress(new Progress<double>(d => viewModel.ProgressNum = d))
+                                                  .WithStatusAction(s => viewModel.Status = (DownloadStatus)s);
 
-            if(!string.IsNullOrWhiteSpace(key))
+            if (!string.IsNullOrWhiteSpace(key))
             {
-                viewModel.KeyInfos = new M3UKeyInfo()
-                {
-                    Method = method!,
-                    BKey = Encoding.UTF8.GetBytes(key),
-                    IV = iv?.ToHex()!,
-                };
+                downloadManager.WithKeyInfo(method!, key, iv!);
             }
 
+            viewModel._downloadManager = downloadManager;
             return viewModel;
         }
 
@@ -240,10 +165,13 @@ namespace M3u8Downloader_H.ViewModels
         {
             DownloadViewModel viewModel = factory.CreateDownloadViewModel();
             viewModel.RequestUrl = requesturl!;
-            viewModel.M3u8Content = content;
-            viewModel.Headers = headers;
             viewModel.VideoName = videoname;
-            viewModel.VideoFullPath = cachePath;
+            viewModel._downloadManager = new DownloadManager(Http.Client, requesturl!, headers, cachePath)
+                                                  .InitM3u8Reader(null)
+                                                  .WithLiveProgress(new Progress<double>(d => viewModel.RecordDuration = d))
+                                                  .WithVodProgress(new Progress<double>(d => viewModel.ProgressNum = d))
+                                                  .WithStatusAction(s => viewModel.Status = (DownloadStatus)s)
+                                                  .WithM3u8Content(content);
 
             return viewModel;
         }
@@ -258,11 +186,13 @@ namespace M3u8Downloader_H.ViewModels
             string videoPath)
         {
             DownloadViewModel viewModel = factory.CreateDownloadViewModel();
-
-            viewModel.M3uFileInfo = m3UFileInfo;
-            viewModel.Headers = headers;
             viewModel.VideoName = videoname;
-            viewModel.VideoFullPath = videoPath;
+            viewModel._downloadManager = new DownloadManager(Http.Client, default!, headers, videoPath)
+                                      .InitM3u8Reader(null)
+                                      .WithLiveProgress(new Progress<double>(d => viewModel.RecordDuration = d))
+                                      .WithVodProgress(new Progress<double>(d => viewModel.ProgressNum = d))
+                                      .WithStatusAction(s => viewModel.Status = (DownloadStatus)s)
+                                      .WithM3u8FileInfo(m3UFileInfo);
 
             return viewModel;
         }

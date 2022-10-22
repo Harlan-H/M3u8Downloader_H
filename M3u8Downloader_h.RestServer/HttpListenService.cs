@@ -5,7 +5,7 @@ using System.Net;
 using Newtonsoft.Json.Linq;
 using M3u8Downloader_H.M3U8.Infos;
 
-namespace M3u8Downloader_h.RestServer
+namespace M3u8Downloader_H.RestServer
 {
     public class HttpListenService
     {
@@ -125,7 +125,7 @@ namespace M3u8Downloader_h.RestServer
                 string text = request.ReadText();
                 JObject jObj = JObject.Parse(text);
                 M3UFileInfo? m3UFileInfo = jObj.SelectToken("content")?.ToObject<M3UFileInfo>();
-                if (m3UFileInfo == null)
+                if (m3UFileInfo is null)
                 {
                     response.Json(Response.Error("m3UFileInfo解析失败"));
                     return;

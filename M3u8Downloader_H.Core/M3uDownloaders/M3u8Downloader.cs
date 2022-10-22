@@ -14,23 +14,23 @@ namespace M3u8Downloader_H.Core.M3uDownloaders
 {
     internal class M3u8Downloader : IM3uDownloader
     {
-        private readonly HttpClient http;
-        private readonly IEnumerable<KeyValuePair<string, string>>? headers;
         private readonly object balanceLock = new();
-        private readonly IProgress<double> progress;
         private int downloadedCount;
         private double recordDuration;
         private int CurIndex = -1;
 
+        public HttpClient HttpClient { get; set; } = default!;
+        public IEnumerable<KeyValuePair<string, string>>? Headers { get; set; } = default;
+        public IProgress<double> Progress { get; set; } = default!;
+
         public int TimeOut { get; set; } = 5 * 1000;
-        public M3u8Downloader(HttpClient http, IEnumerable<KeyValuePair<string, string>>? headers, IProgress<double> progress)
+        public M3u8Downloader()
         {
-            this.http = http;
-            this.headers = headers;
-            this.progress = progress;
+
         }
 
         public virtual ValueTask Initialization(CancellationToken cancellationToken) => ValueTask.CompletedTask;
+
 
         public async ValueTask DownloadMapInfoAsync(M3UMediaInfo? m3UMapInfo, string savePath, bool skipRequestError = false, CancellationToken cancellationToken = default)
         {
@@ -42,7 +42,7 @@ namespace M3u8Downloader_H.Core.M3uDownloaders
             if (fileInfo.Exists && fileInfo.Length > 0)
                 return;
 
-            bool isSuccessful = await DownloadAsynInternal(m3UMapInfo.Uri, headers, m3UMapInfo.RangeValue, mediaPath, skipRequestError, cancellationToken);
+            bool isSuccessful = await DownloadAsynInternal(m3UMapInfo.Uri, Headers, m3UMapInfo.RangeValue, mediaPath, skipRequestError, cancellationToken);
             if (isSuccessful == false)
                 throw new InvalidOperationException($"获取map失败,地址为:{m3UMapInfo.Uri.OriginalString}");
         }
@@ -54,8 +54,8 @@ namespace M3u8Downloader_H.Core.M3uDownloaders
             {
                 for (int i = 0; i < TaskNumber; i++)
                 {
-                    //Tasks[i] = Task.Run(async () => await DownloadCallBack(m3UFileInfo, filePath, headers, skipRequestError, cancellationToken), cancellationToken);
-                    Tasks[i] = DownloadCallBack(m3UFileInfo, filePath, headers, skipRequestError, cancellationToken);
+                    //Tasks[i] = Task.Run(async () => await DownloadCallBack(m3UFileInfo, filePath, Headers, skipRequestError, cancellationToken), cancellationToken);
+                    Tasks[i] = DownloadCallBack(m3UFileInfo, filePath, Headers, skipRequestError, cancellationToken);
                 }
 
                 await Task.WhenAll(Tasks);
@@ -78,11 +78,11 @@ namespace M3u8Downloader_H.Core.M3uDownloaders
             foreach (var mediaFile in m3UFileInfo.MediaFiles)
             {
                 string mediaPath = Path.Combine(savePath, mediaFile.Title);
-                bool isSuccessful = await DownloadAsynInternal(mediaFile.Uri, headers, mediaFile.RangeValue, mediaPath, skipRequestError, cancellationToken);
+                bool isSuccessful = await DownloadAsynInternal(mediaFile.Uri, Headers, mediaFile.RangeValue, mediaPath, skipRequestError, cancellationToken);
                 if(isSuccessful)
                 {
                     recordDuration += mediaFile.Duration;
-                    progress.Report(recordDuration);
+                    Progress.Report(recordDuration);
                 }
             }
             return recordDuration;
@@ -118,7 +118,7 @@ namespace M3u8Downloader_H.Core.M3uDownloaders
                 if(isSuccessful)
                 {
                     _ = Interlocked.Increment(ref downloadedCount);
-                    progress.Report(downloadedCount / (double)m3UFileInfo.MediaFiles.Count);
+                    Progress.Report(downloadedCount / (double)m3UFileInfo.MediaFiles.Count);
                 }
             }
         }
@@ -130,7 +130,7 @@ namespace M3u8Downloader_H.Core.M3uDownloaders
             {
                 try
                 {
-                    (Stream tmpstream, string contentType) = await http.GetResponseContentAsync(uri, headers, rangeHeaderValue, token);
+                    (Stream tmpstream, string contentType) = await HttpClient.GetResponseContentAsync(uri, headers, rangeHeaderValue, token);
                     using Stream stream = DownloadAfter(tmpstream, contentType, token);
 
                     await WriteToFileAsync(mediaPath, stream, token);
