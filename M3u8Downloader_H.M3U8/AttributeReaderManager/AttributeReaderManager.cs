@@ -24,6 +24,11 @@ namespace M3u8Downloader_H.M3U8.AttributeReaderManager
             AttributeReaders.Add(key, value);
         }
 
+        public void Set(string key, IAttributeReader value)
+        {
+            this[key] = value;
+        }
+
         public bool ContainsKey(string key)
         {
             return AttributeReaders.ContainsKey(key);
