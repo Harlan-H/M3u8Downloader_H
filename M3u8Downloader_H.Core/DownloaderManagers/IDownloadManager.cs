@@ -20,7 +20,7 @@ namespace M3u8Downloader_H.Core.DownloaderManagers
         IDownloadManager WithVodProgress(IProgress<double> action);
         IDownloadManager WithLiveProgress(IProgress<double> action);
         IDownloadManager WithStatusAction(Action<int> action);
-        IDownloadManager InitM3u8Reader(IDictionary<string, IAttributeReader> attributeReaders);
+        IDownloadManager InitM3u8Reader();
         ValueTask GetM3U8FileInfo(CancellationToken cancellationToken);
         IDownloaderSource Build();
     }

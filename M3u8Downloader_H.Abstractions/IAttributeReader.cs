@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using M3u8Downloader_H.M3U8.Core;
+using System.Collections.Generic;
 using M3u8Downloader_H.M3U8.Infos;
 using System;
 

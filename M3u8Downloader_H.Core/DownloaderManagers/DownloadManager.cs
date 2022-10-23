@@ -1,4 +1,5 @@
-﻿using M3u8Downloader_H.Core.DownloaderSources;
+﻿using M3u8Downloader_H.Core.DownloaderPluginManagers;
+using M3u8Downloader_H.Core.DownloaderSources;
 using M3u8Downloader_H.Core.Utils.Extensions;
 using M3u8Downloader_H.M3U8;
 using M3u8Downloader_H.M3U8.AttributeReaders;
@@ -27,16 +28,18 @@ namespace M3u8Downloader_H.Core.DownloaderManagers
         private IProgress<double> _vodProgress = default!;
         private IProgress<double> _liveProgress = default!;
         private Action<int> _setStatusDelegate = default!;
+        private IPluginManager? _pluginManager = default!;
 
         public string VideoFullPath { get; } = default!;
         public string VideoFullName { get; private set; } = default!;
 
-        public DownloadManager(HttpClient httpClient, Uri url, IEnumerable<KeyValuePair<string, string>>? Headers, string videoFullPath)
+        public DownloadManager(HttpClient httpClient, Uri url, IEnumerable<KeyValuePair<string, string>>? Headers, string videoFullPath, IPluginManager? pluginManager)
         {
             _httpClient = httpClient;
             _url = url;
             _headers = Headers;
             VideoFullPath = videoFullPath;
+            _pluginManager = pluginManager;
         }
 
         public IDownloadManager WithM3u8FileInfo(M3UFileInfo fileinfo)
@@ -74,9 +77,9 @@ namespace M3u8Downloader_H.Core.DownloaderManagers
             return this;
         }
 
-        public IDownloadManager InitM3u8Reader(IDictionary<string, IAttributeReader>? attributeReaders)
+        public IDownloadManager InitM3u8Reader()
         {
-            m3UFileReader = new M3UFileReader(attributeReaders);
+            m3UFileReader = new M3UFileReader(_pluginManager?.AttributeReaders);
             return this;
         }
 
@@ -133,6 +136,7 @@ namespace M3u8Downloader_H.Core.DownloaderManagers
             downloaderSource.LiveProgress = _liveProgress;
             downloaderSource.VodProgress = _vodProgress;
             downloaderSource.SetStatusDelegate = _setStatusDelegate;
+            downloaderSource.downloadService = _pluginManager?.PluginService;
             downloaderSource.ChangeVideoNameDelegate = videoname => VideoFullName = videoname;
             return _downloaderSource = downloaderSource;
         }

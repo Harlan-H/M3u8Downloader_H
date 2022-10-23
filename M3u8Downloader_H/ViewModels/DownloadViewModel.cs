@@ -11,6 +11,10 @@ using M3u8Downloader_H.ViewModels.FrameWork;
 using System.Collections.Generic;
 using M3u8Downloader_H.Models;
 using M3u8Downloader_H.Core.DownloaderManagers;
+using M3u8Downloader_H.Plugin;
+using M3u8Downloader_H.Core.DownloaderPluginManagers;
+using System.Web;
+using M3u8Downloader_H.Extensions;
 
 namespace M3u8Downloader_H.ViewModels
 {
@@ -139,8 +143,16 @@ namespace M3u8Downloader_H.ViewModels
             DownloadViewModel viewModel = factory.CreateDownloadViewModel();
             viewModel.RequestUrl = requesturl;
             viewModel.VideoName = videoname;
-            IDownloadManager downloadManager = new DownloadManager(Http.Client, requesturl, headers, cachePath)
-                                                  .InitM3u8Reader(null)
+
+            IPluginBuilder? pluginBuilder = Container.Ioc.Get<PluginService>()[requesturl.GetHostName()];
+            PluginManger? pluginManger = default!;
+            if(pluginBuilder is not null)
+            {
+                pluginManger = new PluginManger(pluginBuilder);
+                pluginManger.Build();
+            }
+            IDownloadManager downloadManager = new DownloadManager(Http.Client, requesturl, headers, cachePath, pluginManger)
+                                                  .InitM3u8Reader()
                                                   .WithLiveProgress(new Progress<double>(d => viewModel.RecordDuration = d))
                                                   .WithVodProgress(new Progress<double>(d => viewModel.ProgressNum = d))
                                                   .WithStatusAction(s => viewModel.Status = (DownloadStatus)s);
@@ -166,8 +178,8 @@ namespace M3u8Downloader_H.ViewModels
             DownloadViewModel viewModel = factory.CreateDownloadViewModel();
             viewModel.RequestUrl = requesturl!;
             viewModel.VideoName = videoname;
-            viewModel._downloadManager = new DownloadManager(Http.Client, requesturl!, headers, cachePath)
-                                                  .InitM3u8Reader(null)
+            viewModel._downloadManager = new DownloadManager(Http.Client, requesturl!, headers, cachePath, null)
+                                                  .InitM3u8Reader()
                                                   .WithLiveProgress(new Progress<double>(d => viewModel.RecordDuration = d))
                                                   .WithVodProgress(new Progress<double>(d => viewModel.ProgressNum = d))
                                                   .WithStatusAction(s => viewModel.Status = (DownloadStatus)s)
@@ -187,8 +199,8 @@ namespace M3u8Downloader_H.ViewModels
         {
             DownloadViewModel viewModel = factory.CreateDownloadViewModel();
             viewModel.VideoName = videoname;
-            viewModel._downloadManager = new DownloadManager(Http.Client, default!, headers, videoPath)
-                                      .InitM3u8Reader(null)
+            viewModel._downloadManager = new DownloadManager(Http.Client, default!, headers, videoPath, null)
+                                      .InitM3u8Reader()
                                       .WithLiveProgress(new Progress<double>(d => viewModel.RecordDuration = d))
                                       .WithVodProgress(new Progress<double>(d => viewModel.ProgressNum = d))
                                       .WithStatusAction(s => viewModel.Status = (DownloadStatus)s)

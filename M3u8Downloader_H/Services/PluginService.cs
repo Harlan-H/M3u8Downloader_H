@@ -2,41 +2,60 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml;
-using System.Xml.Serialization;
-using M3u8Downloader_H.Models;
+using System.Reflection;
+using M3u8Downloader_H.Extensions;
+using M3u8Downloader_H.Plugin;
 
 namespace M3u8Downloader_H.Services
 {
     public class PluginService
     {
+        private readonly string _pluginDirPath =
 #if DEBUG
-        private readonly string ConfigPath = "e:/desktop/config.xml";
+            "e:/desktop/Plugins/";
 #else
-        private readonly string ConfigPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "plugin", "config.xml");
+             Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Plugins");
 #endif
-        private PluginInfos PluginInfo = default!;
+        private readonly Dictionary<string, Type> _pluginDict;
         public PluginService()
         {
-
+            _pluginDict = new();
         }
 
         public void Load()
         {
             try
             {
-                XmlSerializer xs = new(typeof(PluginInfos));
-                XmlReader xmlReader = XmlReader.Create(File.OpenRead(ConfigPath));
-                PluginInfo = (PluginInfos)(xs.Deserialize(xmlReader) ?? new PluginInfos());
-            }catch(FileNotFoundException)
+                DirectoryInfo directoryInfo = new(_pluginDirPath);
+                foreach (var item in directoryInfo.EnumerateFiles("M3u8Downloader_H.*.plugin.dll", SearchOption.TopDirectoryOnly))
+                {
+                    Type? type = LoadLibrary(item.FullName);
+                    string key = item.Name.Normalize(@"M3u8Downloader_H\.(.*?)\.plugin");
+                    if (type is not null && !string.IsNullOrWhiteSpace(key))
+                        _pluginDict.Add(key, type);
+                }
+            }
+            catch (DirectoryNotFoundException)
             {
-                PluginInfo = new PluginInfos();
+
             }
         }
 
-        public List<PluginItem> GetPluginItem() => PluginInfo.PluginItems;
+        private Type? LoadLibrary(string path)
+        {
+            Type[] exportTypes = Assembly.LoadFrom(path).GetExportedTypes();
+            return exportTypes.Where(i => i.GetInterface(nameof(IPluginBuilder)) != null).FirstOrDefault();
+        }
+
+        public IPluginBuilder? this[string key]
+        {
+            get
+            {
+                if (_pluginDict.TryGetValue(key, out Type? type))
+                    return (IPluginBuilder?)Activator.CreateInstance(type);
+                return null;
+            }
+        }
 
     }
 }

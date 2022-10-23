@@ -9,8 +9,6 @@ namespace M3u8Downloader_H.M3U8.AttributeReaders
     {
         public bool ShouldTerminate => false;
 
-       // protected virtual bool ShouldTerminate() => false;
-
         public abstract void Write(M3UFileInfo m3UFileInfo, string value, IEnumerator<string> reader,Uri baseUri);
 
         public bool Read(M3UFileInfo m3UFileInfo, IEnumerator<string> reader, KeyValuePair<string, string> keyValuePair, Uri baseUri)
