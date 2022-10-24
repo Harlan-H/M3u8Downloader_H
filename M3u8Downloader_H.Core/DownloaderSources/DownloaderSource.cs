@@ -3,7 +3,9 @@ using M3u8Downloader_H.Core.DownloaderManagers;
 using M3u8Downloader_H.Core.M3uCombiners;
 using M3u8Downloader_H.Core.M3uDownloaders;
 using M3u8Downloader_H.Core.VideoConverter;
+using M3u8Downloader_H.M3U8;
 using M3u8Downloader_H.M3U8.Infos;
+using M3u8Downloader_H.Plugin;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -27,6 +29,8 @@ namespace M3u8Downloader_H.Core.DownloaderSources
         public IProgress<double> LiveProgress = default!;
         public Action<int> SetStatusDelegate = default!;
         public Action<string> ChangeVideoNameDelegate = default!;
+        public IDownloadService? downloadService = default!;
+        public M3UFileReader M3uReader = default!;
 
         protected string PluginPath = default!;
         protected int _taskNumber;
@@ -113,8 +117,8 @@ namespace M3u8Downloader_H.Core.DownloaderSources
 
         protected M3u8Downloader CreateDownloader()
         {
-            return !string.IsNullOrWhiteSpace(PluginPath)
-                ? new PluginM3u8Downloader(PluginPath, M3UFileInfo)
+            return downloadService is not null
+                ? new PluginM3u8Downloader(downloadService, M3UFileInfo)
                 : M3UFileInfo.Key is not null
                 ? new CryptM3uDownloader(M3UFileInfo)
                 : new M3u8Downloader();

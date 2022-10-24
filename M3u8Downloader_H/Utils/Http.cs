@@ -5,7 +5,7 @@ using System.Net.Http;
 
 namespace M3u8Downloader_H.Utils
 {
-    public class Http
+    internal class Http
     {
         private static HttpClientHandler GetHandler()
         {

@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using M3u8Downloader_H.Exceptions;
+using System.Text.RegularExpressions;
 
 namespace M3u8Downloader_H.Extensions
 {
@@ -38,6 +36,11 @@ namespace M3u8Downloader_H.Extensions
         {
             s = s.StartsWith("0x", StringComparison.OrdinalIgnoreCase) ? s[2..] : s;
             return Convert.FromHexString(s);
+        }
+
+        public static string Normalize(this string s,string pattern)
+        {
+            return Regex.Match(s, pattern).Groups[1].Value;
         }
 
     }

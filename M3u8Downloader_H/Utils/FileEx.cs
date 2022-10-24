@@ -1,9 +1,10 @@
 ﻿using System.IO;
+using System.Reflection.Emit;
 using M3u8Downloader_H.Exceptions;
 
 namespace M3u8Downloader_H.Utils
 {
-    public static class FileEx
+    internal static class FileEx
     {
         private static readonly string[] formats = { "ts", "m4s", "mp4" };
         public static void EnsureFileNotExist(string filename)

@@ -6,7 +6,7 @@ using M3u8Downloader_H.M3U8.Infos;
 
 namespace M3u8Downloader_H.M3U8.Readers
 {
-    public abstract class AnalyzerBase
+    internal abstract class AnalyzerBase
     {
         private readonly Uri host;
         private int currentIndex;

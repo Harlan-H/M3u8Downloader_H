@@ -3,20 +3,18 @@ using M3u8Downloader_H.M3U8.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace M3u8Downloader_H.M3U8.Services
+namespace M3u8Downloader_H.M3U8.Utilities
 {
-    public class AttributeReaderRoot : IAttributeReaderRoot
+    internal class AttributeReaderRoot
     {
-        private static readonly Lazy<IAttributeReaderRoot> attributeReaderRootLazy = new(() => new AttributeReaderRoot());
-        public static IAttributeReaderRoot Instance => attributeReaderRootLazy.Value;
+        private static readonly Lazy<AttributeReaderRoot> attributeReaderRootLazy = new(() => new AttributeReaderRoot());
+        public static AttributeReaderRoot Instance => attributeReaderRootLazy.Value;
 
         private readonly IReadOnlyDictionary<string, IAttributeReader> attributeReaders;
-        IDictionary<string, IAttributeReader> IAttributeReaderRoot.AttributeReaders
+
+        public IDictionary<string, IAttributeReader> AttributeReaders
         {
             get => new Dictionary<string, IAttributeReader>(attributeReaders);
         }
@@ -34,5 +32,6 @@ namespace M3u8Downloader_H.M3U8.Services
                 .Select(t => (M3U8ReaderAttribute)t.GetCustomAttribute(typeof(M3U8ReaderAttribute), false)!)
                 .ToDictionary(x => x.Key!, x => (IAttributeReader)Activator.CreateInstance(x.Type)!);
         }
+
     }
 }

@@ -7,7 +7,7 @@ using M3u8Downloader_H.Exceptions;
 
 namespace M3u8Downloader_H.Utils
 {
-    public static class PathEx
+    internal static class PathEx
     {
 
         public static string GenerateFileNameWithoutExtension(string? fileName)
