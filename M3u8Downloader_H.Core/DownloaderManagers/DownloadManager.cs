@@ -40,6 +40,7 @@ namespace M3u8Downloader_H.Core.DownloaderManagers
             _headers = Headers;
             VideoFullPath = videoFullPath;
             _pluginManager = pluginManager;
+            m3UFileReader = new M3UFileReader(pluginManager?.AttributeReaders);
         }
 
         public IDownloadManager WithM3u8FileInfo(M3UFileInfo fileinfo)
@@ -74,12 +75,6 @@ namespace M3u8Downloader_H.Core.DownloaderManagers
         public IDownloadManager WithStatusAction(Action<int> action)
         {
             _setStatusDelegate = action;
-            return this;
-        }
-
-        public IDownloadManager InitM3u8Reader()
-        {
-            m3UFileReader = new M3UFileReader(_pluginManager?.AttributeReaders);
             return this;
         }
 
@@ -137,6 +132,8 @@ namespace M3u8Downloader_H.Core.DownloaderManagers
             downloaderSource.VodProgress = _vodProgress;
             downloaderSource.SetStatusDelegate = _setStatusDelegate;
             downloaderSource.downloadService = _pluginManager?.PluginService;
+            downloaderSource.M3uReader = m3UFileReader;
+
             downloaderSource.ChangeVideoNameDelegate = videoname => VideoFullName = videoname;
             return _downloaderSource = downloaderSource;
         }

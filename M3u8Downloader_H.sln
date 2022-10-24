@@ -19,7 +19,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "M3u8Downloader_H.M3U8", "M3
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "M3u8Downloader_H.M3U8.Readers", "M3u8Downloader_H.M3U8.Readers\M3u8Downloader_H.M3U8.Readers.csproj", "{DD5FFCA4-46A1-4871-90BD-6E9ED13B9EB6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "M3u8Downloader_H.Plugin", "M3u8Downloader_H.Plugin\M3u8Downloader_H.Plugin.csproj", "{73D64921-D4B5-45E9-9D32-D92584C41C45}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "M3u8Downloader_H.Plugin", "M3u8Downloader_H.Plugin\M3u8Downloader_H.Plugin.csproj", "{73D64921-D4B5-45E9-9D32-D92584C41C45}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{42D6DF1F-811D-40A6-9F96-C453D6D23E9C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "M3u8Downloader_H.bilivideo.plugin", "M3u8Downloader_H.bilivideo.plugin\M3u8Downloader_H.bilivideo.plugin.csproj", "{1EEC1879-4CE7-47ED-A9E1-1FC0FA35F5B6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -139,9 +143,24 @@ Global
 		{73D64921-D4B5-45E9-9D32-D92584C41C45}.Release|x64.Build.0 = Release|Any CPU
 		{73D64921-D4B5-45E9-9D32-D92584C41C45}.Release|x86.ActiveCfg = Release|Any CPU
 		{73D64921-D4B5-45E9-9D32-D92584C41C45}.Release|x86.Build.0 = Release|Any CPU
+		{1EEC1879-4CE7-47ED-A9E1-1FC0FA35F5B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1EEC1879-4CE7-47ED-A9E1-1FC0FA35F5B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1EEC1879-4CE7-47ED-A9E1-1FC0FA35F5B6}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{1EEC1879-4CE7-47ED-A9E1-1FC0FA35F5B6}.Debug|x64.Build.0 = Debug|Any CPU
+		{1EEC1879-4CE7-47ED-A9E1-1FC0FA35F5B6}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{1EEC1879-4CE7-47ED-A9E1-1FC0FA35F5B6}.Debug|x86.Build.0 = Debug|Any CPU
+		{1EEC1879-4CE7-47ED-A9E1-1FC0FA35F5B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1EEC1879-4CE7-47ED-A9E1-1FC0FA35F5B6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1EEC1879-4CE7-47ED-A9E1-1FC0FA35F5B6}.Release|x64.ActiveCfg = Release|Any CPU
+		{1EEC1879-4CE7-47ED-A9E1-1FC0FA35F5B6}.Release|x64.Build.0 = Release|Any CPU
+		{1EEC1879-4CE7-47ED-A9E1-1FC0FA35F5B6}.Release|x86.ActiveCfg = Release|Any CPU
+		{1EEC1879-4CE7-47ED-A9E1-1FC0FA35F5B6}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{1EEC1879-4CE7-47ED-A9E1-1FC0FA35F5B6} = {42D6DF1F-811D-40A6-9F96-C453D6D23E9C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0C6E7073-BBF5-42E3-923E-C4B4425AB833}

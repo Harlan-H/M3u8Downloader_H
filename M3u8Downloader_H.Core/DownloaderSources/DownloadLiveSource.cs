@@ -61,8 +61,7 @@ namespace M3u8Downloader_H.Core.DownloaderSources
                 await m3UCombiner.MegerVideoHeader(M3UFileInfo.Map);
             }
 
-            M3UFileReader reader = new();
-            M3UFileInfo previousMediaInfo = await GetM3U8FileInfoAsync(reader,cancellationToken);
+            M3UFileInfo previousMediaInfo = await GetM3U8FileInfoAsync(M3uReader, cancellationToken);
             while (true)
             {
                 var duration = await m3U8Downloader.Start(previousMediaInfo, VideoFullPath, 0, _skipRequestError, cancellationToken);
@@ -78,7 +77,7 @@ namespace M3u8Downloader_H.Core.DownloaderSources
 
                 try
                 {
-                    previousMediaInfo = await GetM3u8FileInfos(reader, Url, Headers, previousMediaInfo, cancellationToken);
+                    previousMediaInfo = await GetM3u8FileInfos(M3uReader, Url, Headers, previousMediaInfo, cancellationToken);
                 }
                 catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.NotFound)
                 {
