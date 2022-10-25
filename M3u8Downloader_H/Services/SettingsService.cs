@@ -30,7 +30,7 @@ namespace M3u8Downloader_H.Services
 #else
         public string SavePath { get; set; } = Path.Combine(System.Environment.CurrentDirectory, "download");
 #endif
-        public PluginItem Pluginitem { get; set; } = default!;
+        public string PluginKey { get; set; } = default!;
         public string SelectedFormat { get; set; } = "默认";
         public bool SkipDirectoryExist { get; set; } = true;
         public bool ForcedMerger { get; set; }

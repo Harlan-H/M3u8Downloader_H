@@ -57,5 +57,7 @@ namespace M3u8Downloader_H.Services
             }
         }
 
+        public IEnumerable<string> Keys => _pluginDict.Keys;
+
     }
 }

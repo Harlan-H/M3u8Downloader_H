@@ -24,7 +24,7 @@ namespace M3u8Downloader_H.ViewModels
 
         public string[] Formats { get; } = { "默认", "mp4" };
 
-       // public IReadOnlyList<PluginItem> PluginItems { get; set; } = Array.Empty<PluginItem>();
+        public IEnumerable<string> PluginKeys { get; set; } = Array.Empty<string>();
 
         public SettingsViewModel(SettingsService settingService)
         {

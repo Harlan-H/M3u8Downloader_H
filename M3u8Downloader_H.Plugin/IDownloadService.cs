@@ -1,4 +1,5 @@
-﻿using System;
+﻿using M3u8Downloader_H.M3U8.Infos;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,17 +15,11 @@ namespace M3u8Downloader_H.Plugin
         /// </summary>
         /// <param name="httpClient">http实例</param>
         /// <param name="headers">附带的请求头，如果有的话</param>
+        /// <param name="m3UFileInfo">m3u8的数据</param>
         /// <param name="cancellationToken">取消的token</param>
         /// <returns>没有返回内容</returns>
-        Task Initialize(HttpClient httpClient, IEnumerable<KeyValuePair<string, string>>? headers, CancellationToken cancellationToken);
+        Task Initialize(HttpClient httpClient, IEnumerable<KeyValuePair<string, string>>? headers,M3UFileInfo m3UFileInfo, CancellationToken cancellationToken);
 
-        /// <summary>
-        /// 设置密钥，当检测到m3u8文件中有密钥信息会请求此函数
-        /// </summary>
-        /// <param name="method">加密方法</param>
-        /// <param name="key">key</param>
-        /// <param name="iv">iv</param>
-        void SetCryptData(string method, byte[] key, byte[] iv);
 
         /// <summary>
         /// 当下载的数据接收到之后，会请求此函数，以便做后续处理

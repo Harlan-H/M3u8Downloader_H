@@ -146,31 +146,31 @@ namespace M3u8Downloader_H.ViewModels
         }
 
 
-        private void ProcessDownload(Uri uri, string? name,string? method,string? key,string? iv, string? savePath = default, IEnumerable<KeyValuePair<string,string>>? headers = default)
+        private void ProcessDownload(Uri uri, string? name,string? method,string? key,string? iv, string? savePath = default, string? pluginKey = default!, IEnumerable<KeyValuePair<string,string>>? headers = default)
         {
             string tmpVideoName = PathEx.GenerateFileNameWithoutExtension(name);
             string fileFullPath = Path.Combine(savePath ?? settingsService.SavePath, tmpVideoName);
             FileEx.EnsureFileNotExist(fileFullPath);
 
-            DownloadViewModel download = viewModelFactory.CreateDownloadViewModel(uri, tmpVideoName,method,key,iv, headers, fileFullPath);
+            DownloadViewModel download = viewModelFactory.CreateDownloadViewModel(uri, tmpVideoName,method,key,iv, headers, fileFullPath, pluginKey);
             if (download is null) return;
 
             EnqueueDownload(download);
         }
 
-        private void ProcessDownload(string content, Uri? uri, string? name, string? savePath, IEnumerable<KeyValuePair<string, string>>? headers)
+        private void ProcessDownload(string content, Uri? uri, string? name, string? savePath, string? pluginKey = default!, IEnumerable<KeyValuePair<string, string>>? headers = default)
         {
             string tmpVideoName = PathEx.GenerateFileNameWithoutExtension(name);
             string fileFullPath = Path.Combine(savePath ?? settingsService.SavePath, tmpVideoName);
             FileEx.EnsureFileNotExist(fileFullPath);
 
-            DownloadViewModel download = viewModelFactory.CreateDownloadViewModel(uri, content, headers, fileFullPath, tmpVideoName);
+            DownloadViewModel download = viewModelFactory.CreateDownloadViewModel(uri, content, headers, fileFullPath, tmpVideoName,pluginKey);
             if (download is null) return;
 
             EnqueueDownload(download);
         }
 
-        private void ProcessDownload(M3UFileInfo m3UFileInfo, string? name, string? savePath = default!, IEnumerable<KeyValuePair<string, string>>? headers = default!)
+        private void ProcessDownload(M3UFileInfo m3UFileInfo, string? name, string? savePath = default!, string? pluginKey = default!, IEnumerable<KeyValuePair<string, string>>? headers = default!)
         {
             if (!m3UFileInfo.MediaFiles.Any())
                 throw new ArgumentException("m3u8的数据不能为空");
@@ -180,7 +180,7 @@ namespace M3u8Downloader_H.ViewModels
             FileEx.EnsureFileNotExist(fileFullPath);
 
             if(string.IsNullOrEmpty(m3UFileInfo.PlaylistType)) m3UFileInfo.PlaylistType = "VOD";
-            DownloadViewModel download = viewModelFactory.CreateDownloadViewModel(m3UFileInfo, headers, tmpVideoName, fileFullPath);
+            DownloadViewModel download = viewModelFactory.CreateDownloadViewModel(m3UFileInfo, headers, tmpVideoName, fileFullPath, pluginKey);
             if (download is null) return;
 
             EnqueueDownload(download);
@@ -246,7 +246,7 @@ namespace M3u8Downloader_H.ViewModels
             try
             {
                 var dialog = viewModelFactory.CreateSettingsViewModel();
-               // dialog.PluginItems = pluginService.GetPluginItem();
+                dialog.PluginKeys = pluginService.Keys;
                 await dialogManager.ShowDialogAsync(dialog);
             }
             finally
