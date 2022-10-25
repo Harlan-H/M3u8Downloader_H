@@ -19,25 +19,11 @@ namespace M3u8Downloader_H.Core.M3uDownloaders
             _pluginDownload = downloadService;
         }
 
+        //不在试图处理插件的任何操作
+        //当时需要重置或者初始化某些数据的时候 完全交给插件自己去处理
         public override async ValueTask Initialization(CancellationToken cancellationToken)
         {
-            await _pluginDownload.Initialize(HttpClient,Headers, cancellationToken);
-
-            if (m3UFileInfo.Key is null)
-                return;
-
-            if (m3UFileInfo.Key.BKey != null)
-            {
-                _pluginDownload.SetCryptData(m3UFileInfo.Key.Method, m3UFileInfo.Key.BKey, m3UFileInfo.Key.IV);
-            }
-            else if (m3UFileInfo.Key.Uri != null)
-            {
-                //不会在尝试解析密钥 因为可能不知道 他会遇到啥类型的密钥
-                byte[] data = m3UFileInfo.Key.Uri.IsFile
-                    ? await File.ReadAllBytesAsync(m3UFileInfo.Key.Uri.OriginalString, cancellationToken)
-                    : await HttpClient.GetByteArrayAsync(m3UFileInfo.Key.Uri, Headers, cancellationToken);
-                _pluginDownload.SetCryptData(m3UFileInfo.Key.Method, data, m3UFileInfo.Key.IV);
-            }
+            await _pluginDownload.Initialize(HttpClient,Headers, m3UFileInfo, cancellationToken);
         }
 
         protected override Stream DownloadAfter(Stream stream, string contentType, CancellationToken cancellationToken)

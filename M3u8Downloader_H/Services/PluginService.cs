@@ -51,11 +51,16 @@ namespace M3u8Downloader_H.Services
         {
             get
             {
+                if (string.IsNullOrWhiteSpace(key))
+                    return null;
+
                 if (_pluginDict.TryGetValue(key, out Type? type))
                     return (IPluginBuilder?)Activator.CreateInstance(type);
                 return null;
             }
         }
+
+        public IEnumerable<string> Keys => _pluginDict.Keys;
 
     }
 }

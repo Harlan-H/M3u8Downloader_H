@@ -1,5 +1,4 @@
-﻿using M3u8Downloader_H.M3U8.Adapters;
-using M3u8Downloader_H.M3U8.AttributeReaders;
+﻿using M3u8Downloader_H.M3U8.AttributeReaders;
 using M3u8Downloader_H.M3U8.Core;
 using M3u8Downloader_H.M3U8.Utilities;
 using M3u8Downloader_H.M3U8.Infos;
@@ -18,10 +17,10 @@ namespace M3u8Downloader_H.M3U8
             this.attributeReaders = attributeReaders ?? AttributeReaderRoot.Instance.AttributeReaders;
         }
 
-        internal M3UFileInfo Read(Uri baseUri, IAdapter adapter)
+        internal M3UFileInfo Read(Uri baseUri, Stream stream)
         {
             M3UFileInfo m3UFileInfo = new();
-            using var reader = new LineReader(adapter);
+            using var reader = new LineReader(stream);
             if (!reader.MoveNext())
                 throw new InvalidDataException("无效得m3u8文件");
             if (!string.Equals(reader.Current?.Trim(), "#EXTM3U", StringComparison.Ordinal))
@@ -46,7 +45,7 @@ namespace M3u8Downloader_H.M3U8
                 if(attributeReader.ShouldTerminate) break;
             }
 
-            adapter?.Dispose();
+            stream?.Dispose();
             return m3UFileInfo;
         }
     }

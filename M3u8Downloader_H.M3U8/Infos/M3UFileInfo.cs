@@ -26,6 +26,9 @@ namespace M3u8Downloader_H.M3U8.Infos
 
         public IList<M3UMediaInfo> MediaFiles { get; set; } = default!;
 
+        //当原始的m3u8中的数据 不满足需求的时候 可以通过自定义的数据 进行操作
+        public object? UserData { get; set; }
+
         public M3UFileInfo(M3UFileInfo m3UFileInfo)
         {
             Version = m3UFileInfo.Version;
@@ -40,8 +43,9 @@ namespace M3u8Downloader_H.M3U8.Infos
 
 
 
-        public M3UFileInfo() { }
-    
-    
+        public M3UFileInfo() 
+        {
+        
+        }    
     }
 }

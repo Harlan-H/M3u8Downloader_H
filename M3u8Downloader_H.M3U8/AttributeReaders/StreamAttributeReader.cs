@@ -1,6 +1,4 @@
-﻿using M3u8Downloader_H.M3U8.Adapters;
-using M3u8Downloader_H.M3U8.Core;
-using M3u8Downloader_H.M3U8.Utilities;
+﻿using M3u8Downloader_H.M3U8.Utilities;
 using System;
 using System.Collections.Generic;
 using System.IO;

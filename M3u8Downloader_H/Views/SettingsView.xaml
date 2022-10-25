@@ -101,45 +101,21 @@
                     <TextBox  Name="savePathTextbox"  FontSize="18"  VerticalAlignment="Center" IsReadOnly="True" Text="{Binding SavePath}" />
                 </DockPanel>
 
-                <!-- <DockPanel Margin="8 0 8 0" >
+                <DockPanel Margin="8 0 8 0" >
                     <DockPanel.ToolTip>
                         <TextBlock>
-                            <Run Text="实现了IPlugin接口的类" />
+                            <Run Text="实现了IPluginBuilder接口的类" />
                             <LineBreak />
-                            <Run Text="实现方法:" />
-                            <LineBreak />
-                            <Run Text="1.创建类库工程" />
-                            <LineBreak />
-                            <Run Text="2.添加项目引用" />
-                            <LineBreak />
-                            <Run Text="3.浏览选择当前程序下的PluginInterface.dll" />
-                            <LineBreak />
-                            <Run Text="4.继承IPlugin 同时实现所有函数" />
-                            <LineBreak />
-                            <Run Text="5.设置plugin文件夹中的config.xml" />
-                            <LineBreak />
-                            <Run Text="6.添加pluginItem项,设置好title和filename" />
+                            <Run Text="具体操作方法，请看帮助文档->插件开发" />
                         </TextBlock>
                     </DockPanel.ToolTip>
                     <TextBlock  Text="选择插件: " Style="{StaticResource TextBlockStyle}" />
-                    <Button DockPanel.Dock="Right"  Style="{DynamicResource MaterialDesignFlatButton}" Margin="2"  >
-                    <materialDesign:PackIcon Kind="FileFind" />
-                    <i:Interaction.Behaviors>
-                        <behavior:OpenFileDialogBehaviour IsFile="True" AttachedTextBox="{Binding ElementName=pluginPathTextbox}" FilterString="插件程序(*.dll)|*.dll|所有文件(*.*)|*.*" />
-                    </i:Interaction.Behaviors>
-                    </Button>
-                    <TextBox  Name="pluginPathTextbox" materialDesign:TextFieldAssist.HasClearButton="True"  FontSize="18"  VerticalAlignment="Center"  IsReadOnly="True" Text="{Binding PluginPath,UpdateSourceTrigger=PropertyChanged}" /> 
                     <ComboBox FontSize="20" 
                               materialDesign:TextFieldAssist.HasClearButton="True"
-                              SelectedItem="{Binding Pluginitem}"
-                              ItemsSource="{Binding DataContext.PluginItems,RelativeSource={RelativeSource AncestorType=UserControl}}">
-                        <ComboBox.ItemTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding Title}" />
-                            </DataTemplate>
-                        </ComboBox.ItemTemplate>
+                              SelectedItem="{Binding PluginKey}"
+                              ItemsSource="{Binding DataContext.PluginKeys,RelativeSource={RelativeSource AncestorType=UserControl}}">
                     </ComboBox>
-                </DockPanel>-->
+                </DockPanel>
 
                 <DockPanel Margin="8 0 8 0">
                     <TextBlock  Style="{StaticResource TextBlockStyle}" Text="转码格式: "  />

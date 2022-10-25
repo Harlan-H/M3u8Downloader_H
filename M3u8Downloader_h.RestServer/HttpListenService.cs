@@ -10,9 +10,9 @@ namespace M3u8Downloader_H.RestServer
     public class HttpListenService
     {
         private readonly HttpListen httpListen = new();
-        private Action<Uri, string?, string?, string?, string?, string?, IEnumerable<KeyValuePair<string, string>>?> DownloadByUrlAction = default!;
-        private Action<string, Uri?, string?, string?, IEnumerable<KeyValuePair<string, string>>?> DownloadByContentAction = default!;
-        private Action<M3UFileInfo, string?, string?, IEnumerable<KeyValuePair<string, string>>?> DownloadByM3uFileInfoAction = default!;
+        private Action<Uri, string?, string?, string?, string?, string?, string?, IEnumerable<KeyValuePair<string, string>>?> DownloadByUrlAction = default!;
+        private Action<string, Uri?, string?, string?, string?, IEnumerable<KeyValuePair<string, string>>?> DownloadByContentAction = default!;
+        private Action<M3UFileInfo, string?, string?, string?, IEnumerable<KeyValuePair<string, string>>?> DownloadByM3uFileInfoAction = default!;
         private Func< string, Uri, M3UFileInfo> GetM3U8FileInfoFunc = default!;
         private readonly string[] methods = { "AES-128", "AES-192", "AES-256" };
 
@@ -28,9 +28,9 @@ namespace M3u8Downloader_H.RestServer
         }
 
         public void Initialization(
-            Action<Uri, string?, string?, string?, string?, string?, IEnumerable<KeyValuePair<string, string>>?> downloadByUrl,
-            Action<string, Uri?, string?, string?, IEnumerable<KeyValuePair<string, string>>?> downloadByContent,
-            Action<M3UFileInfo, string?, string?, IEnumerable<KeyValuePair<string, string>>?> downloadByM3uFileInfo,
+            Action<Uri, string?, string?, string?, string?, string?,string?,IEnumerable<KeyValuePair<string, string>>?> downloadByUrl,
+            Action<string, Uri?, string?, string?, string?,IEnumerable<KeyValuePair<string, string>>?> downloadByContent,
+            Action<M3UFileInfo, string?, string?, string?, IEnumerable<KeyValuePair<string, string>>?> downloadByM3uFileInfo,
             Func<string,Uri, M3UFileInfo> getM3u8FileInfoFunc)
         {
             DownloadByUrlAction = downloadByUrl;
@@ -68,10 +68,11 @@ namespace M3u8Downloader_H.RestServer
                 string? key = (string?)jObj.SelectToken("key");
                 string? iv = (string?)jObj.SelectToken("iv");
                 string? savePath = (string?)jObj.SelectToken("savepath");
+                string? pluginKey = (string?)jObj.SelectToken("plugin");
                 Dictionary<string, string>? headers = jObj.SelectToken("headers")?.ToObject<Dictionary<string, string>>();
 
                 Uri uri = new(url!, UriKind.Absolute);
-                DownloadByUrlAction(uri, videoName, method, key, iv, savePath, headers);
+                DownloadByUrlAction(uri, videoName, method, key, iv, savePath, pluginKey, headers);
 
                 response.Json(Response.Success());
             }
@@ -104,9 +105,10 @@ namespace M3u8Downloader_H.RestServer
 
                 string? videoname = (string?)jObj.SelectToken("name");
                 string? savePath = (string?)jObj.SelectToken("savepath");
+                string? pluginKey = (string?)jObj.SelectToken("plugin");
                 Dictionary<string, string>? headers = jObj.SelectToken("headers")?.ToObject<Dictionary<string, string>>();
 
-                DownloadByContentAction(content, uri, videoname, savePath, headers);
+                DownloadByContentAction(content, uri, videoname, savePath, pluginKey, headers);
 
                 response.Json(Response.Success());
             }
@@ -133,9 +135,10 @@ namespace M3u8Downloader_H.RestServer
 
                 string? videoName = (string?)jObj.SelectToken("name");
                 string? savePath = (string?)jObj.SelectToken("savepath");
+                string? pluginKey = (string?)jObj.SelectToken("plugin");
                 Dictionary<string, string>? headers = jObj.SelectToken("headers")?.ToObject<Dictionary<string, string>>();
 
-                DownloadByM3uFileInfoAction(m3UFileInfo, videoName, savePath, headers);
+                DownloadByM3uFileInfoAction(m3UFileInfo, videoName, savePath, pluginKey, headers);
 
                 response.Json(Response.Success());
             }

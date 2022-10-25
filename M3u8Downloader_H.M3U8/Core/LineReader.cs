@@ -1,5 +1,4 @@
-﻿using M3u8Downloader_H.M3U8.Adapters;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 
@@ -9,16 +8,15 @@ namespace M3u8Downloader_H.M3U8.Core
     {
         private readonly StreamReader _reader;
 
-        public IAdapter Adapter { get; }
+       // public IAdapter Adapter { get; }
 
         public string Current { get; private set; } = default!;
 
         object IEnumerator.Current => Current;
 
-        public LineReader(IAdapter adapter)
+        public LineReader(Stream stream)
         {
-            Adapter = adapter;
-            _reader = new StreamReader(Adapter.Connect());
+            _reader = new StreamReader(stream);
         }
 
         public void Dispose()
