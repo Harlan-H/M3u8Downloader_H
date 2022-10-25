@@ -43,8 +43,9 @@ namespace M3u8Downloader_H.M3U8.Infos
 
 
 
-        public M3UFileInfo() { }
-    
-    
+        public M3UFileInfo() 
+        {
+        
+        }    
     }
 }

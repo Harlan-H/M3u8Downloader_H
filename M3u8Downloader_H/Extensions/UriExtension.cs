@@ -10,6 +10,8 @@ namespace M3u8Downloader_H.Extensions
     {
         public static string GetHostName(this Uri uri)
         {
+            if (uri.IsFile)
+                return string.Empty;
             return uri.Host.Split('.')[^2];
         }
 

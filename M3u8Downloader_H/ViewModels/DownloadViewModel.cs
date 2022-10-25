@@ -144,6 +144,8 @@ namespace M3u8Downloader_H.ViewModels
             viewModel.RequestUrl = requesturl;
             viewModel.VideoName = videoname;
 
+            PluginManger? pluginManger = default!;
+
             SettingsService settingService = Container.Ioc.Get<SettingsService>();
             string tmpPluginKey = pluginKey is not null
                                 ? pluginKey
@@ -151,7 +153,6 @@ namespace M3u8Downloader_H.ViewModels
                                 ? requesturl.GetHostName()
                                 : settingService.PluginKey;
 
-            PluginManger? pluginManger = default!;
             IPluginBuilder? pluginBuilder = Container.Ioc.Get<PluginService>()[tmpPluginKey];
             if(pluginBuilder is not null)
             {
