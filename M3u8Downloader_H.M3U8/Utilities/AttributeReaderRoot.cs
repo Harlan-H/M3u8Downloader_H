@@ -12,11 +12,11 @@ namespace M3u8Downloader_H.M3U8.Utilities
         private static readonly Lazy<AttributeReaderRoot> attributeReaderRootLazy = new(() => new AttributeReaderRoot());
         public static AttributeReaderRoot Instance => attributeReaderRootLazy.Value;
 
-        private readonly IReadOnlyDictionary<string, IAttributeReader> attributeReaders;
+        private readonly IReadOnlyDictionary<string, Type> attributeReaders;
 
         public IDictionary<string, IAttributeReader> AttributeReaders
         {
-            get => new Dictionary<string, IAttributeReader>(attributeReaders);
+            get => attributeReaders.ToDictionary(x => x.Key, x => (IAttributeReader)Activator.CreateInstance(x.Value)!);
         }
 
         public AttributeReaderRoot()
@@ -24,13 +24,13 @@ namespace M3u8Downloader_H.M3U8.Utilities
             attributeReaders = InitAttributeReaders();
         }
 
-        private static IReadOnlyDictionary<string, IAttributeReader> InitAttributeReaders()
+        private static IReadOnlyDictionary<string, Type> InitAttributeReaders()
         {
             Assembly asm = typeof(M3U8ReaderAttribute).Assembly;
             return asm.GetTypes()
                 .Where(t => t.IsDefined(typeof(M3U8ReaderAttribute), false))
                 .Select(t => (M3U8ReaderAttribute)t.GetCustomAttribute(typeof(M3U8ReaderAttribute), false)!)
-                .ToDictionary(x => x.Key!, x => (IAttributeReader)Activator.CreateInstance(x.Type)!);
+                .ToDictionary(x => x.Key!, x => x.Type!);
         }
 
     }

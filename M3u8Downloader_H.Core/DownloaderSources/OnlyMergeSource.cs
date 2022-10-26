@@ -1,6 +1,7 @@
 ﻿using M3u8Downloader_H.Core.M3uCombiners;
 using M3u8Downloader_H.M3U8.Infos;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -10,11 +11,19 @@ namespace M3u8Downloader_H.Core.DownloaderSources
     {
         public override async Task DownloadAsync(CancellationToken cancellationToken = default)
         {
-            CreateDirectory(_savePath, true);
             if (M3UFileInfo.MediaFiles.Count < 2)
                 throw new InvalidDataException("视频流太少不能少于2个");
 
-            await VideoMerge(true);
+            CreateDirectory(_savePath, true);
+
+            //合并只采用原始合并方案
+            await VideoMerge(true, cancellationToken);
+            if (_formats == "mp4")
+            {
+                await ConverterToMp4(VideoFullName,false, cancellationToken);
+                File.Delete(VideoFullName);
+            }             
         }
+
     }
 }

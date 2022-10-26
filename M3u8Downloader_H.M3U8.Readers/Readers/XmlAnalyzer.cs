@@ -55,7 +55,7 @@ namespace M3u8Downloader_H.M3U8.Readers
                 string uri = attribute?["uri"]?.Value
                              ?? throw new InvalidDataException("没有指明uri字段");
 
-                string? name = attribute?["name"]?.Value;
+                string name = attribute?["name"]?.Value ?? Path.GetFileName(uri);
 
                 M3UMediaInfo m3UMediaInfo = GetM3UMediaInfo(uri, name);
                 m3UMediaInfos.Add(m3UMediaInfo);

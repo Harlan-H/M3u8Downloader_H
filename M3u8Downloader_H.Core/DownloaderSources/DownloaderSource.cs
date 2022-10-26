@@ -4,6 +4,7 @@ using M3u8Downloader_H.Core.M3uCombiners;
 using M3u8Downloader_H.Core.M3uDownloaders;
 using M3u8Downloader_H.Core.VideoConverter;
 using M3u8Downloader_H.M3U8;
+using M3u8Downloader_H.M3U8.Extensions;
 using M3u8Downloader_H.M3U8.Infos;
 using M3u8Downloader_H.Plugin;
 using System;
@@ -135,30 +136,56 @@ namespace M3u8Downloader_H.Core.DownloaderSources
             return Task.CompletedTask;
         }
 
-        public virtual async Task ConvertToMp4(CancellationToken cancellationToken = default)
+        protected virtual async Task Converter(bool isFile,CancellationToken cancellationToken = default)
         {
-            string fileExtension = Path.GetExtension(VideoFullName).Trim('.');
-            if (!(fileExtension != "mp4" && _formats == "mp4")) return;
-
-            await Converter(cancellationToken);
+            if(_formats == "mp4")
+            {
+                if (M3UFileInfo.MediaFiles.Any(m => m.Duration > 0))
+                    await ConvertWithM3u8File(cancellationToken);
+                else
+                    await ConvertWithFile(isFile, cancellationToken);
+            }
+            else
+            {
+                await VideoMerge(isFile, cancellationToken);
+            }
         }
 
-        protected async ValueTask VideoMerge(bool isFile)
+        //通过xml,目录,json等方式可能无法判断流的时长，所以采用原先的转码方案
+        protected async ValueTask ConvertWithFile(bool isFile, CancellationToken cancellationToken)
+        {
+            await VideoMerge(isFile, cancellationToken);
+            await ConverterToMp4(VideoFullName,false,cancellationToken);
+            File.Delete(VideoFullName);
+        }
+
+        protected async ValueTask ConvertWithM3u8File(CancellationToken cancellationToken)
+        {
+            string m3u8FilePath = Path.Combine(VideoFullPath, "generated.m3u8");
+            await M3UFileInfo.WriteToAsync(m3u8FilePath, cancellationToken);
+            await ConverterToMp4(m3u8FilePath, true, cancellationToken);
+            File.Delete(m3u8FilePath);
+        }
+
+        protected async ValueTask VideoMerge(bool isFile, CancellationToken cancellationToken = default)
         {
             using M3uCombiner m3UCombiner = isFile && M3UFileInfo.Key is not null
-                ? new CryptM3uCombiner(M3UFileInfo, VideoFullPath, VideoFullName)
-                : new M3uCombiner(VideoFullPath, VideoFullName);
+                ? new CryptM3uCombiner(M3UFileInfo, VideoFullPath)
+                : new M3uCombiner(VideoFullPath);
 
-            m3UCombiner.Initialization();
-            await m3UCombiner.MegerVideoHeader(M3UFileInfo.Map);
-            await m3UCombiner.Start(M3UFileInfo, _forceMerge);
+            m3UCombiner.Initialization(VideoFullName);
+            await m3UCombiner.MegerVideoHeader(M3UFileInfo.Map, cancellationToken);
+            await m3UCombiner.Start(M3UFileInfo, _forceMerge, cancellationToken);
         }
 
-        protected async ValueTask Converter( CancellationToken cancellationToken = default)
+        protected async ValueTask ConverterToMp4(string m3u8FilePath,bool allowed_extensions, CancellationToken cancellationToken = default)
         {
             var arguments = new ArgumentsBuilder();
 
-            arguments.Add("-i").Add(VideoFullName);
+            if(allowed_extensions)
+                arguments.Add("-allowed_extensions").Add("ALL");
+
+            arguments.Add("-i").Add(m3u8FilePath);
 
             arguments.Add("-f").Add(_formats);
 
@@ -173,8 +200,6 @@ namespace M3u8Downloader_H.Core.DownloaderSources
                 .Add("-y").Add(tmpOutputFile);
 
             await _ffmpeg.ExecuteAsync(arguments.Build(), VodProgress, cancellationToken);
-
-            File.Delete(VideoFullName);
         }
 
 
