@@ -83,8 +83,6 @@ namespace M3u8Downloader_H.Services
                         continue;
                     }
                 }
-
-                await downloaderSource.ConvertToMp4(cancellationToken);
             }
             finally
             {

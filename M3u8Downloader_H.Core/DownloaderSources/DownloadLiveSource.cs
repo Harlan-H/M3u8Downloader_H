@@ -20,18 +20,22 @@ namespace M3u8Downloader_H.Core.DownloaderSources
         private bool _firstTimeToRun = true;
         private readonly int _downloadStatus = 1;
 
-        private void ClearDirectory(M3UFileInfo m3UFileinfo)
+        private void AddMedias(M3UFileInfo m3UFileinfo)
         {
-            if (!_isCleanUp) return;
+            if (ReferenceEquals(m3UFileinfo, M3UFileInfo))
+                return;
 
-            foreach (var file in Directory.EnumerateFiles(VideoFullPath))
-                File.Delete(file);
+            foreach (var item in m3UFileinfo.MediaFiles)
+            {
+                M3UFileInfo.MediaFiles.Add(item);
+            }
         }
 
         private async ValueTask<M3UFileInfo> GetM3U8FileInfoAsync(M3UFileReader reader, CancellationToken cancellationToken = default)
         {
             if (_firstTimeToRun)
             {
+                M3UFileInfo.MediaFiles.GenerateTitle();
                 _firstTimeToRun = false;
                 return M3UFileInfo;
             }
@@ -48,27 +52,20 @@ namespace M3u8Downloader_H.Core.DownloaderSources
             m3U8Downloader.Headers = Headers;
 
             SetStatusDelegate(_downloadStatus);
-            await m3U8Downloader.Initialization(cancellationToken);
-
-            using M3uCombiner m3UCombiner = new(VideoFullPath, VideoFullName, FileMode.Append);
-            m3UCombiner.Initialization();
-
+            
             FileInfo fileInfo = new(VideoFullName);
             //当文件存在且大小不为零得情况下说明是旧得任务重新开始得
             if (!(fileInfo.Exists && fileInfo.Length > 0))
             {
+                await m3U8Downloader.Initialization(cancellationToken);
                 await m3U8Downloader.DownloadMapInfoAsync(M3UFileInfo.Map, VideoFullPath, _skipRequestError, cancellationToken);
-                await m3UCombiner.MegerVideoHeader(M3UFileInfo.Map);
             }
 
             M3UFileInfo previousMediaInfo = await GetM3U8FileInfoAsync(M3uReader, cancellationToken);
             while (true)
             {
                 var duration = await m3U8Downloader.Start(previousMediaInfo, VideoFullPath, 0, _skipRequestError, cancellationToken);
-
-                //获取得到任何数据都会实时进行合并，同时删除缓存
-                await m3UCombiner.Start(previousMediaInfo, _forceMerge);
-                ClearDirectory(previousMediaInfo);
+                AddMedias(previousMediaInfo);
 
                 if (previousMediaInfo.IsVod() || duration > _maxRecordDuration)
                     break;
@@ -85,7 +82,9 @@ namespace M3u8Downloader_H.Core.DownloaderSources
                 }
             }
 
-            RemoveCacheDirectory(VideoFullPath, false);
+            await Converter(false, cancellationToken);
+           
+            RemoveCacheDirectory(VideoFullPath);
         }
 
         private async Task<M3UFileInfo> GetLiveFileInfos(M3UFileReader reader, Uri url, IEnumerable<KeyValuePair<string, string>>? Headers, CancellationToken cancellationToken = default)

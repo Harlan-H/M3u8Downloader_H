@@ -31,7 +31,7 @@ namespace M3u8Downloader_H.Core.DownloaderSources
             await m3U8Downloade.DownloadMapInfoAsync(M3UFileInfo.Map, VideoFullPath, _skipRequestError, cancellationToken);
             await m3U8Downloade.Start(M3UFileInfo, _taskNumber, VideoFullPath, 0, _skipRequestError, cancellationToken);
 
-            await VideoMerge(false);
+            await Converter(false, cancellationToken);
 
             RemoveCacheDirectory(VideoFullPath);
         }

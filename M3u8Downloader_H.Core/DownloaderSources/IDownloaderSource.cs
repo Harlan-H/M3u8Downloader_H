@@ -23,6 +23,5 @@ namespace M3u8Downloader_H.Core.DownloaderSources
 
         Task DownloadAsync(CancellationToken cancellationToken = default);
 
-        Task ConvertToMp4(CancellationToken cancellationToken = default);
     }
 }
