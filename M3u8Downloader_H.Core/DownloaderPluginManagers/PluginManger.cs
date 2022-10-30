@@ -13,6 +13,8 @@ namespace M3u8Downloader_H.Core.DownloaderPluginManagers
 
         public IDownloadService? PluginService { get;private set; }
 
+        public IM3u8FileInfoService? M3U8FileInfoService { get; private set; }
+
         public PluginManger(IPluginBuilder pluginBuilder)
         {
             this.pluginBuilder = pluginBuilder;
@@ -24,6 +26,7 @@ namespace M3u8Downloader_H.Core.DownloaderPluginManagers
             pluginBuilder.SetAttributeReader(attributeReaderManager);
             AttributeReaders = attributeReaderManager.AttributeReaders;
             PluginService = pluginBuilder.CreatePluginService();
+            M3U8FileInfoService = pluginBuilder.CreateM3u8FileInfoService();
         }
     }
 }

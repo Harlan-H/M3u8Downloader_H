@@ -5,6 +5,7 @@ using M3u8Downloader_H.M3U8;
 using M3u8Downloader_H.M3U8.AttributeReaders;
 using M3u8Downloader_H.M3U8.Extensions;
 using M3u8Downloader_H.M3U8.Infos;
+using M3u8Downloader_H.M3U8.Readers.Services;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -20,15 +21,15 @@ namespace M3u8Downloader_H.Core.DownloaderManagers
         private readonly HttpClient _httpClient;
         private readonly Uri _url;
         private readonly IEnumerable<KeyValuePair<string, string>>? _headers;
+        private readonly IPluginManager? _pluginManager = default!;
+        private readonly IM3u8FileInfoSource _m3U8FileInfoSource = default!;
         private IDownloaderSource? _downloaderSource;
         private M3UFileInfo? _m3UFileInfo;
-        private M3UFileReader m3UFileReader = default!;
         private M3UKeyInfo? keyInfo;
         private string? m3uContent;
         private IProgress<double> _vodProgress = default!;
         private IProgress<double> _liveProgress = default!;
         private Action<int> _setStatusDelegate = default!;
-        private IPluginManager? _pluginManager = default!;
 
         public string VideoFullPath { get; } = default!;
         public string VideoFullName { get; private set; } = default!;
@@ -40,7 +41,7 @@ namespace M3u8Downloader_H.Core.DownloaderManagers
             _headers = Headers;
             VideoFullPath = videoFullPath;
             _pluginManager = pluginManager;
-            m3UFileReader = new M3UFileReader(pluginManager?.AttributeReaders);
+            _m3U8FileInfoSource = M3u8FileInfoSourceFactory.CreateM3u8FileInfoSoucr(_pluginManager?.M3U8FileInfoService, httpClient, pluginManager?.AttributeReaders);
         }
 
         public IDownloadManager WithM3u8FileInfo(M3UFileInfo fileinfo)
@@ -83,16 +84,7 @@ namespace M3u8Downloader_H.Core.DownloaderManagers
             if (_m3UFileInfo is not null)
                 return;
 
-            M3UFileInfo m3UFileInfo;
-            if (m3uContent is not null)
-                m3UFileInfo = m3UFileReader.GetM3u8FileInfo(_url, m3uContent);
-            else if (_url.IsFile)
-            {
-                string ext = Path.GetExtension(_url.OriginalString).Trim('.');
-                m3UFileInfo = m3UFileReader.GetM3u8FileInfo(ext, _url);
-            }
-            else
-                m3UFileInfo = await m3UFileReader.GetM3u8FileInfo(_httpClient, _url, true, _headers, cancellationToken);
+            M3UFileInfo m3UFileInfo = await _m3U8FileInfoSource.GetM3u8FileInfo(_url, m3uContent, _headers, cancellationToken);
 
             if (keyInfo is not null)
                 m3UFileInfo.Key = keyInfo;
@@ -132,7 +124,7 @@ namespace M3u8Downloader_H.Core.DownloaderManagers
             downloaderSource.VodProgress = _vodProgress;
             downloaderSource.SetStatusDelegate = _setStatusDelegate;
             downloaderSource.downloadService = _pluginManager?.PluginService;
-            downloaderSource.M3uReader = m3UFileReader;
+            downloaderSource.M3uReader = _m3U8FileInfoSource;
 
             downloaderSource.ChangeVideoNameDelegate = videoname => VideoFullName = videoname;
             return _downloaderSource = downloaderSource;

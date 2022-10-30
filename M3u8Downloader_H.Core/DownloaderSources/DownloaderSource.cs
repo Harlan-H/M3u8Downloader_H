@@ -6,6 +6,7 @@ using M3u8Downloader_H.Core.VideoConverter;
 using M3u8Downloader_H.M3U8;
 using M3u8Downloader_H.M3U8.Extensions;
 using M3u8Downloader_H.M3U8.Infos;
+using M3u8Downloader_H.M3U8.Readers.Services;
 using M3u8Downloader_H.Plugin;
 using System;
 using System.Collections.Generic;
@@ -31,7 +32,7 @@ namespace M3u8Downloader_H.Core.DownloaderSources
         public Action<int> SetStatusDelegate = default!;
         public Action<string> ChangeVideoNameDelegate = default!;
         public IDownloadService? downloadService = default!;
-        public M3UFileReader M3uReader = default!;
+        public IM3u8FileInfoSource M3uReader = default!;
 
         protected string PluginPath = default!;
         protected int _taskNumber;
@@ -169,7 +170,7 @@ namespace M3u8Downloader_H.Core.DownloaderSources
 
         protected async ValueTask VideoMerge(bool isFile, CancellationToken cancellationToken = default)
         {
-            using M3uCombiner m3UCombiner = isFile && M3UFileInfo.Key is not null
+            using IM3uCombiner m3UCombiner = isFile && M3UFileInfo.Key is not null
                 ? new CryptM3uCombiner(M3UFileInfo, VideoFullPath)
                 : new M3uCombiner(VideoFullPath);
 

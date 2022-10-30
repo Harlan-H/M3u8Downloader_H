@@ -1,10 +1,4 @@
 ﻿using M3u8Downloader_H.M3U8.AttributeReaderManager;
-using M3u8Downloader_H.M3U8.AttributeReaders;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace M3u8Downloader_H.Plugin
 {
@@ -28,7 +22,16 @@ namespace M3u8Downloader_H.Plugin
         ///       
         /// 如果你不需要处理得到的流，只要return null 即可
         /// </summary>
-        /// <returns></returns>
+        /// <returns>返回实现了IDownloadService接口的实例化</returns>
         IDownloadService? CreatePluginService();
+
+
+        /// <summary>
+        /// 创建获取m3u8文件信息的类
+        /// 如果你不需要处理，只要return null 即可
+        /// 创建IM3u8FileInfoService实例参考CreatePluginService函数的注释
+        /// </summary>
+        /// <returns>返回实现了IGetM3u8InfoService接口的实例化</returns>
+        IM3u8FileInfoService? CreateM3u8FileInfoService();
     }
 }

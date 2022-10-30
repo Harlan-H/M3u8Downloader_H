@@ -1,10 +1,6 @@
 ﻿using M3u8Downloader_H.M3U8.AttributeReaders;
 using M3u8Downloader_H.Plugin;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace M3u8Downloader_H.Core.DownloaderPluginManagers
 {
@@ -12,5 +8,6 @@ namespace M3u8Downloader_H.Core.DownloaderPluginManagers
     {
         IDictionary<string, IAttributeReader> AttributeReaders { get; }
         IDownloadService? PluginService { get; }
+        IM3u8FileInfoService? M3U8FileInfoService { get; }
     }
 }
