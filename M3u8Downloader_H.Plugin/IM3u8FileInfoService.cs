@@ -4,6 +4,7 @@
     {
         /// <summary>
         /// 请求之前做的操作，例如需要post请求，或者参数是加密的都可以在此函数操作
+        /// 如果不需要处理此函数可以使用this.CreateDefaultBeforeRequest()来创建默认的处理方法
         /// </summary>
         /// <param name="uri">请求地址</param>
         /// <param name="headers">请求头</param>
@@ -12,6 +13,7 @@
 
         /// <summary>
         /// 处理请求之后的操作，例如返回的m3u8数据是加密的必须解密才能看到m3u8的字符串信息
+        /// 如果不需要处理可以直接返回stream
         /// 处理之后可以返回MemoryStream
         /// </summary>
         /// <param name="stream">请求到的数据</param>
