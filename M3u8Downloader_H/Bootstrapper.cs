@@ -17,7 +17,7 @@ namespace M3u8Downloader_H
             base.OnStart();
 
             ServicePointManager.DefaultConnectionLimit = 2000;
-            HttpClient.DefaultProxy = new WebProxy("http://127.0.0.1:8888");
+            //HttpClient.DefaultProxy = new WebProxy();
         }
 
         protected override void ConfigureIoC(IStyletIoCBuilder builder)
