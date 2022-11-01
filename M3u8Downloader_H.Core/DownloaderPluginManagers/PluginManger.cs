@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace M3u8Downloader_H.Core.DownloaderPluginManagers
 {
-    public class PluginManger : IPluginManager
+    public partial class PluginManger : IPluginManager
     {
         private readonly IPluginBuilder pluginBuilder;
 
@@ -27,6 +27,19 @@ namespace M3u8Downloader_H.Core.DownloaderPluginManagers
             AttributeReaders = attributeReaderManager.AttributeReaders;
             PluginService = pluginBuilder.CreatePluginService();
             M3U8FileInfoService = pluginBuilder.CreateM3u8FileInfoService();
+        }
+    }
+
+    public partial class PluginManger
+    {
+        public static PluginManger? CreatePluginMangaer(IPluginBuilder? pluginBuilder)
+        {
+            if (pluginBuilder is null)
+                return null;
+
+            PluginManger pluginManger = new(pluginBuilder);
+            pluginManger.Build();
+            return pluginManger;
         }
     }
 }

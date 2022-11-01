@@ -20,7 +20,7 @@ namespace M3u8Downloader_H.Core.DownloaderManagers
     {
         private readonly HttpClient _httpClient;
         private readonly Uri _url;
-        private readonly IEnumerable<KeyValuePair<string, string>>? _headers;
+        private IEnumerable<KeyValuePair<string, string>>? _headers;
         private readonly IPluginManager? _pluginManager = default!;
         private readonly IM3u8FileInfoSource _m3U8FileInfoSource = default!;
         private IDownloaderSource? _downloaderSource;
@@ -41,7 +41,7 @@ namespace M3u8Downloader_H.Core.DownloaderManagers
             _headers = Headers;
             VideoFullPath = videoFullPath;
             _pluginManager = pluginManager;
-            _m3U8FileInfoSource = M3u8FileInfoSourceFactory.CreateM3u8FileInfoSoucr(_pluginManager?.M3U8FileInfoService, httpClient, pluginManager?.AttributeReaders);
+            _m3U8FileInfoSource = M3u8FileInfoSourceFactory.CreateM3u8FileInfoSource(_pluginManager?.M3U8FileInfoService, httpClient, pluginManager?.AttributeReaders);
         }
 
         public IDownloadManager WithM3u8FileInfo(M3UFileInfo fileinfo)
@@ -76,6 +76,12 @@ namespace M3u8Downloader_H.Core.DownloaderManagers
         public IDownloadManager WithStatusAction(Action<int> action)
         {
             _setStatusDelegate = action;
+            return this;
+        }
+
+        public IDownloadManager WithHeaders(IEnumerable<KeyValuePair<string, string>>? headers)
+        {
+            _headers ??= headers;
             return this;
         }
 

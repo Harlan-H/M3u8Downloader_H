@@ -17,6 +17,7 @@ using M3u8Downloader_H.Extensions;
 using M3u8Downloader_H.RestServer;
 using System.Security.Policy;
 using System.Xml.Linq;
+using M3u8Downloader_H.Plugin;
 
 namespace M3u8Downloader_H.ViewModels
 {
@@ -152,7 +153,13 @@ namespace M3u8Downloader_H.ViewModels
             string fileFullPath = Path.Combine(savePath ?? settingsService.SavePath, tmpVideoName);
             FileEx.EnsureFileNotExist(fileFullPath);
 
-            DownloadViewModel download = viewModelFactory.CreateDownloadViewModel(uri, tmpVideoName,method,key,iv, headers, fileFullPath, pluginKey);
+            string tmpPluginKey = pluginKey is not null
+                                ? pluginKey
+                                : string.IsNullOrWhiteSpace(settingsService.PluginKey)
+                                ? uri.GetHostName()
+                                : settingsService.PluginKey;
+            IPluginBuilder? pluginBuilder = pluginService[tmpPluginKey];
+            DownloadViewModel download = viewModelFactory.CreateDownloadViewModel(uri, tmpVideoName,method,key,iv, headers, fileFullPath, pluginBuilder);
             if (download is null) return;
 
             EnqueueDownload(download);
@@ -164,7 +171,13 @@ namespace M3u8Downloader_H.ViewModels
             string fileFullPath = Path.Combine(savePath ?? settingsService.SavePath, tmpVideoName);
             FileEx.EnsureFileNotExist(fileFullPath);
 
-            DownloadViewModel download = viewModelFactory.CreateDownloadViewModel(uri, content, headers, fileFullPath, tmpVideoName,pluginKey);
+            string? tmpPluginKey = pluginKey is not null
+                                 ? pluginKey
+                                 : string.IsNullOrWhiteSpace(settingsService.PluginKey)
+                                 ? uri?.GetHostName()
+                                 : settingsService.PluginKey;
+            IPluginBuilder? pluginBuilder = pluginService[tmpPluginKey];
+            DownloadViewModel download = viewModelFactory.CreateDownloadViewModel(uri, content, headers, fileFullPath, tmpVideoName, pluginBuilder);
             if (download is null) return;
 
             EnqueueDownload(download);
@@ -175,12 +188,15 @@ namespace M3u8Downloader_H.ViewModels
             if (!m3UFileInfo.MediaFiles.Any())
                 throw new ArgumentException("m3u8的数据不能为空");
 
+            if (string.IsNullOrEmpty(m3UFileInfo.PlaylistType)) m3UFileInfo.PlaylistType = "VOD";
+
             string tmpVideoName = PathEx.GenerateFileNameWithoutExtension(name);
             string fileFullPath = Path.Combine(savePath ?? settingsService.SavePath, tmpVideoName);
             FileEx.EnsureFileNotExist(fileFullPath);
 
-            if(string.IsNullOrEmpty(m3UFileInfo.PlaylistType)) m3UFileInfo.PlaylistType = "VOD";
-            DownloadViewModel download = viewModelFactory.CreateDownloadViewModel(m3UFileInfo, headers, tmpVideoName, fileFullPath, pluginKey);
+            //这里因为不可能有url所以直接通过设置来判别使用某个插件
+            IPluginBuilder? pluginBuilder = pluginService[pluginKey ?? settingsService.PluginKey];
+            DownloadViewModel download = viewModelFactory.CreateDownloadViewModel(m3UFileInfo, headers, tmpVideoName, fileFullPath, pluginBuilder);
             if (download is null) return;
 
             EnqueueDownload(download);

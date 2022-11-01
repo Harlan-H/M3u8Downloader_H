@@ -8,6 +8,7 @@ using M3u8Downloader_H.M3U8.Infos;
 using M3u8Downloader_H.M3U8;
 using M3u8Downloader_H.M3U8.Extensions;
 using M3u8Downloader_H.Core.DownloaderSources;
+using M3u8Downloader_H.Core.DownloaderManagers;
 
 namespace M3u8Downloader_H.Services
 {
@@ -37,6 +38,13 @@ namespace M3u8Downloader_H.Services
             {
                 _semaphore.Release();
             }
+        }
+
+        public async ValueTask GetM3u8FileInfo(IDownloadManager downloadManager,CancellationToken cancellationToken)
+        {
+            await downloadManager
+                .WithHeaders(settingService.Headers.ToDictionary())
+                .GetM3U8FileInfo(cancellationToken);
         }
 
 

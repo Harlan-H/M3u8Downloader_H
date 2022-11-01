@@ -6,6 +6,7 @@ using M3u8Downloader_H.ViewModels;
 using M3u8Downloader_H.ViewModels.FrameWork;
 using System.Windows.Threading;
 using System.Windows;
+using System.Net.Http;
 
 namespace M3u8Downloader_H
 {
@@ -16,7 +17,7 @@ namespace M3u8Downloader_H
             base.OnStart();
 
             ServicePointManager.DefaultConnectionLimit = 2000;
-            //HttpClient.DefaultProxy = new WebProxy();
+            HttpClient.DefaultProxy = new WebProxy("http://127.0.0.1:8888");
         }
 
         protected override void ConfigureIoC(IStyletIoCBuilder builder)

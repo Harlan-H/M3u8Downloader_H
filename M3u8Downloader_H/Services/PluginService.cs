@@ -47,7 +47,7 @@ namespace M3u8Downloader_H.Services
             return exportTypes.Where(i => i.GetInterface(nameof(IPluginBuilder)) != null).FirstOrDefault();
         }
 
-        public IPluginBuilder? this[string key]
+        public IPluginBuilder? this[string? key]
         {
             get
             {

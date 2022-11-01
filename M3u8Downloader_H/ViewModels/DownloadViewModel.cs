@@ -13,7 +13,6 @@ using M3u8Downloader_H.Models;
 using M3u8Downloader_H.Core.DownloaderManagers;
 using M3u8Downloader_H.Plugin;
 using M3u8Downloader_H.Core.DownloaderPluginManagers;
-using M3u8Downloader_H.Extensions;
 
 namespace M3u8Downloader_H.ViewModels
 {
@@ -62,7 +61,7 @@ namespace M3u8Downloader_H.ViewModels
                     cancellationTokenSource = new CancellationTokenSource();
 
                     Status = DownloadStatus.Parsed;
-                    await _downloadManager.GetM3U8FileInfo(cancellationTokenSource.Token);
+                    await downloadService.GetM3u8FileInfo(_downloadManager, cancellationTokenSource.Token);
 
                     Status = DownloadStatus.Enqueued;
                     await downloadService.DownloadAsync(_downloadManager.Build(), cancellationTokenSource.Token);
@@ -138,27 +137,13 @@ namespace M3u8Downloader_H.ViewModels
             string? iv,
             IEnumerable<KeyValuePair<string, string>>? headers,
             string cachePath,
-            string? pluginKey = default!)
+            IPluginBuilder? pluginBuilder)
         {
             DownloadViewModel viewModel = factory.CreateDownloadViewModel();
             viewModel.RequestUrl = requesturl;
             viewModel.VideoName = videoname;
 
-            PluginManger? pluginManger = default!;
-
-            SettingsService settingService = Container.Ioc.Get<SettingsService>();
-            string tmpPluginKey = pluginKey is not null
-                                ? pluginKey
-                                : string.IsNullOrWhiteSpace(settingService.PluginKey)
-                                ? requesturl.GetHostName()
-                                : settingService.PluginKey;
-
-            IPluginBuilder? pluginBuilder = Container.Ioc.Get<PluginService>()[tmpPluginKey];
-            if(pluginBuilder is not null)
-            {
-                pluginManger = new PluginManger(pluginBuilder);
-                pluginManger.Build();
-            }
+            PluginManger? pluginManger = PluginManger.CreatePluginMangaer(pluginBuilder);
             IDownloadManager downloadManager = new DownloadManager(Http.Client, requesturl, headers, cachePath, pluginManger)
                                                   .WithLiveProgress(new Progress<double>(d => viewModel.RecordDuration = d))
                                                   .WithVodProgress(new Progress<double>(d => viewModel.ProgressNum = d))
@@ -181,29 +166,13 @@ namespace M3u8Downloader_H.ViewModels
             IEnumerable<KeyValuePair<string, string>>? headers,
             string cachePath,
             string videoname,
-            string? pluginKey)
+            IPluginBuilder? pluginBuilder)
         {
             DownloadViewModel viewModel = factory.CreateDownloadViewModel();
             viewModel.RequestUrl = requesturl!;
             viewModel.VideoName = videoname;
 
-            SettingsService settingService = Container.Ioc.Get<SettingsService>();
-            string? tmpPluginKey = pluginKey is not null
-                                 ? pluginKey
-                                 : string.IsNullOrWhiteSpace(settingService.PluginKey)
-                                 ? requesturl?.GetHostName() 
-                                 : settingService.PluginKey;
-
-            PluginManger? pluginManger = default!;
-            if (!string.IsNullOrWhiteSpace(tmpPluginKey))
-            {
-                IPluginBuilder? pluginBuilder = Container.Ioc.Get<PluginService>()[tmpPluginKey];
-                if (pluginBuilder is not null)
-                {
-                    pluginManger = new PluginManger(pluginBuilder);
-                    pluginManger.Build();
-                }
-            }
+            PluginManger? pluginManger = PluginManger.CreatePluginMangaer(pluginBuilder);
             viewModel._downloadManager = new DownloadManager(Http.Client, requesturl!, headers, cachePath, pluginManger)
                                                   .WithLiveProgress(new Progress<double>(d => viewModel.RecordDuration = d))
                                                   .WithVodProgress(new Progress<double>(d => viewModel.ProgressNum = d))
@@ -221,25 +190,12 @@ namespace M3u8Downloader_H.ViewModels
             IEnumerable<KeyValuePair<string, string>>? headers,
             string videoname,
             string videoPath,
-            string? pluginKey)
+            IPluginBuilder? pluginBuilder)
         {
             DownloadViewModel viewModel = factory.CreateDownloadViewModel();
             viewModel.VideoName = videoname;
-
-            //这里因为不可能有url所以直接通过设置来判别使用某个插件
-            PluginManger? pluginManger = default!;
-            SettingsService settingService = Container.Ioc.Get<SettingsService>();
-
-            string? tmpPluginKey = pluginKey ?? settingService.PluginKey;
-            if (!string.IsNullOrWhiteSpace(tmpPluginKey))
-            {
-                IPluginBuilder? pluginBuilder = Container.Ioc.Get<PluginService>()[tmpPluginKey];
-                if (pluginBuilder is not null)
-                {
-                    pluginManger = new PluginManger(pluginBuilder);
-                    pluginManger.Build();
-                }
-            }
+            
+            PluginManger? pluginManger = PluginManger.CreatePluginMangaer(pluginBuilder);
             viewModel._downloadManager = new DownloadManager(Http.Client, default!, headers, videoPath, pluginManger)
                                       .WithLiveProgress(new Progress<double>(d => viewModel.RecordDuration = d))
                                       .WithVodProgress(new Progress<double>(d => viewModel.ProgressNum = d))
