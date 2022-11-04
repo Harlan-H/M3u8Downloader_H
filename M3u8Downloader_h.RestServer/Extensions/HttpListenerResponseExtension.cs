@@ -9,16 +9,15 @@ namespace M3u8Downloader_H.RestServer.Extensions
 {
     internal static class HttpListenerResponseExtension
     {
-        internal static void Json(this HttpListenerResponse response,string message)
+        internal static void Json(this HttpListenerResponse response, byte[] message)
         {
             response.StatusCode = 200;
             response.ContentType = "application/json;charset=UTF-8";
             response.ContentEncoding = Encoding.UTF8;
-            var retText = Encoding.UTF8.GetBytes(message);
-            response.ContentLength64 = retText.Length;
+            response.ContentLength64 = message.Length;
 
             using var stream = response.OutputStream;
-            stream.Write(retText, 0, retText.Length);
+            stream.Write(message, 0, message.Length);
             response.Close();
         }
 
