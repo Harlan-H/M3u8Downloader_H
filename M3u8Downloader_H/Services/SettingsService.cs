@@ -1,10 +1,5 @@
 ﻿using Settings;
-using System.IO;
-using M3u8Downloader_H.Extensions;
-using M3u8Downloader_H.Models;
 using Newtonsoft.Json;
-using System.Net.Http;
-using System.Net;
 using M3u8Downloader_H.Attributes;
 
 namespace M3u8Downloader_H.Services
@@ -42,7 +37,10 @@ namespace M3u8Downloader_H.Services
         [JsonIgnore]
         public string Separator { get; set; } = "----";
 
+        [Update]
         public string ProxyAddress { get; set; } = string.Empty;
+
+        [JsonIgnore]
         public string Headers { get; set; } = string.Empty;
 
 #if DEBUG
@@ -58,12 +56,6 @@ namespace M3u8Downloader_H.Services
 #if DEBUG
             Configuration.DirectoryName = @"e:\desktop\";
 #endif
-        }
-
-
-        public void ServiceUpdate()
-        {
-            HttpClient.DefaultProxy = string.IsNullOrWhiteSpace(ProxyAddress)? new WebProxy() : new WebProxy(ProxyAddress);
         }
 
     }

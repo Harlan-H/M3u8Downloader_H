@@ -40,10 +40,10 @@ namespace M3u8Downloader_H.Extensions
             Type type = obj.GetType();
             foreach (var prop in type.GetProperties())
             {
-                if (!prop.IsDefined(typeof(RangeAttribute), false)) continue;
+                if (!prop.IsDefined(typeof(BaseAttribute), false)) continue;
 
-                RangeAttribute attribute = (RangeAttribute)prop.GetCustomAttributes(typeof(RangeAttribute), false)[0];
-                attribute.Validate(obj, prop, prop.GetValue(obj) as int?);
+                BaseAttribute attribute = (BaseAttribute)prop.GetCustomAttributes(typeof(BaseAttribute), false)[0];
+                attribute.Validate(obj, prop, prop.GetValue(obj));
             }
         }
 

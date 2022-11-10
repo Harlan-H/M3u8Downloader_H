@@ -1,14 +1,13 @@
 ﻿using M3u8Downloader_H.M3U8.AttributeReaders;
 using M3u8Downloader_H.M3U8.Utilities;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
-namespace M3u8Downloader_H.M3U8.AttributeReaderManager
+namespace M3u8Downloader_H.Plugin.AttributeReaderManagers
 {
-    public class AttributeReaderManager : IAttributeReaderManager
+    internal class AttributeReaderManager : IAttributeReaderManager
     {
         public IDictionary<string, IAttributeReader> AttributeReaders { get; }
-        public AttributeReaderManager()
+        internal AttributeReaderManager()
         {
             AttributeReaders = AttributeReaderRoot.Instance.AttributeReaders;
         }
@@ -33,11 +32,11 @@ namespace M3u8Downloader_H.M3U8.AttributeReaderManager
         {
             return AttributeReaders.ContainsKey(key);
         }
+
         public bool TryGetValue(string key, [MaybeNullWhen(false)] out IAttributeReader value)
         {
             return AttributeReaders.TryGetValue(key, out value);
         }
-
 
     }
 }

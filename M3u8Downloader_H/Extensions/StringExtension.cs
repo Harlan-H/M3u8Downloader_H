@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using System.Text.RegularExpressions;
 
 namespace M3u8Downloader_H.Extensions
 {
@@ -19,29 +18,5 @@ namespace M3u8Downloader_H.Extensions
 
             return keyValuePairs;
         }
-
-        public static string GetMd5(this string s)
-        {
-            using SHA256 md5 = SHA256.Create();
-            byte[] data = md5.ComputeHash(Encoding.UTF8.GetBytes(s));
-
-            StringBuilder sb = new();
-            for (int i = 0; i < data.Length; i++)
-                sb.Append(data[i].ToString("X2"));
-
-            return sb.ToString();
-        }
-
-        public static byte[] ToHex(this string s)
-        {
-            s = s.StartsWith("0x", StringComparison.OrdinalIgnoreCase) ? s[2..] : s;
-            return Convert.FromHexString(s);
-        }
-
-        public static string Normalize(this string s,string pattern)
-        {
-            return Regex.Match(s, pattern).Groups[1].Value;
-        }
-
     }
 }

@@ -1,9 +1,7 @@
 ﻿using CliWrap.Builders;
-using M3u8Downloader_H.Core.DownloaderManagers;
 using M3u8Downloader_H.Core.M3uCombiners;
 using M3u8Downloader_H.Core.M3uDownloaders;
 using M3u8Downloader_H.Core.VideoConverter;
-using M3u8Downloader_H.M3U8;
 using M3u8Downloader_H.M3U8.Extensions;
 using M3u8Downloader_H.M3U8.Infos;
 using M3u8Downloader_H.M3U8.Readers.Services;
@@ -13,7 +11,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 

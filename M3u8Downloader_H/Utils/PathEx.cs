@@ -22,24 +22,5 @@ namespace M3u8Downloader_H.Utils
 
         public static string EscapeFileName(string fileName) =>
         Path.GetInvalidFileNameChars().Append('.').Aggregate(fileName, (current, invalidChar) => current.Replace(invalidChar, '_'));
-
-        public static void CreateDirectory(string dirPath, bool skipExist = true,string? err = null)
-        {
-            DirectoryInfo directoryInfo = new(dirPath);
-            if(directoryInfo.Exists)
-            {
-                if (skipExist) return;
-
-                throw new Exception(err);
-            }
-            directoryInfo.Create();
-        }
-
-        public static string GetFileFullPathWithoutExtension(string path)
-        {
-            var baseFileNameWithoutExtension = Path.GetFileNameWithoutExtension(path);
-            var baseDirPath = Path.GetDirectoryName(path);
-            return Path.Combine(baseDirPath!, baseFileNameWithoutExtension);
-        }
     }
 }

@@ -1,10 +1,4 @@
 ﻿using M3u8Downloader_H.M3U8.Infos;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace M3u8Downloader_H.Plugin
 {
@@ -18,7 +12,7 @@ namespace M3u8Downloader_H.Plugin
         /// <param name="m3UFileInfo">m3u8的数据</param>
         /// <param name="cancellationToken">取消的token</param>
         /// <returns>没有返回内容</returns>
-        Task Initialize(HttpClient httpClient, IEnumerable<KeyValuePair<string, string>>? headers,M3UFileInfo m3UFileInfo, CancellationToken cancellationToken);
+        Task Initialize(HttpClient httpClient, IEnumerable<KeyValuePair<string, string>>? headers, M3UFileInfo m3UFileInfo, CancellationToken cancellationToken);
 
 
         /// <summary>

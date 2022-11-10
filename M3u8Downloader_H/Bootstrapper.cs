@@ -32,12 +32,6 @@ namespace M3u8Downloader_H
             builder.Bind<IVIewModelFactory>().ToAbstractFactory();
         }
 
-        protected override void Configure()
-        {
-            base.Configure();
-
-            Utils.Container.Ioc = Container;
-        }
 
 
 #if !DEBUG
