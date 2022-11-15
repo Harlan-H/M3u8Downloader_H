@@ -35,7 +35,7 @@
  2. 如果提示安装.net6 可以自行下载安装，地址：https://dotnet.microsoft.com/zh-cn/download/dotnet/thank-you/runtime-desktop-6.0.9-windows-x64-installer
  3. 对于win7 64用户.net6安装完成  如果出现点击程序没有任何反应(没有反应指没有任何报错也不出任何界面) 那么就需要进行第二个步骤
     - 下载一个更新KB4457144   地址：http://download.windowsupdate.com/d/msdownload/update/software/secu/2018/09/windows6.1-kb4457144-x64_5ca467d42deadc2b2f4010c4a26b4a6903790dd5.msu
-    - 如果上面两个步骤都做了还是不行 这边给你提供一个参考资料  点击跳转
+    - 如果上面两个步骤都做了还是不行 这边给你提供一个参考资料  [点击跳转](https://www.cnblogs.com/simadi/p/14410536.html)
 
 # 截图
 ![list](https://user-images.githubusercontent.com/39378318/190357782-117bb79d-a7f3-43bb-9e16-aa7af88e5da8.png)
