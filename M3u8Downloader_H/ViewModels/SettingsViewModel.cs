@@ -1,15 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows;
 using M3u8Downloader_H.Extensions;
-using M3u8Downloader_H.Models;
 using M3u8Downloader_H.Services;
-using M3u8Downloader_H.Utils;
 using M3u8Downloader_H.ViewModels.FrameWork;
 
 namespace M3u8Downloader_H.ViewModels
@@ -41,7 +35,7 @@ namespace M3u8Downloader_H.ViewModels
         {
             try
             {
-                obj.ServiceUpdate();
+                obj.Validate();
                 settingService.CopyFrom(obj);
                 Close(true);
             }catch(Exception)

@@ -12,9 +12,10 @@ namespace M3u8Downloader_H.Attributes
     {
         public string ExceptionMsg { get; set; } = default!;
 
-        private readonly string[] extArray = new[] { "", "m3u8", "json", "txt", "xml" };
-        public ExtensionAttribute()
+        private readonly string[] extArray;
+        public ExtensionAttribute(string[] exts)
         {
+            extArray = exts;
         }
 
         public (Uri,string?) Validate(object? value)

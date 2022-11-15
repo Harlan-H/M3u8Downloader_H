@@ -12,7 +12,6 @@ using System.Collections.Generic;
 using M3u8Downloader_H.Models;
 using M3u8Downloader_H.Core.DownloaderManagers;
 using M3u8Downloader_H.Plugin;
-using M3u8Downloader_H.Core.DownloaderPluginManagers;
 
 namespace M3u8Downloader_H.ViewModels
 {
@@ -143,8 +142,7 @@ namespace M3u8Downloader_H.ViewModels
             viewModel.RequestUrl = requesturl;
             viewModel.VideoName = videoname;
 
-            PluginManger? pluginManger = PluginManger.CreatePluginMangaer(pluginBuilder);
-            IDownloadManager downloadManager = new DownloadManager(Http.Client, requesturl, headers, cachePath, pluginManger)
+            IDownloadManager downloadManager = new DownloadManager(Http.Client, requesturl, headers, cachePath, pluginBuilder)
                                                   .WithLiveProgress(new Progress<double>(d => viewModel.RecordDuration = d))
                                                   .WithVodProgress(new Progress<double>(d => viewModel.ProgressNum = d))
                                                   .WithStatusAction(s => viewModel.Status = (DownloadStatus)s);
@@ -172,8 +170,7 @@ namespace M3u8Downloader_H.ViewModels
             viewModel.RequestUrl = requesturl!;
             viewModel.VideoName = videoname;
 
-            PluginManger? pluginManger = PluginManger.CreatePluginMangaer(pluginBuilder);
-            viewModel._downloadManager = new DownloadManager(Http.Client, requesturl!, headers, cachePath, pluginManger)
+            viewModel._downloadManager = new DownloadManager(Http.Client, requesturl!, headers, cachePath, pluginBuilder)
                                                   .WithLiveProgress(new Progress<double>(d => viewModel.RecordDuration = d))
                                                   .WithVodProgress(new Progress<double>(d => viewModel.ProgressNum = d))
                                                   .WithStatusAction(s => viewModel.Status = (DownloadStatus)s)
@@ -194,9 +191,8 @@ namespace M3u8Downloader_H.ViewModels
         {
             DownloadViewModel viewModel = factory.CreateDownloadViewModel();
             viewModel.VideoName = videoname;
-            
-            PluginManger? pluginManger = PluginManger.CreatePluginMangaer(pluginBuilder);
-            viewModel._downloadManager = new DownloadManager(Http.Client, default!, headers, videoPath, pluginManger)
+
+            viewModel._downloadManager = new DownloadManager(Http.Client, default!, headers, videoPath, pluginBuilder)
                                       .WithLiveProgress(new Progress<double>(d => viewModel.RecordDuration = d))
                                       .WithVodProgress(new Progress<double>(d => viewModel.ProgressNum = d))
                                       .WithStatusAction(s => viewModel.Status = (DownloadStatus)s)

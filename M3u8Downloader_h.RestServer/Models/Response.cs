@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Encodings.Web;
+using System.Text.Json;
+using System.Text.Unicode;
 
 namespace M3u8Downloader_H.RestServer.Models
 {
@@ -15,9 +17,10 @@ namespace M3u8Downloader_H.RestServer.Models
             Data = data;
         }
 
-        public override string ToString() => JsonConvert.SerializeObject(this);
-
-        public static implicit operator string(Response<T> response) => response.ToString();
+        public static implicit operator byte[](Response<T> response) => JsonSerializer.SerializeToUtf8Bytes(response,new JsonSerializerOptions()
+        {
+            Encoder = JavaScriptEncoder.Create(UnicodeRanges.BasicLatin, UnicodeRanges.CjkUnifiedIdeographs)
+        });
     }
 
     internal class Response : Response<string>
@@ -27,9 +30,9 @@ namespace M3u8Downloader_H.RestServer.Models
 
         }
 
-        public static string Success(string msg = "请求成功") => new Response(0, msg);
+        public static byte[] Success(string msg = "请求成功") => new Response(0, msg);
 
-        public static string Error(string msg) => new Response(1, msg);
+        public static byte[] Error(string msg) => new Response(1, msg);
     }
 
 }

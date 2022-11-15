@@ -13,7 +13,7 @@ namespace M3u8Downloader_H.Extensions
         {
             settingsService.Load();
             settingsService.Validate();
-            settingsService.ServiceUpdate();
+            //settingsService.ServiceUpdate();
         }
     }
 }

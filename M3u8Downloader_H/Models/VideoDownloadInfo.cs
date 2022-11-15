@@ -4,9 +4,9 @@ using System;
 
 namespace M3u8Downloader_H.Models
 {
-    public class VideoDownloadInfo : PropertyChangedBase, ICloneable
+    public class VideoDownloadInfo : PropertyChangedBase
     {
-        [Extension(ExceptionMsg = "请确认是否为.m3u8或.txt或.json或.xml或文件夹")]
+        [Extension(new[] { "", "m3u8", "json", "txt", "xml" }, ExceptionMsg = "请确认是否为.m3u8或.txt或.json或.xml或文件夹")]
         public string RequestUrl { get; set; } = default!;
         public string VideoName { get; set; } = default!;
 
@@ -26,11 +26,6 @@ namespace M3u8Downloader_H.Models
             Key = null;
             Method = null;
             Iv = null;
-        }
-
-        public object Clone()
-        {
-            return MemberwiseClone();
         }
     }
 }

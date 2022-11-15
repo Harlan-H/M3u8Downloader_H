@@ -8,8 +8,7 @@ using System.Threading.Tasks;
 
 namespace M3u8Downloader_H.Attributes
 {
-    [AttributeUsage(AttributeTargets.Property)]
-    internal class RangeAttribute : Attribute
+    internal class RangeAttribute : BaseAttribute
     {
         private readonly int min;
         private readonly int max;
@@ -20,19 +19,20 @@ namespace M3u8Downloader_H.Attributes
             this.max = max;
         }
 
-        public void Validate(object obj, object property, int? value)
+        public override void Validate(object obj, object property, object? value)
         {
             if (value is null)
                 throw new InvalidDataException("传入得无效得数值");
 
+            var val = (int)value;
             PropertyInfo tmpproperty = (PropertyInfo)property;
-            if (value < min)
+            if (val < min)
             {
                 tmpproperty.SetValue(obj, min);
                 return;
             }
 
-            if (value > max)
+            if (val > max)
             {
                 tmpproperty.SetValue(obj, max);
                 return;

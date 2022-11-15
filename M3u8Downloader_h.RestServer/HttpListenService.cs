@@ -2,8 +2,8 @@
 using M3u8Downloader_H.RestServer.Extensions;
 using M3u8Downloader_H.RestServer.Utils;
 using System.Net;
-using Newtonsoft.Json.Linq;
 using M3u8Downloader_H.M3U8.Infos;
+using System.Text.Json;
 
 namespace M3u8Downloader_H.RestServer
 {
@@ -14,13 +14,14 @@ namespace M3u8Downloader_H.RestServer
         private Action<string, Uri?, string?, string?, string?, IEnumerable<KeyValuePair<string, string>>?> DownloadByContentAction = default!;
         private Action<M3UFileInfo, string?, string?, string?, IEnumerable<KeyValuePair<string, string>>?> DownloadByM3uFileInfoAction = default!;
         private Func< string, Uri, M3UFileInfo> GetM3U8FileInfoFunc = default!;
-        private readonly string[] methods = { "AES-128", "AES-192", "AES-256" };
 
+        private readonly JsonSerializerOptions jsonSerializerOptions;
         private readonly static HttpListenService instance = new();
         public static HttpListenService Instance => instance;
 
         private HttpListenService()
         {
+            jsonSerializerOptions = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
             httpListen.RegisterService("downloadbyurl", DownloadByUrl);
             httpListen.RegisterService("downloadbycontent", DownloadByContent);
             httpListen.RegisterService("downloadbyjsoncontent", DownloadByJsonContent);
@@ -48,31 +49,15 @@ namespace M3u8Downloader_H.RestServer
         {
             try
             {
-                string text = request.ReadText();
-                JObject jObj = JObject.Parse(text);
-                string? url = (string?)jObj.SelectToken("url");
-                if (string.IsNullOrEmpty(url))
+                RequestWithURI? requestWithURI = JsonSerializer.Deserialize<RequestWithURI>(request.InputStream, jsonSerializerOptions);
+                if(requestWithURI is null)
                 {
-                    response.Json(Response.Error("url不能为空"));
+                    response.Json(Response.Error("序列化失败"));
                     return;
                 }
 
-                string? videoName = (string?)jObj.SelectToken("name");
-                string method = ((string?)jObj.SelectToken("method"))?.ToUpper() ?? "AES-128";
-                if (method is not null && !methods.Contains(method))
-                {
-                    response.Json(Response.Error("不可用的key方法，必须是AES-128,AES-192,AES-256其中之一"));
-                    return;
-                }
-
-                string? key = (string?)jObj.SelectToken("key");
-                string? iv = (string?)jObj.SelectToken("iv");
-                string? savePath = (string?)jObj.SelectToken("savepath");
-                string? pluginKey = (string?)jObj.SelectToken("plugin");
-                Dictionary<string, string>? headers = jObj.SelectToken("headers")?.ToObject<Dictionary<string, string>>();
-
-                Uri uri = new(url!, UriKind.Absolute);
-                DownloadByUrlAction(uri, videoName, method, key, iv, savePath, pluginKey, headers);
+                requestWithURI.Validate();
+                DownloadByUrlAction(requestWithURI.Url, requestWithURI.VideoName, requestWithURI.Method, requestWithURI.Key, requestWithURI.Iv, requestWithURI.SavePath, requestWithURI.PluginKey, requestWithURI.Headers);
 
                 response.Json(Response.Success());
             }
@@ -86,29 +71,15 @@ namespace M3u8Downloader_H.RestServer
         {
             try
             {
-                string text = request.ReadText();
-                JObject jObj = JObject.Parse(text);
-                string? content = (string?)jObj.SelectToken("content");
-                if (content == null)
+                RequestWithContent? requestWithContent = JsonSerializer.Deserialize<RequestWithContent>(request.InputStream, jsonSerializerOptions);
+                if (requestWithContent is null)
                 {
-                    response.Json(Response.Error("content不能为空"));
+                    response.Json(Response.Error("序列化失败"));
                     return;
                 }
 
-                string? url = (string?)jObj.SelectToken("baseurl");
-                Uri uri = default!;
-                if (url != null)
-                {
-                    url = Path.EndsInDirectorySeparator(url) ? url : url + Path.DirectorySeparatorChar;
-                    uri = new Uri(url, UriKind.Absolute);
-                }
-
-                string? videoname = (string?)jObj.SelectToken("name");
-                string? savePath = (string?)jObj.SelectToken("savepath");
-                string? pluginKey = (string?)jObj.SelectToken("plugin");
-                Dictionary<string, string>? headers = jObj.SelectToken("headers")?.ToObject<Dictionary<string, string>>();
-
-                DownloadByContentAction(content, uri, videoname, savePath, pluginKey, headers);
+                requestWithContent.Validate();
+                DownloadByContentAction(requestWithContent.Content, requestWithContent.Url, requestWithContent.VideoName, requestWithContent.SavePath, requestWithContent.PluginKey, requestWithContent.Headers);
 
                 response.Json(Response.Success());
             }
@@ -124,21 +95,15 @@ namespace M3u8Downloader_H.RestServer
         {
             try
             {
-                string text = request.ReadText();
-                JObject jObj = JObject.Parse(text);
-                M3UFileInfo? m3UFileInfo = jObj.SelectToken("content")?.ToObject<M3UFileInfo>();
-                if (m3UFileInfo is null)
+                RequestWithM3u8FileInfo? requestWithM3U8FileInfo = JsonSerializer.Deserialize<RequestWithM3u8FileInfo>(request.InputStream, jsonSerializerOptions);
+                if (requestWithM3U8FileInfo is null)
                 {
-                    response.Json(Response.Error("m3UFileInfo解析失败"));
+                    response.Json(Response.Error("序列化失败"));
                     return;
                 }
-
-                string? videoName = (string?)jObj.SelectToken("name");
-                string? savePath = (string?)jObj.SelectToken("savepath");
-                string? pluginKey = (string?)jObj.SelectToken("plugin");
-                Dictionary<string, string>? headers = jObj.SelectToken("headers")?.ToObject<Dictionary<string, string>>();
-
-                DownloadByM3uFileInfoAction(m3UFileInfo, videoName, savePath, pluginKey, headers);
+               
+                requestWithM3U8FileInfo.Validate();
+                DownloadByM3uFileInfoAction(requestWithM3U8FileInfo.M3u8FileInfo, requestWithM3U8FileInfo.VideoName, requestWithM3U8FileInfo.SavePath, requestWithM3U8FileInfo.PluginKey, requestWithM3U8FileInfo.Headers);
 
                 response.Json(Response.Success());
             }
@@ -153,24 +118,15 @@ namespace M3u8Downloader_H.RestServer
         {
             try
             {
-                string text = request.ReadText();
-                JObject jObj = JObject.Parse(text);
-                string? content = (string?)jObj.SelectToken("content");
-                if (content == null)
+                RequestWithGetM3u8FileInfo? requestWIthGetM3U8FileInfo = JsonSerializer.Deserialize<RequestWithGetM3u8FileInfo>(request.InputStream, jsonSerializerOptions);
+                if (requestWIthGetM3U8FileInfo is null)
                 {
-                    response.Json(Response.Error("content不能为空"));
+                    response.Json(Response.Error("序列化失败"));
                     return;
                 }
 
-                string? url = (string?)jObj.SelectToken("baseurl");
-                Uri uri = default!;
-                if (url != null)
-                {
-                    url = Path.EndsInDirectorySeparator(url) ? url : url + Path.DirectorySeparatorChar;
-                    uri = new Uri(url, UriKind.Absolute);
-                }
-
-                M3UFileInfo m3UFileInfo = GetM3U8FileInfoFunc(content, uri!);
+                requestWIthGetM3U8FileInfo.Validate();
+                M3UFileInfo m3UFileInfo = GetM3U8FileInfoFunc(requestWIthGetM3U8FileInfo.Content, requestWIthGetM3U8FileInfo.Url!);
                 var r = new Response<M3UFileInfo>(0, "解析成功", m3UFileInfo);
                 response.Json(r);
             }

@@ -54,7 +54,8 @@ namespace M3u8Downloader_H.ViewModels
 
             _ = Task.Run(() =>
             {
-                settingsService.Init();
+                settingsService.Load();
+                settingsService.Validate();
 
                 pluginService.Load();
                 for (int i = 65432; i > 1024; i--)
@@ -158,8 +159,7 @@ namespace M3u8Downloader_H.ViewModels
                                 : string.IsNullOrWhiteSpace(settingsService.PluginKey)
                                 ? uri.GetHostName()
                                 : settingsService.PluginKey;
-            IPluginBuilder? pluginBuilder = pluginService[tmpPluginKey];
-            DownloadViewModel download = viewModelFactory.CreateDownloadViewModel(uri, tmpVideoName,method,key,iv, headers, fileFullPath, pluginBuilder);
+            DownloadViewModel download = viewModelFactory.CreateDownloadViewModel(uri, tmpVideoName,method,key,iv, headers, fileFullPath, pluginService[tmpPluginKey]);
             if (download is null) return;
 
             EnqueueDownload(download);
@@ -176,8 +176,7 @@ namespace M3u8Downloader_H.ViewModels
                                  : string.IsNullOrWhiteSpace(settingsService.PluginKey)
                                  ? uri?.GetHostName()
                                  : settingsService.PluginKey;
-            IPluginBuilder? pluginBuilder = pluginService[tmpPluginKey];
-            DownloadViewModel download = viewModelFactory.CreateDownloadViewModel(uri, content, headers, fileFullPath, tmpVideoName, pluginBuilder);
+            DownloadViewModel download = viewModelFactory.CreateDownloadViewModel(uri, content, headers, fileFullPath, tmpVideoName, pluginService[tmpPluginKey]);
             if (download is null) return;
 
             EnqueueDownload(download);
@@ -195,8 +194,7 @@ namespace M3u8Downloader_H.ViewModels
             FileEx.EnsureFileNotExist(fileFullPath);
 
             //这里因为不可能有url所以直接通过设置来判别使用某个插件
-            IPluginBuilder? pluginBuilder = pluginService[pluginKey ?? settingsService.PluginKey];
-            DownloadViewModel download = viewModelFactory.CreateDownloadViewModel(m3UFileInfo, headers, tmpVideoName, fileFullPath, pluginBuilder);
+            DownloadViewModel download = viewModelFactory.CreateDownloadViewModel(m3UFileInfo, headers, tmpVideoName, fileFullPath, pluginService[pluginKey ?? settingsService.PluginKey]);
             if (download is null) return;
 
             EnqueueDownload(download);

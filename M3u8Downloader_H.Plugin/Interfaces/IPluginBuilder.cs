@@ -1,6 +1,4 @@
-﻿using M3u8Downloader_H.M3U8.AttributeReaderManager;
-
-namespace M3u8Downloader_H.Plugin
+﻿namespace M3u8Downloader_H.Plugin
 {
     public interface IPluginBuilder
     {

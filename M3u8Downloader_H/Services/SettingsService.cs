@@ -1,10 +1,5 @@
 ﻿using Settings;
-using System.IO;
-using M3u8Downloader_H.Extensions;
-using M3u8Downloader_H.Models;
 using Newtonsoft.Json;
-using System.Net.Http;
-using System.Net;
 using M3u8Downloader_H.Attributes;
 
 namespace M3u8Downloader_H.Services
@@ -15,16 +10,16 @@ namespace M3u8Downloader_H.Services
         /// 线程数量
         /// </summary>
         [Range(1,200)]
-        public int MaxThreadCount { get; set; } = 1;
+        public int MaxThreadCount { get; set; } = 5;
 
         /// <summary>
         /// 同时下载的任务数量
         /// </summary>
         [Range(1,10)]
-        public int MaxConcurrentDownloadCount { get; set; } = 1;
+        public int MaxConcurrentDownloadCount { get; set; } = 3;
 
-        [Range(0,10)]
-        public int RetryCount { get; set; } 
+        [Range(0, 10)]
+        public int RetryCount { get; set; } = 1;
 #if DEBUG
         public string SavePath { get; set; } = @"E:\desktop\download";
 #else
@@ -42,7 +37,10 @@ namespace M3u8Downloader_H.Services
         [JsonIgnore]
         public string Separator { get; set; } = "----";
 
+        [Update]
         public string ProxyAddress { get; set; } = string.Empty;
+
+        [JsonIgnore]
         public string Headers { get; set; } = string.Empty;
 
 #if DEBUG
@@ -58,12 +56,6 @@ namespace M3u8Downloader_H.Services
 #if DEBUG
             Configuration.DirectoryName = @"e:\desktop\";
 #endif
-        }
-
-
-        public void ServiceUpdate()
-        {
-            HttpClient.DefaultProxy = string.IsNullOrWhiteSpace(ProxyAddress)? new WebProxy() : new WebProxy(ProxyAddress);
         }
 
     }

@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using M3u8Downloader_H.Extensions;
+﻿using System.Collections.Generic;
 using M3u8Downloader_H.Plugin;
+using M3u8Downloader_H.Plugin.PluginClients;
 
 namespace M3u8Downloader_H.Services
 {
@@ -16,51 +12,17 @@ namespace M3u8Downloader_H.Services
 #else
              Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Plugins");
 #endif
-        private readonly Dictionary<string, Type> _pluginDict;
+        private readonly PluginClient pluginClient;
         public PluginService()
         {
-            _pluginDict = new();
+            pluginClient = PluginClient.Instance; 
         }
 
-        public void Load()
-        {
-            try
-            {
-                DirectoryInfo directoryInfo = new(_pluginDirPath);
-                foreach (var item in directoryInfo.EnumerateFiles("M3u8Downloader_H.*.plugin.dll", SearchOption.TopDirectoryOnly))
-                {
-                    Type? type = LoadLibrary(item.FullName);
-                    string key = item.Name.Normalize(@"M3u8Downloader_H\.(.*?)\.plugin");
-                    if (type is not null && !string.IsNullOrWhiteSpace(key))
-                        _pluginDict.Add(key, type);
-                }
-            }
-            catch (DirectoryNotFoundException)
-            {
+        public void Load() => pluginClient.Load(_pluginDirPath);
 
-            }
-        }
+        public IPluginBuilder? this[string? key] => pluginClient.CreatePluginBuilder(key); 
 
-        private Type? LoadLibrary(string path)
-        {
-            Type[] exportTypes = Assembly.LoadFrom(path).GetExportedTypes();
-            return exportTypes.Where(i => i.GetInterface(nameof(IPluginBuilder)) != null).FirstOrDefault();
-        }
-
-        public IPluginBuilder? this[string? key]
-        {
-            get
-            {
-                if (string.IsNullOrWhiteSpace(key))
-                    return null;
-
-                if (_pluginDict.TryGetValue(key, out Type? type))
-                    return (IPluginBuilder?)Activator.CreateInstance(type);
-                return null;
-            }
-        }
-
-        public IEnumerable<string> Keys => _pluginDict.Keys;
+        public IEnumerable<string> Keys => pluginClient.Keys;
 
     }
 }

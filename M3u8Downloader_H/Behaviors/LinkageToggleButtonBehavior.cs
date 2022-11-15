@@ -1,21 +1,16 @@
 ﻿using Microsoft.Xaml.Behaviors;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 
 namespace M3u8Downloader_H.Behaviors
 {
-    class CoordinateToggleButtonBehavior : Behavior<ToggleButton>
+    class LinkageToggleButtonBehavior : Behavior<ToggleButton>
     {
 
         // Using a DependencyProperty as the backing store for Target.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty TargetProperty =
-            DependencyProperty.Register("Target", typeof(ToggleButton), typeof(CoordinateToggleButtonBehavior));
+            DependencyProperty.Register("Target", typeof(ToggleButton), typeof(LinkageToggleButtonBehavior));
 
         public ToggleButton Target
         {

@@ -1,11 +1,9 @@
-﻿using M3u8Downloader_H.Core.DownloaderPluginManagers;
-using M3u8Downloader_H.Core.DownloaderSources;
+﻿using M3u8Downloader_H.Core.DownloaderSources;
 using M3u8Downloader_H.Core.Utils.Extensions;
-using M3u8Downloader_H.M3U8;
-using M3u8Downloader_H.M3U8.AttributeReaders;
-using M3u8Downloader_H.M3U8.Extensions;
 using M3u8Downloader_H.M3U8.Infos;
 using M3u8Downloader_H.M3U8.Readers.Services;
+using M3u8Downloader_H.Plugin;
+using M3u8Downloader_H.Plugin.PluginManagers;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -34,14 +32,14 @@ namespace M3u8Downloader_H.Core.DownloaderManagers
         public string VideoFullPath { get; } = default!;
         public string VideoFullName { get; private set; } = default!;
 
-        public DownloadManager(HttpClient httpClient, Uri url, IEnumerable<KeyValuePair<string, string>>? Headers, string videoFullPath, IPluginManager? pluginManager)
+        public DownloadManager(HttpClient httpClient, Uri url, IEnumerable<KeyValuePair<string, string>>? Headers, string videoFullPath, IPluginBuilder? pluginBuilder)
         {
             _httpClient = httpClient;
             _url = url;
             _headers = Headers;
             VideoFullPath = videoFullPath;
-            _pluginManager = pluginManager;
-            _m3U8FileInfoSource = M3u8FileInfoSourceFactory.CreateM3u8FileInfoSource(_pluginManager?.M3U8FileInfoService, httpClient, pluginManager?.AttributeReaders);
+            _pluginManager = PluginManger.CreatePluginMangaer(pluginBuilder);
+            _m3U8FileInfoSource = M3u8FileInfoSourceFactory.CreateM3u8FileInfoSource(_pluginManager?.M3U8FileInfoService, httpClient, _pluginManager?.AttributeReaders);
         }
 
         public IDownloadManager WithM3u8FileInfo(M3UFileInfo fileinfo)

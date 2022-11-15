@@ -19,6 +19,6 @@
         /// <param name="stream">请求到的数据</param>
         /// <param name="cancellationToken">取消的令牌</param>
         /// <returns>返回处理后的数据</returns>
-        Stream PostRequest(Stream stream,CancellationToken cancellationToken = default);
+        Stream PostRequest(Stream stream, CancellationToken cancellationToken = default);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using M3u8Downloader_H.Extensions;
+using M3u8Downloader_H.Plugin;
 
 namespace M3u8Downloader_H.Plugin.Extensions
 {

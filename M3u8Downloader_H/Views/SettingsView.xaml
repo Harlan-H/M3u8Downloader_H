@@ -157,7 +157,7 @@
                         <TextBlock Style="{StaticResource TextBlockStyle}"  Text="强制下载"/>
                         <ToggleButton  HorizontalAlignment="Left"  Margin="10 0 0 0" Style="{StaticResource MaterialDesignSwitchToggleButton}"  ToolTip="{Binding SkipRequestError,Converter={x:Static converters:BoolToStringConverters.Instance}}" IsChecked="{Binding SkipRequestError}" >
                             <i:Interaction.Behaviors>
-                                <behavior:CoordinateToggleButtonBehavior Target="{Binding ElementName=forceMergerButton}" />
+                                <behavior:LinkageToggleButtonBehavior Target="{Binding ElementName=forceMergerButton}" />
                             </i:Interaction.Behaviors>
                         </ToggleButton>
                     </DockPanel>
