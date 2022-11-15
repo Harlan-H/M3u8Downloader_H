@@ -14,12 +14,14 @@
         d:DataContext="{d:DesignInstance Type=local:MainWindowViewModel}"
         WindowStartupLocation="CenterScreen"
         WindowStyle="None"
-        AllowsTransparency="True"
         Height="450" Width="600">
     <i:Interaction.Behaviors>
         <behavior:WindowSystemCommandBehavior />
         <behavior:DragMoveWindowBehavior />
     </i:Interaction.Behaviors>
+    <WindowChrome.WindowChrome>
+        <WindowChrome GlassFrameThickness="1" CornerRadius="0" CaptionHeight="0"/>
+    </WindowChrome.WindowChrome>
 
     <Grid>
         <Grid.RowDefinitions >
