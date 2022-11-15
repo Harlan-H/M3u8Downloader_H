@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using M3u8Downloader_H.Plugin;
 using M3u8Downloader_H.Plugin.PluginClients;
 
