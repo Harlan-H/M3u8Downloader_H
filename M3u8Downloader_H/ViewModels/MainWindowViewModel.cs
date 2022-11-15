@@ -15,9 +15,6 @@ using M3u8Downloader_H.ViewModels.FrameWork;
 using M3u8Downloader_H.M3U8.Infos;
 using M3u8Downloader_H.Extensions;
 using M3u8Downloader_H.RestServer;
-using System.Security.Policy;
-using System.Xml.Linq;
-using M3u8Downloader_H.Plugin;
 
 namespace M3u8Downloader_H.ViewModels
 {
