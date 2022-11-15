@@ -41,7 +41,6 @@ namespace M3u8Downloader_H.Services
         [Update]
         public string ProxyAddress { get; set; } = string.Empty;
 
-        [JsonIgnore]
         public string Headers { get; set; } = string.Empty;
 
 #if DEBUG

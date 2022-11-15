@@ -78,7 +78,8 @@ namespace M3u8Downloader_H.ViewModels
 
             foreach (var item in Downloads)
                 item.OnCancel();
-            
+
+            settingsService.Headers = string.Empty;
             settingsService.Save();
         }
 
