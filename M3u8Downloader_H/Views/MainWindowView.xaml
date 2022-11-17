@@ -217,7 +217,7 @@
                                 </MenuItem>
                                 <MenuItem Header="复制错误信息" cal:Message.Attach="CopyFailReason($DataContext)"/>
                                 <Separator />
-                                <MenuItem Header="停止所有选择项" cal:Message.Attach="StopDownloads" >
+                                <MenuItem Header="停止下载所有选择项" cal:Message.Attach="StopDownloads" >
                                     <MenuItem.Icon>
                                         <materialDesign:PackIcon Kind="StopCircleOutline" />
                                     </MenuItem.Icon>
