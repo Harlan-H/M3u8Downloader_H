@@ -15,11 +15,6 @@
              Width="500"
              d:DataContext="{d:DesignInstance Type=local:SettingsViewModel}"
              d:DesignHeight="600" d:DesignWidth="800">
-    <UserControl.Resources>
-        <ResourceDictionary>
-            <!--<BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" /> -->
-        </ResourceDictionary>
-    </UserControl.Resources>
 
     <Grid>
         <Grid.RowDefinitions >
@@ -28,6 +23,7 @@
         </Grid.RowDefinitions>
 
         <ScrollViewer>
+            <!-- 基础配置区 -->
             <StackPanel Margin="5" Name="SettingGrid" DataContext="{Binding SettingsServiceClone}">
                 <TextBlock Text="基础配置"  Margin="10" HorizontalAlignment="Center"  FontSize="20" FontWeight="Bold" />
                 <DockPanel Margin="8 0 8 0">
@@ -162,7 +158,6 @@
                         </ToggleButton>
                     </DockPanel>
 
-                
                     <DockPanel Margin="8 0 8 0" >
                         <DockPanel.ToolTip>
                             <TextBlock>
@@ -179,6 +174,7 @@
                     </DockPanel>
                 </WrapPanel>
                 
+                <!-- 直播配置区 -->
                 <TextBlock Text="直播配置" Margin="10" HorizontalAlignment="Center" FontSize="20" FontWeight="Bold" />
                 <DockPanel Margin="8 0 8 0">
                     <DockPanel.ToolTip>
@@ -201,16 +197,10 @@
                       WithSeconds="True" />
                 </DockPanel>
 
-                <!--<TextBlock Text="批量下载配置" Margin="10" HorizontalAlignment="Center" FontSize="20" FontWeight="Bold" />
-
-                <DockPanel Margin="8 0 8 0">
-                    <TextBlock Text="分隔符 " Style="{StaticResource TextBlockStyle}" />
-                    <TextBox FontSize="15"  Margin="5" Text="{Binding Separator}" />
-                </DockPanel>-->
-
+                <!--   网络配置区  -->
                 <TextBlock Text="网络配置"  Margin="10" HorizontalAlignment="Center"  FontSize="20" FontWeight="Bold" />
 
-               <DockPanel Margin="8 0 8 0">
+                <DockPanel Margin="8 0 8 0">
                     <DockPanel.ToolTip>
                         <TextBlock>
                             <Run Text="必须是http代理 例如：http://127.0.0.1:7890  注意冒号是英文得冒号" />

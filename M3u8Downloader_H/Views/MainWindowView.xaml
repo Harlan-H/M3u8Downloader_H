@@ -92,6 +92,7 @@
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
+                <!--  操作区 -->
                 <Grid Grid.Row="0" Height="95" Name="videoDownloadInfoGrid" DataContext="{Binding VideoDownloadInfo}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="4*" />
@@ -114,6 +115,8 @@
                                 </i:EventTrigger>
                             </i:Interaction.Triggers>
                         </TextBox>
+                        
+                        <!-- 密钥填写区  -->
                         <DockPanel  Margin="8" >
                             <ComboBox SelectedValue="{Binding Method,TargetNullValue=AES-128}" FontSize="18" 
                                       ItemsSource="{Binding DataContext.Methods,RelativeSource={RelativeSource AncestorType=Window}}" />
@@ -131,15 +134,17 @@
                     </Grid>
                 </Grid>
 
+                <!--  展示区  -->
                 <Grid Grid.Row="1">
+                    
+                    <!-- 占位区 -->
                     <StackPanel
                         Margin="8,10,8,8"
                         HorizontalAlignment="Center"
                         Visibility="{Binding Downloads.Count, Converter={x:Static converters:IntToInverseBoolVisibilityConverter.Instance}}">
                         <Image Source="pack://application:,,,/icon.ico" 
                                             Width="160"
-                                            Height="120"
-                                            VerticalAlignment="Center"/>
+                                            Height="120"/>
                         <TextBlock
                             HorizontalAlignment="Center"
                             FontSize="18"
@@ -187,6 +192,8 @@
                             <Run Text="更多用法可以查看在线帮助文档(地址在关于里)" />
                         </TextBlock>
                         </StackPanel>
+                    
+                    <!-- listbox  -->
                     <ListBox  HorizontalContentAlignment="Stretch"
                               ScrollViewer.CanContentScroll="False"
                               ScrollViewer.HorizontalScrollBarVisibility="Disabled"

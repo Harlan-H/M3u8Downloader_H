@@ -19,8 +19,13 @@
             <ColumnDefinition Width="100"/>
             <ColumnDefinition Width="84" />
         </Grid.ColumnDefinitions>
+        <!-- 地址  -->
         <TextBlock Grid.Column="0" TextTrimming="CharacterEllipsis" FontSize="14" VerticalAlignment="Center" Text="{Binding RequestUrl,TargetNullValue=似乎没有请求地址哦}" />
+        
+        <!-- 名称 -->
         <TextBlock Grid.Column="1" TextTrimming="CharacterEllipsis" Margin="15 0 10 0" FontSize="14" VerticalAlignment="Center"  Text="{Binding VideoName}"  />
+        
+        <!-- 状态 -->
         <Grid Grid.Column="2" VerticalAlignment="Center" Margin="5 0 0 0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="auto" />
@@ -97,6 +102,8 @@
                 </TextBlock.Style>
             </TextBlock>
         </Grid>
+        
+        <!-- 按钮 -->
         <StackPanel Grid.Column="3" cal:Bind.ModelWithoutContext="{Binding}"
                                             Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
 
