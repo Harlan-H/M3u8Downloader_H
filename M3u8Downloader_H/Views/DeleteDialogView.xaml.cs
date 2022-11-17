@@ -18,9 +18,9 @@ namespace M3u8Downloader_H.Views
     /// <summary>
     /// MessageBoxView.xaml 的交互逻辑
     /// </summary>
-    public partial class MessageBoxView : UserControl
+    public partial class DeleteDialogView : UserControl
     {
-        public MessageBoxView()
+        public DeleteDialogView()
         {
             InitializeComponent();
         }

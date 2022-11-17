@@ -1,43 +1,62 @@
-﻿using Stylet;
-using StyletIoC;
+﻿using System;
 using System.Net;
+using System.Windows;
+using System.Collections.Generic;
+using System.Windows.Threading;
+using Caliburn.Micro;
 using M3u8Downloader_H.Services;
 using M3u8Downloader_H.ViewModels;
-using M3u8Downloader_H.ViewModels.FrameWork;
-using System.Windows.Threading;
-using System.Windows;
-using System.Net.Http;
 
 namespace M3u8Downloader_H
 {
-    public class Bootstrapper : Bootstrapper<MainWindowViewModel>
+    public class Bootstrapper : BootstrapperBase
     {
-        protected override void OnStart()
+        private readonly SimpleContainer simpleContainer = new();
+        public Bootstrapper()
         {
-            base.OnStart();
+            Initialize();
+        }
 
+        protected override void Configure()
+        {
+            simpleContainer
+                .PerRequest<IWindowManager, WindowManager>();
+
+            simpleContainer
+                .Singleton<SettingsService>()
+                .Singleton<DownloadService>()
+                .Singleton<SoundService>()
+                .Singleton<PluginService>()
+                .PerRequest<MainWindowViewModel>()
+                .PerRequest<DownloadViewModel>();
+        }
+
+        protected override object GetInstance(Type service, string key)
+        {
+            return simpleContainer.GetInstance(service, key);
+        }
+
+        protected override IEnumerable<object> GetAllInstances(Type service)
+        {
+            return simpleContainer.GetAllInstances(service);
+        }
+
+        protected override void BuildUp(object instance)
+        {
+            simpleContainer.BuildUp(instance);
+        }
+
+        protected override async void OnStartup(object sender, StartupEventArgs e)
+        {
             ServicePointManager.DefaultConnectionLimit = 2000;
-            //HttpClient.DefaultProxy = new WebProxy();
+            await DisplayRootViewForAsync<MainWindowViewModel>();
         }
-
-        protected override void ConfigureIoC(IStyletIoCBuilder builder)
-        {
-            base.ConfigureIoC(builder);
-
-            builder.Bind<SettingsService>().ToSelf().InSingletonScope();
-            builder.Bind<DownloadService>().ToSelf().InSingletonScope();
-            builder.Bind<SoundService>().ToSelf().InSingletonScope();
-            builder.Bind<PluginService>().ToSelf().InSingletonScope();
-
-            builder.Bind<IVIewModelFactory>().ToAbstractFactory();
-        }
-
 
 
 #if !DEBUG
-        protected override void OnUnhandledException(DispatcherUnhandledExceptionEventArgs e)
+        protected override void OnUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
-            base.OnUnhandledException(e);
+            base.OnUnhandledException(sender, e);
 
             MessageBox.Show(e.Exception.Message, "错误详情", MessageBoxButton.OK, MessageBoxImage.Error);
         }

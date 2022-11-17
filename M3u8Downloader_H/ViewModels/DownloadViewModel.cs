@@ -1,21 +1,21 @@
-﻿using Stylet;
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Collections.Generic;
+using Caliburn.Micro;
 using M3u8Downloader_H.M3U8.Infos;
 using M3u8Downloader_H.Services;
 using M3u8Downloader_H.Utils;
-using M3u8Downloader_H.ViewModels.FrameWork;
-using System.Collections.Generic;
 using M3u8Downloader_H.Models;
 using M3u8Downloader_H.Core.DownloaderManagers;
 using M3u8Downloader_H.Plugin;
 
+
 namespace M3u8Downloader_H.ViewModels
 {
-    public class DownloadViewModel : PropertyChangedBase
+    public partial class DownloadViewModel : PropertyChangedBase
     {
         private readonly DownloadService downloadService;
         private readonly SoundService soundService;
@@ -125,10 +125,9 @@ namespace M3u8Downloader_H.ViewModels
 
     }
 
-    public static class DownloadViewModelExtensions
+    public partial class DownloadViewModel
     {
         public static DownloadViewModel CreateDownloadViewModel(
-            this IVIewModelFactory factory,
             Uri requesturl,
             string videoname,
             string? method,
@@ -138,7 +137,7 @@ namespace M3u8Downloader_H.ViewModels
             string cachePath,
             IPluginBuilder? pluginBuilder)
         {
-            DownloadViewModel viewModel = factory.CreateDownloadViewModel();
+            DownloadViewModel viewModel = IoC.Get<DownloadViewModel>();
             viewModel.RequestUrl = requesturl;
             viewModel.VideoName = videoname;
 
@@ -158,7 +157,6 @@ namespace M3u8Downloader_H.ViewModels
 
 
         public static DownloadViewModel CreateDownloadViewModel(
-            this IVIewModelFactory factory,
             Uri? requesturl,
             string content,
             IEnumerable<KeyValuePair<string, string>>? headers,
@@ -166,7 +164,7 @@ namespace M3u8Downloader_H.ViewModels
             string videoname,
             IPluginBuilder? pluginBuilder)
         {
-            DownloadViewModel viewModel = factory.CreateDownloadViewModel();
+            DownloadViewModel viewModel = IoC.Get<DownloadViewModel>();
             viewModel.RequestUrl = requesturl!;
             viewModel.VideoName = videoname;
 
@@ -182,14 +180,13 @@ namespace M3u8Downloader_H.ViewModels
 
         //当传入的是M3UFileInfo 此时因为他不是文件或者http地址 没有办法判断具体的缓存目录
         public static DownloadViewModel CreateDownloadViewModel(
-            this IVIewModelFactory factory,
             M3UFileInfo m3UFileInfo,
             IEnumerable<KeyValuePair<string, string>>? headers,
             string videoname,
             string videoPath,
             IPluginBuilder? pluginBuilder)
         {
-            DownloadViewModel viewModel = factory.CreateDownloadViewModel();
+            DownloadViewModel viewModel = IoC.Get<DownloadViewModel>();
             viewModel.VideoName = videoname;
 
             viewModel._downloadManager = new DownloadManager(Http.Client, default!, headers, videoPath, pluginBuilder)

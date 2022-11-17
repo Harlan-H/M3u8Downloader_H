@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:M3u8Downloader_H.ViewModels"
-             xmlns:s="https://github.com/canton7/Stylet"
+             xmlns:cal="http://www.caliburnproject.org"
              d:DataContext="{d:DesignInstance Type=local:AboutViewModel}"
              mc:Ignorable="d" 
              Height="300"
@@ -20,26 +20,23 @@
                 <RowDefinition />
             </Grid.RowDefinitions>
             <TextBlock  Grid.Row="1" Text="本软件完全免费，且开源" FontSize="18" HorizontalAlignment="Center" />
-            <TextBlock  Grid.Row="2" FontSize="18"  HorizontalAlignment="Center"  >
-                <Run>本软件首发地址: </Run>
-                <LineBreak />
-                <Hyperlink  Command="{s:Action OnExplore}" CommandParameter="https://www.52pojie.cn/thread-1622606-1-1.html">
-                    https://www.52pojie.cn/thread-1622606-1-1.html
-                </Hyperlink>
+            <TextBlock  Grid.Row="2" Text="本软件首发地址:" FontSize="18"  HorizontalAlignment="Center"  >
             </TextBlock>
-            <TextBlock Grid.Row="3" FontSize="18" HorizontalAlignment="Center">
-                <Run>本软件开源地址:</Run>
-                <LineBreak />
-                <Hyperlink Command="{s:Action OnExplore}" CommandParameter="https://github.com/Harlan-H/M3u8Downloader_H">
-                    https://github.com/Harlan-H/M3u8Downloader_H
-                </Hyperlink>
-            </TextBlock>
+            <Button Grid.Row="2" Style="{StaticResource MaterialDesignFlatLightButton}"
+                    cal:Message.Attach="OnExplore('https://www.52pojie.cn/thread-1622606-1-1.html')">
+                <Hyperlink >https://www.52pojie.cn/thread-1622606-1-1.html</Hyperlink>
+            </Button>
+            <TextBlock Grid.Row="3"  Text="本软件开源地址:" FontSize="18" HorizontalAlignment="Center"/>
+            <Button Grid.Row="3" Style="{StaticResource MaterialDesignFlatLightButton}"
+                    cal:Message.Attach="OnExplore('https://github.com/Harlan-H/M3u8Downloader_H')" >
+                <Hyperlink>https://github.com/Harlan-H/M3u8Downloader_H</Hyperlink>
+            </Button>
             <TextBlock Grid.Row="4" FontSize="18" HorizontalAlignment="Left" Text="Copyright (c) 2022 Harlan" Margin="32 0 0 0" />
         </Grid>
 
-        <Button HorizontalAlignment="Right" VerticalAlignment="Bottom" Content="关闭" 
+        <Button x:Name="Close"
+            HorizontalAlignment="Right" VerticalAlignment="Bottom" Content="关闭" 
                 Margin="5" 
-                Command="{s:Action Close}"
                 IsCancel="True"
                 IsDefault="True"/>
     </Grid>

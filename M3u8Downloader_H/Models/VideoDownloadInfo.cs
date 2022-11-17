@@ -1,6 +1,6 @@
-﻿using M3u8Downloader_H.Attributes;
-using Stylet;
-using System;
+﻿using Caliburn.Micro;
+using M3u8Downloader_H.Attributes;
+
 
 namespace M3u8Downloader_H.Models
 {

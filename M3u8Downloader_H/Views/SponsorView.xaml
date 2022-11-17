@@ -21,7 +21,7 @@
             <RowDefinition />
         </Grid.RowDefinitions>
         <Button Grid.ColumnSpan="2"  HorizontalAlignment="Right"  Background="Red"
-                Command="{s:Action Close}"
+                x:Name="Close"
                 ContentTemplate="{StaticResource CloseWhite}"
                 Style="{StaticResource TitleBarButtonStyle}"></Button>
         

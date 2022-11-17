@@ -1,5 +1,4 @@
 ﻿using MaterialDesignThemes.Wpf;
-using Stylet;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -15,19 +14,21 @@ using M3u8Downloader_H.ViewModels.FrameWork;
 using M3u8Downloader_H.M3U8.Infos;
 using M3u8Downloader_H.Extensions;
 using M3u8Downloader_H.RestServer;
+using Caliburn.Micro;
+using System.Threading;
+
 
 namespace M3u8Downloader_H.ViewModels
 {
     public class MainWindowViewModel : Screen
     {
-        private readonly IVIewModelFactory viewModelFactory;
-        private readonly DialogManager dialogManager;
         private readonly SettingsService settingsService;
         private readonly HttpListenService httpListenService;
         private readonly PluginService pluginService;
 
         public ISnackbarMessageQueue Notifications { get; } = new SnackbarMessageQueue(TimeSpan.FromSeconds(5));
         public BindableCollection<DownloadViewModel> Downloads { get; } = new BindableCollection<DownloadViewModel>();
+        public IList<DownloadViewModel> SelectedDownloads { get; set; } = Array.Empty<DownloadViewModel>();
         public VideoDownloadInfo VideoDownloadInfo { get; } = new VideoDownloadInfo();
 
         public string[] Methods { get; } = { "AES-128", "AES-192", "AES-256" };
@@ -35,18 +36,15 @@ namespace M3u8Downloader_H.ViewModels
 
         public bool IsShowDialog { get; private set; }
 
-        public MainWindowViewModel(IVIewModelFactory viewModelFactory, DialogManager dialogManager, SettingsService settingsService,PluginService pluginService)
+        public MainWindowViewModel( SettingsService settingsService,PluginService pluginService)
         {
-            this.viewModelFactory = viewModelFactory;
-            this.dialogManager = dialogManager;
             this.settingsService = settingsService;
             this.pluginService = pluginService;
             httpListenService = HttpListenService.Instance;
         }
 
-        protected override void OnViewLoaded()
+        protected override Task OnInitializeAsync(CancellationToken cancellationToken)
         {
-            base.OnViewLoaded();
             DisplayName = $"m3u8视频下载器 v{App.VersionString} by:Harlan";
 
             _ = Task.Run(() =>
@@ -69,18 +67,19 @@ namespace M3u8Downloader_H.ViewModels
                         continue;
                     }
                 }
-            });
+            }, cancellationToken);
+            return base.OnInitializeAsync(cancellationToken);
         }
 
-        protected override void OnClose()
-        {
-            base.OnClose();
 
+        public override Task<bool> CanCloseAsync(CancellationToken cancellationToken = default)
+        {
             foreach (var item in Downloads)
                 item.OnCancel();
 
             settingsService.Headers = string.Empty;
             settingsService.Save();
+            return base.CanCloseAsync(cancellationToken);
         }
 
 
@@ -157,7 +156,7 @@ namespace M3u8Downloader_H.ViewModels
                                 : string.IsNullOrWhiteSpace(settingsService.PluginKey)
                                 ? uri.GetHostName()
                                 : settingsService.PluginKey;
-            DownloadViewModel download = viewModelFactory.CreateDownloadViewModel(uri, tmpVideoName,method,key,iv, headers, fileFullPath, pluginService[tmpPluginKey]);
+            DownloadViewModel download = DownloadViewModel.CreateDownloadViewModel(uri, tmpVideoName,method,key,iv, headers, fileFullPath, pluginService[tmpPluginKey]);
             if (download is null) return;
 
             EnqueueDownload(download);
@@ -174,7 +173,7 @@ namespace M3u8Downloader_H.ViewModels
                                  : string.IsNullOrWhiteSpace(settingsService.PluginKey)
                                  ? uri?.GetHostName()
                                  : settingsService.PluginKey;
-            DownloadViewModel download = viewModelFactory.CreateDownloadViewModel(uri, content, headers, fileFullPath, tmpVideoName, pluginService[tmpPluginKey]);
+            DownloadViewModel download = DownloadViewModel.CreateDownloadViewModel(uri, content, headers, fileFullPath, tmpVideoName, pluginService[tmpPluginKey]);
             if (download is null) return;
 
             EnqueueDownload(download);
@@ -192,31 +191,47 @@ namespace M3u8Downloader_H.ViewModels
             FileEx.EnsureFileNotExist(fileFullPath);
 
             //这里因为不可能有url所以直接通过设置来判别使用某个插件
-            DownloadViewModel download = viewModelFactory.CreateDownloadViewModel(m3UFileInfo, headers, tmpVideoName, fileFullPath, pluginService[pluginKey ?? settingsService.PluginKey]);
+            DownloadViewModel download = DownloadViewModel.CreateDownloadViewModel(m3UFileInfo, headers, tmpVideoName, fileFullPath, pluginService[pluginKey ?? settingsService.PluginKey]);
             if (download is null) return;
 
             EnqueueDownload(download);
         }
 
-        public void RemoveDownload(DownloadViewModel download)
+        public void RestartDownloads()
         {
-            download.OnCancel();
-            Downloads.Remove(download);
-        }
-
-        public void RemoveDownloadAndCache(DownloadViewModel download)
-        {
-            try
+            foreach (var item in SelectedDownloads)
             {
-                download.OnCancel();
-                download.DeleteCache();
-                Downloads.Remove(download);
-            }catch(DirectoryNotFoundException)
-            {
-
+                item.OnRestart();
             }
         }
-        
+
+        public void StopDownloads()
+        {
+            foreach (var item in SelectedDownloads)
+            {
+                item.OnCancel();
+            }
+        }
+
+        public async void RemoveDownloads()
+        {
+            DeleteDialogViewModel deleteDialogViewModel = DeleteDialogViewModel.CreateDeleteDialogViewModel(SelectedDownloads.Count);
+            DeleteDialogResult? deleteDialogResult = await DialogManager.ShowDialogAsync(deleteDialogViewModel);
+            if (deleteDialogResult is null)
+                return;
+
+            if (deleteDialogResult.DialogResult == false)
+                return;
+
+            foreach (var download in SelectedDownloads)
+            {
+                download.OnCancel();
+                Downloads.Remove(download);
+                if (deleteDialogResult.IsDeleteCache)
+                     download.DeleteCache();
+            }
+        }
+     
 
         public void RemoveInactiveDownloads()
         {
@@ -257,9 +272,11 @@ namespace M3u8Downloader_H.ViewModels
             IsShowDialog = true;
             try
             {
-                var dialog = viewModelFactory.CreateSettingsViewModel();
-                dialog.PluginKeys = pluginService.Keys;
-                await dialogManager.ShowDialogAsync(dialog);
+                var dialog = new SettingsViewModel(settingsService)
+                {
+                    PluginKeys = pluginService.Keys
+                };
+                await DialogManager.ShowDialogAsync(dialog);
             }
             finally
             {
@@ -272,8 +289,8 @@ namespace M3u8Downloader_H.ViewModels
             IsShowDialog = true;
             try
             {
-                var dialog = viewModelFactory.CreateAboutViewModel();
-                await dialogManager.ShowDialogAsync(dialog);
+                var dialog = new AboutViewModel();
+                await DialogManager.ShowDialogAsync(dialog);
             }
             finally
             {
@@ -286,8 +303,8 @@ namespace M3u8Downloader_H.ViewModels
             IsShowDialog = true;
             try
             {
-                var dialog = viewModelFactory.CreateSponsorViewModel();
-                await dialogManager.ShowDialogAsync(dialog);
+                var dialog = new SponsorViewModel();
+                await DialogManager.ShowDialogAsync(dialog);
             }
             finally
             {

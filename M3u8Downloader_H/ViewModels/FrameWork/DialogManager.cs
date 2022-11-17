@@ -1,22 +1,22 @@
-﻿using MaterialDesignThemes.Wpf;
-using Stylet;
+﻿using Caliburn.Micro;
+using MaterialDesignThemes.Wpf;
 using System;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace M3u8Downloader_H.ViewModels.FrameWork
 {
     public class DialogManager
     {
-        private readonly IViewManager viewManager;
-
-        public DialogManager(IViewManager viewManager)
+        public DialogManager()
         {
-            this.viewManager = viewManager;
+            
         }
 
-        public async Task<T?> ShowDialogAsync<T>(DialogScreen<T> dialogScreen)
+        public static async Task<T?> ShowDialogAsync<T>(DialogScreen<T> dialogScreen)
         {
-            var view = viewManager.CreateAndBindViewForModelIfNecessary(dialogScreen);
+            UIElement view = ViewLocator.LocateForModel(dialogScreen, null, null);
+            ViewModelBinder.Bind(dialogScreen, view, null);
 
             void OnDialogOpened(object? openSender, DialogOpenedEventArgs openArgs)
             {

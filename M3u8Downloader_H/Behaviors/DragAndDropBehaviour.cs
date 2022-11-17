@@ -27,6 +27,8 @@ namespace M3u8Downloader_H.Behaviors
         private void DragAndDropBehaviour_PreviewDrop(object sender, System.Windows.DragEventArgs e)
         {
             object text = e.Data.GetData(DataFormats.FileDrop);
+            if (text is null)
+                return;
             if (sender is TextBox tb)
             {
                 tb.Text = ((string[])text)[0];

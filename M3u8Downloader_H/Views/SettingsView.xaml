@@ -7,7 +7,7 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:local="clr-namespace:M3u8Downloader_H.ViewModels"
              xmlns:behavior="clr-namespace:M3u8Downloader_H.Behaviors"
-             xmlns:s="https://github.com/canton7/Stylet"
+             xmlns:cal="http://www.caliburnproject.org"
              xmlns:converters="clr-namespace:M3u8Downloader_H.Converters"
              mc:Ignorable="d" 
              Name="usercontrol"
@@ -230,8 +230,7 @@
                     </DockPanel.ToolTip>
                     <TextBlock Text="代理地址" Style="{StaticResource TextBlockStyle}"/>
                     <Button DockPanel.Dock="Right"
-                            Command="{s:Action TryConnectProxy}"
-                            CommandParameter="{Binding ElementName=proxyTextBox,Path=Text}"
+                            cal:Message.Attach="TryConnectProxy(proxyTextBox)"
                             materialDesign:ButtonProgressAssist.IsIndicatorVisible="True"
                             materialDesign:ButtonProgressAssist.IsIndeterminate="{Binding DataContext.IsActive,RelativeSource={RelativeSource AncestorType=UserControl}}" >
                         <materialDesign:PackIcon Height="24" Width="24">
@@ -268,12 +267,11 @@
         </ScrollViewer>
         
         <StackPanel Orientation="Horizontal" Grid.Row="1"  HorizontalAlignment="Center" Margin="4">
-            <Button Command="{s:Action OnSubmitSettingInfo}"  
-                    CommandParameter="{Binding ElementName=SettingGrid,Path=DataContext}"
+            <Button cal:Message.Attach="OnSubmitSettingInfo(SettingGrid)"
                     Content="保存" 
                     Width="100" />
 
-            <Button  Command="{s:Action OnCloseDialog}"  
+            <Button  cal:Message.Attach="OnCloseDialog"
                      Content="关闭"  Width="100" Margin="10 0 0 0" />
         </StackPanel>
     </Grid>
