@@ -13,7 +13,8 @@
         d:DataContext="{d:DesignInstance Type=local:MainWindowViewModel}"
         WindowStartupLocation="CenterScreen"
         WindowStyle="None"
-        ResizeMode="NoResize"
+        MinHeight="450" MinWidth="620"
+        MaxHeight="450" MaxWidth="620"
         Height="450" Width="620">
     
     <i:Interaction.Behaviors>
