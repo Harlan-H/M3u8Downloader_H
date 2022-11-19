@@ -46,6 +46,7 @@ namespace M3u8Downloader_H.Core.DownloaderSources
             M3u8Downloader m3U8Downloader = CreateDownloader();
             m3U8Downloader.HttpClient = HttpClient;
             m3U8Downloader.Progress = LiveProgress;
+            m3U8Downloader.DownloadRate = _downloadRate;
             m3U8Downloader.Headers = Headers;
 
             SetStatusDelegate(_downloadStatus);

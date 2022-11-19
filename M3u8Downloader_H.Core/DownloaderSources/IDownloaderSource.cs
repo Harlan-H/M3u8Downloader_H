@@ -10,6 +10,7 @@ namespace M3u8Downloader_H.Core.DownloaderSources
 {
     public interface IDownloaderSource
     {
+        IDownloaderSource WithDownloadRate(IProgress<long> downloadRate);
         IDownloaderSource WithTaskNumber(int number);
         IDownloaderSource WithTimeout(int timeout);
         IDownloaderSource WithSavePath(string savepath);
@@ -20,7 +21,6 @@ namespace M3u8Downloader_H.Core.DownloaderSources
         IDownloaderSource WithCleanUp(bool isCleanUp);
         IDownloaderSource WithSkipDirectoryExist(bool skipexist);
         IDownloaderSource WithHeaders(IEnumerable<KeyValuePair<string, string>>? headers);
-
         Task DownloadAsync(CancellationToken cancellationToken = default);
 
     }

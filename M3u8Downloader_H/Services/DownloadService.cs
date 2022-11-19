@@ -9,6 +9,7 @@ using M3u8Downloader_H.M3U8;
 using M3u8Downloader_H.M3U8.Extensions;
 using M3u8Downloader_H.Core.DownloaderSources;
 using M3u8Downloader_H.Core.DownloaderManagers;
+using M3u8Downloader_H.Utils;
 
 namespace M3u8Downloader_H.Services
 {
@@ -58,11 +59,13 @@ namespace M3u8Downloader_H.Services
 
         public async Task DownloadAsync(
             IDownloaderSource downloaderSource,
+            DownloadRateSource downloadRate,
             CancellationToken cancellationToken = default)
         {
             await EnsureThrottlingAsync(cancellationToken);
 
             downloaderSource
+                .WithDownloadRate(downloadRate)
                 .WithTaskNumber(settingService.MaxThreadCount)
                 .WithTimeout(settingService.Timeouts)
                 .WithSkipRequestError(settingService.SkipRequestError)
@@ -76,6 +79,7 @@ namespace M3u8Downloader_H.Services
 
             try
             {
+                downloadRate.Run(cancellationToken);
                 int count = 0;
                 while(true)
                 {

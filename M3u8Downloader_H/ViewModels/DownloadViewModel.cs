@@ -30,6 +30,8 @@ namespace M3u8Downloader_H.ViewModels
 
         public double RecordDuration { get; set; }
 
+        public long DownloadRateBytes { get; set; }
+
         public bool IsActive { get; private set; }
 
         public DownloadStatus Status { get; set; }
@@ -63,7 +65,8 @@ namespace M3u8Downloader_H.ViewModels
                     await downloadService.GetM3u8FileInfo(_downloadManager, cancellationTokenSource.Token);
 
                     Status = DownloadStatus.Enqueued;
-                    await downloadService.DownloadAsync(_downloadManager.Build(), cancellationTokenSource.Token);
+                    using DownloadRateSource downloadRate = new(s => DownloadRateBytes = s);
+                    await downloadService.DownloadAsync(_downloadManager.Build(), downloadRate, cancellationTokenSource.Token);
 
                     soundService.PlaySuccess();
                     Status = DownloadStatus.Completed;

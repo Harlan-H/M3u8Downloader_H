@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -8,9 +9,9 @@ namespace M3u8Downloader_H.Core.Utils
     internal class HandleImageStream : Stream
     {
         private readonly Stream stream;
-        private readonly byte[] _buffer;
+        private readonly IProgress<long> _downloadrate = default!;
+        private Memory<byte> _tsMemory = Memory<byte>.Empty;
         private int _position;
-        private int _length;
 
         public override bool CanRead => true;
 
@@ -26,11 +27,10 @@ namespace M3u8Downloader_H.Core.Utils
             set => _position = (int)value;
         }
 
-        public HandleImageStream(Stream stream, int capacity)
+        public HandleImageStream(Stream stream,IProgress<long> downloadrate)
         {
             this.stream = stream;
-            _buffer = new byte[capacity];
-            _length = capacity;
+            _downloadrate = downloadrate;
         }
 
         protected override void Dispose(bool disposing)
@@ -39,18 +39,20 @@ namespace M3u8Downloader_H.Core.Utils
             base.Dispose(disposing);
         }
 
-        public async Task InitializePositionAsync(CancellationToken cancellationToken = default)
+        public async Task InitializePositionAsync(int capacity,CancellationToken cancellationToken = default)
         {
             //循环读取的目的是 他可能一次性没有办法读到我需要的数据
-            int bytesRead;
-            int curPos = 0;
+            byte[] buffer = new byte[capacity];
+            Memory<byte> memory = new(buffer);
+            int bytesRead, curPos = 0;
             do
             {
-                bytesRead = await stream.ReadAsync(_buffer.AsMemory(curPos, _length - curPos), cancellationToken);
+                bytesRead = await stream.ReadAsync(memory[curPos..capacity], cancellationToken);
                 curPos += bytesRead;
-            } while (curPos < _length);
+            } while (curPos < capacity);
 
-            _position = FindTsMagic(_buffer, _length) ?? throw new InvalidDataException("数据流中没有找到ts结构已退出");
+            int pos = FindTsMagic(buffer, capacity) ?? throw new InvalidDataException("数据流中没有找到ts结构已退出");
+            _tsMemory = memory[pos..];
         }
 
         private static int? FindTsMagic(byte[] data, int length)
@@ -65,21 +67,20 @@ namespace M3u8Downloader_H.Core.Utils
             return null;
         }
 
-        public override async Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+        public override async ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default)
         {
             int bytesRead;
-            if (_position < _length)
+            if (!_tsMemory.IsEmpty && _position < _tsMemory.Length)
             {
-                int len = _length - _position;
-                int tmpCount = len > count ? len - count : len;
-                Buffer.BlockCopy(_buffer, _position, buffer, 0, tmpCount);
-                _position += bytesRead = tmpCount;
+                _tsMemory.CopyTo(buffer);
+                _position += bytesRead = _tsMemory.Length;
             }
             else
             {
-                bytesRead = await stream.ReadAsync(buffer,offset, count, cancellationToken);
+                bytesRead = await stream.ReadAsync(buffer, cancellationToken);
                 _position += bytesRead;
             }
+            _downloadrate?.Report(bytesRead);
             return bytesRead;
         }
 
@@ -97,7 +98,7 @@ namespace M3u8Downloader_H.Core.Utils
 
         public override void Flush()
         {
-            throw new NotImplementedException();
+            stream.Flush();
         }
 
         public override void SetLength(long value)
@@ -112,7 +113,7 @@ namespace M3u8Downloader_H.Core.Utils
 
         public override int Read(byte[] buffer, int offset, int count)
         {
-            return ReadAsync(buffer, offset, count).GetAwaiter().GetResult();
+            return stream.Read(buffer, offset, count);
         }
     }
 }

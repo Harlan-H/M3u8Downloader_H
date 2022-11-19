@@ -14,30 +14,33 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="250"  />
-            <ColumnDefinition Width="150" />
+            <ColumnDefinition Width="5*"  />
+            <ColumnDefinition Width="3*" />
+            <ColumnDefinition Width="90" />
             <ColumnDefinition Width="100"/>
-            <ColumnDefinition Width="84" />
+            <ColumnDefinition Width="34" />
         </Grid.ColumnDefinitions>
         <!-- 地址  -->
         <TextBlock Grid.Column="0" TextTrimming="CharacterEllipsis" FontSize="14" VerticalAlignment="Center" Text="{Binding RequestUrl,TargetNullValue=似乎没有请求地址哦}" />
         
         <!-- 名称 -->
         <TextBlock Grid.Column="1" TextTrimming="CharacterEllipsis" Margin="15 0 10 0" FontSize="14" VerticalAlignment="Center"  Text="{Binding VideoName}"  />
+
+        <!-- 下载速率 -->
+        <TextBlock Grid.Column="2" FontSize="13"  Margin="5 0 0 0"  VerticalAlignment="Center"  Text="{Binding DownloadRateBytes,Converter={x:Static converters:LongToBitrateConverter.Instance}}" d:Text="1113.6 MB/s" />
         
         <!-- 状态 -->
-        <Grid Grid.Column="2" VerticalAlignment="Center" Margin="5 0 0 0">
+        <Grid Grid.Column="3" VerticalAlignment="Center" Margin="5 0 0 0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="auto" />
                 <ColumnDefinition Width="auto"  />
             </Grid.ColumnDefinitions>
-            <ProgressBar
-                                                    Grid.Column="0"
-                                                    Margin="0,0,6,0"
-                                                    Maximum="1"
-                                                    Minimum="0"
-                                                    IsIndeterminate="{Binding IsProgressIndeterminate}"
-                                                    Value="{Binding ProgressNum, Mode=OneWay}">
+            <ProgressBar Grid.Column="0"
+                         Margin="0,0,6,0"
+                         Maximum="1"
+                         Minimum="0"
+                         IsIndeterminate="{Binding IsProgressIndeterminate}"
+                         Value="{Binding ProgressNum, Mode=OneWay}">
                 <ProgressBar.Style>
                     <Style BasedOn="{StaticResource MaterialDesignCircularProgressBar}" TargetType="{x:Type ProgressBar}">
                         <Style.Triggers>
@@ -61,6 +64,7 @@
             <TextBlock Grid.Column="1"
                         FontSize="13"
                         VerticalAlignment="Center"
+                        d:Text="等待下载..."
                         TextTrimming="CharacterEllipsis">
                 <TextBlock.Style>
                     <Style BasedOn="{StaticResource {x:Type TextBlock}}" TargetType="{x:Type TextBlock}">
@@ -102,9 +106,9 @@
                 </TextBlock.Style>
             </TextBlock>
         </Grid>
-        
+
         <!-- 按钮 -->
-        <StackPanel Grid.Column="3" cal:Bind.ModelWithoutContext="{Binding}"
+        <StackPanel Grid.Column="4" cal:Bind.ModelWithoutContext="{Binding}"
                                             Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
 
             <Button Padding="4,0,0,0" VerticalAlignment="Center"  ToolTip="停止下载" 

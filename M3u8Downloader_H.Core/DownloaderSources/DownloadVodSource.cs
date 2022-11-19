@@ -1,13 +1,5 @@
-﻿using M3u8Downloader_H.Core.M3uCombiners;
-using M3u8Downloader_H.Core.M3uDownloaders;
+﻿using M3u8Downloader_H.Core.M3uDownloaders;
 using M3u8Downloader_H.M3U8.Infos;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Net.Http;
-using System.Reflection.PortableExecutable;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -24,6 +16,7 @@ namespace M3u8Downloader_H.Core.DownloaderSources
             m3U8Downloade.TimeOut = _timeouts * 1000;
             m3U8Downloade.HttpClient = HttpClient;
             m3U8Downloade.Progress = VodProgress;
+            m3U8Downloade.DownloadRate = _downloadRate;
             m3U8Downloade.Headers = Headers;
 
             SetStatusDelegate(_downloadStatus);

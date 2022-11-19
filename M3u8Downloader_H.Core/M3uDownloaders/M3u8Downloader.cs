@@ -22,6 +22,7 @@ namespace M3u8Downloader_H.Core.M3uDownloaders
         public HttpClient HttpClient { get; set; } = default!;
         public IEnumerable<KeyValuePair<string, string>>? Headers { get; set; } = default;
         public IProgress<double> Progress { get; set; } = default!;
+        public IProgress<long> DownloadRate { get; set; } = default!;
 
         public int TimeOut { get; set; } = 5 * 1000;
         public M3u8Downloader()
@@ -131,7 +132,7 @@ namespace M3u8Downloader_H.Core.M3uDownloaders
                 try
                 {
                     (Stream tmpstream, string contentType) = await HttpClient.GetResponseContentAsync(uri, headers, rangeHeaderValue, token);
-                    using Stream stream = DownloadAfter(tmpstream, contentType, token);
+                    using Stream stream = DownloadAfter(new HandleImageStream(tmpstream, DownloadRate), contentType, token);
 
                     await WriteToFileAsync(mediaPath, stream, token);
                     IsSuccessful = true;
@@ -172,9 +173,9 @@ namespace M3u8Downloader_H.Core.M3uDownloaders
         {
             if (contentType.StartsWith("image", StringComparison.CurrentCultureIgnoreCase) || contentType.StartsWith("text", StringComparison.CurrentCultureIgnoreCase))
             {
-                HandleImageStream handleImageStream = new(stream, 2000);
-                Task t = handleImageStream.InitializePositionAsync(cancellationToken);
-                return !t.Wait(TimeOut, cancellationToken) ? throw new IOException() : handleImageStream;
+                HandleImageStream handleImageStream =(HandleImageStream)stream;
+                Task t = handleImageStream.InitializePositionAsync(2000,cancellationToken);
+                return !t.Wait(TimeOut, cancellationToken) ? throw new IOException() : stream;
             }
             return stream;
         }

@@ -41,6 +41,7 @@ namespace M3u8Downloader_H.Core.DownloaderSources
         protected bool _isCleanUp;
         protected bool _skipDirectoryExist;
         protected string _savePath = default!;
+        protected IProgress<long> _downloadRate = default!;
 
         private readonly FFmpeg _ffmpeg;
         private bool _firstTimeToRun = true;
@@ -52,6 +53,12 @@ namespace M3u8Downloader_H.Core.DownloaderSources
 #else
             _ffmpeg = new("./ffmpeg.exe");
 #endif
+        }
+
+        public IDownloaderSource WithDownloadRate(IProgress<long> downloadRate)
+        {
+            _downloadRate = downloadRate;
+            return this;
         }
 
         public IDownloaderSource WithTaskNumber(int number)
