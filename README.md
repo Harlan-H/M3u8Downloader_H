@@ -53,9 +53,10 @@
  - [CliWrap](https://github.com/Tyrrrz/CliWrap) : 对命令行调用的封装库
 
 # 截图
-![list](https://user-images.githubusercontent.com/39378318/190357782-117bb79d-a7f3-43bb-9e16-aa7af88e5da8.png)
-![setting1](https://user-images.githubusercontent.com/39378318/190357793-04773f9e-e02f-4fd3-ba01-f0af040cef75.png)
-![setting2](https://user-images.githubusercontent.com/39378318/190357801-0035792a-76f3-49ca-a90b-08802fd63b43.png)
+![QQ截图20221120192851](https://user-images.githubusercontent.com/39378318/202899529-a6d8ae44-f578-4312-b6b7-77d354c874b4.png)
+![setting1](https://user-images.githubusercontent.com/39378318/202899568-874bbf90-1198-42eb-b42a-d8e3df27ba5c.png)
+![QQ截图20221120192700](https://user-images.githubusercontent.com/39378318/202899573-ee513782-f792-464b-b7ee-eb8b48f02ce6.png)
+
 
 # 支持作者
 |微信|支付宝|
