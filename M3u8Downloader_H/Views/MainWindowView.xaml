@@ -9,13 +9,14 @@
         mc:Ignorable="d"
         xmlns:converters="clr-namespace:M3u8Downloader_H.Converters"
         xmlns:cal="http://www.caliburnproject.org"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         d:DataContext="{d:DesignInstance Type=local:MainWindowViewModel}"
         WindowStartupLocation="CenterScreen"
         WindowStyle="None"
-        MinHeight="450" MinWidth="700"
-        MaxHeight="450" MaxWidth="700"
-        Height="450" Width="700">
+        MinHeight="480" MinWidth="700"
+        MaxHeight="480" MaxWidth="700"
+        Height="480" Width="700">
     
     <i:Interaction.Behaviors>
         <behavior:WindowSystemCommandBehavior />
@@ -29,6 +30,7 @@
         <Grid.RowDefinitions >
             <RowDefinition Height="26.4" />
             <RowDefinition />
+            <RowDefinition Height="30" />
         </Grid.RowDefinitions>
         <Grid Grid.Row="0" >
             <Grid.ColumnDefinitions>
@@ -120,8 +122,15 @@
                         
                         <!-- 密钥填写区  -->
                         <DockPanel  Margin="8" >
-                            <ComboBox SelectedValue="{Binding Method,TargetNullValue=AES-128}" FontSize="18" 
-                                      ItemsSource="{Binding DataContext.Methods,RelativeSource={RelativeSource AncestorType=Window}}" />
+                            <ComboBox SelectedValue="{Binding Method,TargetNullValue=AES-128}" FontSize="18" >
+                                <ComboBox.ItemsSource>
+                                    <x:Array Type="{x:Type sys:String}">
+                                        <sys:String>AES-128</sys:String>
+                                        <sys:String>AES-192</sys:String>
+                                        <sys:String>AES-256</sys:String>
+                                    </x:Array>
+                                </ComboBox.ItemsSource>
+                            </ComboBox>
                             <TextBox Text="{Binding Key}"  Margin="5 0 0 0" FontSize="18"
                                      materialDesign:HintAssist.Hint="KEY(字符串或者base64)" />
                         </DockPanel>
@@ -146,7 +155,7 @@
                         Visibility="{Binding Downloads.Count, Converter={x:Static converters:IntToInverseBoolVisibilityConverter.Instance}}">
                         <Image Source="pack://application:,,,/icon.ico" 
                                             Width="160"
-                                            Height="120"/>
+                                            Height="105"/>
                         <TextBlock
                             HorizontalAlignment="Center"
                             FontSize="18"
@@ -190,6 +199,10 @@
                             <Run Text="或者右键" />
                             <Run FontWeight="SemiBold" Text="复制错误信息" />
                             <Run Text="也可以获取详细得错误信息" />
+                            <LineBreak />
+                            <Run Text="最下方是" />
+                            <Run FontWeight="SemiBold" Text="RestApi" />
+                            <Run Text="的监听地址,可以使用其他语言发起请求,详情查看帮助文档RestApi" />
                             <LineBreak />
                             <Run Text="更多用法可以查看在线帮助文档(地址在关于里)" />
                         </TextBlock>
@@ -254,5 +267,15 @@
                 </Grid>
             </Grid>
         </materialDesign:DialogHost>
+        <Grid Grid.Row="2" VerticalAlignment="Center">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+                <ColumnDefinition Width="100" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Margin="5 0 0 0" d:Text="http://111.111.111.111:12345" Text="{Binding HttpServicePort,TargetNullValue=RestApi初始化失败,Converter={x:Static converters:PortToLocalAddress.Instance}}" />
+            <TextBlock Grid.Column="1" d:Text="http://127.0.0.1:12345" Text="{Binding HttpServicePort,TargetNullValue=RestApi初始化失败,StringFormat=http://127.0.0.1:\{0\}}" />
+            <TextBlock Grid.Column="2"  d:Text="v3.11.11" HorizontalAlignment="Right" Margin="0 0 10 0" Text="{Binding VersionString}" />
+        </Grid>
     </Grid>
 </Window>

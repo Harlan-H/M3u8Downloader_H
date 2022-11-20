@@ -33,7 +33,10 @@ namespace M3u8Downloader_H.ViewModels
         public IList<DownloadViewModel> SelectedDownloads { get; set; } = Array.Empty<DownloadViewModel>();
         public VideoDownloadInfo VideoDownloadInfo { get; } = new VideoDownloadInfo();
 
-        public string[] Methods { get; } = { "AES-128", "AES-192", "AES-256" };
+        public string VersionString => $"v{App.VersionString}";
+
+        public int? HttpServicePort { get; set; }
+
         public bool IsBusy { get; private set; }
 
         public bool IsShowDialog { get; private set; }
@@ -47,7 +50,7 @@ namespace M3u8Downloader_H.ViewModels
 
         protected override Task OnInitializeAsync(CancellationToken cancellationToken)
         {
-            DisplayName = $"m3u8视频下载器 v{App.VersionString} by:Harlan";
+            DisplayName = $"m3u8视频下载器 by:Harlan";
 
             _ = Task.Run(() =>
             {
@@ -61,7 +64,7 @@ namespace M3u8Downloader_H.ViewModels
                     {
                         httpListenService.Run($"http://+:{i}/");
                         httpListenService.Initialization(ProcessDownload, ProcessDownload, ProcessDownload, DownloadService.GetM3U8FileInfo);
-                        Notifications.Enqueue($"http服务初始化成功\n监听在 {i} 端口");
+                        HttpServicePort = i;
                         break;
                     }
                     catch (HttpListenerException)

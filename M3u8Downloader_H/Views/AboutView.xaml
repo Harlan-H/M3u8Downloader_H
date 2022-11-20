@@ -7,37 +7,51 @@
              xmlns:cal="http://www.caliburnproject.org"
              d:DataContext="{d:DesignInstance Type=local:AboutViewModel}"
              mc:Ignorable="d" 
-             Height="300"
+             Height="320"
              Width="500"
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="10" />
-                <RowDefinition />
-                <RowDefinition />
-                <RowDefinition />
-                <RowDefinition />
-            </Grid.RowDefinitions>
-            <TextBlock  Grid.Row="1" Text="本软件完全免费，且开源" FontSize="18" HorizontalAlignment="Center" />
-            <TextBlock  Grid.Row="2" Text="本软件首发地址:" FontSize="18"  HorizontalAlignment="Center"  >
-            </TextBlock>
-            <Button Grid.Row="2" Style="{StaticResource MaterialDesignFlatLightButton}"
-                    cal:Message.Attach="OnExplore('https://www.52pojie.cn/thread-1622606-1-1.html')">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto" />
+        </Grid.RowDefinitions>
+        <TextBlock   Text="本软件完全免费，且开源" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Center" />
+        <StackPanel Grid.Row="1">
+            <TextBlock   Text="本软件首发地址:" FontSize="18"  HorizontalAlignment="Center"  />
+            <Button Style="{StaticResource MaterialDesignFlatLightButton}"
+                cal:Message.Attach="OnExplore('https://www.52pojie.cn/thread-1622606-1-1.html')">
                 <Hyperlink >https://www.52pojie.cn/thread-1622606-1-1.html</Hyperlink>
             </Button>
-            <TextBlock Grid.Row="3"  Text="本软件开源地址:" FontSize="18" HorizontalAlignment="Center"/>
-            <Button Grid.Row="3" Style="{StaticResource MaterialDesignFlatLightButton}"
+            <TextBlock Text="帮助文档:" FontSize="16"  HorizontalAlignment="Center"  />
+            <Button  Style="{StaticResource MaterialDesignFlatLightButton}" 
+            cal:Message.Attach="OnExplore('http://note.youdao.com/noteshare?id=c6ba2fb478ad300b7095c7c951556fc6')">
+                <Hyperlink >http://note.youdao.com/noteshare?id=c6ba2fb478ad300b7095c7c951556fc6</Hyperlink>
+            </Button>
+        </StackPanel>
+
+        <StackPanel Grid.Row="2"  >
+            <TextBlock  Text="本软件开源地址:" FontSize="18" HorizontalAlignment="Center"/>
+            <Button Style="{StaticResource MaterialDesignFlatLightButton}"
                     cal:Message.Attach="OnExplore('https://github.com/Harlan-H/M3u8Downloader_H')" >
                 <Hyperlink>https://github.com/Harlan-H/M3u8Downloader_H</Hyperlink>
             </Button>
-            <TextBlock Grid.Row="4" FontSize="18" HorizontalAlignment="Left" Text="Copyright (c) 2022 Harlan" Margin="32 0 0 0" />
-        </Grid>
+            <TextBlock Text="帮助文档:" FontSize="16"  HorizontalAlignment="Center"  />
+            <Button  Style="{StaticResource MaterialDesignFlatLightButton}" 
+            cal:Message.Attach="OnExplore('https://github.com/Harlan-H/M3u8Downloader_H/wiki/')">
+                <Hyperlink >https://github.com/Harlan-H/M3u8Downloader_H/wiki/</Hyperlink>
+            </Button>
+        </StackPanel>
+        <Grid Grid.Row="3">
+        <TextBlock  FontSize="18" HorizontalAlignment="Left" VerticalAlignment="Center" Text="Copyright (c) 2022 Harlan" Margin="32 0 0 0" />
 
-        <Button x:Name="Close"
+        <Button  x:Name="Close"
             HorizontalAlignment="Right" VerticalAlignment="Bottom" Content="关闭" 
                 Margin="5" 
                 IsCancel="True"
                 IsDefault="True"/>
+        </Grid>
     </Grid>
+
 </UserControl>
