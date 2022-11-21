@@ -1,10 +1,7 @@
-﻿using M3u8Downloader_H.Core.DownloaderSources;
-using M3u8Downloader_H.M3U8.AttributeReaders;
-using M3u8Downloader_H.M3U8.Infos;
+﻿using M3u8Downloader_H.Common.M3u8Infos;
+using M3u8Downloader_H.Core.DownloaderSources;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 

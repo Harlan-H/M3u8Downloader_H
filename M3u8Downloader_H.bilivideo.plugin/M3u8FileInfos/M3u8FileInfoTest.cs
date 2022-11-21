@@ -1,32 +1,22 @@
-﻿using M3u8Downloader_H.Plugin.Extensions;
-using M3u8Downloader_H.Plugin;
+﻿using M3u8Downloader_H.Plugin;
 
 namespace M3u8Downloader_H.bilivideo.plugin.M3u8FileInfos
 {
     //这个类是示范代码
-    internal class M3u8FileInfoTest : IM3u8FileInfoService
+    internal class M3u8FileInfoTest : IM3u8UriProvider
     {
         /// <summary>
         /// 再请求之前可以做的一些操作
+        /// 可以选择直接请求数据，也可以进行一些别得操作
         /// </summary>
-        /// <param name="uri">请求的url</param>
+        /// <param name="httpClient">http实例</param>
+        /// <param name="uri">请求url</param>
         /// <param name="headers">请求头</param>
-        /// <returns>HttpRequestMessage 自己实现可以参考CreateDefaultBeforeRequest的代码</returns>
-        public HttpRequestMessage BeforeRequest(Uri uri, IEnumerable<KeyValuePair<string, string>>? headers = null)
+        /// <param name="cancellationToken">取消令牌</param>
+        /// <returns>返回实际拿到得uri</returns>
+        public Task<Uri> GetM3u8UriAsync(HttpClient httpClient, Uri uri, IEnumerable<KeyValuePair<string, string>>? headers, CancellationToken cancellationToken = default)
         {
-            return this.CreateDefaultBeforeRequest(uri, headers);
-        }
-
-
-        /// <summary>
-        /// 请求到数据之后的处理
-        /// </summary>
-        /// <param name="stream">原始的数据流</param>
-        /// <param name="cancellationToken">取消的令牌</param>
-        /// <returns>如果不处理直接返回stream,处理可以返回任意继承了stream的类</returns>
-        public Stream PostRequest(Stream stream, CancellationToken cancellationToken = default)
-        {
-            return stream;
+            return Task.FromResult(uri);
         }
     }
 }

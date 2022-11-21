@@ -1,7 +1,6 @@
 ﻿using Settings;
 using Newtonsoft.Json;
 using M3u8Downloader_H.Attributes;
-using System.IO;
 
 namespace M3u8Downloader_H.Services
 {

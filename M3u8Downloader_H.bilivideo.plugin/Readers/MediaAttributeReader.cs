@@ -1,6 +1,6 @@
 ﻿using M3u8Downloader_H.bilivideo.plugin.Extensions;
-using M3u8Downloader_H.M3U8.AttributeReaders;
-using M3u8Downloader_H.M3U8.Infos;
+using M3u8Downloader_H.Common.M3u8Infos;
+using M3u8Downloader_H.Plugin;
 using System.Web;
 
 namespace M3u8Downloader_H.bilivideo.plugin.Readers

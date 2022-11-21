@@ -5,13 +5,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Caliburn.Micro;
-using M3u8Downloader_H.M3U8.Infos;
 using M3u8Downloader_H.Services;
 using M3u8Downloader_H.Utils;
 using M3u8Downloader_H.Models;
 using M3u8Downloader_H.Core.DownloaderManagers;
 using M3u8Downloader_H.Plugin;
-
+using M3u8Downloader_H.Common.M3u8Infos;
 
 namespace M3u8Downloader_H.ViewModels
 {

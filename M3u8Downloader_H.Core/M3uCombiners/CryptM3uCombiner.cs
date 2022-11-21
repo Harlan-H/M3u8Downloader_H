@@ -1,6 +1,6 @@
 ﻿using System.IO;
-using M3u8Downloader_H.Extensions;
-using M3u8Downloader_H.M3U8.Infos;
+using M3u8Downloader_H.Common.Extensions;
+using M3u8Downloader_H.Common.M3u8Infos;
 
 namespace M3u8Downloader_H.Core.M3uCombiners
 {

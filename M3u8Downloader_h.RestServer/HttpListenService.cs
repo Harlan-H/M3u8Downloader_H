@@ -2,8 +2,11 @@
 using M3u8Downloader_H.RestServer.Extensions;
 using M3u8Downloader_H.RestServer.Utils;
 using System.Net;
-using M3u8Downloader_H.M3U8.Infos;
 using System.Text.Json;
+using M3u8Downloader_H.Common.M3u8Infos;
+using M3u8Downloader_H.M3U8.M3UFileReaders;
+using M3u8Downloader_H.M3U8.Extensions;
+using System;
 
 namespace M3u8Downloader_H.RestServer
 {
@@ -13,7 +16,6 @@ namespace M3u8Downloader_H.RestServer
         private Action<Uri, string?, string?, string?, string?, string?, string?, IEnumerable<KeyValuePair<string, string>>?> DownloadByUrlAction = default!;
         private Action<string, Uri?, string?, string?, string?, IEnumerable<KeyValuePair<string, string>>?> DownloadByContentAction = default!;
         private Action<M3UFileInfo, string?, string?, string?, IEnumerable<KeyValuePair<string, string>>?> DownloadByM3uFileInfoAction = default!;
-        private Func< string, Uri, M3UFileInfo> GetM3U8FileInfoFunc = default!;
 
         private readonly JsonSerializerOptions jsonSerializerOptions;
         private readonly static HttpListenService instance = new();
@@ -31,13 +33,11 @@ namespace M3u8Downloader_H.RestServer
         public void Initialization(
             Action<Uri, string?, string?, string?, string?, string?,string?,IEnumerable<KeyValuePair<string, string>>?> downloadByUrl,
             Action<string, Uri?, string?, string?, string?,IEnumerable<KeyValuePair<string, string>>?> downloadByContent,
-            Action<M3UFileInfo, string?, string?, string?, IEnumerable<KeyValuePair<string, string>>?> downloadByM3uFileInfo,
-            Func<string,Uri, M3UFileInfo> getM3u8FileInfoFunc)
+            Action<M3UFileInfo, string?, string?, string?, IEnumerable<KeyValuePair<string, string>>?> downloadByM3uFileInfo)
         {
             DownloadByUrlAction = downloadByUrl;
             DownloadByContentAction = downloadByContent;
             DownloadByM3uFileInfoAction = downloadByM3uFileInfo;
-            GetM3U8FileInfoFunc = getM3u8FileInfoFunc;
         }
 
         public void Run(string port)
@@ -126,8 +126,10 @@ namespace M3u8Downloader_H.RestServer
                 }
 
                 requestWIthGetM3U8FileInfo.Validate();
-                M3UFileInfo m3UFileInfo = GetM3U8FileInfoFunc(requestWIthGetM3U8FileInfo.Content, requestWIthGetM3U8FileInfo.Url!);
-                var r = new Response<M3UFileInfo>(0, "解析成功", m3UFileInfo);
+                M3UFileInfo m3UFileInfo = new M3UFileReaderWithStream().GetM3u8FileInfo(requestWIthGetM3U8FileInfo.Url!, requestWIthGetM3U8FileInfo.Content);
+                Response<M3UFileInfo> r = m3UFileInfo.MediaFiles != null && m3UFileInfo.MediaFiles.Any()
+                                        ? new Response<M3UFileInfo>(0, "解析成功", m3UFileInfo)
+                                        : new Response<M3UFileInfo>(1, "没有包含任何数据", null);
                 response.Json(r);
             }
             catch (Exception ex)

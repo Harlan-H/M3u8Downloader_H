@@ -18,9 +18,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\M3u8Downloader_H.M3U8.Readers\M3u8Downloader_H.M3U8.Readers.csproj" />
+    <ProjectReference Include="..\M3u8Downloader_H.Common\M3u8Downloader_H.Common.csproj" />
     <ProjectReference Include="..\M3u8Downloader_H.Plugin\M3u8Downloader_H.Plugin.csproj" />
-    <ProjectReference Include="..\M3u8Downloader_H.Extensions\M3u8Downloader_H.Extensions.csproj" />
     <ProjectReference Include="..\M3u8Downloader_H.M3U8\M3u8Downloader_H.M3U8.csproj" />
   </ItemGroup>
 

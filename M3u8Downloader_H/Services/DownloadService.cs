@@ -1,12 +1,8 @@
 ﻿using System;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using M3u8Downloader_H.Extensions;
 using System.Linq;
-using M3u8Downloader_H.M3U8.Infos;
-using M3u8Downloader_H.M3U8;
-using M3u8Downloader_H.M3U8.Extensions;
 using M3u8Downloader_H.Core.DownloaderSources;
 using M3u8Downloader_H.Core.DownloaderManagers;
 using M3u8Downloader_H.Utils;
@@ -48,14 +44,6 @@ namespace M3u8Downloader_H.Services
                 .GetM3U8FileInfo(cancellationToken);
         }
 
-
-        public static M3UFileInfo GetM3U8FileInfo(string content, Uri url)
-        {
-            M3UFileInfo m3UFileInfo = new M3UFileReader().GetM3u8FileInfo(url, content);
-            return m3UFileInfo.MediaFiles != null && m3UFileInfo.MediaFiles.Any()
-                    ? m3UFileInfo
-                    : throw new InvalidDataException($"'{url.OriginalString}' 没有包含任何数据");
-        }
 
         public async Task DownloadAsync(
             IDownloaderSource downloaderSource,

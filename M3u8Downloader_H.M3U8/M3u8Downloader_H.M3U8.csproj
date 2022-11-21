@@ -11,4 +11,9 @@
 		<DebugSymbols>False</DebugSymbols>
 		<DebugType>None</DebugType>
 	</PropertyGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\M3u8Downloader_H.Common\M3u8Downloader_H.Common.csproj" />
+	  <ProjectReference Include="..\M3u8Downloader_H.M3U8.AttributeReader\M3u8Downloader_H.M3U8.AttributeReader.csproj" />
+	</ItemGroup>
 </Project>

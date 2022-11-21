@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
-
-namespace M3u8Downloader_H.bilivideo.plugin.Extensions
+﻿namespace M3u8Downloader_H.bilivideo.plugin.Extensions
 {
     internal static class StringExtension
     {

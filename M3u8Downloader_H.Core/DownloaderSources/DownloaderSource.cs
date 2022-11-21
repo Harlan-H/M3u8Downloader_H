@@ -1,10 +1,11 @@
 ﻿using CliWrap.Builders;
+using M3u8Downloader_H.Common.M3u8Infos;
 using M3u8Downloader_H.Core.M3uCombiners;
 using M3u8Downloader_H.Core.M3uDownloaders;
+using M3u8Downloader_H.Core.Utils.Extensions;
 using M3u8Downloader_H.Core.VideoConverter;
 using M3u8Downloader_H.M3U8.Extensions;
-using M3u8Downloader_H.M3U8.Infos;
-using M3u8Downloader_H.M3U8.Readers.Services;
+using M3u8Downloader_H.M3U8.M3UFileReaderManangers;
 using M3u8Downloader_H.Plugin;
 using System;
 using System.Collections.Generic;
@@ -29,7 +30,7 @@ namespace M3u8Downloader_H.Core.DownloaderSources
         public Action<int> SetStatusDelegate = default!;
         public Action<string> ChangeVideoNameDelegate = default!;
         public IDownloadService? downloadService = default!;
-        public IM3u8FileInfoSource M3uReader = default!;
+        public IM3UFileInfoMananger M3uReader = default!;
 
         protected string PluginPath = default!;
         protected int _taskNumber;
@@ -167,6 +168,7 @@ namespace M3u8Downloader_H.Core.DownloaderSources
         protected async ValueTask ConvertWithM3u8File(CancellationToken cancellationToken)
         {
             string m3u8FilePath = Path.Combine(VideoFullPath, "generated.m3u8");
+            M3UFileInfo.MediaFiles = M3UFileInfo.MediaFiles.Where(m => File.Exists(Path.Combine(VideoFullPath, m.Title))).ToList();
             await M3UFileInfo.WriteToAsync(m3u8FilePath, cancellationToken);
             await ConverterToMp4(m3u8FilePath, true, cancellationToken);
             File.Delete(m3u8FilePath);

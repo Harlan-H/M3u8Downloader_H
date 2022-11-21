@@ -11,6 +11,7 @@
 		<DebugType>None</DebugType>
 	</PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\M3u8Downloader_H.Common\M3u8Downloader_H.Common.csproj" />
     <ProjectReference Include="..\M3u8Downloader_H.Plugin\M3u8Downloader_H.Plugin.csproj" />
   </ItemGroup>
 

@@ -2,9 +2,9 @@
 
 namespace M3u8Downloader_H.M3U8.Extensions
 {
-    public static class UriExtension
+    internal static class UriExtension
     {
-        public static Uri Join(this Uri host, string uri)
+        internal static Uri Join(this Uri host, string uri)
         {
             if (Uri.TryCreate(uri, UriKind.RelativeOrAbsolute, out Uri? relativeUri))
             {

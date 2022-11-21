@@ -1,5 +1,5 @@
-﻿using M3u8Downloader_H.Core.Utils.Extensions;
-using M3u8Downloader_H.M3U8.Infos;
+﻿using M3u8Downloader_H.Common.Extensions;
+using M3u8Downloader_H.Common.M3u8Infos;
 using System.Text;
 
 namespace M3u8Downloader_H.Core.DownloaderManagers

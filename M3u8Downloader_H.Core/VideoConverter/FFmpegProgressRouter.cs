@@ -7,7 +7,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using M3u8Downloader_H.Core.Utils.Extensions;
+using M3u8Downloader_H.Common.Extensions;
 
 namespace M3u8Downloader_H.Core.VideoConverter
 {
@@ -21,10 +21,13 @@ namespace M3u8Downloader_H.Core.VideoConverter
 
         public FFmpegProgressRouter(IProgress<double> output) => _output = output;
 
-        private TimeSpan? TryParseTotalDuration(string data) => data
+        private TimeSpan? TryParseTotalDuration(string data)
+        {
+            return data
             .Pipe(s => Regex.Match(s, @"Duration:\s(\d\d:\d\d:\d\d.\d\d)").Groups[1].Value)
             .NullIfWhiteSpace()?
             .Pipe(s => TimeSpan.ParseExact(s, "c", CultureInfo.InvariantCulture));
+        }
 
         private TimeSpan? TryParseCurrentOffset(string data) => data
             .Pipe(s => Regex.Matches(s, @"time=(\d\d:\d\d:\d\d.\d\d)")

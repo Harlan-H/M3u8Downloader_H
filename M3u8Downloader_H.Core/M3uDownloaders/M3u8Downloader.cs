@@ -6,9 +6,9 @@ using System.Net.Http.Headers;
 using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
+using M3u8Downloader_H.Common.M3u8Infos;
 using M3u8Downloader_H.Core.Utils;
 using M3u8Downloader_H.Core.Utils.Extensions;
-using M3u8Downloader_H.M3U8.Infos;
 
 namespace M3u8Downloader_H.Core.M3uDownloaders
 {
