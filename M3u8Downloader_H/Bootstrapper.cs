@@ -2,10 +2,12 @@
 using System.Net;
 using System.Windows;
 using System.Collections.Generic;
-using System.Windows.Threading;
 using Caliburn.Micro;
 using M3u8Downloader_H.Services;
 using M3u8Downloader_H.ViewModels;
+#if !DEBUG
+using System.Windows.Threading;
+#endif
 
 namespace M3u8Downloader_H
 {
