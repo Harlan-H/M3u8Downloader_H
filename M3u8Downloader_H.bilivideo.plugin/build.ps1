@@ -5,7 +5,7 @@ if((Test-Path $targetDir) -eq $False)
     exit
 }
 
-$dllpath = "$PSScriptRoot\bin\Publish\M3u8Downloader_H.bilivideo.plugin.dll"
+$dllpath = "$PSScriptRoot\bin\Publish\M3u8Downloader_H.bilibili.plugin.dll"
 if(Test-Path $dllpath)
 {
     Write-Host "Skipped publish, file already exists."
@@ -13,5 +13,5 @@ if(Test-Path $dllpath)
     dotnet publish $PSScriptRoot/ -o $PSScriptRoot/bin/Publish -c Release
 }
 
-Copy-Item $PSScriptRoot/bin/Publish/M3u8Downloader_H.bilivideo.plugin.dll $targetDir/Plugins/
+Copy-Item $PSScriptRoot/bin/Publish/M3u8Downloader_H.bilibili.plugin.dll $targetDir/Plugins/
 Write-Host "copied to the ${targetDir}"
