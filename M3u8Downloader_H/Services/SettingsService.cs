@@ -1,7 +1,9 @@
 ﻿using Settings;
 using Newtonsoft.Json;
 using M3u8Downloader_H.Attributes;
+#if !DEBUG
 using System.IO;
+#endif
 
 namespace M3u8Downloader_H.Services
 {
