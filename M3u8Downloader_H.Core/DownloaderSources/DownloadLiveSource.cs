@@ -1,6 +1,6 @@
-﻿using M3u8Downloader_H.Core.M3uDownloaders;
+﻿using M3u8Downloader_H.Common.M3u8Infos;
+using M3u8Downloader_H.Core.M3uDownloaders;
 using M3u8Downloader_H.Core.Utils.Extensions;
-using M3u8Downloader_H.M3U8.Infos;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -34,7 +34,7 @@ namespace M3u8Downloader_H.Core.DownloaderSources
             {
                 M3UFileInfo.MediaFiles.GenerateTitle();
                 _firstTimeToRun = false;
-                return M3UFileInfo;
+                return M3UFileInfo!;
             }
 
             return await GetLiveFileInfos(Url, Headers, cancellationToken);

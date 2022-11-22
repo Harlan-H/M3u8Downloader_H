@@ -1,5 +1,4 @@
-﻿using M3u8Downloader_H.M3U8.AttributeReaders;
-using M3u8Downloader_H.M3U8.Utilities;
+﻿using M3u8Downloader_H.M3U8.AttributeReader;
 using System.Diagnostics.CodeAnalysis;
 
 namespace M3u8Downloader_H.Plugin.AttributeReaderManagers

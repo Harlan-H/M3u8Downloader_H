@@ -7,8 +7,8 @@
     <UseWindowsForms>true</UseWindowsForms>
     <RootNamespace>M3u8Downloader_H</RootNamespace>
     <Platforms>AnyCPU;x64</Platforms>
-    <AssemblyVersion>3.11.9.0</AssemblyVersion>
-    <Version>3.11.9.0</Version>
+    <AssemblyVersion>3.12.1.0</AssemblyVersion>
+    <Version>3.12.1.0</Version>
     <PackageId>m3u8视频下载器</PackageId>
     <Product>m3u8视频下载器</Product>
     <ApplicationIcon>icon.ico</ApplicationIcon>
@@ -45,7 +45,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\M3u8Downloader_H.M3U8.Readers\M3u8Downloader_H.M3U8.Readers.csproj" />
+    <ProjectReference Include="..\M3u8Downloader_H.Common\M3u8Downloader_H.Common.csproj" />
     <ProjectReference Include="..\M3u8Downloader_h.RestServer\M3u8Downloader_H.RestServer.csproj" />
     <ProjectReference Include="..\SettingsManager\Settings.csproj" />
     <ProjectReference Include="..\M3u8Downloader_H.Core\M3u8Downloader_H.Core.csproj" />

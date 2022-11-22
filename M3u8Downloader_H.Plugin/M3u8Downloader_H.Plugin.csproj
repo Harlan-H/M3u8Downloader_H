@@ -12,7 +12,6 @@
 	</PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\M3u8Downloader_H.Extensions\M3u8Downloader_H.Extensions.csproj" />
     <ProjectReference Include="..\M3u8Downloader_H.M3U8\M3u8Downloader_H.M3U8.csproj" />
   </ItemGroup>
 

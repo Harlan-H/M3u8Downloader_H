@@ -5,7 +5,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
-using M3u8Downloader_H.Extensions;
+using M3u8Downloader_H.Common.Extensions;
 
 namespace M3u8Downloader_H.Core.Utils.Extensions
 {

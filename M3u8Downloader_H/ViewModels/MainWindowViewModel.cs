@@ -7,11 +7,11 @@ using System.Net;
 using System.Threading.Tasks;
 using System.Windows;
 using M3u8Downloader_H.Exceptions;
+using M3u8Downloader_H.Common.M3u8Infos;
 using M3u8Downloader_H.Models;
 using M3u8Downloader_H.Services;
 using M3u8Downloader_H.Utils;
 using M3u8Downloader_H.ViewModels.FrameWork;
-using M3u8Downloader_H.M3U8.Infos;
 using M3u8Downloader_H.Extensions;
 using M3u8Downloader_H.RestServer;
 using Caliburn.Micro;
@@ -63,7 +63,7 @@ namespace M3u8Downloader_H.ViewModels
                     try
                     {
                         httpListenService.Run($"http://+:{i}/");
-                        httpListenService.Initialization(ProcessDownload, ProcessDownload, ProcessDownload, DownloadService.GetM3U8FileInfo);
+                        httpListenService.Initialization(ProcessDownload, ProcessDownload, ProcessDownload);
                         HttpServicePort = i;
                         break;
                     }

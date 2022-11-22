@@ -1,14 +1,9 @@
 ﻿using CliWrap;
 using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
-using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using M3u8Downloader_H.Core.Utils.Extensions;
+using M3u8Downloader_H.Common.Extensions;
 
 namespace M3u8Downloader_H.Core.VideoConverter
 {

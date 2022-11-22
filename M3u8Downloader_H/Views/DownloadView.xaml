@@ -21,10 +21,10 @@
             <ColumnDefinition Width="34" />
         </Grid.ColumnDefinitions>
         <!-- 地址  -->
-        <TextBlock Grid.Column="0" TextTrimming="CharacterEllipsis" FontSize="14" VerticalAlignment="Center" Text="{Binding RequestUrl,TargetNullValue=似乎没有请求地址哦}" />
+        <TextBlock Grid.Column="0" TextTrimming="CharacterEllipsis" FontSize="14" VerticalAlignment="Center" ToolTip="{Binding RequestUrl,TargetNullValue=似乎没有请求地址哦}" Text="{Binding RequestUrl,TargetNullValue=似乎没有请求地址哦}" />
         
         <!-- 名称 -->
-        <TextBlock Grid.Column="1" TextTrimming="CharacterEllipsis" Margin="15 0 10 0" FontSize="14" VerticalAlignment="Center"  Text="{Binding VideoName}"  />
+        <TextBlock Grid.Column="1" TextTrimming="CharacterEllipsis" Margin="15 0 10 0" FontSize="14" VerticalAlignment="Center" ToolTip="{Binding VideoName}"  Text="{Binding VideoName}"  />
 
         <!-- 下载速率 -->
         <TextBlock Grid.Column="2" FontSize="13"  Margin="5 0 0 0"  VerticalAlignment="Center"  Text="{Binding DownloadRateBytes,Converter={x:Static converters:LongToBitrateConverter.Instance}}" d:Text="1113.6 MB/s" />

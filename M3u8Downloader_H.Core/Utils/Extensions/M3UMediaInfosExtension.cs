@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using M3u8Downloader_H.M3U8.Infos;
+using M3u8Downloader_H.Common.Extensions;
+using M3u8Downloader_H.Common.M3u8Infos;
 
 namespace M3u8Downloader_H.Core.Utils.Extensions
 {
-    public static class M3UMediaInfosExtension
+    internal static class M3UMediaInfosExtension
     {
         public static IList<M3UMediaInfo> GenerateTitle(this IEnumerable<M3UMediaInfo> m3UMediaInfos)
         {

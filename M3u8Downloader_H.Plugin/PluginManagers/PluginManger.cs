@@ -1,5 +1,4 @@
 ﻿using M3u8Downloader_H.Plugin.AttributeReaderManagers;
-using M3u8Downloader_H.M3U8.AttributeReaders;
 
 namespace M3u8Downloader_H.Plugin.PluginManagers
 {
@@ -11,7 +10,11 @@ namespace M3u8Downloader_H.Plugin.PluginManagers
 
         public IDownloadService? PluginService { get; private set; }
 
-        public IM3u8FileInfoService? M3U8FileInfoService { get; private set; }
+        public IM3u8UriProvider? M3U8UriProvider { get; private set; }
+
+        public IM3uFileReader? M3UFileReaderInterface { get; private set; }
+
+        public IM3u8FileInfoStreamService? M3U8FileInfoStreamService { get; private set; }
 
         private PluginManger(IPluginBuilder pluginBuilder)
         {
@@ -20,11 +23,13 @@ namespace M3u8Downloader_H.Plugin.PluginManagers
 
         private void Build()
         {
+            M3U8UriProvider = pluginBuilder.CreateM3u8UriProvider();
+            M3UFileReaderInterface = pluginBuilder.CreateM3u8FileReader();
+            M3U8FileInfoStreamService = pluginBuilder.CreateM3U8FileInfoStreamService();
             var attributeReaderManager = new AttributeReaderManager();
             pluginBuilder.SetAttributeReader(attributeReaderManager);
             AttributeReaders = attributeReaderManager.AttributeReaders;
             PluginService = pluginBuilder.CreatePluginService();
-            M3U8FileInfoService = pluginBuilder.CreateM3u8FileInfoService();
         }
     }
 

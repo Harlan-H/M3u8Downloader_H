@@ -1,7 +1,5 @@
-﻿using M3u8Downloader_H.Core.M3uCombiners;
-using M3u8Downloader_H.M3U8.Infos;
+﻿using M3u8Downloader_H.Common.M3u8Infos;
 using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 

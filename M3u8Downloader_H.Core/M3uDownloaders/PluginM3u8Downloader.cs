@@ -1,10 +1,8 @@
 ﻿using System.IO;
-using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using M3u8Downloader_H.M3U8.Infos;
-using M3u8Downloader_H.Extensions;
 using M3u8Downloader_H.Plugin;
+using M3u8Downloader_H.Common.M3u8Infos;
 
 namespace M3u8Downloader_H.Core.M3uDownloaders
 {
