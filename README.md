@@ -4,10 +4,10 @@
   - M3u8Downloader_H.zip  为需要.net core的运行库的版本
   - M3u8Downloader_H-SingleFile.zip  不需要.net core运行库  
 
-# 问题
- - 目前项目已经很稳定了,不会出现无缘无故的崩溃等问题。
- - 如果你遇到某些报错,或者一些bug可以直接提issue,如果你觉得我的代码哪里可以优化，也可以提pr
- - 软件提供了插件开发功能,如果你想对某些网站或者软件下载做适配，你需要对c#  .net6有一些了解
+# 下一步计划
+ - 目前项目已经很稳定了,不会出现无缘无故的崩溃等问题，插件也比较完善了。
+ - 将会对很多网站通过插件开发得方式直接适配,目前测试使用了b站得直播，现在直接使用b站得直播间地址就可以直接下载直播视频,不在需要人为得取得m3u8地址
+ - 那如果你遇到没有适配得网站,同时又需要适配那么可以给我留言,如果你也是开发者你也想加入那可以提交pr
   
 # 特点
  - 简单的ui操作
@@ -53,9 +53,10 @@
  - [CliWrap](https://github.com/Tyrrrz/CliWrap) : 对命令行调用的封装库
 
 # 截图
-![list](https://user-images.githubusercontent.com/39378318/190357782-117bb79d-a7f3-43bb-9e16-aa7af88e5da8.png)
-![setting1](https://user-images.githubusercontent.com/39378318/190357793-04773f9e-e02f-4fd3-ba01-f0af040cef75.png)
-![setting2](https://user-images.githubusercontent.com/39378318/190357801-0035792a-76f3-49ca-a90b-08802fd63b43.png)
+![QQ截图20221120192851](https://user-images.githubusercontent.com/39378318/202899529-a6d8ae44-f578-4312-b6b7-77d354c874b4.png)
+![setting1](https://user-images.githubusercontent.com/39378318/202899568-874bbf90-1198-42eb-b42a-d8e3df27ba5c.png)
+![QQ截图20221120192700](https://user-images.githubusercontent.com/39378318/202899573-ee513782-f792-464b-b7ee-eb8b48f02ce6.png)
+
 
 # 支持作者
 |微信|支付宝|
