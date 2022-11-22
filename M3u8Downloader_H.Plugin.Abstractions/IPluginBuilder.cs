@@ -3,15 +3,23 @@
     public interface IPluginBuilder
     {
         /// <summary>
-        /// 创建获取m3u8文件信息的类
+        /// 创建获取m3u8 uri的类
         /// 如果你不需要处理，只要return null 即可
-        /// 创建IM3u8FileInfoService实例参考CreatePluginService函数的注释
         /// </summary>
         /// <returns>返回实现了IGetM3u8InfoService接口的实例化</returns>
         IM3u8UriProvider? CreateM3u8UriProvider();
 
         /// <summary>
-        /// 解析m3u8数据得接口,在大部分情况之下此接口是不用实现得,但是在某些情况下你不需要默认得实现方案，那么请实现此接口
+        /// 获取m3u8文件流得类
+        /// 如果你需要对某项请求或者响应加密或者解密,可以实现此类
+        /// </summary>
+        /// <returns></returns>
+        IM3u8FileInfoStreamService? CreateM3U8FileInfoStreamService();
+
+
+        /// <summary>
+        /// 解析m3u8数据得接口,在大部分情况之下此接口是不用实现得
+        /// 在某些情况下你不需要默认得解析方案，那么请实现此接口
         /// 如果你不需要处理，直接return null
         /// </summary>
         /// <returns>返回实现了IM3uFileReader接口得实例</returns>
@@ -37,8 +45,6 @@
         /// </summary>
         /// <returns>返回实现了IDownloadService接口的实例化</returns>
         IDownloadService? CreatePluginService();
-
-
 
     }
 }

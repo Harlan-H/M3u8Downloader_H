@@ -1,9 +1,9 @@
-﻿using M3u8Downloader_H.bilivideo.plugin.Extensions;
+﻿using M3u8Downloader_H.bilibili.plugin.Extensions;
 using M3u8Downloader_H.Common.M3u8Infos;
 using M3u8Downloader_H.Plugin;
 using System.Web;
 
-namespace M3u8Downloader_H.bilivideo.plugin.Readers
+namespace M3u8Downloader_H.bilibili.plugin.Readers
 {
     internal class MediaAttributeReader : IAttributeReader
     {

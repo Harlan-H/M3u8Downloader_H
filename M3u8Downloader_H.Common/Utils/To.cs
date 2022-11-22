@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace M3u8Downloader_H.M3U8.AttributeReader.Utils
+namespace M3u8Downloader_H.Common.Utils
 {
     public static class To
     {

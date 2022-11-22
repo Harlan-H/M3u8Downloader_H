@@ -1,6 +1,6 @@
 ﻿using M3u8Downloader_H.M3U8.AttributeReader.Attributes;
-using M3u8Downloader_H.M3U8.AttributeReader.Utils;
 using M3u8Downloader_H.Common.M3u8Infos;
+using M3u8Downloader_H.Common.Utils;
 using M3u8Downloader_H.Plugin;
 
 namespace M3u8Downloader_H.M3U8.AttributeReader.AttributeReaders

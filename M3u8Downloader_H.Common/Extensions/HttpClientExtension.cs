@@ -63,5 +63,22 @@ namespace M3u8Downloader_H.Common.Extensions
         {
             return await httpClient.GetByteArrayAsync(new Uri(uri, UriKind.Absolute), headers, cancellationToken);
         }
+
+        public  static async Task<string> GetStringAsync(this HttpClient httpClient, HttpRequestMessage httpRequestMessage, CancellationToken cancellationToken = default)
+        {
+            HttpResponseMessage response = await httpClient.SendAsync(httpRequestMessage, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+            response.EnsureSuccessStatusCode();
+
+            return await response.Content.ReadAsStringAsync(cancellationToken);
+        }
+
+
+        public static async Task<string> GetStringAsync(this HttpClient httpClient,Uri uri, IEnumerable<KeyValuePair<string, string>>? headers = default, CancellationToken cancellationToken = default)
+        {
+            using HttpRequestMessage request = new(HttpMethod.Get, uri);
+            request.AddHeaders(headers);
+
+            return await httpClient.GetStringAsync(request, cancellationToken);
+        }
     }
 }

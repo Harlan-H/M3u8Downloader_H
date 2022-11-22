@@ -19,13 +19,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "M3u8Downloader_H.Plugin", "
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{42D6DF1F-811D-40A6-9F96-C453D6D23E9C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "M3u8Downloader_H.bilivideo.plugin", "M3u8Downloader_H.bilivideo.plugin\M3u8Downloader_H.bilivideo.plugin.csproj", "{1EEC1879-4CE7-47ED-A9E1-1FC0FA35F5B6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "M3u8Downloader_H.bilibili.plugin", "M3u8Downloader_H.bilivideo.plugin\M3u8Downloader_H.bilibili.plugin.csproj", "{1EEC1879-4CE7-47ED-A9E1-1FC0FA35F5B6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "M3u8Downloader_H.Common", "M3u8Downloader_H.Common\M3u8Downloader_H.Common.csproj", "{51AA459A-36C9-440A-9734-990EF5E26E24}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "M3u8Downloader_H.Common", "M3u8Downloader_H.Common\M3u8Downloader_H.Common.csproj", "{51AA459A-36C9-440A-9734-990EF5E26E24}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "M3u8Downloader_H.M3U8.AttributeReader", "M3u8Downloader_H.M3U8.AttributeReader\M3u8Downloader_H.M3U8.AttributeReader.csproj", "{CCB3C5E8-D398-459D-ADD8-EA5DCBF5F660}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "M3u8Downloader_H.M3U8.AttributeReader", "M3u8Downloader_H.M3U8.AttributeReader\M3u8Downloader_H.M3U8.AttributeReader.csproj", "{CCB3C5E8-D398-459D-ADD8-EA5DCBF5F660}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "M3u8Downloader_H.Plugin.Abstractions", "M3u8Downloader_H.Plugin.Abstractions\M3u8Downloader_H.Plugin.Abstractions.csproj", "{2044E0FB-43D0-4FA0-B589-F23C904CE6C9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "M3u8Downloader_H.Plugin.Abstractions", "M3u8Downloader_H.Plugin.Abstractions\M3u8Downloader_H.Plugin.Abstractions.csproj", "{2044E0FB-43D0-4FA0-B589-F23C904CE6C9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

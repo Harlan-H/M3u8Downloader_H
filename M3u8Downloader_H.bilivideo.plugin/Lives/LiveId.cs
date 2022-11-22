@@ -1,12 +1,7 @@
 ﻿using M3u8Downloader_H.Common.Extensions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
-namespace M3u8Downloader_H.bilivideo.plugin.Lives
+namespace M3u8Downloader_H.bilibili.plugin.Lives
 {
     public readonly partial struct LiveId
     {
@@ -34,15 +29,13 @@ namespace M3u8Downloader_H.bilivideo.plugin.Lives
             return null;
         }
 
-        public static LiveId? TryParse(string? liveIdOrUrl) => TryNormalize(liveIdOrUrl)?.Pipe(r => new LiveId(r));
+        public static LiveId? TryParse(string? url) => TryNormalize(url)?.Pipe(r => new LiveId(r));
 
-        public static LiveId Parse(string liveIdOrUrl) => TryParse(liveIdOrUrl) ?? throw new InvalidDataException($"无效的视频id或者url {liveIdOrUrl}");
+        public static LiveId Parse(string url) => TryParse(url) ?? throw new InvalidDataException($"无效的视频url {url}");
 
-        public static implicit operator LiveId(string liveIdOrUrl) => Parse(liveIdOrUrl);
+        public static implicit operator LiveId(Uri liveIdOrUrl) => Parse(liveIdOrUrl.OriginalString);
 
-        public static implicit operator string(LiveId liveId) => liveId.ToString();
-
-        public static implicit operator int(LiveId liveId) => Convert.ToInt32(liveId.Value);
+        public static implicit operator Uri(LiveId liveId) => new(liveId.Url);
     }
 
     public partial struct LiveId : IEquatable<LiveId>

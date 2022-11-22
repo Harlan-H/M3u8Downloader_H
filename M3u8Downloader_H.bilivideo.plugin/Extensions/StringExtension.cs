@@ -1,4 +1,4 @@
-﻿namespace M3u8Downloader_H.bilivideo.plugin.Extensions
+﻿namespace M3u8Downloader_H.bilibili.plugin.Extensions
 {
     internal static class StringExtension
     {

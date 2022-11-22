@@ -43,7 +43,7 @@ namespace M3u8Downloader_H.Core.DownloaderManagers
             _headers = Headers;
             VideoFullPath = videoFullPath;
             _pluginManager = PluginManger.CreatePluginMangaer(pluginBuilder);
-            _m3U8FileInfoMananger = new M3UFileReaderManager(_pluginManager?.M3UFileReaderInterface, httpClient, _pluginManager?.AttributeReaders);
+            _m3U8FileInfoMananger = M3u8FileInfoManagerFactory.CreateM3u8FileInfoManager(_pluginManager?.M3U8FileInfoStreamService, _pluginManager?.M3UFileReaderInterface, httpClient, _pluginManager?.AttributeReaders);
             _m3U8UriManager = M3u8UriManagerFactory.CreateM3u8UriManager(_pluginManager?.M3U8UriProvider, httpClient, Headers);
         }
 
@@ -88,7 +88,7 @@ namespace M3u8Downloader_H.Core.DownloaderManagers
             return this;
         }
 
-        public async ValueTask GetM3U8FileInfo(CancellationToken cancellationToken)
+        public async Task GetM3U8FileInfo(CancellationToken cancellationToken)
         {
             if (_m3UFileInfo is not null)
                 return;

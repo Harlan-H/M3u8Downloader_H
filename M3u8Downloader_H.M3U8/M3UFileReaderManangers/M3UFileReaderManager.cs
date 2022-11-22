@@ -13,15 +13,17 @@ using System.Threading.Tasks;
 
 namespace M3u8Downloader_H.M3U8.M3UFileReaderManangers
 {
-    public class M3UFileReaderManager : IM3UFileInfoMananger
+    internal class M3UFileReaderManager : IM3UFileInfoMananger
     {
         private readonly HttpClient _httpClient;
         private readonly M3UFileReaderWithStream _m3UFileReaderWithStream;
 
-        public M3UFileReaderManager(IM3uFileReader? m3UFileReader, HttpClient httpClient, IDictionary<string, IAttributeReader>? attributeReaders = default!)
+        public IM3uFileReader? M3UFileReader { get; set; }
+
+        public M3UFileReaderManager(HttpClient httpClient, IDictionary<string, IAttributeReader>? attributeReaders = default!)
         {
             _httpClient = httpClient;
-            _m3UFileReaderWithStream = M3UFileReaderFactory.CreateM3UFileReader(m3UFileReader, attributeReaders);
+            _m3UFileReaderWithStream = M3UFileReaderFactory.CreateM3UFileReader(M3UFileReader, attributeReaders);
         }
 
 
