@@ -11,6 +11,8 @@ namespace M3u8Downloader_H.Core.M3uCombiners
     {
         protected readonly string cacheFullPath;
         protected FileStream videoFileStream = default!;
+
+        public IProgress<double> Progress { get; set; } = default!;
         public M3uCombiner(string dirPath)
         {
             cacheFullPath = dirPath;
@@ -44,8 +46,11 @@ namespace M3u8Downloader_H.Core.M3uCombiners
             {
                 try
                 {
+                    cancellationToken.ThrowIfCancellationRequested();
                     await MegerVideoInternalAsync(m3UFileInfo.MediaFiles[i], cancellationToken);
-                }catch(CryptographicException)
+                    Progress.Report(i / (double)m3UFileInfo.MediaFiles.Count);
+                }
+                catch(CryptographicException)
                 {
                     throw new CryptographicException("解密失败,请确认key,iv是否正确");
                 }

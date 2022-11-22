@@ -176,10 +176,11 @@ namespace M3u8Downloader_H.Core.DownloaderSources
 
         protected async ValueTask VideoMerge(bool isFile, CancellationToken cancellationToken = default)
         {
-            using IM3uCombiner m3UCombiner = isFile && M3UFileInfo.Key is not null
+            using M3uCombiner m3UCombiner = isFile && M3UFileInfo.Key is not null
                 ? new CryptM3uCombiner(M3UFileInfo, VideoFullPath)
                 : new M3uCombiner(VideoFullPath);
 
+            m3UCombiner.Progress = VodProgress;
             m3UCombiner.Initialization(VideoFullName);
             await m3UCombiner.MegerVideoHeader(M3UFileInfo.Map, cancellationToken);
             await m3UCombiner.Start(M3UFileInfo, _forceMerge, cancellationToken);
