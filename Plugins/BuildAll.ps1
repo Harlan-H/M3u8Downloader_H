@@ -14,7 +14,7 @@ if((Test-Path $targetDir) -eq $False)
 $fileList = Get-ChildItem -Directory Plugins
 foreach($file in $fileList)
 {
-    $buildDir = "$PSScriptRoot\$file\bin\Publish"
+    $buildDir = "$file\bin\Publish"
     $dllpath = "$buildDir\$file.dll"
     if(Test-Path $dllpath)
     {
