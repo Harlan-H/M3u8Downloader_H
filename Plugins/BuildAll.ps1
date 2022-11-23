@@ -15,19 +15,15 @@ $currentPath = Get-Location
 $dirList = [System.IO.Directory]::GetDirectories("$currentPath\Plugins")
 foreach($dir in $dirList)
 {
-    $dirName = $dir.Substring($dir.LastIndexOf("\") +1 )
-    Write-Host "dir  ${dirName}"
+    $dirName = $dir.Substring($dir.LastIndexOf("\") + 1)
     $buildDir = "$dir\bin\Publish"
-    Write-Host "buildDir  ${buildDir}"
     $dllpath = "$buildDir\$dirName.dll"
-    Write-Host "dllpath  ${dllpath}"
     if(Test-Path $dllpath)
     {
         Write-Host "Skipped publish, file already exists."
     }else{
         dotnet publish $dir -o $buildDir -c Release
     }   
-    Write-Host "targetDir/Plugins  ${targetDir/Plugins}"
     Copy-Item $dllpath $targetDir/Plugins
 }
 Write-Host "copied to the ${targetDir}"
