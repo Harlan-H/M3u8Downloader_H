@@ -13,7 +13,7 @@ namespace M3u8Downloader_H.M3U8.M3UFileReaderManangers
         private readonly IM3u8FileInfoStreamService m3U8FileInfoService;
         private readonly HttpClient httpClient;
 
-        public PluginM3UFileReaderManager(IM3u8FileInfoStreamService m3U8FileInfoService, HttpClient httpClient, IDictionary<string, IAttributeReader>? attributeReaders = null) : base(httpClient, attributeReaders)
+        public PluginM3UFileReaderManager(IM3u8FileInfoStreamService m3U8FileInfoService, IM3uFileReader? M3UFileReader, HttpClient httpClient, IDictionary<string, IAttributeReader>? attributeReaders = null) : base(M3UFileReader,httpClient, attributeReaders)
         {
             this.m3U8FileInfoService = m3U8FileInfoService;
             this.httpClient = httpClient;

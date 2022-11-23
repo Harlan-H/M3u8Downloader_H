@@ -31,7 +31,7 @@ namespace M3u8Downloader_H.bilibili.plugin.Lives
 
         public static LiveId? TryParse(string? url) => TryNormalize(url)?.Pipe(r => new LiveId(r));
 
-        public static LiveId Parse(string url) => TryParse(url) ?? throw new InvalidDataException($"无效的视频url {url}");
+        public static LiveId Parse(string url) => TryParse(url) ?? throw new InvalidDataException($"不能解析得地址,必须是b站直播地址:{url}");
 
         public static implicit operator LiveId(Uri liveIdOrUrl) => Parse(liveIdOrUrl.OriginalString);
 
