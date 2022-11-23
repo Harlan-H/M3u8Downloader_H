@@ -189,8 +189,6 @@ namespace M3u8Downloader_H.ViewModels
             if (!m3UFileInfo.MediaFiles.Any())
                 throw new ArgumentException("m3u8的数据不能为空");
 
-            if (string.IsNullOrEmpty(m3UFileInfo.PlaylistType)) m3UFileInfo.PlaylistType = "VOD";
-
             string tmpVideoName = PathEx.GenerateFileNameWithoutExtension(name);
             string fileFullPath = Path.Combine(savePath ?? settingsService.SavePath, tmpVideoName);
             FileEx.EnsureFileNotExist(fileFullPath);

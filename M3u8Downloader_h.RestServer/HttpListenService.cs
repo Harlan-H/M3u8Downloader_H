@@ -103,6 +103,7 @@ namespace M3u8Downloader_H.RestServer
                 }
                
                 requestWithM3U8FileInfo.Validate();
+                requestWithM3U8FileInfo.M3u8FileInfo.PlaylistType = "VOD";
                 DownloadByM3uFileInfoAction(requestWithM3U8FileInfo.M3u8FileInfo, requestWithM3U8FileInfo.VideoName, requestWithM3U8FileInfo.SavePath, requestWithM3U8FileInfo.PluginKey, requestWithM3U8FileInfo.Headers);
 
                 response.Json(Response.Success());

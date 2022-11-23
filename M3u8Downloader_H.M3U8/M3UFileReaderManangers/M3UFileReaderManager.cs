@@ -18,9 +18,7 @@ namespace M3u8Downloader_H.M3U8.M3UFileReaderManangers
         private readonly HttpClient _httpClient;
         private readonly M3UFileReaderWithStream _m3UFileReaderWithStream;
 
-        public IM3uFileReader? M3UFileReader { get; set; }
-
-        public M3UFileReaderManager(HttpClient httpClient, IDictionary<string, IAttributeReader>? attributeReaders = default!)
+        public M3UFileReaderManager(IM3uFileReader? M3UFileReader,HttpClient httpClient, IDictionary<string, IAttributeReader>? attributeReaders = default!)
         {
             _httpClient = httpClient;
             _m3UFileReaderWithStream = M3UFileReaderFactory.CreateM3UFileReader(M3UFileReader, attributeReaders);

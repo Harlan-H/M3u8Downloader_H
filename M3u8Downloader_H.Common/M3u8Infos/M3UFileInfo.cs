@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace M3u8Downloader_H.Common.M3u8Infos
 {
-    public class M3UFileInfo 
+    public partial class M3UFileInfo 
     {
         public int? Version { get; set; }
 
@@ -47,5 +47,17 @@ namespace M3u8Downloader_H.Common.M3u8Infos
         {
         
         }    
+    }
+
+    public partial class M3UFileInfo
+    {
+        public static M3UFileInfo CreateVodM3UFileInfo()
+        {
+            M3UFileInfo m3UFileInfo = new()
+            {
+                PlaylistType = "VOD"
+            };
+            return m3UFileInfo;
+        }
     }
 }
