@@ -3,8 +3,8 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
-    <AssemblyVersion>3.12.1.0</AssemblyVersion>
-    <Version>3.12.1.0</Version>
+    <AssemblyVersion>3.12.2.0</AssemblyVersion>
+    <Version>3.12.2.0</Version>
   </PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)'=='Release'">
