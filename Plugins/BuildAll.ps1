@@ -11,16 +11,18 @@ if((Test-Path $targetDir) -eq $False)
     exit
 }
 
-$fileList = Get-ChildItem -Directory Plugins
-foreach($file in $fileList)
+$currentPath = Get-Location
+$dirList = [System.IO.Directory]::GetDirectories("$currentPath\Plugins")
+foreach($dir in $dirList)
 {
-    $buildDir = "$PSScriptRoot\$file\bin\Publish"
-    $dllpath = "$buildDir\$file.dll"
+    $dirName = $dir.Substring($dir.LastIndexOf("\") + 1)
+    $buildDir = "$dir\bin\Publish"
+    $dllpath = "$buildDir\$dirName.dll"
     if(Test-Path $dllpath)
     {
         Write-Host "Skipped publish, file already exists."
     }else{
-        dotnet publish $PSScriptRoot/$file -o $buildDir -c Release
+        dotnet publish $dir -o $buildDir -c Release
     }   
     Copy-Item $dllpath $targetDir/Plugins
 }
