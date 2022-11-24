@@ -25,5 +25,7 @@ namespace M3u8Downloader_H.Common.Extensions
             s = s.StartsWith("0x", StringComparison.Ordinal) ? s[2..] : s;
             return Convert.FromHexString(s);
         }
+
+
     }
 }
