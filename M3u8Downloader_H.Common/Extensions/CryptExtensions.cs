@@ -40,7 +40,7 @@ namespace M3u8Downloader_H.Common.Extensions
             _aes.Key = aesKey;
             _aes.IV = aesIv ?? new byte[16];
 
-            using var _crypto = _aes.CreateEncryptor(_aes.Key, _aes.IV);
+            var _crypto = _aes.CreateEncryptor(_aes.Key, _aes.IV);
             return new CryptoStream(memory, _crypto, CryptoStreamMode.Write);
         }
 
@@ -65,7 +65,7 @@ namespace M3u8Downloader_H.Common.Extensions
             aesAlg.Key = aesKey;
             aesAlg.IV = aesIV ?? new byte[16];
 
-            using ICryptoTransform decryptor = aesAlg.CreateDecryptor(aesAlg.Key, aesAlg.IV);
+            ICryptoTransform decryptor = aesAlg.CreateDecryptor(aesAlg.Key, aesAlg.IV);
             return new CryptoStream(memory, decryptor, CryptoStreamMode.Read);
         }
 
