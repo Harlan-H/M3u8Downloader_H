@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
+﻿using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -10,28 +7,54 @@ namespace M3u8Downloader_H.Common.Extensions
     public static class CryptExtensions
     {
         private static readonly Dictionary<string, (int, int)> KeyGroup = new() { { "AES-128", (16, 24) }, { "AES-192", (24, 32) }, { "AES-256", (32, 44) } };
-        public static byte[]? AesDecrypt(this byte[] content, byte[] aesKey, byte[] aesIV)
+
+        public static byte[] HmacSha256(this Stream memory, byte[] key)
         {
-            byte[] decrypted;
+            using HMACSHA256 hmac = new(key);
+            return hmac.ComputeHash(memory);
+        }
 
-            try
-            {
-                using Aes _aes = Aes.Create();
-                _aes.Padding = PaddingMode.PKCS7;
-                _aes.Mode = CipherMode.CBC;
-                _aes.Key = aesKey;
-                _aes.IV = aesIV ?? new byte[16];
+        public static byte[] HmacSha256(this byte[] memory, byte[] key)
+        {
+            using HMACSHA256 hmac = new(key);
+            return hmac.ComputeHash(memory);
+        }
 
-                var _crypto = _aes.CreateDecryptor(_aes.Key, _aes.IV);
-                decrypted = _crypto.TransformFinalBlock(content, 0, content.Length);
-                _crypto.Dispose();
-            }
-            catch (CryptographicException)
-            {
-                return null;
-            }
+        public static byte[] AesEncrypt(this byte[] content, byte[] aesKey, byte[] aesIv)
+        {
+            using Aes _aes = Aes.Create();
+            _aes.Padding = PaddingMode.PKCS7;
+            _aes.Mode = CipherMode.CBC;
+            _aes.Key = aesKey;
+            _aes.IV = aesIv ?? new byte[16];
 
-            return decrypted;
+            using var _crypto = _aes.CreateEncryptor(_aes.Key, _aes.IV);
+            return _crypto.TransformFinalBlock(content, 0, content.Length);
+        }
+
+        public static Stream AesEncrypt(this Stream memory, byte[] aesKey, byte[] aesIv)
+        {
+            using Aes _aes = Aes.Create();
+            _aes.Padding = PaddingMode.PKCS7;
+            _aes.Mode = CipherMode.CBC;
+            _aes.Key = aesKey;
+            _aes.IV = aesIv ?? new byte[16];
+
+            using var _crypto = _aes.CreateEncryptor(_aes.Key, _aes.IV);
+            return new CryptoStream(memory, _crypto, CryptoStreamMode.Write);
+        }
+
+        public static byte[] AesDecrypt(this byte[] content, byte[] aesKey, byte[] aesIV)
+        {
+
+            using Aes _aes = Aes.Create();
+            _aes.Padding = PaddingMode.PKCS7;
+            _aes.Mode = CipherMode.CBC;
+            _aes.Key = aesKey;
+            _aes.IV = aesIV ?? new byte[16];
+
+            using var _crypto = _aes.CreateDecryptor(_aes.Key, _aes.IV);
+            return _crypto.TransformFinalBlock(content, 0, content.Length);
         }
 
         public static Stream AesDecrypt(this Stream memory, byte[] aesKey, byte[] aesIV)
@@ -42,7 +65,7 @@ namespace M3u8Downloader_H.Common.Extensions
             aesAlg.Key = aesKey;
             aesAlg.IV = aesIV ?? new byte[16];
 
-            ICryptoTransform decryptor = aesAlg.CreateDecryptor(aesAlg.Key, aesAlg.IV);
+            using ICryptoTransform decryptor = aesAlg.CreateDecryptor(aesAlg.Key, aesAlg.IV);
             return new CryptoStream(memory, decryptor, CryptoStreamMode.Read);
         }
 
