@@ -4,6 +4,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using M3u8Downloader_H.Common.M3u8Infos;
 using M3u8Downloader_H.Common.Extensions;
+using Newtonsoft.Json.Linq;
+using System;
 
 namespace M3u8Downloader_H.Core.M3uDownloaders
 {
@@ -14,8 +16,6 @@ namespace M3u8Downloader_H.Core.M3uDownloaders
         {
             this.m3UFileInfo = m3UFileInfo;
         }
-
-
 
         public override async ValueTask Initialization(CancellationToken cancellationToken)
         {
@@ -31,7 +31,12 @@ namespace M3u8Downloader_H.Core.M3uDownloaders
                         : await HttpClient.GetByteArrayAsync(m3UFileInfo.Key.Uri, Headers, cancellationToken);
 
                     m3UFileInfo.Key.BKey = data.TryParseKey(m3UFileInfo.Key.Method);
-                }catch(HttpRequestException e) when(e.StatusCode == System.Net.HttpStatusCode.NotFound)
+                }
+                catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+                {
+                    throw new HttpRequestException("密钥获取失败");
+                }
+                catch (HttpRequestException e) when(e.StatusCode == System.Net.HttpStatusCode.NotFound)
                 {
                     throw new HttpRequestException("获取密钥失败，没有找到任何数据",e.InnerException,e.StatusCode);
                 }
