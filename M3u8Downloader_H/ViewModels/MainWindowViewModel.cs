@@ -28,8 +28,6 @@ namespace M3u8Downloader_H.ViewModels
 
         public ISnackbarMessageQueue Notifications { get; } = new SnackbarMessageQueue(TimeSpan.FromSeconds(5));
         public BindableCollection<DownloadViewModel> Downloads { get; } = new BindableCollection<DownloadViewModel>();
-
-        [DoNotNotify]
         public IList<DownloadViewModel> SelectedDownloads { get; set; } = Array.Empty<DownloadViewModel>();
         public VideoDownloadInfo VideoDownloadInfo { get; } = new VideoDownloadInfo();
 

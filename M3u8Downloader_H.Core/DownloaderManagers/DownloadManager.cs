@@ -88,7 +88,7 @@ namespace M3u8Downloader_H.Core.DownloaderManagers
             return this;
         }
 
-        public async Task GetM3U8FileInfo(CancellationToken cancellationToken)
+        public async ValueTask GetM3U8FileInfo(CancellationToken cancellationToken)
         {
             if (_m3UFileInfo is not null)
                 return;
