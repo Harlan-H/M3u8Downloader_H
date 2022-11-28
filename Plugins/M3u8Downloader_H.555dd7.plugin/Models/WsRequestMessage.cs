@@ -6,7 +6,7 @@ namespace M3u8Downloader_H._555dd7.plugin.Models
 {
     internal class WsRequestMessage
     {
-        private readonly byte[] _hmacKey = Encoding.UTF8.GetBytes("55ca5c4d11424dcecfe16c08a943afdc");
+        private static readonly byte[] _hmacKey = Encoding.UTF8.GetBytes("55ca5c4d11424dcecfe16c08a943afdc");
 
         [JsonProperty("type")]
         public string Type { get; } = "getUrl";

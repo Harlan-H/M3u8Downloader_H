@@ -13,8 +13,8 @@ namespace M3u8Downloader_H._555dd7.plugin.Streams
         private readonly IEnumerable<KeyValuePair<string, string>>? headers;
         private static readonly Regex regex = new("player_aaaa=(.*?)</script>", RegexOptions.Compiled);
         private static readonly Regex wssRegex = new("'(wss://.*?)'", RegexOptions.Compiled);
-        private readonly byte[] _key = Encoding.UTF8.GetBytes("55ca5c48a943afdc");
-        private readonly byte[] _iv = Encoding.UTF8.GetBytes("d11424dcecfe16c0");
+        private static readonly byte[] _key = Encoding.UTF8.GetBytes("55ca5c48a943afdc");
+        private static readonly byte[] _iv = Encoding.UTF8.GetBytes("d11424dcecfe16c0");
 
         public Extractor(HttpClient httpClient, IEnumerable<KeyValuePair<string, string>>? headers)
         {
@@ -32,7 +32,7 @@ namespace M3u8Downloader_H._555dd7.plugin.Streams
             return GetPlayUrl(recvBytes);
         }
 
-        private Uri GetPlayUrl(byte[] bytes)
+        private static Uri GetPlayUrl(byte[] bytes)
         {
             var decryptText = bytes.AesDecrypt(_key, _iv).GetString();
             var r = JsonConvert.DeserializeObject<Response>(decryptText);

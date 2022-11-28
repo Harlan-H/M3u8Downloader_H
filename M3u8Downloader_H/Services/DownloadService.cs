@@ -40,6 +40,7 @@ namespace M3u8Downloader_H.Services
         public async ValueTask GetM3u8FileInfo(IDownloadManager downloadManager,CancellationToken cancellationToken)
         {
             await downloadManager
+                .WithTimeout(settingService.Timeouts)
                 .WithHeaders(settingService.Headers.ToDictionary())
                 .GetM3U8FileInfo(cancellationToken);
         }

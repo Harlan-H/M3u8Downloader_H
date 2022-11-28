@@ -18,6 +18,7 @@ namespace M3u8Downloader_H.Core.DownloaderManagers
         IDownloadManager WithLiveProgress(IProgress<double> action);
         IDownloadManager WithStatusAction(Action<int> action);
         IDownloadManager WithHeaders(IEnumerable<KeyValuePair<string, string>>? headers);
+        IDownloadManager WithTimeout(int second);
         Task GetM3U8FileInfo(CancellationToken cancellationToken);
         IDownloaderSource Build();
     }

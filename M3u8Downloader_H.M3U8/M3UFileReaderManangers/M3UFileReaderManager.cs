@@ -13,10 +13,12 @@ using System.Threading.Tasks;
 
 namespace M3u8Downloader_H.M3U8.M3UFileReaderManangers
 {
-    internal class M3UFileReaderManager : IM3UFileInfoMananger
+    public class M3UFileReaderManager : IM3UFileInfoMananger
     {
         private readonly HttpClient _httpClient;
         private readonly M3UFileReaderWithStream _m3UFileReaderWithStream;
+
+        public int TimeOuts { get; set; } = 10 * 1000;
 
         public M3UFileReaderManager(IM3uFileReader? M3UFileReader,HttpClient httpClient, IDictionary<string, IAttributeReader>? attributeReaders = default!)
         {
@@ -32,7 +34,9 @@ namespace M3u8Downloader_H.M3U8.M3UFileReaderManangers
             {
                 try
                 {
-                    var m3u8FileInfo = await GetM3u8FileInfo(uri, headers, cancellationToken);
+                    using CancellationTokenSource cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+                    cancellationTokenSource.CancelAfter(TimeOuts);
+                    var m3u8FileInfo = await GetM3u8FileInfo(uri, headers, cancellationTokenSource.Token);
                     return m3u8FileInfo.MediaFiles != null && m3u8FileInfo.MediaFiles.Any()
                         ? m3u8FileInfo
                         : throw new InvalidDataException($"'{uri.OriginalString}' 没有包含任何数据");
@@ -76,9 +80,9 @@ namespace M3u8Downloader_H.M3U8.M3UFileReaderManangers
         }
 
 
-        protected virtual async Task<(Uri?,Stream)> GetM3u8FileStreamAsync(Uri uri, IEnumerable<KeyValuePair<string, string>>? headers, CancellationToken cancellationToken = default)
+        protected virtual Task<(Uri?,Stream)> GetM3u8FileStreamAsync(Uri uri, IEnumerable<KeyValuePair<string, string>>? headers, CancellationToken cancellationToken = default)
         {
-            return await _httpClient.GetStreamAndUriAsync(uri, headers, cancellationToken);
+            return _httpClient.GetStreamAndUriAsync(uri, headers, cancellationToken);
         }
 
 
