@@ -6,6 +6,7 @@ using M3u8Downloader_H.Common.M3u8Infos;
 using M3u8Downloader_H.Common.Extensions;
 using Newtonsoft.Json.Linq;
 using System;
+using M3u8Downloader_H.Core.Utils.Extensions;
 
 namespace M3u8Downloader_H.Core.M3uDownloaders
 {
@@ -26,9 +27,10 @@ namespace M3u8Downloader_H.Core.M3uDownloaders
             {
                 try
                 {
+                    using var tokenSource = cancellationToken.CancelTimeOut(TimeOut);                    
                     byte[] data = m3UFileInfo.Key.Uri.IsFile
-                        ? await File.ReadAllBytesAsync(m3UFileInfo.Key.Uri.OriginalString, cancellationToken)
-                        : await HttpClient.GetByteArrayAsync(m3UFileInfo.Key.Uri, Headers, cancellationToken);
+                        ? await File.ReadAllBytesAsync(m3UFileInfo.Key.Uri.OriginalString, tokenSource.Token)
+                        : await HttpClient.GetByteArrayAsync(m3UFileInfo.Key.Uri, Headers, tokenSource.Token);
 
                     m3UFileInfo.Key.BKey = data.TryParseKey(m3UFileInfo.Key.Method);
                 }

@@ -24,7 +24,7 @@ namespace M3u8Downloader_H.Core.M3uDownloaders
         public IProgress<double> Progress { get; set; } = default!;
         public IProgress<long> DownloadRate { get; set; } = default!;
 
-        public int TimeOut { get; set; } = 5 * 1000;
+        public int TimeOut { get; set; } = 10 * 1000;
         public M3u8Downloader()
         {
 
@@ -131,10 +131,11 @@ namespace M3u8Downloader_H.Core.M3uDownloaders
             {
                 try
                 {
-                    (Stream tmpstream, string contentType) = await HttpClient.GetResponseContentAsync(uri, headers, rangeHeaderValue, token);
-                    using Stream stream = DownloadAfter(new HandleImageStream(tmpstream, DownloadRate), contentType, token);
+                    using CancellationTokenSource cancellationToken = token.CancelTimeOut(TimeOut);
+                    (Stream tmpstream, string contentType) = await HttpClient.GetResponseContentAsync(uri, headers, rangeHeaderValue, cancellationToken.Token);
+                    using Stream stream = DownloadAfter(new HandleImageStream(tmpstream, DownloadRate), contentType, cancellationToken.Token);
 
-                    await WriteToFileAsync(mediaPath, stream, token);
+                    await WriteToFileAsync(mediaPath, stream, cancellationToken.Token);
                     IsSuccessful = true;
                     break;
                 }
@@ -173,18 +174,18 @@ namespace M3u8Downloader_H.Core.M3uDownloaders
         {
             if (contentType.StartsWith("image", StringComparison.CurrentCultureIgnoreCase) || contentType.StartsWith("text", StringComparison.CurrentCultureIgnoreCase))
             {
-                HandleImageStream handleImageStream =(HandleImageStream)stream;
-                Task t = handleImageStream.InitializePositionAsync(2000,cancellationToken);
-                return !t.Wait(TimeOut, cancellationToken) ? throw new IOException() : stream;
+                using HandleImageStream handleImageStream =(HandleImageStream)stream;
+                Task t = handleImageStream.InitializePositionAsync(2000, cancellationToken);
+                t.Wait(cancellationToken);
+                return handleImageStream;
             }
             return stream;
         }
 
-        protected Task WriteToFileAsync(string file, Stream stream, CancellationToken token)
+        protected static async Task WriteToFileAsync(string file, Stream stream, CancellationToken token)
         {
             using FileStream fileobject = File.Create(file);
-            Task t = stream.CopyToAsync(fileobject, token);
-            return !t.Wait(TimeOut, token) ? throw new IOException() : Task.CompletedTask;
+            await stream.CopyToAsync(fileobject, token);
         }
 
         protected static void DeleteFileWhenTimeOut(string file)

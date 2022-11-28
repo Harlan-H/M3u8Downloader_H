@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using M3u8Downloader_H.Plugin;
 using M3u8Downloader_H.Common.M3u8Infos;
+using M3u8Downloader_H.Core.Utils.Extensions;
 
 namespace M3u8Downloader_H.Core.M3uDownloaders
 {
@@ -21,7 +22,8 @@ namespace M3u8Downloader_H.Core.M3uDownloaders
         //当时需要重置或者初始化某些数据的时候 完全交给插件自己去处理
         public override async ValueTask Initialization(CancellationToken cancellationToken)
         {
-            await _pluginDownload.Initialize(HttpClient,Headers, m3UFileInfo, cancellationToken);
+            using var tokenSource = cancellationToken.CancelTimeOut(TimeOut);
+            await _pluginDownload.Initialize(HttpClient,Headers, m3UFileInfo, tokenSource.Token);
         }
 
         protected override Stream DownloadAfter(Stream stream, string contentType, CancellationToken cancellationToken)

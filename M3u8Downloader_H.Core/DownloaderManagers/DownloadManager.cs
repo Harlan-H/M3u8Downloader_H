@@ -22,8 +22,9 @@ namespace M3u8Downloader_H.Core.DownloaderManagers
         private readonly HttpClient _httpClient;
         private Uri _url;
         private IEnumerable<KeyValuePair<string, string>>? _headers;
+        private int _timeOut;
         private readonly IPluginManager? _pluginManager = default!;
-        private readonly IM3UFileInfoMananger _m3U8FileInfoMananger = default!;
+        private readonly M3UFileReaderManager _m3U8FileInfoMananger = default!;
         private readonly IM3u8UriManager _m3U8UriManager = default!;
         private IDownloaderSource? _downloaderSource;
         private M3UFileInfo? _m3UFileInfo;
@@ -88,13 +89,22 @@ namespace M3u8Downloader_H.Core.DownloaderManagers
             return this;
         }
 
-        public async ValueTask GetM3U8FileInfo(CancellationToken cancellationToken)
+        public IDownloadManager WithTimeout(int second)
+        {
+            _timeOut = second * 1000;
+            return this;
+        }
+
+
+        public async Task GetM3U8FileInfo(CancellationToken cancellationToken)
         {
             if (_m3UFileInfo is not null)
                 return;
 
-            _url = await _m3U8UriManager.GetM3u8UriAsync(_url, cancellationToken);
+            using CancellationTokenSource cancellationTokenSource = cancellationToken.CancelTimeOut(_timeOut);
+            _url = await _m3U8UriManager.GetM3u8UriAsync(_url, cancellationTokenSource.Token);
 
+            _m3U8FileInfoMananger.TimeOuts = _timeOut;
             M3UFileInfo m3UFileInfo = await _m3U8FileInfoMananger.GetM3u8FileInfo(_url, m3uContent, _headers, cancellationToken);
 
             if (keyInfo is not null)

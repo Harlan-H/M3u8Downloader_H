@@ -152,7 +152,7 @@
                     <StackPanel
                         Margin="8,10,8,8"
                         HorizontalAlignment="Center"
-                        Visibility="{Binding Downloads.Count,TargetNullValue=0, Converter={x:Static converters:IntToInverseBoolVisibilityConverter.Instance}}">
+                        Visibility="{Binding Downloads.Count, Converter={x:Static converters:IntToInverseBoolVisibilityConverter.Instance}}">
                         <Image Source="pack://application:,,,/icon.ico" 
                                             Width="160"
                                             Height="105"/>

@@ -69,7 +69,7 @@ namespace M3u8Downloader_H.Core.DownloaderSources
 
         public IDownloaderSource WithTimeout(int timeout)
         {
-            _timeouts = timeout;
+            _timeouts = timeout * 1000;
             return this;
         }
 
