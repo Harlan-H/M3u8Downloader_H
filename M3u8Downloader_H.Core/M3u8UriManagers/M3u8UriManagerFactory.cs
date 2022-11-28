@@ -1,5 +1,4 @@
-﻿using M3u8Downloader_H.Core.M3u8UriProviders;
-using M3u8Downloader_H.Plugin;
+﻿using M3u8Downloader_H.Plugin;
 using System.Collections.Generic;
 using System.Net.Http;
 

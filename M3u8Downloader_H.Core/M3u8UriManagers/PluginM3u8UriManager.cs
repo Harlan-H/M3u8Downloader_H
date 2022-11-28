@@ -1,12 +1,11 @@
-﻿using M3u8Downloader_H.Core.M3u8UriManagers;
-using M3u8Downloader_H.Plugin;
+﻿using M3u8Downloader_H.Plugin;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace M3u8Downloader_H.Core.M3u8UriProviders
+namespace M3u8Downloader_H.Core.M3u8UriManagers
 {
     internal class PluginM3u8UriManager  : IM3u8UriManager
     {

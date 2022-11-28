@@ -1,7 +1,6 @@
 ﻿using M3u8Downloader_H.Common.M3u8Infos;
 using M3u8Downloader_H.Core.DownloaderSources;
 using M3u8Downloader_H.Core.M3u8UriManagers;
-using M3u8Downloader_H.Core.M3u8UriProviders;
 using M3u8Downloader_H.Core.Utils.Extensions;
 using M3u8Downloader_H.M3U8;
 using M3u8Downloader_H.M3U8.M3UFileReaderManangers;
