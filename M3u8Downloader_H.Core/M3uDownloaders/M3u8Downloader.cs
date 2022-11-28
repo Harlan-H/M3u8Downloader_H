@@ -173,7 +173,7 @@ namespace M3u8Downloader_H.Core.M3uDownloaders
         {
             if (contentType.StartsWith("image", StringComparison.CurrentCultureIgnoreCase) || contentType.StartsWith("text", StringComparison.CurrentCultureIgnoreCase))
             {
-                using HandleImageStream handleImageStream =(HandleImageStream)stream;
+                HandleImageStream handleImageStream =(HandleImageStream)stream;
                 Task t = handleImageStream.InitializePositionAsync(2000, cancellationToken);
                 t.Wait(cancellationToken);
                 return handleImageStream;
