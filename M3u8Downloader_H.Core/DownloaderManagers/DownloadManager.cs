@@ -97,6 +97,7 @@ namespace M3u8Downloader_H.Core.DownloaderManagers
 
         public async Task GetM3U8FileInfo(CancellationToken cancellationToken)
         {
+            _m3U8FileInfoMananger.TimeOuts = _timeOut;
             if (_m3UFileInfo is not null)
                 return;
 
@@ -105,7 +106,6 @@ namespace M3u8Downloader_H.Core.DownloaderManagers
                 _url = await _m3U8UriManager.GetM3u8UriAsync(_url, cancellationTokenSource.Token);
             }
 
-            _m3U8FileInfoMananger.TimeOuts = _timeOut;
             M3UFileInfo m3UFileInfo = await _m3U8FileInfoMananger.GetM3u8FileInfo(_url, m3uContent, _headers, cancellationToken);
 
             if (keyInfo is not null)

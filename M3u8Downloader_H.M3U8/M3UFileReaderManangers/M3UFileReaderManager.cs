@@ -80,11 +80,9 @@ namespace M3u8Downloader_H.M3U8.M3UFileReaderManangers
         }
 
 
-        protected virtual async Task<(Uri?,Stream)> GetM3u8FileStreamAsync(Uri uri, IEnumerable<KeyValuePair<string, string>>? headers, CancellationToken cancellationToken = default)
+        protected virtual Task<(Uri?,Stream)> GetM3u8FileStreamAsync(Uri uri, IEnumerable<KeyValuePair<string, string>>? headers, CancellationToken cancellationToken = default)
         {
-            using CancellationTokenSource cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-            cancellationTokenSource.CancelAfter(TimeOuts);
-            return await _httpClient.GetStreamAndUriAsync(uri, headers, cancellationTokenSource.Token);
+            return _httpClient.GetStreamAndUriAsync(uri, headers, cancellationToken);
         }
 
 
