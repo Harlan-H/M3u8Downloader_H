@@ -1,4 +1,5 @@
-﻿using M3u8Downloader_H.Plugin;
+﻿using M3u8Downloader_H.Core.Utils.Extensions;
+using M3u8Downloader_H.Plugin;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -20,9 +21,16 @@ namespace M3u8Downloader_H.Core.M3u8UriManagers
             this.headers = headers;
         }
 
-        public Task<Uri> GetM3u8UriAsync(Uri uri, CancellationToken cancellationToken)
+        public Task<Uri> GetM3u8UriAsync(Uri uri, int timeout, CancellationToken cancellationToken)
         {
-            return m3U8UriProvider.GetM3u8UriAsync(httpClient, uri, headers, cancellationToken);
+            try
+            {
+                using CancellationTokenSource cancellationTokenSource = cancellationToken.CancelTimeOut(timeout);
+                return m3U8UriProvider.GetM3u8UriAsync(httpClient, uri, headers, cancellationTokenSource.Token);
+            }catch(OperationCanceledException) when(!cancellationToken.IsCancellationRequested) 
+            {
+                throw new TimeoutException($"访问 {uri.OriginalString} 超时");
+            }      
         }
     }
 }

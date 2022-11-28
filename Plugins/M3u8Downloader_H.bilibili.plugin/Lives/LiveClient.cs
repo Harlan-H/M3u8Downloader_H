@@ -11,6 +11,9 @@ namespace M3u8Downloader_H.bilibili.plugin.Lives
         private static readonly Regex regex = new(@"__NEPTUNE_IS_MY_WAIFU__=(\{.*?\})</script>", RegexOptions.Compiled);
         public async Task<Uri> GetM3u8UriAsync(HttpClient httpClient, Uri uri, IEnumerable<KeyValuePair<string, string>>? headers, CancellationToken cancellationToken = default)
         {
+            if (uri.LocalPath.Contains("m3u8"))
+                return uri;
+
             var raw = await GetLiveStreamInfo(httpClient,uri, headers, cancellationToken);
             var data= ExtractStreamInfos(raw);
             var requestUrl = GetRequestUrl(data);
