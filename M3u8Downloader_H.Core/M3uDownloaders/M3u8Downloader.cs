@@ -55,7 +55,6 @@ namespace M3u8Downloader_H.Core.M3uDownloaders
             {
                 for (int i = 0; i < TaskNumber; i++)
                 {
-                    //Tasks[i] = Task.Run(async () => await DownloadCallBack(m3UFileInfo, filePath, Headers, skipRequestError, cancellationToken), cancellationToken);
                     Tasks[i] = DownloadCallBack(m3UFileInfo, filePath, Headers, skipRequestError, cancellationToken);
                 }
 

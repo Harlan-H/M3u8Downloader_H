@@ -18,8 +18,6 @@ namespace M3u8Downloader_H.Core.M3uDownloaders
             _pluginDownload = downloadService;
         }
 
-        //不在试图处理插件的任何操作
-        //当时需要重置或者初始化某些数据的时候 完全交给插件自己去处理
         public override async ValueTask Initialization(CancellationToken cancellationToken)
         {
             using var tokenSource = cancellationToken.CancelTimeOut(TimeOut);
