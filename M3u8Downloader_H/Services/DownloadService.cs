@@ -68,7 +68,7 @@ namespace M3u8Downloader_H.Services
 
             try
             {
-                downloadRate.Run(cancellationToken);
+                downloadRate.Run();
                 int count = 0;
                 while(true)
                 {
