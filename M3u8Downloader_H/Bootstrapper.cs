@@ -22,7 +22,7 @@ namespace M3u8Downloader_H
         protected override void Configure()
         {
             simpleContainer
-                .PerRequest<IWindowManager, WindowManager>();
+                .Singleton<IWindowManager, WindowManager>();
 
             simpleContainer
                 .Singleton<SettingsService>()
