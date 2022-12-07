@@ -4,7 +4,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using M3u8Downloader_H.Common.M3u8Infos;
 using M3u8Downloader_H.Common.Extensions;
-using Newtonsoft.Json.Linq;
 using System;
 using M3u8Downloader_H.Core.Utils.Extensions;
 
