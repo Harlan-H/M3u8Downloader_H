@@ -21,15 +21,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "M3u8Downloader_H.M3U8.Attri
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "M3u8Downloader_H.Plugin.Abstractions", "M3u8Downloader_H.Plugin.Abstractions\M3u8Downloader_H.Plugin.Abstractions.csproj", "{2044E0FB-43D0-4FA0-B589-F23C904CE6C9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "M3u8Downloader_H.bilibili.plugin", "Plugins\M3u8Downloader_H.bilibili.plugin\M3u8Downloader_H.bilibili.plugin.csproj", "{0CF34F12-5A53-4C2F-99AC-D2F4B6EEFF59}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "M3u8Downloader_H.Test", "M3u8Downloader_H.Test\M3u8Downloader_H.Test.csproj", "{224B2D03-394B-4C9A-B05F-856C5EF67F29}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "M3u8Downloader_H.vlive.plugin", "Plugins\M3u8Downloader_H.vlive.plugin\M3u8Downloader_H.vlive.plugin.csproj", "{E68BC643-F316-4A0F-A7D5-89AD4A7912D4}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "M3u8Downloader_H.555dd7.plugin", "Plugins\M3u8Downloader_H.555dd7.plugin\M3u8Downloader_H.555dd7.plugin.csproj", "{4D500E52-5B92-4884-87DD-31597CD1157C}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "M3u8Downloader_H.Test", "M3u8Downloader_H.Test\M3u8Downloader_H.Test.csproj", "{224B2D03-394B-4C9A-B05F-856C5EF67F29}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "M3u8Downloader_H.douyin.plugin", "Plugins\M3u8Downloader_H.douyin.plugin\M3u8Downloader_H.douyin.plugin.csproj", "{BB91CFFA-DFED-4C4F-95B1-4EECC5940429}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "M3u8Downloader_H.PluginManager", "M3u8Downloader_H.PluginManager\M3u8Downloader_H.PluginManager.csproj", "{7827FEA2-C039-4960-943C-1BFB218FC979}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
