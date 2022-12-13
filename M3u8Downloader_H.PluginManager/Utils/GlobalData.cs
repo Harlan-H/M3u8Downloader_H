@@ -8,7 +8,7 @@ namespace M3u8Downloader_H.PluginManager.Utils
 {
     public class GlobalData
     {
-        public static Uri DataSetUrl { get; } = new("https://ghproxy.com/raw.githubusercontent.com/Harlan-H/M3u8Downloader_H.Plugins/develop/datasets.json");
+        public static Uri DataSetUrl { get; } = new("https://ghproxy.com/raw.githubusercontent.com/Harlan-H/M3u8Downloader_H.Plugins/master/datasets.json");
         public static Uri DownloadBaseUrl { get; } = new("https://ghproxy.com/https://github.com/Harlan-H/M3u8Downloader_H.Plugins/releases/latest/download/");
 
         public static string PluginDirectory { get; } =
