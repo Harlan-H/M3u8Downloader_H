@@ -3,13 +3,14 @@ using System.Net;
 using System.Windows;
 using System.Collections.Generic;
 using Caliburn.Micro;
-using M3u8Downloader_H.Services;
-using M3u8Downloader_H.ViewModels;
+using M3u8Downloader_H.PluginManager.ViewModels;
+using M3u8Downloader_H.PluginManager.Services;
+
 #if !DEBUG
 using System.Windows.Threading;
 #endif
 
-namespace M3u8Downloader_H
+namespace M3u8Downloader_H.PluginManager
 {
     public class Bootstrapper : BootstrapperBase
     {
@@ -25,12 +26,9 @@ namespace M3u8Downloader_H
                 .Singleton<IWindowManager, WindowManager>();
 
             simpleContainer
-                .Singleton<SettingsService>()
-                .Singleton<DownloadService>()
-                .Singleton<SoundService>()
                 .Singleton<PluginService>()
-                .PerRequest<MainWindowViewModel>()
-                .PerRequest<DownloadViewModel>();
+                .PerRequest<DownloadViewModel>()
+                .PerRequest<MainWindowViewModel>();
         }
 
         protected override object GetInstance(Type service, string key)
@@ -50,7 +48,7 @@ namespace M3u8Downloader_H
 
         protected override async void OnStartup(object sender, StartupEventArgs e)
         {
-            ServicePointManager.DefaultConnectionLimit = 2000;
+            ServicePointManager.DefaultConnectionLimit = 20;
             await DisplayRootViewForAsync<MainWindowViewModel>();
         }
 

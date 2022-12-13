@@ -28,9 +28,9 @@ jobs:
       - name: Publish
         run: |
           dotnet publish M3u8Downloader_H/ -o M3u8Downloader_H/bin/Publish --configuration Release
-          Plugins/BuildAll.ps1 M3u8Downloader_H/bin/Publish/
+          dotnet publish M3u8Downloader_H.M3u8Downloader_H.PluginManager/ -o M3u8Downloader_H/bin/Publish --configuration Release
           dotnet publish M3u8Downloader_H/ -o M3u8Downloader_H/bin/PublishSingleFile -c Release --self-contained true -r win7-x64  -p:PublishSingleFile=true
-          Plugins/BuildAll.ps1 M3u8Downloader_H/bin/PublishSingleFile/
+          dotnet publish M3u8Downloader_H.M3u8Downloader_H.PluginManager/ -o M3u8Downloader_H/bin/PublishSingleFile -c Release --self-contained true -r win7-x64  -p:PublishSingleFile=true
 
       - name: Upload artifacts normal
         if: ${{ github.event_name == 'push' && github.ref_type == 'tag' }}

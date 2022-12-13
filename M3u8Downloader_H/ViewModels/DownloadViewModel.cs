@@ -29,7 +29,7 @@ namespace M3u8Downloader_H.ViewModels
 
         public double RecordDuration { get; set; }
 
-        public long DownloadRateBytes { get; set; }
+        public long DownloadRateBytes { get; set; } = -1;
 
         public bool IsActive { get; private set; }
 

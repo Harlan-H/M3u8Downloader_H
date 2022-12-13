@@ -4,10 +4,11 @@
   - [M3u8Downloader_H-SingleFile.zip](https://github.com/Harlan-H/M3u8Downloader_H/releases/latest/download/M3u8Downloader_H-SingleFile.zip)  不需要.net 6运行库  
   **如果你是win7用户 不管你用哪个版本都必须安装KB4457144 ,具体看下面的环境问题，点击上方版本直接下载**
 
-# 下一步计划
- - 目前支持已经支持直接通过网址下载m3u8视频的有b站直播，抖音直播，vlive视频，555dd7影视站
- - 那如果你遇到没有适配得网站,同时又需要适配那么可以给我留言,如果你也是开发者你也想加入那可以提交pr
- - 后续得开发还将继续对一些网站进行适配
+# M3u8Downloader_H.PluginManager
+ - 此文件是一个插件管理程序，主要是动态下载或者更新插件
+ - 以后得插件下载,更新等操作不在本项目进行
+ - 插件项目地址：https://github.com/Harlan-H/M3u8Downloader_H.Plugins
+
   
 # 特点
  - 支持多线程，多任务,断点续传
@@ -38,6 +39,17 @@
     - 下载一个更新KB4457144   地址：http://download.windowsupdate.com/d/msdownload/update/software/secu/2018/09/windows6.1-kb4457144-x64_5ca467d42deadc2b2f4010c4a26b4a6903790dd5.msu
     - 如果上面两个步骤都做了还是不行 这边给你提供一个参考资料  [点击跳转](https://www.cnblogs.com/simadi/p/14410536.html)
 
+
+# 开发相关
+ - 本项目不依赖任何第三方的下载器，解析器,所有下载及解析实现全部由本程序自己实现
+ - 核心只使用了一个cli的库,转码采用的ffmpeg,因为本人对音视频不熟悉没有办法自己实现
+
+## 依赖
+ ####  本项目一共使用这4个库,前3个都是针对界面的
+ - [Caliburn.Micro](https://github.com/Caliburn-Micro/Caliburn.Micro) : mvvm框架
+ - [MaterialDesignThemes](https://github.com/MaterialDesignInXAML/MaterialDesignInXamlToolkit) : ui库
+ - [PropertyChanged.Fody](https://github.com/Fody/PropertyChanged) : 属性绑定库,此库功能非常强大,他可以自动生成NotifyOfPropertyChange相关代码
+ - [CliWrap](https://github.com/Tyrrrz/CliWrap) : 对命令行调用的封装库
 
 # 截图
 ![QQ截图20221120192851](https://user-images.githubusercontent.com/39378318/202899529-a6d8ae44-f578-4312-b6b7-77d354c874b4.png)

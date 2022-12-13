@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Buffers;
 using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -11,6 +11,7 @@ namespace M3u8Downloader_H.Core.Utils
         private readonly Stream stream;
         private readonly IProgress<long> _downloadrate = default!;
         private Memory<byte> _tsMemory = Memory<byte>.Empty;
+        private byte[]? _buffer;
         private int _position;
 
         public override bool CanRead => true;
@@ -36,23 +37,26 @@ namespace M3u8Downloader_H.Core.Utils
         protected override void Dispose(bool disposing)
         {
             stream?.Dispose();
+            if(_buffer is not null)
+                ArrayPool<byte>.Shared.Return(_buffer);
             base.Dispose(disposing);
         }
 
         public async Task InitializePositionAsync(int capacity,CancellationToken cancellationToken = default)
         {
-            //循环读取的目的是 他可能一次性没有办法读到我需要的数据
-            byte[] buffer = new byte[capacity];
-            Memory<byte> memory = new(buffer);
-            int bytesRead, curPos = 0;
+            //循环读取的目的是 他可能一次性没有办法读到我需要的数据    
+            _buffer = ArrayPool<byte>.Shared.Rent(capacity);
+            Memory<byte> memory = new(_buffer);
+            int bytesRead, totalBytes = 0;
             do
             {
-                bytesRead = await stream.ReadAsync(memory[curPos..capacity], cancellationToken);
-                curPos += bytesRead;
-            } while (curPos < capacity);
+                
+                bytesRead = await stream.ReadAsync(memory[totalBytes..capacity], cancellationToken);
+                totalBytes += bytesRead;
+            } while (bytesRead > 0 && totalBytes < capacity);
 
-            int pos = FindTsMagic(buffer, capacity) ?? throw new InvalidDataException("数据流中没有找到ts结构已退出");
-            _tsMemory = memory[pos..];
+            int pos = FindTsMagic(_buffer, totalBytes) ?? throw new InvalidDataException("数据流中没有找到ts结构已退出");
+            _tsMemory = memory[pos..totalBytes];
         }
 
         private static int? FindTsMagic(byte[] data, int length)
