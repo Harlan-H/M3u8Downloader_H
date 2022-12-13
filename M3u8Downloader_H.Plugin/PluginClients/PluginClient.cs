@@ -34,8 +34,14 @@ namespace M3u8Downloader_H.Plugin.PluginClients
 
         private static Type? LoadLibrary(string path)
         {
-            Type[] exportTypes = Assembly.LoadFrom(path).GetExportedTypes();
-            return exportTypes.FirstOrDefault(i => typeof(IPluginBuilder).IsAssignableFrom(i));
+            try
+            {
+                Type[] exportTypes = Assembly.LoadFrom(path).GetExportedTypes();
+                return exportTypes.FirstOrDefault(i => typeof(IPluginBuilder).IsAssignableFrom(i));
+            }catch(FileLoadException)
+            {
+                return null;
+            }
         }
 
         public IPluginBuilder? CreatePluginBuilder(string? key)

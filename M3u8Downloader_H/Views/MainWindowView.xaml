@@ -200,9 +200,10 @@
                             <Run FontWeight="SemiBold" Text="复制错误信息" />
                             <Run Text="也可以获取详细得错误信息" />
                             <LineBreak />
-                            <Run Text="最下方是" />
-                            <Run FontWeight="SemiBold" Text="RestApi" />
-                            <Run Text="的监听地址,可以使用其他语言发起请求,详情查看帮助文档RestApi" />
+                            <Run Text="出现" />
+                            <Run FontWeight="SemiBold" Text="RestApi初始化失败" />
+                            <Run Text="不会影响程序得正常使用,如有需要请看帮助文档" />
+                            <Run FontWeight="SemiBold" Text="Rest Api" />
                             <LineBreak />
                             <Run Text="更多用法可以查看在线帮助文档(地址在关于里)" />
                         </TextBlock>
