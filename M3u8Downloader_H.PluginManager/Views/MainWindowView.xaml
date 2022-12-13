@@ -9,6 +9,7 @@
         xmlns:models="clr-namespace:M3u8Downloader_H.PluginManager.Models"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         d:DataContext="{d:DesignInstance Type=viewmodels:MainWindowViewModel}"
+        
         ResizeMode="CanMinimize"
         mc:Ignorable="d"
         Height="500" Width="800">

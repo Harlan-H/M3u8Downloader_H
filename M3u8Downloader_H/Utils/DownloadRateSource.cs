@@ -13,7 +13,6 @@ namespace M3u8Downloader_H.Utils
         public DownloadRateSource(Action<long> Handler)
         {
             _handler = Handler;
-            _handler(-1);
             _timer = new Timer(s => TimerCallback());
         }
 
