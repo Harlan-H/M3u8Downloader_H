@@ -23,8 +23,9 @@ namespace M3u8Downloader_H.Utils
 
         private void TimerCallback()
         {
-            var bytes = _BitRateValue - _lastBitRateValue;
-            _lastBitRateValue = _BitRateValue;
+            var bit = _BitRateValue;
+            var bytes = bit - _lastBitRateValue;
+            _lastBitRateValue = bit;
             _handler.Invoke(bytes);
         }
 
