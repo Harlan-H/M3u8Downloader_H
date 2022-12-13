@@ -13,6 +13,11 @@
 		<DebugSymbols>False</DebugSymbols>
 		<DebugType>None</DebugType>
 	</PropertyGroup>
+
+	<Target Name="Delete Files" AfterTargets="Publish">
+		<Message Text="Delete $(PublishDir)$(ProjectName).deps.json" Importance="high" />
+		<Delete Files="$(PublishDir)$(ProjectName).deps.json" />
+	</Target>
 	
   <ItemGroup>
     <None Remove="icon.ico" />
