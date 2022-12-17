@@ -16,6 +16,7 @@ namespace M3u8Downloader_H.Core.DownloaderSources
     {
         private bool _firstTimeToRun = true;
         private readonly int _downloadStatus = 1;
+        private static readonly Random _rand = Random.Shared;
 
         private void AddMedias(M3UFileInfo m3UFileinfo)
         {
@@ -122,11 +123,12 @@ namespace M3u8Downloader_H.Core.DownloaderSources
             {
                 m3ufileinfo = await GetLiveFileInfos(url, Headers, cancellationToken);
                 //判断新的内容里 上次最后一条数据所在的位置，同时跳过那条数据 取出剩下所有内容
-                IEnumerable<M3UMediaInfo> newMediaInfos = m3ufileinfo.MediaFiles.Skip(m => m == oldMediafile).ToList();
+                IEnumerable<M3UMediaInfo> newMediaInfos = m3ufileinfo.MediaFiles.Skip(m => m == oldMediafile);
                 if (!newMediaInfos.Any())
                 {
                     //当newMediaInfos数量为0 说明新的数据 跟旧的数据完全一致  则延迟上次最后一项数据的Duration
-                    double delayTime = m3ufileinfo.MediaFiles.Last().Duration;
+                    int index = _rand.Next(m3ufileinfo.MediaFiles.Count);
+                    double delayTime = m3ufileinfo.MediaFiles[index].Duration;
                     await Task.Delay(TimeSpan.FromSeconds(delayTime), cancellationToken);
                     continue;
                 }
