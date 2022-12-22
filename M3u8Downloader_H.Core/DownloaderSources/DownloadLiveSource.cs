@@ -1,4 +1,5 @@
-﻿using M3u8Downloader_H.Common.M3u8Infos;
+﻿using M3u8Downloader_H.Common.Extensions;
+using M3u8Downloader_H.Common.M3u8Infos;
 using M3u8Downloader_H.Core.M3uDownloaders;
 using M3u8Downloader_H.Core.Utils.Extensions;
 using System;
@@ -17,6 +18,7 @@ namespace M3u8Downloader_H.Core.DownloaderSources
         private bool _firstTimeToRun = true;
         private readonly int _downloadStatus = 1;
         private static readonly Random _rand = Random.Shared;
+        private long _index;
 
         private void AddMedias(M3UFileInfo m3UFileinfo)
         {
@@ -29,16 +31,28 @@ namespace M3u8Downloader_H.Core.DownloaderSources
             }
         }
 
+        public IList<M3UMediaInfo> RenameTitle(IEnumerable<M3UMediaInfo> m3UMediaInfos)
+        {
+            foreach (var item in m3UMediaInfos)
+            {
+                item.Title = $"{++_index}.tmp";
+            }
+            return m3UMediaInfos.ToList();
+        }
+
+
         private async ValueTask<M3UFileInfo> GetM3U8FileInfoAsync(CancellationToken cancellationToken = default)
         {
             if (_firstTimeToRun)
             {
-                M3UFileInfo.MediaFiles.GenerateTitle();
+                //RenameTitle(M3UFileInfo.MediaFiles);
                 _firstTimeToRun = false;
                 return M3UFileInfo!;
             }
 
-            return await GetLiveFileInfos(Url, Headers, cancellationToken);
+            var m3uFileInfo = await GetLiveFileInfos(Url, Headers, cancellationToken);
+            RenameTitle(m3uFileInfo.MediaFiles);
+            return m3uFileInfo;
         }
 
         public override async Task DownloadAsync(CancellationToken cancellationToken = default)
@@ -51,7 +65,7 @@ namespace M3u8Downloader_H.Core.DownloaderSources
             m3U8Downloader.Headers = Headers;
 
             SetStatusDelegate(_downloadStatus);
-            
+
             FileInfo fileInfo = new(VideoFullName);
             //当文件存在且大小不为零得情况下说明是旧得任务重新开始得
             if (!(fileInfo.Exists && fileInfo.Length > 0))
@@ -126,14 +140,14 @@ namespace M3u8Downloader_H.Core.DownloaderSources
                 IEnumerable<M3UMediaInfo> newMediaInfos = m3ufileinfo.MediaFiles.Skip(m => m == oldMediafile);
                 if (!newMediaInfos.Any())
                 {
-                    //当newMediaInfos数量为0 说明新的数据 跟旧的数据完全一致  则延迟上次最后一项数据的Duration
+                    //当newMediaInfos数量为0 说明新的数据 跟旧的数据完全一致  则随机延迟上次某项数据的Duration
                     int index = _rand.Next(m3ufileinfo.MediaFiles.Count);
                     double delayTime = m3ufileinfo.MediaFiles[index].Duration;
                     await Task.Delay(TimeSpan.FromSeconds(delayTime), cancellationToken);
                     continue;
                 }
-                //防止缓存视频出现重名的问题，重新生成新的名称
-                m3ufileinfo.MediaFiles = newMediaInfos.GenerateTitle();
+                //重新修改成新的名称，方便中途停止及后续合并
+                m3ufileinfo.MediaFiles = RenameTitle(newMediaInfos);
                 IsEnded = false;
                 break;
             }
