@@ -79,7 +79,7 @@
                         </TextBlock>
                     </DockPanel.ToolTip>
                     <TextBlock Text="超时时间: " Style="{StaticResource TextBlockStyle}" />
-                    <Slider Height="20" Minimum="10" Maximum="300" TickFrequency="5" Value="{Binding Timeouts}" Style="{StaticResource MaterialDesignDiscreteSlider}" />
+                    <Slider Height="20" Minimum="1" Maximum="300" TickFrequency="1" Value="{Binding Timeouts}" Style="{StaticResource MaterialDesignDiscreteSlider}" />
                 </DockPanel>
 
                 <DockPanel Margin="8 0 8 0" ToolTip="视频保存路径，默认在当前程序目录下">
