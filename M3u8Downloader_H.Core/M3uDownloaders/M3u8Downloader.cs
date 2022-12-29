@@ -49,12 +49,12 @@ namespace M3u8Downloader_H.Core.M3uDownloaders
                 throw new InvalidOperationException($"获取map失败,地址为:{m3UMapInfo.Uri.OriginalString}");
         }
 
-        public async Task Start(M3UFileInfo m3UFileInfo, int TaskNumber, string filePath, int reserve0, bool skipRequestError = false, CancellationToken cancellationToken = default)
+        public async Task Start(M3UFileInfo m3UFileInfo, int taskNumber, string filePath, int reserve0, bool skipRequestError = false, CancellationToken cancellationToken = default)
         {
-            Task[] Tasks = new Task[TaskNumber];
+            Task[] Tasks = new Task[taskNumber];
             try
             {
-                for (int i = 0; i < TaskNumber; i++)
+                for (int i = 0; i < taskNumber; i++)
                 {
                     Tasks[i] = DownloadCallBack(m3UFileInfo, filePath, Headers, skipRequestError, cancellationToken);
                 }
