@@ -18,6 +18,7 @@ namespace M3u8Downloader_H.Core.DownloaderSources
             m3U8Downloade.Progress = VodProgress;
             m3U8Downloade.DownloadRate = _downloadRate;
             m3U8Downloade.Headers = Headers;
+            m3U8Downloade.RetryCount = _retryCount;
 
             SetStatusDelegate(_downloadStatus);
             await m3U8Downloade.Initialization(cancellationToken);

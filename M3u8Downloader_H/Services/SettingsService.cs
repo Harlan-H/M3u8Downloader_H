@@ -18,11 +18,11 @@ namespace M3u8Downloader_H.Services
         /// <summary>
         /// 同时下载的任务数量
         /// </summary>
-        [Range(1,10)]
+        [Range(1,30)]
         public int MaxConcurrentDownloadCount { get; set; } = 3;
 
-        [Range(0, 10)]
-        public int RetryCount { get; set; } = 1;
+        [Range(1, 20)]
+        public int RetryCount { get; set; } = 5;
 #if DEBUG
         public string SavePath { get; set; } = @"E:\desktop\download";
 #else

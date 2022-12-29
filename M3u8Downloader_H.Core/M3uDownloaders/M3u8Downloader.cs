@@ -23,6 +23,7 @@ namespace M3u8Downloader_H.Core.M3uDownloaders
         public IEnumerable<KeyValuePair<string, string>>? Headers { get; set; } = default;
         public IProgress<double> Progress { get; set; } = default!;
         public IProgress<long> DownloadRate { get; set; } = default!;
+        public int RetryCount { get; set; } = default!;
 
         public int TimeOut { get; set; } = 10 * 1000;
         public M3u8Downloader()
@@ -126,7 +127,7 @@ namespace M3u8Downloader_H.Core.M3uDownloaders
         protected async Task<bool> DownloadAsynInternal(Uri uri, IEnumerable<KeyValuePair<string, string>>? headers, RangeHeaderValue? rangeHeaderValue, string mediaPath, bool skipRequestError, CancellationToken token)
         {
             bool IsSuccessful = false;
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < RetryCount; i++)
             {
                 try
                 {

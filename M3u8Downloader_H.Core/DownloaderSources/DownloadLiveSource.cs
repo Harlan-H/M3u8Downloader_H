@@ -45,7 +45,7 @@ namespace M3u8Downloader_H.Core.DownloaderSources
         {
             if (_firstTimeToRun)
             {
-                //RenameTitle(M3UFileInfo.MediaFiles);
+                RenameTitle(M3UFileInfo.MediaFiles);
                 _firstTimeToRun = false;
                 return M3UFileInfo!;
             }
@@ -63,6 +63,7 @@ namespace M3u8Downloader_H.Core.DownloaderSources
             m3U8Downloader.Progress = LiveProgress;
             m3U8Downloader.DownloadRate = _downloadRate;
             m3U8Downloader.Headers = Headers;
+            m3U8Downloader.RetryCount = _retryCount;
 
             SetStatusDelegate(_downloadStatus);
 

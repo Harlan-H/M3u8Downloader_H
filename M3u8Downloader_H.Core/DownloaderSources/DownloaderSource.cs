@@ -31,10 +31,12 @@ namespace M3u8Downloader_H.Core.DownloaderSources
         public IDownloadService? downloadService = default!;
         public IM3UFileInfoMananger M3uReader = default!;
 
+        
         protected string PluginPath = default!;
         protected int _taskNumber;
         protected int _timeouts = default!;
         protected double _maxRecordDuration;
+        protected int _retryCount;
         protected bool _skipRequestError = false;
         protected bool _forceMerge;
         protected string _formats = default!;
@@ -118,6 +120,12 @@ namespace M3u8Downloader_H.Core.DownloaderSources
         public IDownloaderSource WithHeaders(IEnumerable<KeyValuePair<string, string>>? headers)
         {
             Headers ??= headers;
+            return this;
+        }
+
+        public IDownloaderSource WithRetryCount(int retry)
+        {
+            _retryCount = retry;
             return this;
         }
 

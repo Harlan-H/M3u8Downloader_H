@@ -18,6 +18,7 @@ namespace M3u8Downloader_H.Core.DownloaderSources
         IDownloaderSource WithCleanUp(bool isCleanUp);
         IDownloaderSource WithSkipDirectoryExist(bool skipexist);
         IDownloaderSource WithHeaders(IEnumerable<KeyValuePair<string, string>>? headers);
+        IDownloaderSource WithRetryCount(int retry);
         Task DownloadAsync(CancellationToken cancellationToken = default);
 
     }
