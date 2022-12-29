@@ -23,6 +23,7 @@ namespace M3u8Downloader_H.Core.M3uDownloaders
         public IEnumerable<KeyValuePair<string, string>>? Headers { get; set; } = default;
         public IProgress<double> Progress { get; set; } = default!;
         public IProgress<long> DownloadRate { get; set; } = default!;
+        public int RetryCount { get; set; } = default!;
 
         public int TimeOut { get; set; } = 10 * 1000;
         public M3u8Downloader()
@@ -48,12 +49,12 @@ namespace M3u8Downloader_H.Core.M3uDownloaders
                 throw new InvalidOperationException($"获取map失败,地址为:{m3UMapInfo.Uri.OriginalString}");
         }
 
-        public async Task Start(M3UFileInfo m3UFileInfo, int TaskNumber, string filePath, int reserve0, bool skipRequestError = false, CancellationToken cancellationToken = default)
+        public async Task Start(M3UFileInfo m3UFileInfo, int taskNumber, string filePath, int reserve0, bool skipRequestError = false, CancellationToken cancellationToken = default)
         {
-            Task[] Tasks = new Task[TaskNumber];
+            Task[] Tasks = new Task[taskNumber];
             try
             {
-                for (int i = 0; i < TaskNumber; i++)
+                for (int i = 0; i < taskNumber; i++)
                 {
                     Tasks[i] = DownloadCallBack(m3UFileInfo, filePath, Headers, skipRequestError, cancellationToken);
                 }
@@ -126,7 +127,7 @@ namespace M3u8Downloader_H.Core.M3uDownloaders
         protected async Task<bool> DownloadAsynInternal(Uri uri, IEnumerable<KeyValuePair<string, string>>? headers, RangeHeaderValue? rangeHeaderValue, string mediaPath, bool skipRequestError, CancellationToken token)
         {
             bool IsSuccessful = false;
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < RetryCount; i++)
             {
                 try
                 {

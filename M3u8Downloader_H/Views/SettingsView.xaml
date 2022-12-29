@@ -51,23 +51,21 @@
 
                 <DockPanel Margin="8 0 8 0" ToolTip="同时下载视频的数量" >
                     <TextBlock Text="任务数量: " Style="{StaticResource TextBlockStyle}" />
-                    <Slider Height="20" Minimum="1" Maximum="10" TickFrequency="1" Value="{Binding MaxConcurrentDownloadCount}" Style="{StaticResource MaterialDesignDiscreteSlider}" />
+                    <Slider Height="20" Minimum="1" Maximum="30" TickFrequency="1" Value="{Binding MaxConcurrentDownloadCount}" Style="{StaticResource MaterialDesignDiscreteSlider}" />
                 </DockPanel>
 
                 <DockPanel Margin="8 0 8 0">
                     <DockPanel.ToolTip>
                         <TextBlock>
-                            <Run Text="当下载的视频数不完整时，自动重试的次数" />
+                            <Run Text="当下载的视频数时,会出现网络错误,及一些其他得问题" />
                             <LineBreak/>
-                            <Run Text="注意：" />
-                            <LineBreak/>
-                            <Run Text="只有下载ts的数量跟m3u8文件中的数量不一致时，才会重试" />
-                            <LineBreak/>
-                            <Run Text="其他类型的错误 是不会自动重试的" />
+                            <Run Text="设置好重试次数,就可以正常下载完成" />
+                            <LineBreak />
+                            <Run Text="重试次数只影响下载ts流" />
                         </TextBlock>
                     </DockPanel.ToolTip>
                     <TextBlock Text="重试次数: " Style="{StaticResource TextBlockStyle}" />
-                    <Slider Height="20" Minimum="0" Maximum="10" TickFrequency="1" Value="{Binding RetryCount}" Style="{StaticResource MaterialDesignDiscreteSlider}" />
+                    <Slider Height="20" Minimum="1" Maximum="20" TickFrequency="1" Value="{Binding RetryCount}" Style="{StaticResource MaterialDesignDiscreteSlider}" />
                 </DockPanel>
 
                 <DockPanel Margin="8 0 8 0">
@@ -81,7 +79,7 @@
                         </TextBlock>
                     </DockPanel.ToolTip>
                     <TextBlock Text="超时时间: " Style="{StaticResource TextBlockStyle}" />
-                    <Slider Height="20" Minimum="10" Maximum="300" TickFrequency="5" Value="{Binding Timeouts}" Style="{StaticResource MaterialDesignDiscreteSlider}" />
+                    <Slider Height="20" Minimum="1" Maximum="300" TickFrequency="1" Value="{Binding Timeouts}" Style="{StaticResource MaterialDesignDiscreteSlider}" />
                 </DockPanel>
 
                 <DockPanel Margin="8 0 8 0" ToolTip="视频保存路径，默认在当前程序目录下">

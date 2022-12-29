@@ -57,6 +57,7 @@ namespace M3u8Downloader_H.Services
                 .WithDownloadRate(downloadRate)
                 .WithTaskNumber(settingService.MaxThreadCount)
                 .WithTimeout(settingService.Timeouts)
+                .WithRetryCount(settingService.RetryCount)
                 .WithSkipRequestError(settingService.SkipRequestError)
                 .WithSkipDirectoryExist(settingService.SkipDirectoryExist)
                 .WithSavePath(settingService.SavePath)
@@ -69,21 +70,7 @@ namespace M3u8Downloader_H.Services
             try
             {
                 downloadRate.Run();
-                int count = 0;
-                while(true)
-                {
-                    try
-                    {
-                        await downloaderSource.DownloadAsync(cancellationToken);
-                        break;
-                    }
-                    catch (DataMisalignedException) when (count < settingService.RetryCount)
-                    {
-                        await Task.Delay(3000, cancellationToken);
-                        count++;
-                        continue;
-                    }
-                }
+                await downloaderSource.DownloadAsync(cancellationToken);
             }
             finally
             {

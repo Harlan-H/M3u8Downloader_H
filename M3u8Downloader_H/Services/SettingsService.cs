@@ -18,11 +18,11 @@ namespace M3u8Downloader_H.Services
         /// <summary>
         /// 同时下载的任务数量
         /// </summary>
-        [Range(1,10)]
+        [Range(1,30)]
         public int MaxConcurrentDownloadCount { get; set; } = 3;
 
-        [Range(0, 10)]
-        public int RetryCount { get; set; } = 1;
+        [Range(1, 20)]
+        public int RetryCount { get; set; } = 5;
 #if DEBUG
         public string SavePath { get; set; } = @"E:\desktop\download";
 #else
@@ -50,7 +50,7 @@ namespace M3u8Downloader_H.Services
 #else
         public double RecordDuration { get; set; } = 60 * 60 * 12;
 #endif
-        [Range(10,300)]
+        [Range(1,300)]
         public int Timeouts { get; set; } = 10;
 
         public SettingsService()
