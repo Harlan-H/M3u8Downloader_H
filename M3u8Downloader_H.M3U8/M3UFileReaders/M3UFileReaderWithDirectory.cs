@@ -16,9 +16,11 @@ namespace M3u8Downloader_H.M3U8.M3UFileReaders
             if (!fileinfos.Any())
                 throw new InvalidOperationException("此文件夹中没有任何文件");
 
+
             M3UFileInfo m3UFileInfo = new()
             {
                 Key = GetM3UKeyInfo(fileinfos)!,
+                Map = GetMapMediaInfo(fileinfos),
                 MediaFiles = GetM3UMediaInfos(fileinfos),
                 PlaylistType = "VOD"
             };
@@ -32,6 +34,14 @@ namespace M3u8Downloader_H.M3U8.M3UFileReaders
             {
                 return GetM3UKeyInfo(null, keyInfos.FullName, null, null);
             }
+            return null;
+        }
+
+        private M3UMediaInfo? GetMapMediaInfo(IEnumerable<FileInfo> fileInfos)
+        {
+            var mapMediaInfo = fileInfos.FirstOrDefault(f => f.Name.StartsWith("header.", StringComparison.CurrentCultureIgnoreCase));
+            if (mapMediaInfo is not null)
+                return GetM3UMediaInfo(mapMediaInfo.FullName, mapMediaInfo.Name);
             return null;
         }
 
