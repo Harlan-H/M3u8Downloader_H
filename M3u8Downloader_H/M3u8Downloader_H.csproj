@@ -7,8 +7,8 @@
     <UseWindowsForms>true</UseWindowsForms>
     <RootNamespace>M3u8Downloader_H</RootNamespace>
     <Platforms>AnyCPU;x64</Platforms>
-    <AssemblyVersion>3.12.8.0</AssemblyVersion>
-    <Version>3.12.8.0</Version>
+    <AssemblyVersion>3.12.9.0</AssemblyVersion>
+    <Version>3.12.9.0</Version>
     <PackageId>m3u8视频下载器</PackageId>
     <Product>m3u8视频下载器</Product>
     <ApplicationIcon>icon.ico</ApplicationIcon>
@@ -40,7 +40,7 @@
 	
   <ItemGroup>
     <PackageReference Include="Caliburn.Micro" Version="4.0.212" />
-    <PackageReference Include="MaterialDesignThemes" Version="4.3.0" />
+    <PackageReference Include="MaterialDesignThemes" Version="4.9.0" />
     <PackageReference Include="PropertyChanged.Fody" Version="4.1.0" PrivateAssets="All" />
   </ItemGroup>
 
