@@ -10,7 +10,7 @@ using System.Windows.Media.Animation;
 
 namespace M3u8Downloader_H.Behaviors
 {
-    internal class HeightAnimationTriggerAction : TriggerAction<TextBox>
+    internal class HeightAnimationTriggerAction : TriggerAction<Button>
     {
         // Using a DependencyProperty as the backing store for MyProperty.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty TargetControlProperty =

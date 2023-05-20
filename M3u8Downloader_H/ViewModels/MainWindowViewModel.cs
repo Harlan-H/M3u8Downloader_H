@@ -90,13 +90,10 @@ namespace M3u8Downloader_H.ViewModels
 
         private void EnqueueDownload(DownloadViewModel download)
         {
-            var existingDownloads = Downloads.Where(d => d.VideoName == download.VideoName).ToArray();
-            foreach (var existingDownload in existingDownloads)
-            {
-                existingDownload.OnCancel();
-                Downloads.Remove(existingDownload);
-            }
-
+            var existingDownloads = Downloads.Where(d => d.VideoName == download.VideoName).FirstOrDefault();
+            if (existingDownloads is not null)
+                return;
+           
             download.OnStart();
             Downloads.Insert(0, download);
         }
