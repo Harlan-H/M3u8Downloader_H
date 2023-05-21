@@ -137,30 +137,57 @@
                             Margin="5" Width="150" >
                             <materialDesign:PackIcon Kind="Download" Width="24" Height="24" />
                         </Button>
-                            <Button Margin="5" Content="高级模式" Cursor="Hand" HorizontalAlignment="Center" FontSize="12">
-                                <Button.Template>
-                                    <ControlTemplate TargetType="Button">
+                            <ToggleButton Foreground="Blue" Margin="5" Cursor="Hand" HorizontalAlignment="Center" FontSize="13">
+                                <ToggleButton.Template>
+                                    <ControlTemplate TargetType="ToggleButton">
                                         <TextBlock >
                                             <ContentPresenter />
                                         </TextBlock>
                                     </ControlTemplate>
-                                </Button.Template>
-                                <Button.Style>
-                                    <Style TargetType="Button">
-                                        <Setter Property="Foreground" Value="Blue" />
+                                </ToggleButton.Template>
+                                <ToggleButton.Style>
+                                    <Style TargetType="ToggleButton">
                                         <Style.Triggers>
                                             <Trigger Property="IsMouseOver" Value="true">
                                                 <Setter Property="Foreground" Value="#af0000ff" />
                                             </Trigger>
                                         </Style.Triggers>
                                     </Style>
-                                </Button.Style>
-                                <i:Interaction.Triggers>
-                                    <i:EventTrigger EventName="Click">
-                                        <behavior:HeightAnimationTriggerAction TargetControl="{Binding ElementName=videoDownloadInfoGrid}" From="95" To="191" />
-                                    </i:EventTrigger>
-                                </i:Interaction.Triggers>
-                            </Button>
+                                </ToggleButton.Style>
+
+                                <Grid>
+                                    <Grid.ColumnDefinitions >
+                                        <ColumnDefinition Width="auto" />
+                                        <ColumnDefinition Width="4"/>
+                                        <ColumnDefinition />
+                                    </Grid.ColumnDefinitions>
+                                    <ContentControl Name="expend" RenderTransformOrigin="0.5,0.5">
+                                        <ContentControl.RenderTransform>
+                                            <RotateTransform x:Name="rotate" />
+                                        </ContentControl.RenderTransform>
+                                        <Path Stroke="{Binding Path=Foreground,RelativeSource={RelativeSource AncestorType=ToggleButton}}"  VerticalAlignment="Center" HorizontalAlignment="Center"   Data="M 1,1.5 L 4.5,5 L 8,1.5"/>
+                                    </ContentControl>
+                                    <TextBlock Grid.Column="2" Text="高级模式" />
+                                </Grid>
+                                <ToggleButton.Triggers>
+                                    <EventTrigger RoutedEvent="ToggleButton.Checked">
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <DoubleAnimation Storyboard.TargetName="expend" Storyboard.TargetProperty="RenderTransform.Angle" To="180" Duration="0:0:0.3" />
+                                                <DoubleAnimation Storyboard.TargetName="videoDownloadInfoGrid" Storyboard.TargetProperty="Height" To="191" Duration="0:0:0.3" />
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger>
+                                    <EventTrigger RoutedEvent="ToggleButton.Unchecked">
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <DoubleAnimation Storyboard.TargetName="expend" Storyboard.TargetProperty="RenderTransform.Angle" To="0" Duration="0:0:0.3" />
+                                                <DoubleAnimation Storyboard.TargetName="videoDownloadInfoGrid" Storyboard.TargetProperty="Height" To="95" Duration="0:0:0.3" />
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger>
+                                </ToggleButton.Triggers>
+                            </ToggleButton>
                         </StackPanel>
                     </Grid>
                 </Grid>
