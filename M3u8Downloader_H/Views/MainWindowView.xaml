@@ -137,7 +137,7 @@
                             Margin="5" Width="150" >
                             <materialDesign:PackIcon Kind="Download" Width="24" Height="24" />
                         </Button>
-                            <ToggleButton Foreground="Blue" Margin="5" Cursor="Hand" HorizontalAlignment="Center" FontSize="13">
+                            <ToggleButton Margin="5" Cursor="Hand" HorizontalAlignment="Center" FontSize="13">
                                 <ToggleButton.Template>
                                     <ControlTemplate TargetType="ToggleButton">
                                         <TextBlock >
@@ -147,6 +147,7 @@
                                 </ToggleButton.Template>
                                 <ToggleButton.Style>
                                     <Style TargetType="ToggleButton">
+                                        <Setter Property="Foreground" Value="Blue" />
                                         <Style.Triggers>
                                             <Trigger Property="IsMouseOver" Value="true">
                                                 <Setter Property="Foreground" Value="#af0000ff" />
