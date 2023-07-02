@@ -39,10 +39,11 @@ namespace M3u8Downloader_H.Services
 
         public async ValueTask GetM3u8FileInfo(IDownloadManager downloadManager,CancellationToken cancellationToken)
         {
+            using CancellationTokenSource cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            cancellationTokenSource.CancelAfter(TimeSpan.FromSeconds(settingService.Timeouts));
             await downloadManager
-                .WithTimeout(settingService.Timeouts)
                 .WithHeaders(settingService.Headers.ToDictionary())
-                .GetM3U8FileInfo(cancellationToken);
+                .GetM3U8FileInfo(cancellationTokenSource.Token);
         }
 
 
@@ -56,7 +57,6 @@ namespace M3u8Downloader_H.Services
             downloaderSource
                 .WithDownloadRate(downloadRate)
                 .WithTaskNumber(settingService.MaxThreadCount)
-                .WithTimeout(settingService.Timeouts)
                 .WithRetryCount(settingService.RetryCount)
                 .WithSkipRequestError(settingService.SkipRequestError)
                 .WithSkipDirectoryExist(settingService.SkipDirectoryExist)
@@ -70,7 +70,9 @@ namespace M3u8Downloader_H.Services
             try
             {
                 downloadRate.Run();
-                await downloaderSource.DownloadAsync(cancellationToken);
+                using CancellationTokenSource cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+                cancellationTokenSource.CancelAfter(TimeSpan.FromSeconds(settingService.Timeouts));
+                await downloaderSource.DownloadAsync(cancellationTokenSource!.Token);
             }
             finally
             {

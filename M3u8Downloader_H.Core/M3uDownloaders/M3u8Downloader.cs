@@ -131,11 +131,10 @@ namespace M3u8Downloader_H.Core.M3uDownloaders
             {
                 try
                 {
-                    using CancellationTokenSource cancellationToken = token.CancelTimeOut(TimeOut);
-                    (Stream tmpstream, string contentType) = await HttpClient.GetResponseContentAsync(uri, headers, rangeHeaderValue, cancellationToken.Token);
-                    using Stream stream = DownloadAfter(new HandleImageStream(tmpstream, DownloadRate), contentType, cancellationToken.Token);
+                    (Stream tmpstream, string contentType) = await HttpClient.GetResponseContentAsync(uri, headers, rangeHeaderValue, token);
+                    using Stream stream = DownloadAfter(new HandleImageStream(tmpstream, DownloadRate), contentType, token);
 
-                    await WriteToFileAsync(mediaPath, stream, cancellationToken.Token);
+                    await WriteToFileAsync(mediaPath, stream, token);
                     IsSuccessful = true;
                     break;
                 }

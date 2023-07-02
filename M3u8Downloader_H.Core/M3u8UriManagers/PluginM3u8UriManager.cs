@@ -21,12 +21,11 @@ namespace M3u8Downloader_H.Core.M3u8UriManagers
             this.headers = headers;
         }
 
-        public Task<Uri> GetM3u8UriAsync(Uri uri, int timeout, CancellationToken cancellationToken)
+        public Task<Uri> GetM3u8UriAsync(Uri uri, int reserve0, CancellationToken cancellationToken)
         {
             try
             {
-                using CancellationTokenSource cancellationTokenSource = cancellationToken.CancelTimeOut(timeout);
-                return m3U8UriProvider.GetM3u8UriAsync(httpClient, uri, headers, cancellationTokenSource.Token);
+                return m3U8UriProvider.GetM3u8UriAsync(httpClient, uri, headers, cancellationToken);
             }catch(OperationCanceledException) when(!cancellationToken.IsCancellationRequested) 
             {
                 throw new TimeoutException($"访问 {uri.OriginalString} 超时");

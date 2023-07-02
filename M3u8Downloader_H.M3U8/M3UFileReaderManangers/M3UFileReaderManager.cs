@@ -18,8 +18,6 @@ namespace M3u8Downloader_H.M3U8.M3UFileReaderManangers
         private readonly HttpClient _httpClient;
         private readonly M3UFileReaderWithStream _m3UFileReaderWithStream;
 
-        public int TimeOuts { get; set; } = 10 * 1000;
-
         public M3UFileReaderManager(IM3uFileReader? M3UFileReader,HttpClient httpClient, IDictionary<string, IAttributeReader>? attributeReaders = default!)
         {
             _httpClient = httpClient;
@@ -34,9 +32,7 @@ namespace M3u8Downloader_H.M3U8.M3UFileReaderManangers
             {
                 try
                 {
-                    using CancellationTokenSource cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-                    cancellationTokenSource.CancelAfter(TimeOuts);
-                    var m3u8FileInfo = await GetM3u8FileInfo(uri, headers, cancellationTokenSource.Token);
+                    var m3u8FileInfo = await GetM3u8FileInfo(uri, headers, cancellationToken);
                     return m3u8FileInfo.MediaFiles != null && m3u8FileInfo.MediaFiles.Any()
                         ? m3u8FileInfo
                         : throw new InvalidDataException($"'{uri.OriginalString}' 没有包含任何数据");
