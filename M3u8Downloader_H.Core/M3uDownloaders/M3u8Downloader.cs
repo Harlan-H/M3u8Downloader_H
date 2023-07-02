@@ -172,14 +172,10 @@ namespace M3u8Downloader_H.Core.M3uDownloaders
         //参数传入带类型的值 在其他操作上来判断是否要调用这个基类
         protected virtual Stream DownloadAfter(Stream stream, string contentType, CancellationToken cancellationToken)
         {
-            if (contentType.StartsWith("image", StringComparison.CurrentCultureIgnoreCase) || contentType.StartsWith("text", StringComparison.CurrentCultureIgnoreCase))
-            {
-                HandleImageStream handleImageStream =(HandleImageStream)stream;
-                Task t = handleImageStream.InitializePositionAsync(2000, cancellationToken);
-                t.Wait(cancellationToken);
-                return handleImageStream;
-            }
-            return stream;
+            HandleImageStream handleImageStream =(HandleImageStream)stream;
+            Task t = handleImageStream.InitializePositionAsync(2000, cancellationToken);
+            t.Wait(cancellationToken);
+            return handleImageStream;
         }
 
         protected static async Task WriteToFileAsync(string file, Stream stream, CancellationToken token)
