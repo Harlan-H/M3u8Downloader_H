@@ -49,9 +49,8 @@ namespace M3u8Downloader_H.Core.M3uDownloaders
         }
 
         protected override Stream DownloadAfter(Stream stream, string contentType, CancellationToken cancellationToken)
-        {
-            Stream Decryptstream = stream.AesDecrypt(m3UFileInfo.Key.BKey, m3UFileInfo.Key.IV);
-            return base.DownloadAfter(Decryptstream, contentType, cancellationToken);
+        {   
+            return stream.AesDecrypt(m3UFileInfo.Key.BKey, m3UFileInfo.Key.IV);
         }
     }
 }
