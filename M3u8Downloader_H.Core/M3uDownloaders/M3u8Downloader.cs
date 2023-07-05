@@ -127,21 +127,22 @@ namespace M3u8Downloader_H.Core.M3uDownloaders
         protected async Task<bool> DownloadAsynInternal(Uri uri, IEnumerable<KeyValuePair<string, string>>? headers, RangeHeaderValue? rangeHeaderValue, string mediaPath, bool skipRequestError, CancellationToken token)
         {
             bool IsSuccessful = false;
+            var cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(token);
+            cancellationTokenSource.CancelAfter(TimeOut);
             for (int i = 0; i < RetryCount; i++)
             {
                 try
                 {
-                    using CancellationTokenSource cancellationToken = token.CancelTimeOut(TimeOut);
-                    (Stream tmpstream, string contentType) = await HttpClient.GetResponseContentAsync(uri, headers, rangeHeaderValue, cancellationToken.Token);
-                    using Stream stream = DownloadAfter(new HandleImageStream(tmpstream, DownloadRate), contentType, cancellationToken.Token);
+                    (Stream tmpstream, string contentType) = await HttpClient.GetResponseContentAsync(uri, headers, rangeHeaderValue, cancellationTokenSource.Token);
+                    using Stream stream = DownloadAfter(new HandleImageStream(tmpstream, DownloadRate), contentType, cancellationTokenSource.Token);
 
-                    await WriteToFileAsync(mediaPath, stream, cancellationToken.Token);
+                    await WriteToFileAsync(mediaPath, stream, cancellationTokenSource.Token);
                     IsSuccessful = true;
                     break;
                 }
                 catch (OperationCanceledException) when (!token.IsCancellationRequested)
                 {
-                    await Task.Delay(2000, token);
+                    await Task.Delay(2000, cancellationTokenSource.Token);
                     continue;
                 }
                 catch (AggregateException ex) when(ex.InnerException is not InvalidDataException)
@@ -150,17 +151,17 @@ namespace M3u8Downloader_H.Core.M3uDownloaders
                     {
                         throw new CryptographicException("解密失败,请确认key,iv是否正确");
                     }
-                    await Task.Delay(2000, token);
+                    await Task.Delay(2000, cancellationTokenSource.Token);
                     continue;
                 }
                 catch (IOException)
                 {
-                    await Task.Delay(2000, token);
+                    await Task.Delay(2000, cancellationTokenSource.Token);
                     continue;
                 }
                 catch (HttpRequestException) when (skipRequestError)
                 {
-                    await Task.Delay(2000, token);
+                    await Task.Delay(2000, cancellationTokenSource.Token);
                     continue;
                 }
             }
@@ -172,14 +173,10 @@ namespace M3u8Downloader_H.Core.M3uDownloaders
         //参数传入带类型的值 在其他操作上来判断是否要调用这个基类
         protected virtual Stream DownloadAfter(Stream stream, string contentType, CancellationToken cancellationToken)
         {
-            if (contentType.StartsWith("image", StringComparison.CurrentCultureIgnoreCase) || contentType.StartsWith("text", StringComparison.CurrentCultureIgnoreCase))
-            {
-                HandleImageStream handleImageStream =(HandleImageStream)stream;
-                Task t = handleImageStream.InitializePositionAsync(2000, cancellationToken);
-                t.Wait(cancellationToken);
-                return handleImageStream;
-            }
-            return stream;
+            HandleImageStream handleImageStream =(HandleImageStream)stream;
+            Task t = handleImageStream.InitializePositionAsync(2000, cancellationToken);
+            t.Wait(cancellationToken);
+            return handleImageStream;
         }
 
         protected static async Task WriteToFileAsync(string file, Stream stream, CancellationToken token)

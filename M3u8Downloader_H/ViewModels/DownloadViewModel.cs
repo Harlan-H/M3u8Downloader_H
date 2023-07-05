@@ -70,7 +70,7 @@ namespace M3u8Downloader_H.ViewModels
                     soundService.PlaySuccess();
                     Status = DownloadStatus.Completed;
                 }
-                catch (OperationCanceledException)
+                catch (OperationCanceledException) when (cancellationTokenSource!.IsCancellationRequested)
                 {
                     Status = DownloadStatus.Canceled;
                 }

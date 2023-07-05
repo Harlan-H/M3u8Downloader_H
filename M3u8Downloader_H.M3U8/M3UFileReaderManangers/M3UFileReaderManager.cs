@@ -30,12 +30,12 @@ namespace M3u8Downloader_H.M3U8.M3UFileReaderManangers
         public async Task<M3UFileInfo> GetM3u8FileInfo(Uri uri, IEnumerable<KeyValuePair<string, string>>? headers, bool isRetry, CancellationToken cancellationToken = default)
         {
             _ = isRetry;
+            using CancellationTokenSource cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            cancellationTokenSource.CancelAfter(TimeOuts);
             for (int i = 0; i < 5; i++)
             {
                 try
                 {
-                    using CancellationTokenSource cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-                    cancellationTokenSource.CancelAfter(TimeOuts);
                     var m3u8FileInfo = await GetM3u8FileInfo(uri, headers, cancellationTokenSource.Token);
                     return m3u8FileInfo.MediaFiles != null && m3u8FileInfo.MediaFiles.Any()
                         ? m3u8FileInfo
@@ -43,7 +43,7 @@ namespace M3u8Downloader_H.M3U8.M3UFileReaderManangers
                 }
                 catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
                 {
-                    await Task.Delay(2000, cancellationToken);
+                    await Task.Delay(2000, cancellationTokenSource.Token);
                     continue;
                 }
             }

@@ -94,14 +94,13 @@ namespace M3u8Downloader_H.Core.DownloaderManagers
             return this;
         }
 
-
         public async Task GetM3U8FileInfo(CancellationToken cancellationToken)
         {
             _m3U8FileInfoMananger.TimeOuts = _timeOut;
             if (_m3UFileInfo is not null)
                 return;
 
-            _url = await _m3U8UriManager.GetM3u8UriAsync(_url, _timeOut , cancellationToken);
+            _url = await _m3U8UriManager.GetM3u8UriAsync(_url, 0 , cancellationToken);
 
             M3UFileInfo m3UFileInfo = await _m3U8FileInfoMananger.GetM3u8FileInfo(_url, m3uContent, _headers, cancellationToken);
 

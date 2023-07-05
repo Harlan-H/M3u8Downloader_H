@@ -25,11 +25,10 @@ namespace M3u8Downloader_H.Core.M3uDownloaders
             if(m3UFileInfo.Key.Uri != null && m3UFileInfo.Key.BKey == null)
             {
                 try
-                {
-                    using var tokenSource = cancellationToken.CancelTimeOut(TimeOut);                    
+                {              
                     byte[] data = m3UFileInfo.Key.Uri.IsFile
-                        ? await File.ReadAllBytesAsync(m3UFileInfo.Key.Uri.OriginalString, tokenSource.Token)
-                        : await HttpClient.GetByteArrayAsync(m3UFileInfo.Key.Uri, Headers, tokenSource.Token);
+                        ? await File.ReadAllBytesAsync(m3UFileInfo.Key.Uri.OriginalString, cancellationToken)
+                        : await HttpClient.GetByteArrayAsync(m3UFileInfo.Key.Uri, Headers, cancellationToken);
 
                     m3UFileInfo.Key.BKey = data.TryParseKey(m3UFileInfo.Key.Method);
                 }
@@ -50,9 +49,8 @@ namespace M3u8Downloader_H.Core.M3uDownloaders
         }
 
         protected override Stream DownloadAfter(Stream stream, string contentType, CancellationToken cancellationToken)
-        {
-            Stream Decryptstream = stream.AesDecrypt(m3UFileInfo.Key.BKey, m3UFileInfo.Key.IV);
-            return base.DownloadAfter(Decryptstream, contentType, cancellationToken);
+        {   
+            return stream.AesDecrypt(m3UFileInfo.Key.BKey, m3UFileInfo.Key.IV);
         }
     }
 }
