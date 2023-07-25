@@ -60,7 +60,7 @@ namespace M3u8Downloader_H.Core.Utils
         {
             for (int i = 0; i < length; i++)
             {
-                if (data[i] == 0x47 && data[i + 1] == 0x40 && data[i + 188] == 0x47)
+                if (data[i] == 0x47 && data[i + 188] == 0x47 && data[i + 188 * 2] == 0x47)
                 {
                     return i;
                 }
