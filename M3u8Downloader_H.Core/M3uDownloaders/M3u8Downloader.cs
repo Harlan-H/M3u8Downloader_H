@@ -142,7 +142,7 @@ namespace M3u8Downloader_H.Core.M3uDownloaders
                 }
                 catch (OperationCanceledException) when (!token.IsCancellationRequested)
                 {
-                    await Task.Delay(2000, cancellationTokenSource.Token);
+                    await Task.Delay(2000, token);
                     continue;
                 }
                 catch (AggregateException ex) when(ex.InnerException is not InvalidDataException)
@@ -151,17 +151,17 @@ namespace M3u8Downloader_H.Core.M3uDownloaders
                     {
                         throw new CryptographicException("解密失败,请确认key,iv是否正确");
                     }
-                    await Task.Delay(2000, cancellationTokenSource.Token);
+                    await Task.Delay(2000, token);
                     continue;
                 }
                 catch (IOException)
                 {
-                    await Task.Delay(2000, cancellationTokenSource.Token);
+                    await Task.Delay(2000, token);
                     continue;
                 }
                 catch (HttpRequestException) when (skipRequestError)
                 {
-                    await Task.Delay(2000, cancellationTokenSource.Token);
+                    await Task.Delay(2000, token);
                     continue;
                 }
             }
