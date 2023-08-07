@@ -127,16 +127,15 @@ namespace M3u8Downloader_H.Core.M3uDownloaders
         protected async Task<bool> DownloadAsynInternal(Uri uri, IEnumerable<KeyValuePair<string, string>>? headers, RangeHeaderValue? rangeHeaderValue, string mediaPath, bool skipRequestError, CancellationToken token)
         {
             bool IsSuccessful = false;
-            var cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(token);
-            cancellationTokenSource.CancelAfter(TimeOut);
             for (int i = 0; i < RetryCount; i++)
             {
                 try
                 {
-                    (Stream tmpstream, string contentType) = await HttpClient.GetResponseContentAsync(uri, headers, rangeHeaderValue, cancellationTokenSource.Token);
-                    using Stream stream = DownloadAfter(new HandleImageStream(tmpstream, DownloadRate), contentType, cancellationTokenSource.Token);
+                    using CancellationTokenSource cancellationToken = token.CancelTimeOut(TimeOut);
+                    (Stream tmpstream, string contentType) = await HttpClient.GetResponseContentAsync(uri, headers, rangeHeaderValue, cancellationToken.Token);
+                    using Stream stream = DownloadAfter(new HandleImageStream(tmpstream, DownloadRate), contentType, cancellationToken.Token);
 
-                    await WriteToFileAsync(mediaPath, stream, cancellationTokenSource.Token);
+                    await WriteToFileAsync(mediaPath, stream, cancellationToken.Token);
                     IsSuccessful = true;
                     break;
                 }
