@@ -7,8 +7,8 @@
     <UseWindowsForms>true</UseWindowsForms>
     <RootNamespace>M3u8Downloader_H</RootNamespace>
     <Platforms>AnyCPU;x64</Platforms>
-    <AssemblyVersion>3.13.3.0</AssemblyVersion>
-    <Version>3.13.3.0</Version>
+    <AssemblyVersion>3.13.4.0</AssemblyVersion>
+    <Version>3.13.4.0</Version>
     <PackageId>m3u8视频下载器</PackageId>
     <Product>m3u8视频下载器</Product>
     <ApplicationIcon>icon.ico</ApplicationIcon>
