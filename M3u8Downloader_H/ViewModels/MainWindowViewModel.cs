@@ -158,7 +158,7 @@ namespace M3u8Downloader_H.ViewModels
                                 : string.IsNullOrWhiteSpace(settingsService.PluginKey)
                                 ? uri.GetHostName()
                                 : settingsService.PluginKey;
-            DownloadViewModel download = DownloadViewModel.CreateDownloadViewModel(uri, tmpVideoName,method,key,iv, headers, fileFullPath, pluginService[tmpPluginKey]);
+            DownloadViewModel download = DownloadViewModel.CreateDownloadViewModel(uri, tmpVideoName,method,key,iv, headers ?? settingsService.Headers?.ToDictionary(), fileFullPath, pluginService[tmpPluginKey]);
             if (download is null) return;
 
             EnqueueDownload(download);

@@ -114,7 +114,10 @@ namespace M3u8Downloader_H.Core.Utils
 
         public override int Read(byte[] buffer, int offset, int count)
         {
-            return stream.Read(buffer, offset, count);
+            int bytesRead = stream.Read(buffer, offset, count);
+            _position += bytesRead;
+            _downloadrate?.Report(bytesRead);
+            return bytesRead;
         }
     }
 }
