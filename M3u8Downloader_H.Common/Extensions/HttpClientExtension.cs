@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -79,6 +80,30 @@ namespace M3u8Downloader_H.Common.Extensions
             request.AddHeaders(headers);
 
             return await httpClient.GetStringAsync(request, cancellationToken);
+        }
+
+        public static async Task<string> PostStringAsync(this HttpClient httpClient, Uri uri, string payload, IEnumerable<KeyValuePair<string, string>>? headers = default, CancellationToken cancellationToken = default)
+        {
+            using HttpRequestMessage request = new(HttpMethod.Post, uri);
+            request.AddHeaders(headers);
+            request.Content = new StringContent(payload, Encoding.UTF8, "application/x-www-form-urlencoded");
+
+            HttpResponseMessage response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+            response.EnsureSuccessStatusCode();
+
+            return await response.Content.ReadAsStringAsync(cancellationToken);
+        }
+
+        public static async Task<string> PostJsonAsync(this HttpClient httpClient, Uri uri, string payload, IEnumerable<KeyValuePair<string, string>>? headers = default, CancellationToken cancellationToken = default)
+        {
+            using HttpRequestMessage request = new(HttpMethod.Post, uri);
+            request.AddHeaders(headers);
+            request.Content = new StringContent(payload, Encoding.UTF8, "application/json");
+
+            HttpResponseMessage response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+            response.EnsureSuccessStatusCode();
+
+            return await response.Content.ReadAsStringAsync(cancellationToken);
         }
     }
 }
