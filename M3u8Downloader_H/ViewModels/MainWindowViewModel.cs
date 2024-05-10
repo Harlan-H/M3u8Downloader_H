@@ -82,7 +82,7 @@ namespace M3u8Downloader_H.ViewModels
             foreach (var item in Downloads)
                 item.OnCancel();
 
-            settingsService.Headers = string.Empty;
+            settingsService.Headers = default!;
             settingsService.Save();
             return base.CanCloseAsync(cancellationToken);
         }
@@ -158,7 +158,7 @@ namespace M3u8Downloader_H.ViewModels
                                 : string.IsNullOrWhiteSpace(settingsService.PluginKey)
                                 ? uri.GetHostName()
                                 : settingsService.PluginKey;
-            DownloadViewModel download = DownloadViewModel.CreateDownloadViewModel(uri, tmpVideoName,method,key,iv, headers ?? settingsService.Headers?.ToDictionary(), fileFullPath, pluginService[tmpPluginKey]);
+            DownloadViewModel download = DownloadViewModel.CreateDownloadViewModel(uri, tmpVideoName,method,key,iv, headers ?? settingsService.Headers, fileFullPath, pluginService[tmpPluginKey]);
             if (download is null) return;
 
             EnqueueDownload(download);

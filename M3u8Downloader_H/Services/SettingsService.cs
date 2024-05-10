@@ -1,13 +1,17 @@
-﻿using Settings;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using M3u8Downloader_H.Attributes;
+using M3u8Downloader_H.Settings.Services;
+using M3u8Downloader_H.Settings.Models;
+using System.Collections.Generic;
+
+
 #if !DEBUG
 using System.IO;
 #endif
 
 namespace M3u8Downloader_H.Services
 {
-    public class SettingsService : SettingsManager
+    public class SettingsService : SettingsManager, ISettings
     {
         /// <summary>
         /// 线程数量
@@ -43,7 +47,7 @@ namespace M3u8Downloader_H.Services
         [Update]
         public string ProxyAddress { get; set; } = string.Empty;
 
-        public string Headers { get; set; } = string.Empty;
+        public Dictionary<string,string> Headers { get; set; } = default!;
 
 #if DEBUG
         public double RecordDuration { get; set; } = 60 * 10;

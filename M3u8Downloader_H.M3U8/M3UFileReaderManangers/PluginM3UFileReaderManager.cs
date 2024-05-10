@@ -19,9 +19,7 @@ namespace M3u8Downloader_H.M3U8.M3UFileReaderManangers
             this.httpClient = httpClient;
         }
 
-        protected override async Task<(Uri?, Stream)> GetM3u8FileStreamAsync(Uri uri, IEnumerable<KeyValuePair<string, string>>? headers, CancellationToken cancellationToken = default)
-        {
-            return await m3U8FileInfoService.GetM3u8FileStreamAsync(httpClient, uri, headers, cancellationToken);
-        }
+        protected override async Task<(Uri?, Stream)> GetM3u8FileStreamAsync(Uri uri, IEnumerable<KeyValuePair<string, string>>? headers, CancellationToken cancellationToken = default) 
+            => await m3U8FileInfoService.GetM3u8FileStreamAsync(httpClient, uri, headers, cancellationToken);
     }
 }

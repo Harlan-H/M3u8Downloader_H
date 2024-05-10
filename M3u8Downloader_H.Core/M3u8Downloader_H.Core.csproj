@@ -12,15 +12,13 @@
 		<DebugSymbols>False</DebugSymbols>
 		<DebugType>None</DebugType>
 	</PropertyGroup>
-	
-  <ItemGroup>
-    <PackageReference Include="CliWrap" Version="3.4.3" />
-  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\M3u8Downloader_H.Common\M3u8Downloader_H.Common.csproj" />
+    <ProjectReference Include="..\M3u8Downloader_H.Downloader\M3u8Downloader_H.Downloader.csproj" />
     <ProjectReference Include="..\M3u8Downloader_H.Plugin\M3u8Downloader_H.Plugin.csproj" />
     <ProjectReference Include="..\M3u8Downloader_H.M3U8\M3u8Downloader_H.M3U8.csproj" />
+    <ProjectReference Include="..\SettingsManager\M3u8Downloader_H.Settings.csproj" />
   </ItemGroup>
 
 </Project>

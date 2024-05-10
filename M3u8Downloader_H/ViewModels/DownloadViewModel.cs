@@ -8,9 +8,11 @@ using Caliburn.Micro;
 using M3u8Downloader_H.Services;
 using M3u8Downloader_H.Utils;
 using M3u8Downloader_H.Models;
-using M3u8Downloader_H.Core.DownloaderManagers;
+using M3u8Downloader_H.Core.Extensions;
 using M3u8Downloader_H.Plugin;
 using M3u8Downloader_H.Common.M3u8Infos;
+using M3u8Downloader_H.Combiners.Interfaces;
+using M3u8Downloader_H.Core;
 
 namespace M3u8Downloader_H.ViewModels
 {
@@ -19,7 +21,8 @@ namespace M3u8Downloader_H.ViewModels
         private readonly DownloadService downloadService;
         private readonly SoundService soundService;
         private CancellationTokenSource? cancellationTokenSource;
-        public IDownloadManager _downloadManager = default!;
+        private IDownloadParams _downloadParams = default!;
+        private DownloadClient _downloadClient= default!;
 
         public Uri RequestUrl { get; set; } = default!;
 
@@ -61,12 +64,16 @@ namespace M3u8Downloader_H.ViewModels
                     cancellationTokenSource = new CancellationTokenSource();
 
                     Status = DownloadStatus.Parsed;
-                    await downloadService.GetM3u8FileInfo(_downloadManager, cancellationTokenSource.Token);
+                    await _downloadClient.GetM3u8Uri(cancellationTokenSource.Token);
+
+                    await _downloadClient.GetM3U8FileInfo(cancellationTokenSource.Token);
 
                     Status = DownloadStatus.Enqueued;
                     using DownloadRateSource downloadRate = new(s => DownloadRateBytes = s);
-                    await downloadService.DownloadAsync(_downloadManager.Build(), downloadRate, cancellationTokenSource.Token);
+                    void downloadStatus(bool s) => Status = s ? DownloadStatus.StartedLive : DownloadStatus.StartedVod;
+                    await downloadService.DownloadAsync(_downloadClient.Downloader, downloadRate, downloadStatus, cancellationTokenSource.Token);
 
+                    await _downloadClient.Merger.Converter(_downloadClient.M3u8FileInfo.IsFile, cancellationTokenSource.Token);
                     soundService.PlaySuccess();
                     Status = DownloadStatus.Completed;
                 }
@@ -97,7 +104,7 @@ namespace M3u8Downloader_H.ViewModels
 
             try
             {
-                Process.Start("explorer", $"/select, \"{_downloadManager.VideoFullName}\"");
+                Process.Start("explorer", $"/select, \"{_downloadParams.VideoFullName}\"");
             }
             catch (Exception)
             {
@@ -120,7 +127,7 @@ namespace M3u8Downloader_H.ViewModels
 
         public void DeleteCache()
         {
-            DirectoryInfo directory = new(_downloadManager.VideoFullPath);
+            DirectoryInfo directory = new(_downloadParams.VideoFullPath);
             if (directory.Exists)
                 directory.Delete(true);
         }
@@ -143,17 +150,20 @@ namespace M3u8Downloader_H.ViewModels
             viewModel.RequestUrl = requesturl;
             viewModel.VideoName = videoname;
 
-            IDownloadManager downloadManager = new DownloadManager(Http.Client, requesturl, headers, cachePath, pluginBuilder)
-                                                  .WithLiveProgress(new Progress<double>(d => viewModel.RecordDuration = d))
-                                                  .WithVodProgress(new Progress<double>(d => viewModel.ProgressNum = d))
-                                                  .WithStatusAction(s => viewModel.Status = (DownloadStatus)s);
-
+            viewModel._downloadClient = new(Http.Client, requesturl, headers, pluginBuilder);            
             if (!string.IsNullOrWhiteSpace(key))
             {
-                downloadManager.WithKeyInfo(method!, key, iv!);
+                viewModel._downloadClient.SetKeyInfo(method!, key, iv!);
             }
 
-            viewModel._downloadManager = downloadManager;
+            viewModel._downloadParams = new DownloadParam()
+            {
+                VideoFullPath = cachePath,
+                VideoFullName = videoname,
+                LiveProgress = new Progress<double>(d => viewModel.RecordDuration = d),
+                VodProgress = new Progress<double>(d => viewModel.ProgressNum = d),
+                ChangeVideoNameDelegate = videoName => viewModel._downloadParams.VideoFullName = videoName
+            };
             return viewModel;
         }
 
@@ -170,11 +180,19 @@ namespace M3u8Downloader_H.ViewModels
             viewModel.RequestUrl = requesturl!;
             viewModel.VideoName = videoname;
 
-            viewModel._downloadManager = new DownloadManager(Http.Client, requesturl!, headers, cachePath, pluginBuilder)
-                                                  .WithLiveProgress(new Progress<double>(d => viewModel.RecordDuration = d))
-                                                  .WithVodProgress(new Progress<double>(d => viewModel.ProgressNum = d))
-                                                  .WithStatusAction(s => viewModel.Status = (DownloadStatus)s)
-                                                  .WithM3u8Content(content);
+            viewModel._downloadClient = new(Http.Client, requesturl!, headers, pluginBuilder)
+            {
+                M3uContent = content
+            };
+
+            viewModel._downloadParams = new DownloadParam()
+            {
+                VideoFullPath = cachePath,
+                VideoFullName = videoname,
+                LiveProgress = new Progress<double>(d => viewModel.RecordDuration = d),
+                VodProgress = new Progress<double>(d => viewModel.ProgressNum = d),
+                ChangeVideoNameDelegate = videoName => viewModel._downloadParams.VideoFullName = videoName
+            };
 
             return viewModel;
         }
@@ -191,11 +209,19 @@ namespace M3u8Downloader_H.ViewModels
             DownloadViewModel viewModel = IoC.Get<DownloadViewModel>();
             viewModel.VideoName = videoname;
 
-            viewModel._downloadManager = new DownloadManager(Http.Client, default!, headers, videoPath, pluginBuilder)
-                                      .WithLiveProgress(new Progress<double>(d => viewModel.RecordDuration = d))
-                                      .WithVodProgress(new Progress<double>(d => viewModel.ProgressNum = d))
-                                      .WithStatusAction(s => viewModel.Status = (DownloadStatus)s)
-                                      .WithM3u8FileInfo(m3UFileInfo);
+            viewModel._downloadClient = new(Http.Client, default!, headers, pluginBuilder)
+            {
+                M3u8FileInfo = m3UFileInfo
+            };
+
+            viewModel._downloadParams = new DownloadParam()
+            {
+                VideoFullPath = videoPath,
+                VideoFullName = videoname,
+                LiveProgress = new Progress<double>(d => viewModel.RecordDuration = d),
+                VodProgress = new Progress<double>(d => viewModel.ProgressNum = d),
+                ChangeVideoNameDelegate = videoName => viewModel._downloadParams.VideoFullName = videoName
+            };
 
             return viewModel;
         }

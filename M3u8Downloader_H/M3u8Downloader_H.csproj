@@ -14,6 +14,7 @@
     <ApplicationIcon>icon.ico</ApplicationIcon>
     <Authors>Harlan</Authors>
     <Nullable>enable</Nullable>
+
   </PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)'=='Release'">
@@ -31,6 +32,8 @@
 		<Message Text="Delete $(PublishDir)$(ProjectName).deps.json" Importance="high" />
 		<Delete Files="$(PublishDir)$(ProjectName).deps.json" />
 	</Target>
+
+
 	
     <ItemGroup>
         <None Remove="Assets\weixin.png" />
@@ -47,7 +50,7 @@
   <ItemGroup>
     <ProjectReference Include="..\M3u8Downloader_H.Common\M3u8Downloader_H.Common.csproj" />
     <ProjectReference Include="..\M3u8Downloader_h.RestServer\M3u8Downloader_H.RestServer.csproj" />
-    <ProjectReference Include="..\SettingsManager\Settings.csproj" />
+    <ProjectReference Include="..\SettingsManager\M3u8Downloader_H.Settings.csproj" />
     <ProjectReference Include="..\M3u8Downloader_H.Core\M3u8Downloader_H.Core.csproj" />
     <ProjectReference Include="..\M3u8Downloader_H.M3U8\M3u8Downloader_H.M3U8.csproj" />
   </ItemGroup>
