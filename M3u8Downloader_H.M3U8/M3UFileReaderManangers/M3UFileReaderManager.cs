@@ -18,7 +18,7 @@ namespace M3u8Downloader_H.M3U8.M3UFileReaderManangers
         private readonly HttpClient _httpClient;
         private readonly M3UFileReaderWithStream _m3UFileReaderWithStream;
 
-        public int TimeOuts { get; set; } = 10 * 1000;
+        public TimeSpan TimeOuts { get; set; } = TimeSpan.FromSeconds(10);
 
         public M3UFileReaderManager(IM3uFileReader? M3UFileReader,HttpClient httpClient, IDictionary<string, IAttributeReader>? attributeReaders = default!)
         {

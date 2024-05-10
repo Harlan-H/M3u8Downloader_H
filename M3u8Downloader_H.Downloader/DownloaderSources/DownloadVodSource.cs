@@ -18,7 +18,7 @@ namespace M3u8Downloader_H.Downloader.DownloaderSources
             await base.DownloadAsync(IsLiveAction, cancellationToken);
 
             M3u8Downloader m3U8Downloade = CreateDownloader();
-            m3U8Downloade.TimeOut = Settings.Timeouts;
+            m3U8Downloade.TimeOut = TimeSpan.FromSeconds( Settings.Timeouts);
             m3U8Downloade.HttpClient = _httpClient;
             m3U8Downloade.Progress = DownloadParams.VodProgress;
             m3U8Downloade.DownloadRate = DownloadRate;

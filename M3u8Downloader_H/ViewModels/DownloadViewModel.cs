@@ -11,7 +11,6 @@ using M3u8Downloader_H.Models;
 using M3u8Downloader_H.Core.Extensions;
 using M3u8Downloader_H.Plugin;
 using M3u8Downloader_H.Common.M3u8Infos;
-using M3u8Downloader_H.Combiners.Interfaces;
 using M3u8Downloader_H.Core;
 
 namespace M3u8Downloader_H.ViewModels
@@ -20,8 +19,8 @@ namespace M3u8Downloader_H.ViewModels
     {
         private readonly DownloadService downloadService;
         private readonly SoundService soundService;
+        private readonly SettingsService settingsService;
         private CancellationTokenSource? cancellationTokenSource;
-        private IDownloadParams _downloadParams = default!;
         private DownloadClient _downloadClient= default!;
 
         public Uri RequestUrl { get; set; } = default!;
@@ -42,9 +41,10 @@ namespace M3u8Downloader_H.ViewModels
 
         public string? FailReason { get; private set; } = string.Empty;
 
-        public DownloadViewModel(DownloadService downloadService, SoundService soundService)
+        public DownloadViewModel(DownloadService downloadService, SettingsService settingsService, SoundService soundService)
         {
             this.downloadService = downloadService;
+            this.settingsService = settingsService;
             this.soundService = soundService;
         }
 
@@ -104,7 +104,7 @@ namespace M3u8Downloader_H.ViewModels
 
             try
             {
-                Process.Start("explorer", $"/select, \"{_downloadParams.VideoFullName}\"");
+                Process.Start("explorer", $"/select, \"{_downloadClient.DownloadParams.VideoFullName}\"");
             }
             catch (Exception)
             {
@@ -127,7 +127,7 @@ namespace M3u8Downloader_H.ViewModels
 
         public void DeleteCache()
         {
-            DirectoryInfo directory = new(_downloadParams.VideoFullPath);
+            DirectoryInfo directory = new(_downloadClient.DownloadParams.VideoFullPath);
             if (directory.Exists)
                 directory.Delete(true);
         }
@@ -150,20 +150,26 @@ namespace M3u8Downloader_H.ViewModels
             viewModel.RequestUrl = requesturl;
             viewModel.VideoName = videoname;
 
-            viewModel._downloadClient = new(Http.Client, requesturl, headers, pluginBuilder);            
+
+            viewModel._downloadClient = new(Http.Client, requesturl, headers, pluginBuilder)
+            {
+                Settings = viewModel.settingsService,
+                DownloadParams = new DownloadParam()
+                {
+                    VideoFullPath = cachePath,
+                    VideoFullName = videoname,
+                    LiveProgress = new Progress<double>(d => viewModel.RecordDuration = d),
+                    VodProgress = new Progress<double>(d => viewModel.ProgressNum = d),
+                    ChangeVideoNameDelegate = videoName => viewModel._downloadClient.DownloadParams.VideoFullName = videoName
+                }
+            };
+
             if (!string.IsNullOrWhiteSpace(key))
             {
                 viewModel._downloadClient.SetKeyInfo(method!, key, iv!);
             }
 
-            viewModel._downloadParams = new DownloadParam()
-            {
-                VideoFullPath = cachePath,
-                VideoFullName = videoname,
-                LiveProgress = new Progress<double>(d => viewModel.RecordDuration = d),
-                VodProgress = new Progress<double>(d => viewModel.ProgressNum = d),
-                ChangeVideoNameDelegate = videoName => viewModel._downloadParams.VideoFullName = videoName
-            };
+
             return viewModel;
         }
 
@@ -182,17 +188,18 @@ namespace M3u8Downloader_H.ViewModels
 
             viewModel._downloadClient = new(Http.Client, requesturl!, headers, pluginBuilder)
             {
-                M3uContent = content
+                M3uContent = content,
+                Settings = viewModel.settingsService,
+                DownloadParams  = new DownloadParam()
+                {
+                    VideoFullPath = cachePath,
+                    VideoFullName = videoname,
+                    LiveProgress = new Progress<double>(d => viewModel.RecordDuration = d),
+                    VodProgress = new Progress<double>(d => viewModel.ProgressNum = d),
+                    ChangeVideoNameDelegate = videoName => viewModel._downloadClient.DownloadParams.VideoFullName = videoName
+                }
             };
 
-            viewModel._downloadParams = new DownloadParam()
-            {
-                VideoFullPath = cachePath,
-                VideoFullName = videoname,
-                LiveProgress = new Progress<double>(d => viewModel.RecordDuration = d),
-                VodProgress = new Progress<double>(d => viewModel.ProgressNum = d),
-                ChangeVideoNameDelegate = videoName => viewModel._downloadParams.VideoFullName = videoName
-            };
 
             return viewModel;
         }
@@ -211,17 +218,18 @@ namespace M3u8Downloader_H.ViewModels
 
             viewModel._downloadClient = new(Http.Client, default!, headers, pluginBuilder)
             {
-                M3u8FileInfo = m3UFileInfo
+                M3u8FileInfo = m3UFileInfo,
+                Settings = viewModel.settingsService,
+                DownloadParams = new DownloadParam()
+                {
+                    VideoFullPath = videoPath,
+                    VideoFullName = videoname,
+                    LiveProgress = new Progress<double>(d => viewModel.RecordDuration = d),
+                    VodProgress = new Progress<double>(d => viewModel.ProgressNum = d),
+                    ChangeVideoNameDelegate = videoName => viewModel._downloadClient.DownloadParams.VideoFullName = videoName
+                }
             };
 
-            viewModel._downloadParams = new DownloadParam()
-            {
-                VideoFullPath = videoPath,
-                VideoFullName = videoname,
-                LiveProgress = new Progress<double>(d => viewModel.RecordDuration = d),
-                VodProgress = new Progress<double>(d => viewModel.ProgressNum = d),
-                ChangeVideoNameDelegate = videoName => viewModel._downloadParams.VideoFullName = videoName
-            };
 
             return viewModel;
         }

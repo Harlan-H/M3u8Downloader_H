@@ -8,7 +8,7 @@ namespace M3u8Downloader_H.M3U8.M3UFileReaderManangers
 {
     public interface IM3UFileInfoMananger
     {
-        int TimeOuts { set; }
+        TimeSpan TimeOuts { set; }
 
         //通过http方式请求数据
         Task<M3UFileInfo> GetM3u8FileInfo(Uri uri, IEnumerable<KeyValuePair<string, string>>? headers, CancellationToken cancellationToken = default);

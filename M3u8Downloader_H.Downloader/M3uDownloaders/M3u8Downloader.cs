@@ -1,5 +1,6 @@
 ﻿using System.Net.Http.Headers;
 using System.Security.Cryptography;
+using System.Threading;
 using M3u8Downloader_H.Common.M3u8Infos;
 using M3u8Downloader_H.Downloader.Extensions;
 using M3u8Downloader_H.Downloader.Utils;
@@ -19,7 +20,7 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
         public IProgress<long> DownloadRate { get; set; } = default!;
         public int RetryCount { get; set; } = default!;
 
-        public int TimeOut { get; set; } = 10 * 1000;
+        public TimeSpan TimeOut { get; set; } = TimeSpan.FromSeconds(10);
         public M3u8Downloader()
         {
 
@@ -125,11 +126,12 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
             {
                 try
                 {
-                    using CancellationTokenSource cancellationToken = token.CancelTimeOut(TimeOut);
-                    (Stream tmpstream, string contentType) = await HttpClient.GetResponseContentAsync(uri, headers, rangeHeaderValue, cancellationToken.Token);
-                    using Stream stream = DownloadAfter(new HandleImageStream(tmpstream, DownloadRate), contentType, cancellationToken.Token);
+                    using CancellationTokenSource cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(token);
+                    cancellationTokenSource.CancelAfter(TimeOut);
+                    (Stream tmpstream, string contentType) = await HttpClient.GetResponseContentAsync(uri, headers, rangeHeaderValue, token);
+                    using Stream stream = DownloadAfter(new HandleImageStream(tmpstream, DownloadRate), contentType, token);
 
-                    await WriteToFileAsync(mediaPath, stream, cancellationToken.Token);
+                    await WriteToFileAsync(mediaPath, stream, token);
                     IsSuccessful = true;
                     break;
                 }

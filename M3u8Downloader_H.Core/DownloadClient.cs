@@ -34,7 +34,7 @@ namespace M3u8Downloader_H.Core
         public M3UKeyInfo M3UKeyInfo { get; set; } = default!;
         public IDownloadParams DownloadParams { get; set; } = default!;
         public ISettings Settings { get; set; } = default!;
-       
+
 
         private IM3u8UriManager M3U8UriManager
         {
@@ -43,10 +43,10 @@ namespace M3u8Downloader_H.Core
                 m3U8UriManager ??= M3u8UriManagerFactory.CreateM3u8UriManager(pluginManager?.M3U8UriProvider, httpClient, _header);
                 return m3U8UriManager;
             }
-        
+
         }
 
-        private M3UFileReaderManager M3uFileReader
+        private IM3UFileInfoMananger M3uFileReader
         {
             get
             {
@@ -59,7 +59,7 @@ namespace M3u8Downloader_H.Core
         {
             get
             {
-                if(m3UDownloaderClient is null)
+                if (m3UDownloaderClient is null)
                 {
                     m3UDownloaderClient = new M3uDownloaderClient(httpClient, _url, M3u8FileInfo, pluginManager);
                     m3UDownloaderClient.Downloader.GetLiveFileInfoFunc = M3uFileReader.GetM3u8FileInfo;
@@ -67,12 +67,23 @@ namespace M3u8Downloader_H.Core
                     m3UDownloaderClient.Downloader.Headers = _header;
                     m3UDownloaderClient.Downloader.DownloadParams = DownloadParams;
                 }
-                
+
                 return m3UDownloaderClient.Downloader;
             }
         }
 
-        public M3uCombinerClient Merger => m3UCombinerClient ??= new M3uCombinerClient(M3u8FileInfo);
+        public M3uCombinerClient Merger 
+        {
+            get
+            {
+                m3UCombinerClient ??= new M3uCombinerClient(M3u8FileInfo)
+                {
+                    DownloadParams = DownloadParams,
+                    Settings = Settings
+                };
+                return m3UCombinerClient;
+            }
+        }
 
         
 
@@ -105,7 +116,7 @@ namespace M3u8Downloader_H.Core
             }
             else
             {
-                M3uFileReader.TimeOuts = Settings.Timeouts;
+                M3uFileReader.TimeOuts = TimeSpan.FromSeconds(Settings.Timeouts);
                 M3u8FileInfo =  await M3uFileReader.GetM3u8FileInfo(_url, _header, cancellationToken);
             }
 
