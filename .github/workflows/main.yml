@@ -36,14 +36,12 @@ jobs:
           Copy-Item dotnet-sdk-win-x64.exe M3u8Downloader_H/bin/Publish -Recurse
 
       - name: Upload artifacts normal
-        if: ${{ github.event_name == 'push' && github.ref_type == 'tag' }}
         uses: actions/upload-artifact@v3
         with:
           name: M3u8Downloader_H
           path: M3u8Downloader_H/bin/Publish
 
       - name: Upload artifacts single file
-        if: ${{ github.event_name == 'push' && github.ref_type == 'tag' }}
         uses: actions/upload-artifact@v3
         with:
           name: M3u8Downloader_H-SingleFile
