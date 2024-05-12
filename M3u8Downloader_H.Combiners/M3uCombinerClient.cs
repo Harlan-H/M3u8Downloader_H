@@ -2,6 +2,7 @@
 using M3u8Downloader_H.Combiners.Extensions;
 using M3u8Downloader_H.Combiners.Interfaces;
 using M3u8Downloader_H.Combiners.M3uCombiners;
+using M3u8Downloader_H.Common.Interfaces;
 using M3u8Downloader_H.Common.M3u8Infos;
 using M3u8Downloader_H.Core.VideoConverter;
 using M3u8Downloader_H.Settings.Models;
@@ -12,6 +13,8 @@ namespace M3u8Downloader_H.Combiners
     {
         private readonly FFmpeg _ffmpeg;
         private readonly M3UFileInfo _m3UFileInfo;
+
+        public ILog? Log { get; set; }  
         public IDownloadParams DownloadParams { get; set; } = default!;
         public ISettings Settings { get; set; } = default!;
 
@@ -27,6 +30,7 @@ namespace M3u8Downloader_H.Combiners
 
         public async Task Converter(bool isFile, CancellationToken cancellationToken = default)
         {
+            Log?.Info("开始合并视频流");
             if (Settings.SelectedFormat == "mp4")
             {
                 if (_m3UFileInfo.MediaFiles.Any(m => m.Duration > 0))
@@ -38,6 +42,7 @@ namespace M3u8Downloader_H.Combiners
             {
                 await VideoMerge(isFile, cancellationToken);
             }
+            Log?.Info("合并完成");
         }
 
         //通过xml,目录,json等方式可能无法判断流的时长，所以采用原先的转码方案

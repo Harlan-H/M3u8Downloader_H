@@ -1,4 +1,5 @@
-﻿using M3u8Downloader_H.Common.M3u8Infos;
+﻿using M3u8Downloader_H.Common.Interfaces;
+using M3u8Downloader_H.Common.M3u8Infos;
 using M3u8Downloader_H.Downloader.DownloaderSources;
 using M3u8Downloader_H.Downloader.Extensions;
 using M3u8Downloader_H.Plugin.PluginManagers;
@@ -13,6 +14,7 @@ namespace M3u8Downloader_H.Downloader
         private readonly M3UFileInfo m3UFileInfo;
         private readonly IPluginManager? pluginManager;
         private IDownloaderSource? _downloaderSource;
+
 
         public IDownloaderSource Downloader {  get =>_downloaderSource ??= CreateDownloadSource();  }
 

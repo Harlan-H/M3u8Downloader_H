@@ -1,4 +1,5 @@
 ﻿using M3u8Downloader_H.Combiners.Interfaces;
+using M3u8Downloader_H.Common.Interfaces;
 using M3u8Downloader_H.Common.M3u8Infos;
 using M3u8Downloader_H.Downloader.M3uDownloaders;
 using M3u8Downloader_H.Plugin;
@@ -17,6 +18,7 @@ namespace M3u8Downloader_H.Downloader.DownloaderSources
         public IProgress<long> DownloadRate { get ; set ; } = default!;
 
         public Func< Uri,IEnumerable<KeyValuePair<string, string>>?, CancellationToken, Task<M3UFileInfo>> GetLiveFileInfoFunc { get;  set ; } = default!;
+        public ILog? Log { get ; set ; }
 
         public DownloaderSource(IDownloadService? downloadService)
         {
@@ -26,11 +28,13 @@ namespace M3u8Downloader_H.Downloader.DownloaderSources
 
         protected M3u8Downloader CreateDownloader()
         {
-            return downloadService is not null
+            M3u8Downloader  m3U8Downloader = downloadService is not null
                 ? new PluginM3u8Downloader(downloadService, M3UFileInfo)
                 : M3UFileInfo.Key is not null
                 ? new CryptM3uDownloader(M3UFileInfo)
                 : new M3u8Downloader();
+            m3U8Downloader.Log = Log;   
+            return m3U8Downloader;
         }
 
         public virtual Task DownloadAsync(Action<bool> IsLiveAction,CancellationToken cancellationToken = default)
@@ -44,7 +48,7 @@ namespace M3u8Downloader_H.Downloader.DownloaderSources
             return Task.CompletedTask;
         }
 
-        protected static void CreateDirectory(string dirPath, bool skipExist = true)
+        protected void CreateDirectory(string dirPath, bool skipExist = true)
         {
             DirectoryInfo directoryInfo = new(dirPath);
             if (directoryInfo.Exists)
@@ -54,6 +58,7 @@ namespace M3u8Downloader_H.Downloader.DownloaderSources
                 throw new Exception($"{dirPath} 目录已经存在，程序停止");
             }
             directoryInfo.Create();
+            Log?.Info("创建缓存目录:{0}", dirPath);
         }
 
 
@@ -62,7 +67,10 @@ namespace M3u8Downloader_H.Downloader.DownloaderSources
             try
             {
                 if (Settings.IsCleanUp)
+                {
                     Directory.Delete(filePath, recursive);
+                    Log?.Info("删除缓存目录:{0}", filePath);
+                }
             }
             catch (DirectoryNotFoundException)
             {

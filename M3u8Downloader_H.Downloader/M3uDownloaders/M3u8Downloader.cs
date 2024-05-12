@@ -1,6 +1,7 @@
 ﻿using System.Net.Http.Headers;
 using System.Security.Cryptography;
 using System.Threading;
+using M3u8Downloader_H.Common.Interfaces;
 using M3u8Downloader_H.Common.M3u8Infos;
 using M3u8Downloader_H.Downloader.Extensions;
 using M3u8Downloader_H.Downloader.Utils;
@@ -14,6 +15,7 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
         private double recordDuration;
         private int CurIndex = -1;
 
+        public ILog? Log { get; set; }
         public HttpClient HttpClient { get; set; } = default!;
         public IEnumerable<KeyValuePair<string, string>>? Headers { get; set; } = default;
         public IProgress<double> Progress { get; set; } = default!;
@@ -42,6 +44,7 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
             bool isSuccessful = await DownloadAsynInternal(m3UMapInfo.Uri, Headers, m3UMapInfo.RangeValue, mediaPath, skipRequestError, cancellationToken);
             if (isSuccessful == false)
                 throw new InvalidOperationException($"获取map失败,地址为:{m3UMapInfo.Uri.OriginalString}");
+            Log?.Info("fmp4格式视频,获取map信息完成");
         }
 
         public async Task Start(M3UFileInfo m3UFileInfo, int taskNumber, string filePath, int reserve0, bool skipRequestError = false, CancellationToken cancellationToken = default)
@@ -54,6 +57,7 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
                     Tasks[i] = DownloadCallBack(m3UFileInfo, filePath, Headers, skipRequestError, cancellationToken);
                 }
 
+                Log?.Info("{0}条线程已开启", taskNumber);
                 await Task.WhenAll(Tasks);
             }
             finally
@@ -62,6 +66,7 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
                 {
                     item?.Dispose();
                 }
+                Log?.Info("{0}条线程已停止",taskNumber);
             }
 
             if (skipRequestError == false && downloadedCount != m3UFileInfo.MediaFiles.Count)
@@ -133,10 +138,12 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
 
                     await WriteToFileAsync(mediaPath, stream, token);
                     IsSuccessful = true;
+                    Log?.Info("{0} 下载完成", uri.OriginalString);
                     break;
                 }
                 catch (OperationCanceledException) when (!token.IsCancellationRequested)
                 {
+                    Log?.Warn("{0} 请求超时，重试第{1}次", uri.OriginalString, i + 1);
                     await Task.Delay(2000, token);
                     continue;
                 }
@@ -146,16 +153,19 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
                     {
                         throw new CryptographicException("解密失败,请确认key,iv是否正确");
                     }
+                    Log?.Warn("{0} 遇到异常:{0},重试第{1}次", uri.OriginalString, ex.Message, i + 1);
                     await Task.Delay(2000, token);
                     continue;
                 }
                 catch (IOException)
                 {
+                    Log?.Warn("{0} 遇到io异常，重试第{1}次", uri.OriginalString, i + 1);
                     await Task.Delay(2000, token);
                     continue;
                 }
                 catch (HttpRequestException) when (skipRequestError)
                 {
+                    Log?.Warn("{0} 请求失败,以跳过错误，重试第{1}次", uri.OriginalString, i + 1);
                     await Task.Delay(2000, token);
                     continue;
                 }
@@ -180,11 +190,14 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
             await stream.CopyToAsync(fileobject, token);
         }
 
-        protected static void DeleteFileWhenTimeOut(string file)
+        protected void DeleteFileWhenTimeOut(string file)
         {
             FileInfo fileInfo = new(file);
             if (fileInfo.Exists && fileInfo.Length > 0)
+            {
                 fileInfo.Delete();
+                Log?.Warn("重试达到上限，删除未完成的文件: {0}", file);
+            }
         }
     }
 }

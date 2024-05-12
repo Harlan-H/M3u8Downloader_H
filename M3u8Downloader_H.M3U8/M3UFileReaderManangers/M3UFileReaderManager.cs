@@ -1,4 +1,5 @@
 ﻿using M3u8Downloader_H.Common.Extensions;
+using M3u8Downloader_H.Common.Interfaces;
 using M3u8Downloader_H.Common.M3u8Infos;
 using M3u8Downloader_H.M3U8.Extensions;
 using M3u8Downloader_H.M3U8.M3UFileReaders;
@@ -19,6 +20,7 @@ namespace M3u8Downloader_H.M3U8.M3UFileReaderManangers
         private readonly M3UFileReaderWithStream _m3UFileReaderWithStream;
 
         public TimeSpan TimeOuts { get; set; } = TimeSpan.FromSeconds(10);
+        public ILog? Log { get; set; }
 
         public M3UFileReaderManager(IM3uFileReader? M3UFileReader,HttpClient httpClient, IDictionary<string, IAttributeReader>? attributeReaders = default!)
         {
@@ -35,12 +37,11 @@ namespace M3u8Downloader_H.M3U8.M3UFileReaderManangers
                 try
                 {
                     var m3u8FileInfo = await GetM3u8FileInfoInternal(uri, headers, cancellationTokenSource.Token);
-                    return m3u8FileInfo.MediaFiles != null && m3u8FileInfo.MediaFiles.Any()
-                        ? m3u8FileInfo
-                        : throw new InvalidDataException($"'{uri.OriginalString}' 没有包含任何数据");
+                    return checkM3u8FileInfo(m3u8FileInfo, uri);
                 }
                 catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
                 {
+                    Log?.Warn("获取m3u8信息超过{0}秒，重试第{1}次", TimeOuts.Seconds, i + 1);
                     await Task.Delay(2000, cancellationTokenSource.Token);
                     continue;
                 }
@@ -49,7 +50,11 @@ namespace M3u8Downloader_H.M3U8.M3UFileReaderManangers
             throw new InvalidOperationException($"'{uri.OriginalString}' 请求失败，请检查网络是否可以访问");
         }
 
-        public  M3UFileInfo GetM3u8FileInfo(Uri uri, string content) => _m3UFileReaderWithStream.GetM3u8FileInfo(uri, content);
+        public M3UFileInfo GetM3u8FileInfo(Uri uri, string content)
+        {
+            var m3u8FileInfo =  _m3UFileReaderWithStream.GetM3u8FileInfo(uri, content);
+            return checkM3u8FileInfo(m3u8FileInfo, uri);
+        }
 
         public M3UFileInfo GetM3u8FileInfo(string ext, Uri uri)
         {
@@ -61,11 +66,20 @@ namespace M3u8Downloader_H.M3U8.M3UFileReaderManangers
                 "m3u8" => _m3UFileReaderWithStream.GetM3u8FileInfo(uri),
                 _ => throw new InvalidOperationException("请确认是否为.m3u8或.json或.xml或文件夹"),
             };
-            return m3UFileInfo.MediaFiles != null && m3UFileInfo.MediaFiles.Any()
-                ? m3UFileInfo
-                : throw new InvalidDataException($"'{uri.OriginalString}' 没有包含任何数据");
+            return checkM3u8FileInfo(m3UFileInfo, uri);
         }
 
+        private M3UFileInfo checkM3u8FileInfo(M3UFileInfo m3u8FileInfo,Uri uri)
+        {
+            if (m3u8FileInfo.MediaFiles != null && m3u8FileInfo.MediaFiles.Any())
+            {
+                return m3u8FileInfo;
+            }
+            else
+            {
+                throw new InvalidDataException($"'{uri.OriginalString}' 没有包含任何数据");
+            }
+        }
 
         protected virtual Task<(Uri?,Stream)> GetM3u8FileStreamAsync(Uri uri, IEnumerable<KeyValuePair<string, string>>? headers, CancellationToken cancellationToken = default)
         {

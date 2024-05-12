@@ -15,6 +15,7 @@ using M3u8Downloader_H.Combiners;
 using System.IO;
 using M3u8Downloader_H.Settings.Models;
 using M3u8Downloader_H.Core.M3u8UriManagers;
+using M3u8Downloader_H.Common.Interfaces;
 
 namespace M3u8Downloader_H.Core
 {
@@ -29,6 +30,7 @@ namespace M3u8Downloader_H.Core
         private M3uCombinerClient? m3UCombinerClient;
         private IM3u8UriManager? m3U8UriManager;
 
+        public ILog? Log { get; set; } = default!;
         public string M3uContent { get; set; } = default!;
         public M3UFileInfo M3u8FileInfo { get; set; } = default!;
         public M3UKeyInfo M3UKeyInfo { get; set; } = default!;
@@ -51,6 +53,8 @@ namespace M3u8Downloader_H.Core
             get
             {
                 m3U8FileInfoClient ??= new M3u8FileInfoClient(httpClient, pluginManager);
+                m3U8FileInfoClient.M3UFileReader.TimeOuts = TimeSpan.FromSeconds(Settings.Timeouts);
+                m3U8FileInfoClient.M3UFileReader.Log = Log;
                 return m3U8FileInfoClient.M3UFileReader;
             }
         }
@@ -66,6 +70,7 @@ namespace M3u8Downloader_H.Core
                     m3UDownloaderClient.Downloader.M3UFileInfo = M3u8FileInfo;
                     m3UDownloaderClient.Downloader.Headers = _header;
                     m3UDownloaderClient.Downloader.DownloadParams = DownloadParams;
+                    m3UDownloaderClient.Downloader.Log = Log;
                 }
 
                 return m3UDownloaderClient.Downloader;
@@ -79,13 +84,12 @@ namespace M3u8Downloader_H.Core
                 m3UCombinerClient ??= new M3uCombinerClient(M3u8FileInfo)
                 {
                     DownloadParams = DownloadParams,
-                    Settings = Settings
+                    Settings = Settings,
+                    Log = Log
                 };
                 return m3UCombinerClient;
             }
         }
-
-        
 
         public DownloadClient(HttpClient httpClient,Uri url,IEnumerable<KeyValuePair<string,string>>? header,  IPluginBuilder? pluginBuilder) 
         {
@@ -107,19 +111,18 @@ namespace M3u8Downloader_H.Core
             if (M3u8FileInfo is not null)
                 return;
 
-            if(M3uContent is not null)
-                M3u8FileInfo =  M3uFileReader.GetM3u8FileInfo(_url, M3uContent);
+            if (M3uContent is not null)
+                M3u8FileInfo = M3uFileReader.GetM3u8FileInfo(_url, M3uContent);
             else if (_url.IsFile)
             {
                 string ext = Path.GetExtension(_url.OriginalString).Trim('.');
-                M3u8FileInfo =  M3uFileReader.GetM3u8FileInfo(ext, _url);
+                M3u8FileInfo = M3uFileReader.GetM3u8FileInfo(ext, _url);
             }
             else
             {
-                M3uFileReader.TimeOuts = TimeSpan.FromSeconds(Settings.Timeouts);
                 M3u8FileInfo =  await M3uFileReader.GetM3u8FileInfo(_url, _header, cancellationToken);
             }
-
+            Log?.Info("获取视频流{0}个", M3u8FileInfo.MediaFiles.Count);
             if (M3UKeyInfo is not null)
                 M3u8FileInfo.Key = M3UKeyInfo;
 

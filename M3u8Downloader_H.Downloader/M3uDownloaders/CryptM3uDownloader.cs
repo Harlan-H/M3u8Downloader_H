@@ -1,5 +1,6 @@
 ﻿using M3u8Downloader_H.Common.M3u8Infos;
 using M3u8Downloader_H.Common.Extensions;
+using System.Text;
 
 namespace M3u8Downloader_H.Downloader.M3uDownloaders
 {
@@ -24,6 +25,7 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
                         ? await File.ReadAllBytesAsync(m3UFileInfo.Key.Uri.OriginalString, cancellationToken)
                         : await HttpClient.GetByteArrayAsync(m3UFileInfo.Key.Uri, Headers, cancellationToken);
 
+                    Log?.Info("获取到密钥:{0}", Encoding.UTF8.GetString(data));
                     m3UFileInfo.Key.BKey = data.TryParseKey(m3UFileInfo.Key.Method);
                 }
                 catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)

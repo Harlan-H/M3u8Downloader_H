@@ -1,4 +1,5 @@
-﻿using M3u8Downloader_H.Common.M3u8Infos;
+﻿using M3u8Downloader_H.Common.Interfaces;
+using M3u8Downloader_H.Common.M3u8Infos;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -8,6 +9,7 @@ namespace M3u8Downloader_H.M3U8.M3UFileReaderManangers
 {
     public interface IM3UFileInfoMananger
     {
+        ILog? Log { set; }
         TimeSpan TimeOuts { set; }
 
         //通过http方式请求数据

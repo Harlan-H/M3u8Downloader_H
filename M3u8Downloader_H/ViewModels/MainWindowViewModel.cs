@@ -17,6 +17,7 @@ using M3u8Downloader_H.RestServer;
 using Caliburn.Micro;
 using System.Threading;
 using PropertyChanged;
+using System.Security.Principal;
 
 namespace M3u8Downloader_H.ViewModels
 {
@@ -58,18 +59,23 @@ namespace M3u8Downloader_H.ViewModels
                 settingsService.Validate();
 
                 pluginService.Load();
-                for (int i = 65432; i > 1024; i--)
+                WindowsIdentity windowsIdentity = WindowsIdentity.GetCurrent();
+                WindowsPrincipal windowsPrincipal = new(windowsIdentity);
+                if(windowsPrincipal.IsInRole(WindowsBuiltInRole.Administrator))
                 {
-                    try
+                    for (int i = 65432; i > 1024; i--)
                     {
-                        httpListenService.Run($"http://+:{i}/");
-                        httpListenService.Initialization(ProcessDownload, ProcessDownload, ProcessDownload);
-                        HttpServicePort = i;
-                        break;
-                    }
-                    catch (HttpListenerException)
-                    {
-                        continue;
+                        try
+                        {
+                            httpListenService.Run($"http://+:{i}/");
+                            httpListenService.Initialization(ProcessDownload, ProcessDownload, ProcessDownload);
+                            HttpServicePort = i;
+                            break;
+                        }
+                        catch (HttpListenerException)
+                        {
+                            continue;
+                        }
                     }
                 }
             }, cancellationToken);
@@ -263,6 +269,8 @@ namespace M3u8Downloader_H.ViewModels
         public void CopyTitle(DownloadViewModel download) => Clipboard.SetText(download.VideoName);
 
         public void CopyFailReason(DownloadViewModel download) => Clipboard.SetText(download.FailReason);
+
+        public void CopyLogs(DownloadViewModel download) => Clipboard.SetText(download.CopyLog());
 
 
         public bool CanShowSettings => !IsShowDialog;

@@ -14,7 +14,6 @@
     <ApplicationIcon>icon.ico</ApplicationIcon>
     <Authors>Harlan</Authors>
     <Nullable>enable</Nullable>
-
   </PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)'=='Release'">
@@ -32,7 +31,6 @@
 		<Message Text="Delete $(PublishDir)$(ProjectName).deps.json" Importance="high" />
 		<Delete Files="$(PublishDir)$(ProjectName).deps.json" />
 	</Target>
-
 
 	
     <ItemGroup>

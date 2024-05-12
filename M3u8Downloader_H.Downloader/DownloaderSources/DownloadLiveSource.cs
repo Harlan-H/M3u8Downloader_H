@@ -70,10 +70,12 @@ namespace M3u8Downloader_H.Downloader.DownloaderSources
             //当文件存在且大小不为零得情况下说明是旧得任务重新开始得
             if (!(fileInfo.Exists && fileInfo.Length > 0))
             {
+                Log?.Info("下载器开始初始化");
                 await m3U8Downloader.Initialization(cancellationToken);
                 await m3U8Downloader.DownloadMapInfoAsync(M3UFileInfo.Map, DownloadParams.VideoFullPath, Settings.SkipRequestError, cancellationToken);
             }
 
+            Log?.Info("直播录制开始");
             M3UFileInfo previousMediaInfo = await GetM3U8FileInfoAsync(cancellationToken);
             while (true)
             {
@@ -81,7 +83,10 @@ namespace M3u8Downloader_H.Downloader.DownloaderSources
                 AddMedias(previousMediaInfo);
 
                 if (previousMediaInfo.IsVod() || duration > Settings.RecordDuration)
+                {
+                    Log?.Info("已录制{0},录制结束", TimeSpan.FromSeconds(duration).ToString());
                     break;
+                }
 
                 await Task.Delay(TimeSpan.FromSeconds(previousMediaInfo.MediaFiles.Last().Duration), cancellationToken);
 
@@ -107,6 +112,7 @@ namespace M3u8Downloader_H.Downloader.DownloaderSources
                 }
                 catch (HttpRequestException e) when (e.StatusCode == System.Net.HttpStatusCode.NotFound && i < 3)
                 {
+                    Log?.Warn("获取直播数据失败,网页返回代码:{0},返回内容:{1},正在进行第{2}次重试", e.StatusCode, e.Message, i + 1);
                     await Task.Delay(2000, cancellationToken);
                     continue;
                 }
@@ -139,16 +145,21 @@ namespace M3u8Downloader_H.Downloader.DownloaderSources
                     //当newMediaInfos数量为0 说明新的数据 跟旧的数据完全一致  则随机延迟上次某项数据的Duration
                     int index = _rand.Next(m3ufileinfo.MediaFiles.Count);
                     double delayTime = m3ufileinfo.MediaFiles[index].Duration;
+                    Log?.Info("本次获取数据和上次完全一致等待{0}秒后继续重试", delayTime);
                     await Task.Delay(TimeSpan.FromSeconds(delayTime), cancellationToken);
                     continue;
                 }
+                Log?.Info("获取到新的直播数量有{0}个", newMediaInfos.Count());
                 //重新修改成新的名称，方便中途停止及后续合并
                 m3ufileinfo.MediaFiles = RenameTitle(newMediaInfos);
                 IsEnded = false;
                 break;
             }
             if (IsEnded)
+            {
+                Log?.Info("5次请求数据全部一致,判定直播结束");
                 throw new HttpRequestException("直播结束", null, System.Net.HttpStatusCode.NotFound);
+            }
             return m3ufileinfo;
         }
 

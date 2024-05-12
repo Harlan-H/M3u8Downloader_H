@@ -12,10 +12,12 @@ using M3u8Downloader_H.Core.Extensions;
 using M3u8Downloader_H.Plugin;
 using M3u8Downloader_H.Common.M3u8Infos;
 using M3u8Downloader_H.Core;
+using System.Text;
+using System.Linq;
 
 namespace M3u8Downloader_H.ViewModels
 {
-    public partial class DownloadViewModel : PropertyChangedBase
+    public partial class DownloadViewModel : PropertyChangedBase, Common.Interfaces.ILog
     {
         private readonly DownloadService downloadService;
         private readonly SoundService soundService;
@@ -23,6 +25,7 @@ namespace M3u8Downloader_H.ViewModels
         private CancellationTokenSource? cancellationTokenSource;
         private DownloadClient _downloadClient= default!;
 
+        public BindableCollection<LogParams> Logs { get; } = new BindableCollection<LogParams>();
         public Uri RequestUrl { get; set; } = default!;
 
         public string VideoName { get; set; } = default!;
@@ -80,12 +83,14 @@ namespace M3u8Downloader_H.ViewModels
                 catch (OperationCanceledException) when (cancellationTokenSource!.IsCancellationRequested)
                 {
                     Status = DownloadStatus.Canceled;
+                    Info("已经停止下载");
                 }
                 catch (Exception e)
                 {
                     soundService.PlayError();
                     Status = DownloadStatus.Failed;
                     FailReason = e.ToString();
+                    Error(e);
                 }
                 finally
                 {
@@ -132,6 +137,33 @@ namespace M3u8Downloader_H.ViewModels
                 directory.Delete(true);
         }
 
+        public void Info(string format, params object[] args)
+        {
+            Logs.Add(new LogParams(LogType.Info, string.Format(format, args)));
+        }
+
+        public void Warn(string format, params object[] args)
+        {
+            Logs.Add(new LogParams(LogType.Warning, string.Format(format, args)));
+        }
+
+        public void Error(Exception exception)
+        {
+            Logs.Add(new LogParams(LogType.Error, exception.Message));
+        }
+
+        public string CopyLog()
+        {
+            StringBuilder sb = new();
+            foreach (var log in Logs.ToArray())
+            {
+                sb.Append(log.Time.ToString("yyyy-MM-dd HH:mm:ss"));
+                sb.Append(' ');
+                sb.Append(log.Message);
+                sb.Append(Environment.NewLine);
+            }
+            return sb.ToString();
+        }
     }
 
     public partial class DownloadViewModel
@@ -154,6 +186,7 @@ namespace M3u8Downloader_H.ViewModels
             viewModel._downloadClient = new(Http.Client, requesturl, headers, pluginBuilder)
             {
                 Settings = viewModel.settingsService,
+                Log = viewModel,
                 DownloadParams = new DownloadParam()
                 {
                     VideoFullPath = cachePath,
@@ -190,6 +223,7 @@ namespace M3u8Downloader_H.ViewModels
             {
                 M3uContent = content,
                 Settings = viewModel.settingsService,
+                Log = viewModel,
                 DownloadParams  = new DownloadParam()
                 {
                     VideoFullPath = cachePath,
@@ -220,6 +254,7 @@ namespace M3u8Downloader_H.ViewModels
             {
                 M3u8FileInfo = m3UFileInfo,
                 Settings = viewModel.settingsService,
+                Log = viewModel,
                 DownloadParams = new DownloadParam()
                 {
                     VideoFullPath = videoPath,
