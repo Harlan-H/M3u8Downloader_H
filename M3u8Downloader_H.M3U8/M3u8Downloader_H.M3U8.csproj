@@ -3,8 +3,8 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
-    <AssemblyVersion>3.13.5.0</AssemblyVersion>
-    <Version>3.13.5.0</Version>
+    <AssemblyVersion>3.14.1.0</AssemblyVersion>
+    <Version>3.14.1.0</Version>
   </PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)'=='Release'">
@@ -15,5 +15,7 @@
 	<ItemGroup>
 	  <ProjectReference Include="..\M3u8Downloader_H.Common\M3u8Downloader_H.Common.csproj" />
 	  <ProjectReference Include="..\M3u8Downloader_H.M3U8.AttributeReader\M3u8Downloader_H.M3U8.AttributeReader.csproj" />
+	  <ProjectReference Include="..\M3u8Downloader_H.Plugin.Abstractions\M3u8Downloader_H.Plugin.Abstractions.csproj" />
+	  <ProjectReference Include="..\M3u8Downloader_H.Plugin\M3u8Downloader_H.Plugin.csproj" />
 	</ItemGroup>
 </Project>

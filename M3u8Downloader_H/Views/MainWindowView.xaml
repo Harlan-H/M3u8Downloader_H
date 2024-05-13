@@ -14,8 +14,8 @@
         d:DataContext="{d:DesignInstance Type=local:MainWindowViewModel}"
         WindowStartupLocation="CenterScreen"
         WindowStyle="None"
-        MinHeight="480" MinWidth="700" 
-        Height="480" Width="700">
+        MinHeight="580" MinWidth="800" 
+        Height="580" Width="800">
     
     <i:Interaction.Behaviors>
         <behavior:WindowSystemCommandBehavior />
@@ -223,8 +223,8 @@
                             <Run FontWeight="SemiBold" Text="下载" />
                             <Run Text="将会进行下载或者合并操作" />
                             <LineBreak />
-                            <Run Text="双击" />
-                            <Run FontWeight="SemiBold" Text="视频名称" />
+                            <Run Text="点击" />
+                            <Run FontWeight="SemiBold" Text="高级模式" />
                             <Run Text="可以填写密钥信息" />
                             <LineBreak />
                             <Run Text="批量操作" />
@@ -245,13 +245,21 @@
                             <Run FontWeight="SemiBold" Text="⚠ 错误" />
                             <Run Text="上等待2秒获取详细信息" />
                             <LineBreak />
+                            <Run Text="也可以通过点击下载栏中最右侧按钮显示详细日志" />
+                            <LineBreak />
                             <Run Text="或者右键" />
                             <Run FontWeight="SemiBold" Text="复制错误信息" />
                             <Run Text="也可以获取详细得错误信息" />
                             <LineBreak />
                             <Run Text="出现" />
                             <Run FontWeight="SemiBold" Text="RestApi初始化失败" />
-                            <Run Text="不会影响程序得正常使用,如有需要请看帮助文档" />
+                            <Run Text="不影响程序使用,如需此功能请" />
+                            <Run  FontWeight="Bold"  Text="以管理员身份运行" />
+                            <Run Text="本程序" />
+                            <LineBreak />
+                            <Run Text="RestApi仅限安装过.net6运行库的版本使用,SingleFile版本可能不支持" />
+                            <LineBreak />
+                            <Run Text="详细的RestApi使用方法，请看帮助文档" />
                             <Run FontWeight="SemiBold" Text="Rest Api" />
                             <LineBreak />
                             <Run Text="更多用法可以查看在线帮助文档(地址在关于里)" />
@@ -281,6 +289,7 @@
                                     </MenuItem.Icon>
                                 </MenuItem>
                                 <MenuItem Header="复制错误信息" cal:Message.Attach="CopyFailReason($DataContext)"/>
+                                <MenuItem Header="复制所有日志" cal:Message.Attach="CopyLogs($DataContext)"/>
                                 <Separator />
                                 <MenuItem Header="停止下载所有选择项" cal:Message.Attach="StopDownloads" >
                                     <MenuItem.Icon>
@@ -323,8 +332,8 @@
                 <ColumnDefinition />
                 <ColumnDefinition Width="100" />
             </Grid.ColumnDefinitions>
-            <TextBlock Margin="5 0 0 0" d:Text="http://111.111.111.111:12345" Text="{Binding HttpServicePort,TargetNullValue=RestApi初始化失败,Converter={x:Static converters:PortToLocalAddress.Instance}}" />
-            <TextBlock Grid.Column="1" d:Text="http://127.0.0.1:12345" Text="{Binding HttpServicePort,TargetNullValue=RestApi初始化失败,StringFormat=http://127.0.0.1:\{0\}}" />
+            <TextBlock Margin="5 0 0 0" d:Text="http://111.111.111.111:12345" Text="{Binding HttpServicePort,TargetNullValue=RestApi初始化失败如需此以管理员权限身份运行此程序,Converter={x:Static converters:PortToLocalAddress.Instance}}" />
+            <TextBlock Grid.Column="1" d:Text="http://127.0.0.1:12345" Text="{Binding HttpServicePort,TargetNullValue=RestApi初始化失败如需请以管理员权限身份运行此程序,StringFormat=http://127.0.0.1:\{0\}}" />
             <TextBlock Grid.Column="2"  d:Text="v3.11.11" HorizontalAlignment="Right" Margin="0 0 10 0" Text="{Binding VersionString}" />
         </Grid>
     </Grid>

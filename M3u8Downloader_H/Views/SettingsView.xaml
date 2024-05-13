@@ -243,7 +243,7 @@
 
                 <DockPanel Margin="8 0 8 0">
                     <TextBlock Text="请求头部" Style="{StaticResource TextBlockStyle}"/>
-                    <TextBox FontSize="16" Text="{Binding Headers}" 
+                    <TextBox FontSize="16" Text="{Binding Headers,Converter={x:Static converters:DictHeaderToStrHeaderConverter.Instance}}" 
                          Style="{StaticResource MaterialDesignOutlinedTextBox}"
                          VerticalAlignment="Stretch"
                          materialDesign:HintAssist.Hint="一行一条内容(按回车换行)"

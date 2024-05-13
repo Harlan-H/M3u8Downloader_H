@@ -9,26 +9,35 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:model="clr-namespace:M3u8Downloader_H.Models" 
              xmlns:viewmodels="clr-namespace:M3u8Downloader_H.ViewModels" 
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:behavior="clr-namespace:M3u8Downloader_H.Behaviors"
              d:DataContext="{d:DesignInstance Type=viewmodels:DownloadViewModel}"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
+             d:DesignHeight="450" d:DesignWidth="800"
+    xmlns:wpf="clr-namespace:MaterialDesignThemes.Wpf;assembly=MaterialDesignThemes.Wpf">
+
+    <Grid >
+        <Grid.RowDefinitions >
+            <RowDefinition  Height="*"/>
+            <RowDefinition  />
+        </Grid.RowDefinitions>
+        <Grid >
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="5*"  />
             <ColumnDefinition Width="3*" />
             <ColumnDefinition Width="90" />
             <ColumnDefinition Width="100"/>
-            <ColumnDefinition Width="34" />
+            <ColumnDefinition Width="48" />
         </Grid.ColumnDefinitions>
         <!-- 地址  -->
         <TextBlock Grid.Column="0" TextTrimming="CharacterEllipsis" FontSize="14" VerticalAlignment="Center" ToolTip="{Binding RequestUrl,TargetNullValue=似乎没有请求地址哦}" Text="{Binding RequestUrl,TargetNullValue=似乎没有请求地址哦}" />
-        
+
         <!-- 名称 -->
         <TextBlock Grid.Column="1" TextTrimming="CharacterEllipsis" Margin="15 0 10 0" FontSize="14" VerticalAlignment="Center" ToolTip="{Binding VideoName}"  Text="{Binding VideoName}"  />
 
         <!-- 下载速率 -->
         <TextBlock Grid.Column="2" FontSize="13"  Margin="5 0 0 0"  VerticalAlignment="Center"  Text="{Binding DownloadRateBytes,Converter={x:Static converters:LongToBitrateConverter.Instance}}" d:Text="1113.6 MB/s" />
-        
+
         <!-- 状态 -->
         <Grid Grid.Column="3" VerticalAlignment="Center" Margin="5 0 0 0">
             <Grid.ColumnDefinitions>
@@ -131,6 +140,90 @@
                                                     Visibility="{Binding CanOnShowFile,Converter={StaticResource booltovis}}">
                 <materialDesign:PackIcon Width="24" Height="24" Kind="FileFindOutline" />
             </Button>
-        </StackPanel>
+                <ToggleButton ToolTip="显示日志"  x:Name="VisibilityBtn"  Height="32"  VerticalContentAlignment="Center" VerticalAlignment="Center" Padding="4,0,0,0">
+                    <ToggleButton.Template>
+                        <ControlTemplate TargetType="ToggleButton">
+                            <Grid>
+                                <Border Name="border">
+                                    <ContentPresenter />
+                                </Border>
+                            </Grid>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="UIElement.IsMouseOver" Value="true">
+                                    <Setter TargetName="border" Value="{Binding Foreground , RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource BrushOpacityConverter}, ConverterParameter=0.16}" Property="Background" />
+                                    <Setter TargetName="border" Property="Cursor" Value="Hand"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </ToggleButton.Template>
+                    <ToggleButton.Style>
+                        <Style TargetType="ToggleButton">
+                            <Setter Property="Foreground" Value="{DynamicResource PrimaryHueMidBrush}" />
+                            <Setter Property="HorizontalContentAlignment" Value="Center" />
+                            <Style.Triggers>
+                                <Trigger Property="IsChecked" Value="True">
+                                    <Setter Property="Content">
+                                        <Setter.Value >
+                                            <materialDesign:PackIcon VerticalAlignment="Center" Width="24" Height="24"  Kind="ChevronUpCircleOutline" />
+                                        </Setter.Value>
+                                    </Setter>
+                                    <Setter Property="VerticalAlignment" Value="Center" />
+                                </Trigger>
+                                <Trigger Property="IsChecked" Value="False">
+                                    <Setter Property="Content">
+                                        <Setter.Value >
+                                            <materialDesign:PackIcon VerticalAlignment="Center" Width="24" Height="24" Kind="ChevronDownCircleOutline" />
+                                        </Setter.Value>
+                                    </Setter>
+                                    <Setter Property="VerticalAlignment" Value="Center" />
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ToggleButton.Style>
+                </ToggleButton>
+            </StackPanel>
+    </Grid>
+        <ItemsControl Grid.Row="1" Height="130" ItemsSource="{Binding Logs}"
+                      ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                      ScrollViewer.VerticalScrollBarVisibility="Auto"
+                      Visibility="{Binding IsChecked, ElementName=VisibilityBtn, Converter={StaticResource BooleanToVisibilityConverter}}" >
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <VirtualizingStackPanel/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.Template>
+                <ControlTemplate TargetType="ItemsControl">
+                    <ScrollViewer>
+                        <ItemsPresenter />
+                    </ScrollViewer>
+                </ControlTemplate>
+            </ItemsControl.Template>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock FontSize="13">
+                        <Run Text="{Binding Time,StringFormat='yyyy-MM-dd HH:mm:ss',Mode=OneWay}"  />
+                        <Run Text="{Binding Message,Mode=OneWay}" >
+                            <Run.Style>
+                                <Style TargetType="Run">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Type}" Value="{x:Static model:LogType.Warning}">
+                                            <Setter Property="Foreground" Value="Orange" />
+                                        </DataTrigger>
+
+                                        <DataTrigger Binding="{Binding Type}" Value="{x:Static model:LogType.Error}">
+                                            <Setter Property="Foreground" Value="Red" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Run.Style>
+                        </Run>
+                    </TextBlock>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+            <i:Interaction.Behaviors>
+                <behavior:EnsureScrollingToBottomBehavior />
+            </i:Interaction.Behaviors>
+        </ItemsControl>
     </Grid>
 </UserControl>

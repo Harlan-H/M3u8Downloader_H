@@ -12,8 +12,9 @@
 		<DebugType>None</DebugType>
 	</PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\M3u8Downloader_H.M3U8\M3u8Downloader_H.M3U8.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\M3u8Downloader_H.M3U8.AttributeReader\M3u8Downloader_H.M3U8.AttributeReader.csproj" />
+	  <ProjectReference Include="..\M3u8Downloader_H.Plugin.Abstractions\M3u8Downloader_H.Plugin.Abstractions.csproj" />
+	</ItemGroup>
 
 </Project>
