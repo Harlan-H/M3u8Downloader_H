@@ -4,10 +4,8 @@
   - [M3u8Downloader_H-SingleFile.zip](https://github.com/Harlan-H/M3u8Downloader_H/releases/latest/download/M3u8Downloader_H-SingleFile.zip)  不需要.net 6运行库  
   **如果你是win7用户 不管你用哪个版本都必须安装KB4457144 ,具体看下面的环境问题，点击上方版本直接下载**
 
-# M3u8Downloader_H.PluginManager
- - 此文件是一个插件管理程序，主要是动态下载或者更新插件
- - 以后得插件下载,更新等操作不在本项目进行
- - 插件项目地址：https://github.com/Harlan-H/M3u8Downloader_H.Plugins
+# 插件项目地址
+ - https://github.com/Harlan-H/M3u8Downloader_H.Plugins
 
   
 # 特点
