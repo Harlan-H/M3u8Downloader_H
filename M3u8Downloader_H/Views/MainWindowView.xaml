@@ -321,6 +321,11 @@
                                 <Setter Property="FocusVisualStyle" Value="{x:Null}" />
                             </Style>
                         </ListBox.ItemContainerStyle>
+                        <ListBox.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <VirtualizingStackPanel/>
+                            </ItemsPanelTemplate>
+                        </ListBox.ItemsPanel>
                     </ListBox>
                     <materialDesign:Snackbar MessageQueue="{Binding Notifications}" />
                 </Grid>
