@@ -1,19 +1,15 @@
 # M3u8Downloader_H
-**M3u8Downloader_H** 是一个操作非常简单，同时功能比较强大的应用程序，你只需要复制需要下载的m3u8地址或者文件既可完成自动下载，合并，转码等操作，如果是插件支持得网站可以直接通过网址进行下载不用依赖m3u8地址   
-软件分两个版本：  **如果你是win7用户 不管你用哪个版本都必须安装KB4457144 ,具体看下面的环境问题**
-  - M3u8Downloader_H.zip  为需要.net 6的运行库的版本 运行库已经在程序目录中
-  - M3u8Downloader_H-SingleFile.zip  不需要.net 6运行库  
+软件分两个版本： 
+  - [m3u8Downloader_H.zip](https://github.com/Harlan-H/M3u8Downloader_H/releases/latest/download/M3u8Downloader_H.zip)  需要.net 6的运行库的版本
+  - [M3u8Downloader_H-SingleFile.zip](https://github.com/Harlan-H/M3u8Downloader_H/releases/latest/download/M3u8Downloader_H-SingleFile.zip)  不需要.net 6运行库  
+  **如果你是win7用户 不管你用哪个版本都必须安装KB4457144 ,具体看下面的环境问题，点击上方版本直接下载**
 
-# M3u8Downloader_H.PluginManager
- - 插件项目地址：https://github.com/Harlan-H/M3u8Downloader_H.Plugins
- - 已经去除程序中自带的动态管理插件程序，以后可能会直接集成进本软件
+# 插件项目地址
+ - https://github.com/Harlan-H/M3u8Downloader_H.Plugins
 
   
 # 特点
- - 简单的ui操作
- - 提供不需要运行库的版本软件
- - 支持多线程，多任务
- - 支持断点续传
+ - 支持多线程，多任务,断点续传
  - 支持aes-128-cbc,aes-192-cbc,aes-256-cbc自动解密
  - 支持对m3u8的ts,fmp4格式下载
  - 支持拖拽文件夹实现快速合并
@@ -25,9 +21,9 @@
  - 自动转换png,jpg,bmp等伪装格式的ts流
  - 自动识别直播流，同时下载直播流
  - 可以自定义请求头
- - 提供插件功能，可以个性化定制自己的下载需求，具体参见帮助文档->插件开发
  - 个性化的m3u8下载，可以采用xml,json等方式下载m3u8的文件内容
  - 提供http接口调用，可以使用任何语言对软件发起调用下载，具体参见帮助文档
+ - 提供插件功能，可以个性化定制自己的下载需求，具体参见帮助文档->插件开发
  - 特定网站可以直接通过网页地址来下载m3u8视频
 
 # 帮助文档
@@ -40,6 +36,18 @@
  3. 对于win7 64用户.net6安装完成  如果出现点击程序没有任何反应(没有反应指没有任何报错也不出任何界面) 那么就需要进行第二个步骤
     - 下载一个更新KB4457144   地址：http://download.windowsupdate.com/d/msdownload/update/software/secu/2018/09/windows6.1-kb4457144-x64_5ca467d42deadc2b2f4010c4a26b4a6903790dd5.msu
     - 如果上面两个步骤都做了还是不行 这边给你提供一个参考资料  [点击跳转](https://www.cnblogs.com/simadi/p/14410536.html)
+
+
+# 开发相关
+ - 本项目不依赖任何第三方的下载器，解析器,所有下载及解析实现全部由本程序自己实现
+ - 核心只使用了一个cli的库,转码采用的ffmpeg,因为本人对音视频不熟悉没有办法自己实现
+
+## 依赖
+ ####  本项目一共使用这4个库,前3个都是针对界面的
+ - [Caliburn.Micro](https://github.com/Caliburn-Micro/Caliburn.Micro) : mvvm框架
+ - [MaterialDesignThemes](https://github.com/MaterialDesignInXAML/MaterialDesignInXamlToolkit) : ui库
+ - [PropertyChanged.Fody](https://github.com/Fody/PropertyChanged) : 属性绑定库,此库功能非常强大,他可以自动生成NotifyOfPropertyChange相关代码
+ - [CliWrap](https://github.com/Tyrrrz/CliWrap) : 对命令行调用的封装库
 
 # 截图
 ![QQ截图20221120192851](https://user-images.githubusercontent.com/39378318/202899529-a6d8ae44-f578-4312-b6b7-77d354c874b4.png)
