@@ -1,13 +1,12 @@
 # M3u8Downloader_H
 **M3u8Downloader_H** 是一个操作非常简单，同时功能比较强大的应用程序，你只需要复制需要下载的m3u8地址或者文件既可完成自动下载，合并，转码等操作，如果是插件支持得网站可以直接通过网址进行下载不用依赖m3u8地址   
 软件分两个版本：  **如果你是win7用户 不管你用哪个版本都必须安装KB4457144 ,具体看下面的环境问题**
-  - M3u8Downloader_H.zip  为需要.net core的运行库的版本
-  - M3u8Downloader_H-SingleFile.zip  不需要.net core运行库  
+  - M3u8Downloader_H.zip  为需要.net 6的运行库的版本 运行库已经在程序目录中
+  - M3u8Downloader_H-SingleFile.zip  不需要.net 6运行库  
 
 # M3u8Downloader_H.PluginManager
- - 此文件是一个插件管理程序，主要是动态下载或者更新插件
- - 以后得插件下载,更新等操作不在本项目进行
  - 插件项目地址：https://github.com/Harlan-H/M3u8Downloader_H.Plugins
+ - 已经去除程序中自带的动态管理插件程序，以后可能会直接集成进本软件
 
   
 # 特点
