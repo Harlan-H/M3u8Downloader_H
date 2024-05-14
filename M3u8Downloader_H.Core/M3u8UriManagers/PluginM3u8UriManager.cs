@@ -10,14 +10,12 @@ namespace M3u8Downloader_H.Core.M3u8UriManagers
     internal class PluginM3u8UriManager : IM3u8UriManager
     {
         private readonly IM3u8UriProvider m3U8UriProvider;
-        private readonly HttpClient httpClient;
         private readonly IEnumerable<KeyValuePair<string, string>>? headers;
         public bool Completed { get; set; } = false;
 
-        public PluginM3u8UriManager(IM3u8UriProvider m3U8UriProvider,HttpClient httpClient, IEnumerable<KeyValuePair<string, string>>? headers)
+        public PluginM3u8UriManager(IM3u8UriProvider m3U8UriProvider,IEnumerable<KeyValuePair<string, string>>? headers)
         {
             this.m3U8UriProvider = m3U8UriProvider;
-            this.httpClient = httpClient;
             this.headers = headers;
         }
 
@@ -27,7 +25,7 @@ namespace M3u8Downloader_H.Core.M3u8UriManagers
         {
             try
             {
-                var url = m3U8UriProvider.GetM3u8UriAsync(httpClient, uri, headers, cancellationToken);
+                var url = m3U8UriProvider.GetM3u8UriAsync(uri, headers, cancellationToken);
                 Completed = true;
                 return url;
             }

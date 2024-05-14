@@ -2,15 +2,18 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
+using Caliburn.Micro;
 using M3u8Downloader_H.Extensions;
 using M3u8Downloader_H.Services;
 using M3u8Downloader_H.ViewModels.FrameWork;
+using MaterialDesignThemes.Wpf;
 
 namespace M3u8Downloader_H.ViewModels
 {
     public class SettingsViewModel : DialogScreen
     {
         private readonly SettingsService settingService;
+        public ISnackbarMessageQueue MyMessageQueue { get; } = new SnackbarMessageQueue(TimeSpan.FromSeconds(5));
         public bool IsActive { get; private set; }
         public bool? Status { get; set; } = default!;
 
@@ -18,7 +21,7 @@ namespace M3u8Downloader_H.ViewModels
 
         public string[] Formats { get; } = { "默认", "mp4" };
 
-        public IEnumerable<string> PluginKeys { get; set; } = Array.Empty<string>();
+        public BindableCollection<string> PluginKeys { get; } = new BindableCollection<string>();
 
         public SettingsViewModel(SettingsService settingService)
         {
@@ -38,9 +41,9 @@ namespace M3u8Downloader_H.ViewModels
                 obj.Validate();
                 settingService.CopyFrom(obj);
                 Close(true);
-            }catch(Exception)
+            }catch(Exception e)
             {
-                Status = false;
+                MyMessageQueue.Enqueue($"提交失败,错误信息:{e.Message}");
             }
         }
 
@@ -48,11 +51,11 @@ namespace M3u8Downloader_H.ViewModels
 
         public async void TryConnectProxy(string proxy)
         {
-            if (Status is not null)
+            if(string.IsNullOrWhiteSpace(proxy))
             {
-                Status = null;
+                MyMessageQueue.Enqueue("请输入代理地址后,再次点击");
                 return;
-            }
+            }    
 
             IsActive = true;
             try
@@ -66,11 +69,13 @@ namespace M3u8Downloader_H.ViewModels
                     Timeout = TimeSpan.FromSeconds(5)
                 };
 
-                Status = await httpclient.GetConnectStatus(new Uri("https://www.google.com"));
+                var statu = await httpclient.GetConnectStatus(new Uri("https://www.google.com"));
+               
+                MyMessageQueue.Enqueue(statu ? "测试成功,代理正常":"测试失败,代理不可用");
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                Status = false;
+                MyMessageQueue.Enqueue($"链接失败,{e.Message}");
             }
             finally
             {

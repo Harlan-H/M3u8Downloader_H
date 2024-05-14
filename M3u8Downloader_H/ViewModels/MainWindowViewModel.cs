@@ -280,10 +280,8 @@ namespace M3u8Downloader_H.ViewModels
             IsShowDialog = true;
             try
             {
-                var dialog = new SettingsViewModel(settingsService)
-                {
-                    PluginKeys = pluginService.Keys
-                };
+                var dialog = new SettingsViewModel(settingsService);
+                dialog.PluginKeys.AddRange(pluginService.Keys);
                 await DialogManager.ShowDialogAsync(dialog);
             }
             finally

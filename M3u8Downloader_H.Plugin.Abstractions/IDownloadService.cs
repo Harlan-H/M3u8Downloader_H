@@ -7,12 +7,11 @@ namespace M3u8Downloader_H.Plugin
         /// <summary>
         /// 初始化函数，在没有进行任何下载之前，第一个调用的函数
         /// </summary>
-        /// <param name="httpClient">http实例</param>
         /// <param name="headers">附带的请求头，如果有的话</param>
         /// <param name="m3UFileInfo">m3u8的数据</param>
         /// <param name="cancellationToken">取消的token</param>
         /// <returns>没有返回内容</returns>
-        Task Initialize(HttpClient httpClient, IEnumerable<KeyValuePair<string, string>>? headers, M3UFileInfo m3UFileInfo, CancellationToken cancellationToken);
+        Task Initialize(IEnumerable<KeyValuePair<string, string>>? headers, M3UFileInfo m3UFileInfo, CancellationToken cancellationToken);
 
 
         /// <summary>

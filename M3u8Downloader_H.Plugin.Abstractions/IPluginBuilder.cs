@@ -2,6 +2,37 @@
 {
     public interface IPluginBuilder
     {
+        // 修改后的插件将在构造函数中添加两个参数
+        // HttpClient , Ilog 
+        // 两个参数的位置无所谓 需要用哪个就在构造函数中添加上
+        // 构造函数必须时继承自IPluginBuilder接口的构造函数,
+        // 如果这两个参数都不需要可以不写构造函数
+        /*  例子1：
+        public class Class1 : IPluginBuilder
+        {
+                 public Class1(HttpClient httpClient)
+                 {
+                    this.httpClient = httpClient;
+                 }
+       }
+        例子2：
+        public class Class1 : IPluginBuilder
+        {
+                public Class1(HttpClient httpClient,ILog log)
+                {
+                    this.httpClient = httpClient;
+                    this.log = log;
+                }
+        }
+        例子3:
+        public class Class1 : IPluginBuilder
+        {
+                public Class1(ILog log)
+                {
+                    this.log = log;
+                }
+        }
+        */
         /// <summary>
         /// 创建获取m3u8 uri的类
         /// 如果你不需要处理，只要return null 即可
