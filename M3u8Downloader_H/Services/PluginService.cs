@@ -2,6 +2,10 @@
 using System.Collections.Generic;
 using M3u8Downloader_H.Plugin.PluginClients;
 
+#if !DEGUG
+using System.IO;
+#endif
+
 namespace M3u8Downloader_H.Services
 {
     public class PluginService
