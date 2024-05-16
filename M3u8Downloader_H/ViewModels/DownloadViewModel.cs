@@ -176,17 +176,16 @@ namespace M3u8Downloader_H.ViewModels
             string? iv,
             IEnumerable<KeyValuePair<string, string>>? headers,
             string cachePath,
-            IPluginBuilder? pluginBuilder)
+            Type? pluginType)
         {
             DownloadViewModel viewModel = IoC.Get<DownloadViewModel>();
             viewModel.RequestUrl = requesturl;
             viewModel.VideoName = videoname;
 
 
-            viewModel._downloadClient = new(Http.Client, requesturl, headers, pluginBuilder)
+            viewModel._downloadClient = new(Http.Client, requesturl, headers, viewModel, pluginType)
             {
                 Settings = viewModel.settingsService,
-                Log = viewModel,
                 DownloadParams = new DownloadParam()
                 {
                     VideoFullPath = cachePath,
@@ -213,17 +212,16 @@ namespace M3u8Downloader_H.ViewModels
             IEnumerable<KeyValuePair<string, string>>? headers,
             string cachePath,
             string videoname,
-            IPluginBuilder? pluginBuilder)
+            Type? pluginType)
         {
             DownloadViewModel viewModel = IoC.Get<DownloadViewModel>();
             viewModel.RequestUrl = requesturl!;
             viewModel.VideoName = videoname;
 
-            viewModel._downloadClient = new(Http.Client, requesturl!, headers, pluginBuilder)
+            viewModel._downloadClient = new(Http.Client, requesturl!, headers, viewModel, pluginType)
             {
                 M3uContent = content,
                 Settings = viewModel.settingsService,
-                Log = viewModel,
                 DownloadParams  = new DownloadParam()
                 {
                     VideoFullPath = cachePath,
@@ -245,16 +243,15 @@ namespace M3u8Downloader_H.ViewModels
             IEnumerable<KeyValuePair<string, string>>? headers,
             string videoname,
             string videoPath,
-            IPluginBuilder? pluginBuilder)
+            Type? pluginType)
         {
             DownloadViewModel viewModel = IoC.Get<DownloadViewModel>();
             viewModel.VideoName = videoname;
 
-            viewModel._downloadClient = new(Http.Client, default!, headers, pluginBuilder)
+            viewModel._downloadClient = new(Http.Client, default!, headers, viewModel,pluginType)
             {
                 M3u8FileInfo = m3UFileInfo,
                 Settings = viewModel.settingsService,
-                Log = viewModel,
                 DownloadParams = new DownloadParam()
                 {
                     VideoFullPath = videoPath,

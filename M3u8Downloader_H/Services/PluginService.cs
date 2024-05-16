@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using M3u8Downloader_H.Plugin;
 using M3u8Downloader_H.Plugin.PluginClients;
+
+#if !DEGUG
+using System.IO;
+#endif
 
 namespace M3u8Downloader_H.Services
 {
@@ -17,12 +19,14 @@ namespace M3u8Downloader_H.Services
         private readonly PluginClient pluginClient;
         public PluginService()
         {
-            pluginClient = PluginClient.Instance; 
+            pluginClient = PluginClient.Instance;
+            pluginClient.PluginPath = _pluginDirPath;
+            pluginClient.Init();
         }
 
-        public void Load() => pluginClient.Load(_pluginDirPath);
+        public void Load() => pluginClient.Load();
 
-        public IPluginBuilder? this[string? key] => pluginClient.CreatePluginBuilder(key); 
+        public Type? this[string? key] => pluginClient.GetPluginType(key); 
 
         public IEnumerable<string> Keys => pluginClient.Keys;
 

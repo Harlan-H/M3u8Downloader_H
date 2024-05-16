@@ -20,7 +20,7 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
 
         public override async ValueTask Initialization(CancellationToken cancellationToken)
         {
-            await _pluginDownload.Initialize(HttpClient,Headers, m3UFileInfo, cancellationToken);
+            await _pluginDownload.Initialize(Headers, m3UFileInfo, cancellationToken);
         }
 
         protected override Stream DownloadAfter(Stream stream, string contentType, CancellationToken cancellationToken)

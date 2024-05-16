@@ -10,11 +10,10 @@
         /// 如果需要默认得处理函数可以使用下面得方式,同时引入M3u8Downloader_H.Common这个dll
         /// httpClient.GetStreamAndUriAsync(uri, headers, cancellationToken);
         /// </summary>
-        /// <param name="httpClient">http实例</param>
         /// <param name="uri">请求地址</param>
         /// <param name="headers">请求头</param>
         /// <param name="cancellationToken">取消的令牌</param>
         /// <returns>返回得到得m3u8数据流</returns>
-        Task<(Uri?,Stream)> GetM3u8FileStreamAsync(HttpClient httpClient, Uri uri, IEnumerable<KeyValuePair<string, string>>? headers, CancellationToken cancellationToken = default);
+        Task<(Uri?,Stream)> GetM3u8FileStreamAsync(Uri uri, IEnumerable<KeyValuePair<string, string>>? headers, CancellationToken cancellationToken = default);
     }
 }

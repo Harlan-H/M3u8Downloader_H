@@ -5,26 +5,56 @@ namespace M3u8Downloader_H.Plugin.PluginClients
 {
     public partial class PluginClient
     {
+        private static string _filterStr = "M3u8Downloader_H.*.plugin.dll";
+        private static string _pluginKeyRegex = @"M3u8Downloader_H\.(.*?)\.plugin";
         private readonly Dictionary<string, Type> _pluginDict = new();
+        private readonly FileSystemWatcher watcher = new FileSystemWatcher();
         public IEnumerable<string> Keys => _pluginDict.Keys;
+
+        public string PluginPath { get; set; } = default!;
 
         private PluginClient()
         {
 
         }
 
-        public void Load(string path)
+        public void Init()
+        {
+            watcher.Path = PluginPath;
+            watcher.Filter = _filterStr;
+            watcher.NotifyFilter = NotifyFilters.FileName;
+            watcher.Created += OnCreated;
+            watcher.Deleted += OnDeleted;
+        }
+
+        private void OnDeleted(object sender, FileSystemEventArgs e)
+        {
+            if (string.IsNullOrEmpty(e.Name)) return;
+
+            string key = e.Name!.Normalize(_pluginKeyRegex);
+            if (_pluginDict.ContainsKey(key))
+            {
+                _pluginDict.Remove(key);
+            }
+        }
+
+        private void OnCreated(object sender, FileSystemEventArgs e)
+        {
+            if (string.IsNullOrEmpty(e.Name)) return;
+
+            LoadFile(e.FullPath, e.Name!);
+        }
+
+        public void Load()
         {
             try
             {
-                DirectoryInfo directoryInfo = new(path);
-                foreach (var item in directoryInfo.EnumerateFiles("M3u8Downloader_H.*.plugin.dll", SearchOption.TopDirectoryOnly))
+                DirectoryInfo directoryInfo = new(PluginPath);
+                foreach (var item in directoryInfo.EnumerateFiles(_filterStr, SearchOption.TopDirectoryOnly))
                 {
-                    Type? type = LoadLibrary(item.FullName);
-                    string key = item.Name.Normalize(@"M3u8Downloader_H\.(.*?)\.plugin");
-                    if (type is not null && !string.IsNullOrWhiteSpace(key))
-                        _pluginDict.Add(key, type);
+                    LoadFile(item.FullName, item.Name);
                 }
+                watcher.EnableRaisingEvents = true;
             }
             catch (DirectoryNotFoundException)
             {
@@ -32,11 +62,20 @@ namespace M3u8Downloader_H.Plugin.PluginClients
             }
         }
 
+        private void LoadFile(string fullPath,string fileName)
+        {
+            Type? type = LoadLibrary(fullPath);
+            string key = fileName.Normalize(_pluginKeyRegex);
+            if (type is not null && !string.IsNullOrWhiteSpace(key))
+                _pluginDict.Add(key, type);
+        }
+
+
         private static Type? LoadLibrary(string path)
         {
             try
             {
-                Type[] exportTypes = Assembly.LoadFrom(path).GetExportedTypes();
+                Type[] exportTypes = Assembly.LoadFile(path).GetExportedTypes();
                 return exportTypes.FirstOrDefault(i => typeof(IPluginBuilder).IsAssignableFrom(i));
             }catch(FileLoadException)
             {
@@ -44,13 +83,13 @@ namespace M3u8Downloader_H.Plugin.PluginClients
             }
         }
 
-        public IPluginBuilder? CreatePluginBuilder(string? key)
+        public Type? GetPluginType(string? key)
         {
             if (string.IsNullOrWhiteSpace(key))
                 return null;
 
             if (_pluginDict.TryGetValue(key, out Type? type))
-                return (IPluginBuilder?)Activator.CreateInstance(type);
+                return type;
             return null;
         }
     }

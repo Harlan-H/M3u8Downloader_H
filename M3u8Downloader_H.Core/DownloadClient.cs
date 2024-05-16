@@ -25,12 +25,12 @@ namespace M3u8Downloader_H.Core
         private Uri _url;
         private readonly IEnumerable<KeyValuePair<string, string>>? _header;
         private readonly IPluginManager? pluginManager;
+        private readonly ILog _log;
         private M3u8FileInfoClient? m3U8FileInfoClient;
         private M3uDownloaderClient? m3UDownloaderClient;
         private M3uCombinerClient? m3UCombinerClient;
         private IM3u8UriManager? m3U8UriManager;
 
-        public ILog? Log { get; set; } = default!;
         public string M3uContent { get; set; } = default!;
         public M3UFileInfo M3u8FileInfo { get; set; } = default!;
         public M3UKeyInfo M3UKeyInfo { get; set; } = default!;
@@ -42,7 +42,7 @@ namespace M3u8Downloader_H.Core
         {
             get
             {
-                m3U8UriManager ??= M3u8UriManagerFactory.CreateM3u8UriManager(pluginManager?.M3U8UriProvider, httpClient, _header);
+                m3U8UriManager ??= M3u8UriManagerFactory.CreateM3u8UriManager(pluginManager?.M3U8UriProvider,  _header);
                 return m3U8UriManager;
             }
 
@@ -54,7 +54,7 @@ namespace M3u8Downloader_H.Core
             {
                 m3U8FileInfoClient ??= new M3u8FileInfoClient(httpClient, pluginManager);
                 m3U8FileInfoClient.M3UFileReader.TimeOuts = TimeSpan.FromSeconds(Settings.Timeouts);
-                m3U8FileInfoClient.M3UFileReader.Log = Log;
+                m3U8FileInfoClient.M3UFileReader.Log = _log;
                 return m3U8FileInfoClient.M3UFileReader;
             }
         }
@@ -70,7 +70,7 @@ namespace M3u8Downloader_H.Core
                     m3UDownloaderClient.Downloader.M3UFileInfo = M3u8FileInfo;
                     m3UDownloaderClient.Downloader.Headers = _header;
                     m3UDownloaderClient.Downloader.DownloadParams = DownloadParams;
-                    m3UDownloaderClient.Downloader.Log = Log;
+                    m3UDownloaderClient.Downloader.Log = _log;
                 }
 
                 return m3UDownloaderClient.Downloader;
@@ -85,18 +85,19 @@ namespace M3u8Downloader_H.Core
                 {
                     DownloadParams = DownloadParams,
                     Settings = Settings,
-                    Log = Log
+                    Log = _log
                 };
                 return m3UCombinerClient;
             }
         }
 
-        public DownloadClient(HttpClient httpClient,Uri url,IEnumerable<KeyValuePair<string,string>>? header,  IPluginBuilder? pluginBuilder) 
+        public DownloadClient(HttpClient httpClient,Uri url,IEnumerable<KeyValuePair<string,string>>? header, ILog log, Type? pluginType) 
         {
             this.httpClient = httpClient;
             _url = url;
             _header = header;
-            pluginManager = PluginManger.CreatePluginMangaer(pluginBuilder);
+            _log = log;
+            pluginManager = PluginManger.CreatePluginMangaer(pluginType, httpClient, log);
         }
 
         public async Task GetM3u8Uri(CancellationToken cancellationToken)
@@ -122,7 +123,7 @@ namespace M3u8Downloader_H.Core
             {
                 M3u8FileInfo =  await M3uFileReader.GetM3u8FileInfo(_url, _header, cancellationToken);
             }
-            Log?.Info("获取视频流{0}个", M3u8FileInfo.MediaFiles.Count);
+            _log.Info("获取视频流{0}个", M3u8FileInfo.MediaFiles.Count);
             if (M3UKeyInfo is not null)
                 M3u8FileInfo.Key = M3UKeyInfo;
 

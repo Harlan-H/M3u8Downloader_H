@@ -1,4 +1,7 @@
-﻿using M3u8Downloader_H.Plugin.AttributeReaderManagers;
+﻿using M3u8Downloader_H.Common.Interfaces;
+using M3u8Downloader_H.Plugin.AttributeReaderManagers;
+using Newtonsoft.Json.Linq;
+using System.Reflection;
 
 namespace M3u8Downloader_H.Plugin.PluginManagers
 {
@@ -35,10 +38,37 @@ namespace M3u8Downloader_H.Plugin.PluginManagers
 
     public partial class PluginManger
     {
-        public static PluginManger? CreatePluginMangaer(IPluginBuilder? pluginBuilder)
+        public static PluginManger? CreatePluginMangaer(Type? type,HttpClient httpClient,ILog log)
         {
-            if (pluginBuilder is null)
+            if (type is null)
                 return null;
+
+            ConstructorInfo constructor = type.GetConstructors()[0];
+            ParameterInfo[] parameterInfos = constructor.GetParameters();
+
+
+            
+            IPluginBuilder pluginBuilder;
+            if (parameterInfos.Length == 0)
+                pluginBuilder = (IPluginBuilder)constructor.Invoke(null);
+            else 
+            {
+                object[] argsArray = new object[parameterInfos.Length];
+                for (int i = 0; i < parameterInfos.Length; i++)
+                {
+                    if (parameterInfos[i].ParameterType == typeof(HttpClient))
+                    {
+                        argsArray[i] = httpClient;
+                    }else if (parameterInfos[i].ParameterType ==  typeof(ILog))
+                    {
+                        argsArray[i] = log;
+                    }else 
+                    {
+                        argsArray[i] = default!;
+                    }                    
+                }
+                pluginBuilder = (IPluginBuilder)constructor.Invoke(argsArray);
+            }
 
             PluginManger pluginManger = new(pluginBuilder);
             pluginManger.Build();
