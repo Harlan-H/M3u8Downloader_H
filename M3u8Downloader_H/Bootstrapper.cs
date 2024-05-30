@@ -60,7 +60,7 @@ namespace M3u8Downloader_H
         {
             base.OnUnhandledException(sender, e);
 
-            MessageBox.Show(e.Exception.Message, "错误详情", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show(e.Exception.ToString(), "错误详情", MessageBoxButton.OK, MessageBoxImage.Error);
         }
 #endif
 
