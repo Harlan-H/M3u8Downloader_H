@@ -1,21 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using M3u8Downloader_H.Plugin.PluginClients;
-
-#if !DEGUG
 using System.IO;
-#endif
+
 
 namespace M3u8Downloader_H.Services
 {
     public class PluginService
     {
-        private readonly string _pluginDirPath =
-#if DEBUG
-            "e:/desktop/Plugins/";
-#else
-             Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Plugins");
-#endif
+        private readonly string _pluginDirPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Plugins");
         private readonly PluginClient pluginClient;
         public PluginService()
         {
