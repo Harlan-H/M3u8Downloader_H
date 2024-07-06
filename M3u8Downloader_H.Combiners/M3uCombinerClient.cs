@@ -43,6 +43,7 @@ namespace M3u8Downloader_H.Combiners
                 await VideoMerge(isFile, cancellationToken);
             }
             Log?.Info("合并完成");
+            RemoveCacheDirectory(DownloadParams.VideoFullPath);
         }
 
         //通过xml,目录,json等方式可能无法判断流的时长，所以采用原先的转码方案
@@ -97,6 +98,20 @@ namespace M3u8Downloader_H.Combiners
                 .Add("-y").Add(tmpOutputFile);
 
             await _ffmpeg.ExecuteAsync(arguments.Build(), DownloadParams.VodProgress, cancellationToken);
+        }
+
+
+        protected void RemoveCacheDirectory(string filePath, bool recursive = true)
+        {
+
+            if (Settings.IsCleanUp)
+            {
+                if (!Directory.Exists(filePath)) return;
+
+                Directory.Delete(filePath, recursive);
+                Log?.Info("删除{0}目录成功", filePath);
+            }
+
         }
 
     }
