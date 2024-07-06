@@ -61,21 +61,5 @@ namespace M3u8Downloader_H.Downloader.DownloaderSources
             Log?.Info("创建缓存目录:{0}", dirPath);
         }
 
-
-        protected void RemoveCacheDirectory(string filePath, bool recursive = true)
-        {
-            try
-            {
-                if (Settings.IsCleanUp)
-                {
-                    Directory.Delete(filePath, recursive);
-                    Log?.Info("删除缓存目录:{0}", filePath);
-                }
-            }
-            catch (DirectoryNotFoundException)
-            {
-
-            }
-        }
     }
 }

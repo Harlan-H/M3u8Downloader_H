@@ -84,9 +84,9 @@ namespace M3u8Downloader_H.Core
                 m3UCombinerClient ??= new M3uCombinerClient(M3u8FileInfo)
                 {
                     DownloadParams = DownloadParams,
-                    Settings = Settings,
                     Log = _log
                 };
+                m3UCombinerClient.Settings = Settings;
                 return m3UCombinerClient;
             }
         }

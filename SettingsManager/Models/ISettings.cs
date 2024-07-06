@@ -12,10 +12,6 @@ namespace M3u8Downloader_H.Settings.Models
         bool ForcedMerger { get;  }
         bool IsCleanUp { get;  }         
         bool SkipRequestError { get;  }
-        bool IsResetAddress { get;  }         
-        bool IsResetName { get;  } 
-        string Separator { get;  } 
-        string ProxyAddress { get;  } 
         Dictionary<string,string> Headers { get;  } 
         double RecordDuration { get;  }
         int Timeouts { get;  }     

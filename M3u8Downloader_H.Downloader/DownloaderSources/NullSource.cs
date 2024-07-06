@@ -13,5 +13,10 @@ namespace M3u8Downloader_H.Downloader.DownloaderSources
         public NullSource(HttpClient httpClient, IDownloadService? downloadService) : base(downloadService)
         {
         }
+
+        public override Task DownloadAsync(Action<bool> IsLiveAction, CancellationToken cancellationToken = default)
+        {
+            return Task.CompletedTask;
+        }
     }
 }
