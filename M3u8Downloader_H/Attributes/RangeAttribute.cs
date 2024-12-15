@@ -8,16 +8,10 @@ using System.Threading.Tasks;
 
 namespace M3u8Downloader_H.Attributes
 {
-    internal class RangeAttribute : BaseAttribute
+    internal class RangeAttribute(int min, int max) : BaseAttribute
     {
-        private readonly int min;
-        private readonly int max;
-
-        public RangeAttribute(int min, int max)
-        {
-            this.min = min;
-            this.max = max;
-        }
+        private readonly int min = min;
+        private readonly int max = max;
 
         public override void Validate(object obj, object property, object? value)
         {

@@ -85,10 +85,11 @@ namespace M3u8Downloader_H.Behaviors
         }
         private void OnBrowerFolderDialog()
         {
-            System.Windows.Forms.FolderBrowserDialog dialog = new();
-            if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+
+            OpenFolderDialog openFolderDialog = new();
+            if (openFolderDialog.ShowDialog() is true)
             {
-                AttachedTextBox.Text = dialog.SelectedPath;
+                AttachedTextBox.Text = openFolderDialog.FolderName;
                 BindingExpression bindingExpression = AttachedTextBox.GetBindingExpression(TextBox.TextProperty);
                 bindingExpression.UpdateSource();
             }

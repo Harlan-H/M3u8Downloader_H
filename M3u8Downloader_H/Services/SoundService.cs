@@ -25,25 +25,31 @@ namespace M3u8Downloader_H.Services
             }
         }
 
-        public void PlaySuccess()
+        public void PlaySuccess(bool isPlay)
         {
+            if (!isPlay) return;
+
             try
             {
                 SuccessSound?.Stop();
                 SuccessSound?.PlaySync();
-            }catch(FileNotFoundException)
+            }
+            catch (FileNotFoundException)
             {
 
             }
         }
 
-        public void PlayError()
+        public void PlayError(bool isPlay)
         {
+            if (!isPlay) return;
+
             try
             {
                 ErrorSound?.Stop();
                 ErrorSound?.PlaySync();
-            }catch(FileNotFoundException)
+            }
+            catch (FileNotFoundException)
             {
 
             }

@@ -10,24 +10,18 @@ using MaterialDesignThemes.Wpf;
 
 namespace M3u8Downloader_H.ViewModels
 {
-    public class SettingsViewModel : DialogScreen
+    public class SettingsViewModel(SettingsService settingService) : DialogScreen
     {
-        private readonly SettingsService settingService;
+        private readonly SettingsService settingService = settingService;
         public ISnackbarMessageQueue MyMessageQueue { get; } = new SnackbarMessageQueue(TimeSpan.FromSeconds(5));
         public bool IsActive { get; private set; }
         public bool? Status { get; set; } = default!;
 
-        public SettingsService SettingsServiceClone { get; set; }
+        public SettingsService SettingsServiceClone { get; set; } = (SettingsService)settingService.Clone();
 
         public string[] Formats { get; } = { "默认", "mp4" };
 
-        public BindableCollection<string> PluginKeys { get; } = new BindableCollection<string>();
-
-        public SettingsViewModel(SettingsService settingService)
-        {
-            this.settingService = settingService;
-            SettingsServiceClone = (SettingsService)settingService.Clone();
-        }
+        public BindableCollection<string> PluginKeys { get; } = [];
 
         public void OnCloseDialog()
         {

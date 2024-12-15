@@ -2,9 +2,7 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net6.0-windows</TargetFramework>
-    <UseWPF>true</UseWPF>
-    <UseWindowsForms>true</UseWindowsForms>
+    <TargetFramework>net8.0-windows7.0</TargetFramework>
     <RootNamespace>M3u8Downloader_H</RootNamespace>
     <Platforms>AnyCPU;x64</Platforms>
     <AssemblyVersion>3.14.5.0</AssemblyVersion>
@@ -14,6 +12,7 @@
     <ApplicationIcon>icon.ico</ApplicationIcon>
     <Authors>Harlan</Authors>
     <Nullable>enable</Nullable>
+    <UseWPF>True</UseWPF>
   </PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)'=='Release'">

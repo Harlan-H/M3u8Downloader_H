@@ -37,6 +37,8 @@ namespace M3u8Downloader_H.Services
         public bool SkipDirectoryExist { get; set; } = true;
         public bool ForcedMerger { get; set; }
         public bool IsCleanUp { get; set; } = true;
+        public bool IsPlaySound { get; set; } = true;
+
         public bool SkipRequestError { get; set; }
         public bool IsResetAddress { get; set; } = true;
         public bool IsResetName { get; set; } = true;

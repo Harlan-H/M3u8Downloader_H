@@ -6,16 +6,12 @@ using M3u8Downloader_H.Utils;
 
 namespace M3u8Downloader_H.Services
 {
-    public class DownloadService : IDisposable
+    public class DownloadService(SettingsService settingService) : IDisposable
     {
         private readonly SemaphoreSlim _semaphore = new(1, 1);
-        private readonly SettingsService settingService;
+        private readonly SettingsService settingService = settingService;
 
         private int _concurrentDownloadCount;
-        public DownloadService(SettingsService settingService)
-        {
-            this.settingService = settingService;
-        }
 
         private async Task EnsureThrottlingAsync(CancellationToken cancellationToken)
         {
