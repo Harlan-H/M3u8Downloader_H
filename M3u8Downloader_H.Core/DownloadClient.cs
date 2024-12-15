@@ -19,13 +19,13 @@ using M3u8Downloader_H.Common.Interfaces;
 
 namespace M3u8Downloader_H.Core
 {
-    public class DownloadClient
+    public class DownloadClient(HttpClient httpClient, Uri url, IEnumerable<KeyValuePair<string, string>>? header, ILog log, Type? pluginType)
     {
-        private readonly HttpClient httpClient;
-        private Uri _url;
-        private readonly IEnumerable<KeyValuePair<string, string>>? _header;
-        private readonly IPluginManager? pluginManager;
-        private readonly ILog _log;
+        private readonly HttpClient httpClient = httpClient;
+        private Uri _url = url;
+        private readonly IEnumerable<KeyValuePair<string, string>>? _header = header;
+        private readonly PluginManger? pluginManager = PluginManger.CreatePluginMangaer(pluginType, httpClient, log);
+        private readonly ILog _log = log;
         private M3u8FileInfoClient? m3U8FileInfoClient;
         private M3uDownloaderClient? m3UDownloaderClient;
         private M3uCombinerClient? m3UCombinerClient;
@@ -91,15 +91,6 @@ namespace M3u8Downloader_H.Core
             }
         }
 
-        public DownloadClient(HttpClient httpClient,Uri url,IEnumerable<KeyValuePair<string,string>>? header, ILog log, Type? pluginType) 
-        {
-            this.httpClient = httpClient;
-            _url = url;
-            _header = header;
-            _log = log;
-            pluginManager = PluginManger.CreatePluginMangaer(pluginType, httpClient, log);
-        }
-
         public async Task GetM3u8Uri(CancellationToken cancellationToken)
         {
             if(!M3U8UriManager.Completed)
@@ -112,9 +103,8 @@ namespace M3u8Downloader_H.Core
             if (M3u8FileInfo is not null)
                 return;
 
-            if (M3uContent is not null)
-                M3u8FileInfo = M3uFileReader.GetM3u8FileInfo(_url, M3uContent);
-            else if (_url.IsFile)
+
+            if (_url.IsFile)
             {
                 string ext = Path.GetExtension(_url.OriginalString).Trim('.');
                 M3u8FileInfo = M3uFileReader.GetM3u8FileInfo(ext, _url);

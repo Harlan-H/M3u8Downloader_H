@@ -7,11 +7,9 @@ using M3u8Downloader_H.Common.Extensions;
 
 namespace M3u8Downloader_H.Core.VideoConverter
 {
-    internal class FFmpeg
+    internal class FFmpeg(string filePath)
     {
-        private readonly string _filePath;
-
-        public FFmpeg(string filePath) => _filePath = filePath;
+        private readonly string _filePath = filePath;
 
         public async ValueTask ExecuteAsync(
              string arguments,

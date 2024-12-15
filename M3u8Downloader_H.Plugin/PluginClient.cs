@@ -5,10 +5,10 @@ namespace M3u8Downloader_H.Plugin.PluginClients
 {
     public partial class PluginClient
     {
-        private static string _filterStr = "M3u8Downloader_H.*.plugin.dll";
-        private static string _pluginKeyRegex = @"M3u8Downloader_H\.(.*?)\.plugin";
-        private readonly Dictionary<string, Type> _pluginDict = new();
-        private readonly FileSystemWatcher watcher = new FileSystemWatcher();
+        private static readonly string _filterStr = "M3u8Downloader_H.*.plugin.dll";
+        private static readonly string _pluginKeyRegex = @"M3u8Downloader_H\.(.*?)\.plugin";
+        private readonly Dictionary<string, Type> _pluginDict = [];
+        private readonly FileSystemWatcher watcher = new();
         public IEnumerable<string> Keys => _pluginDict.Keys;
 
         public string PluginPath { get; set; } = default!;

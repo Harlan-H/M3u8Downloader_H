@@ -10,22 +10,13 @@ using System;
 
 namespace M3u8Downloader_H.M3U8
 {
-    public class M3u8FileInfoClient
+    public class M3u8FileInfoClient(HttpClient httpClient, IPluginManager? PluginManager)
     {
-        private readonly HttpClient httpClient;
-        private readonly IPluginManager? pluginManager;
+        private readonly HttpClient httpClient = httpClient;
+        private readonly IPluginManager? pluginManager = PluginManager;
         private M3UFileReaderManager? _m3UFileReaderManager;
 
         public M3UFileReaderManager M3UFileReader { get => _m3UFileReaderManager ??= CreateM3u8FileInfoManager(); }
-
-
-
-        public M3u8FileInfoClient(HttpClient httpClient, IPluginManager? PluginManager)
-        {
-            this.httpClient = httpClient;
-            pluginManager = PluginManager;
-        }
-
 
         public M3UFileReaderManager CreateM3u8FileInfoManager()
         {

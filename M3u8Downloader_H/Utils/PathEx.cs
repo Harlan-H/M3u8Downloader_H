@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using M3u8Downloader_H.Exceptions;
 
@@ -10,13 +11,15 @@ namespace M3u8Downloader_H.Utils
     internal static class PathEx
     {
 
-        public static string GenerateFileNameWithoutExtension(string? fileName)
+        public static string GenerateFileNameWithoutExtension(Uri? uri, string? fileName)
         {
             string tmpFileName;
-            if (string.IsNullOrWhiteSpace(fileName))
-                tmpFileName = Guid.NewGuid().ToString("N");
-            else
+            if (!string.IsNullOrWhiteSpace(fileName))
                 tmpFileName = EscapeFileName(fileName);
+            else if (uri is not null)
+                tmpFileName = Convert.ToHexString(MD5.HashData( Encoding.UTF8.GetBytes(uri.OriginalString)));
+            else
+                tmpFileName = Guid.NewGuid().ToString("N");
             return tmpFileName;
         }
 

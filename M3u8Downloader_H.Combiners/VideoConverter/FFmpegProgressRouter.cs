@@ -11,26 +11,24 @@ using M3u8Downloader_H.Common.Extensions;
 
 namespace M3u8Downloader_H.Core.VideoConverter
 {
-    internal class FFmpegProgressRouter : PipeTarget
+    internal partial class FFmpegProgressRouter(IProgress<double> output) : PipeTarget
     {
         private readonly StringBuilder _buffer = new();
-        private readonly IProgress<double> _output;
+        private readonly IProgress<double> _output = output;
 
         private TimeSpan? _totalDuration;
         private TimeSpan? _lastOffset;
 
-        public FFmpegProgressRouter(IProgress<double> output) => _output = output;
-
         private TimeSpan? TryParseTotalDuration(string data)
         {
             return data
-            .Pipe(s => Regex.Match(s, @"Duration:\s(\d\d:\d\d:\d\d.\d\d)").Groups[1].Value)
+            .Pipe(s => Duration().Match(s).Groups[1].Value)
             .NullIfWhiteSpace()?
             .Pipe(s => TimeSpan.ParseExact(s, "c", CultureInfo.InvariantCulture));
         }
 
         private TimeSpan? TryParseCurrentOffset(string data) => data
-            .Pipe(s => Regex.Matches(s, @"time=(\d\d:\d\d:\d\d.\d\d)")
+            .Pipe(s => Time().Matches(s)
                 .Cast<Match>()
                 .LastOrDefault()?
                 .Groups[1]
@@ -73,5 +71,11 @@ namespace M3u8Downloader_H.Core.VideoConverter
                 HandleBuffer();
             }
         }
+
+        [GeneratedRegex(@"time=(\d\d:\d\d:\d\d.\d\d)")]
+        private static partial Regex Time();
+
+        [GeneratedRegex(@"Duration:\s(\d\d:\d\d:\d\d.\d\d)")]
+        private static partial Regex Duration();
     }
 }

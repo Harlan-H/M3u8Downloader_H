@@ -4,20 +4,13 @@ using System.IO;
 
 namespace M3u8Downloader_H.M3U8.Core
 {
-    internal sealed class LineReader : IEnumerator<string>
+    internal sealed class LineReader(Stream stream) : IEnumerator<string>
     {
-        private readonly StreamReader _reader;
-
-       // public IAdapter Adapter { get; }
+        private readonly StreamReader _reader = new(stream);
 
         public string Current { get; private set; } = default!;
 
         object IEnumerator.Current => Current;
-
-        public LineReader(Stream stream)
-        {
-            _reader = new StreamReader(stream);
-        }
 
         public void Dispose()
         {

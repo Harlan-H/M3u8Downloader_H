@@ -19,9 +19,9 @@ namespace M3u8Downloader_H.M3U8.Extensions
             return reader.Read(stream);
         }
 
-        public static M3UFileInfo GetM3u8FileInfo(this M3UFileReaderBase reader, Uri baseUri, string text)
+        public static M3UFileInfo GetM3u8FileInfo(this M3UFileReaderBase reader, Uri baseUri, string m3u8Content)
         {
-            Stream stream = new MemoryStream(Encoding.UTF8.GetBytes(text), false);
+            Stream stream = new MemoryStream(Encoding.UTF8.GetBytes(m3u8Content), false);
             reader.WithUri(baseUri);
             return reader.Read(stream);
         }

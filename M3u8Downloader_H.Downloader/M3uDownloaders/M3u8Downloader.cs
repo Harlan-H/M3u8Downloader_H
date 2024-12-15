@@ -1,6 +1,5 @@
 ﻿using System.Net.Http.Headers;
 using System.Security.Cryptography;
-using System.Threading;
 using M3u8Downloader_H.Common.Interfaces;
 using M3u8Downloader_H.Common.M3u8Infos;
 using M3u8Downloader_H.Downloader.Extensions;

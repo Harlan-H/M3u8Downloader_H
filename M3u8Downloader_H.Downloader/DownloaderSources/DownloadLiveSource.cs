@@ -6,19 +6,13 @@ using System.Net;
 
 namespace M3u8Downloader_H.Downloader.DownloaderSources
 {
-    internal class DownloadLiveSource : DownloaderSource
+    internal class DownloadLiveSource(HttpClient httpClient, Uri url, IDownloadService? downloadService) : DownloaderSource(downloadService)
     {
         private bool _firstTimeToRun = true;
         private static readonly Random _rand = Random.Shared;
-        private readonly HttpClient _httpClient;
-        private readonly Uri url;
+        private readonly HttpClient _httpClient = httpClient;
+        private readonly Uri url = url;
         private long _index;
-
-        public DownloadLiveSource(HttpClient httpClient,Uri url, IDownloadService? downloadService) : base(downloadService)
-        {
-            this._httpClient = httpClient;
-            this.url = url;
-        }
 
         private void AddMedias(M3UFileInfo m3UFileinfo)
         {

@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Linq;
 using System.Reflection.Emit;
 using M3u8Downloader_H.Exceptions;
 

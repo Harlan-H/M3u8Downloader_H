@@ -30,6 +30,8 @@ namespace M3u8Downloader_H.ViewModels
 
         public string VideoName { get; set; } = default!;
 
+        public string SavePath { get; set; } = default!;
+
         public double ProgressNum { get; set; }
 
         public double RecordDuration { get; set; }
@@ -174,7 +176,7 @@ namespace M3u8Downloader_H.ViewModels
             DownloadViewModel viewModel = IoC.Get<DownloadViewModel>();
             viewModel.RequestUrl = requesturl;
             viewModel.VideoName = videoname;
-
+            viewModel.SavePath = cachePath;
 
             viewModel._downloadClient = new(Http.Client, requesturl, headers, viewModel, pluginType)
             {
@@ -199,7 +201,7 @@ namespace M3u8Downloader_H.ViewModels
         }
 
 
-        public static DownloadViewModel CreateDownloadViewModel(
+       /* public static DownloadViewModel CreateDownloadViewModel(
             Uri? requesturl,
             string content,
             IEnumerable<KeyValuePair<string, string>>? headers,
@@ -210,6 +212,7 @@ namespace M3u8Downloader_H.ViewModels
             DownloadViewModel viewModel = IoC.Get<DownloadViewModel>();
             viewModel.RequestUrl = requesturl!;
             viewModel.VideoName = videoname;
+            viewModel.SavePath = cachePath;
 
             viewModel._downloadClient = new(Http.Client, requesturl!, headers, viewModel, pluginType)
             {
@@ -227,7 +230,7 @@ namespace M3u8Downloader_H.ViewModels
 
 
             return viewModel;
-        }
+        }*/
 
 
         //当传入的是M3UFileInfo 此时因为他不是文件或者http地址 没有办法判断具体的缓存目录
@@ -240,6 +243,7 @@ namespace M3u8Downloader_H.ViewModels
         {
             DownloadViewModel viewModel = IoC.Get<DownloadViewModel>();
             viewModel.VideoName = videoname;
+            viewModel.SavePath = videoPath;
 
             viewModel._downloadClient = new(Http.Client, default!, headers, viewModel,pluginType)
             {

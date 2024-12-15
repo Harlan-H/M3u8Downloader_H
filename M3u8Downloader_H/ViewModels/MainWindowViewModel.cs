@@ -61,7 +61,7 @@ namespace M3u8Downloader_H.ViewModels
                         try
                         {
                             httpListenService.Run($"http://+:{i}/");
-                            httpListenService.Initialization(ProcessDownload, ProcessDownload, ProcessDownload);
+                            httpListenService.Initialization(ProcessDownload, ProcessDownload);
                             HttpServicePort = i;
                             break;
                         }
@@ -89,7 +89,7 @@ namespace M3u8Downloader_H.ViewModels
 
         private void EnqueueDownload(DownloadViewModel download)
         {
-            var existingDownloads = Downloads.Where(d => d.VideoName == download.VideoName).FirstOrDefault();
+            var existingDownloads = Downloads.Where(d =>  d.VideoName == download.VideoName && d.SavePath == download.SavePath ).FirstOrDefault();
             if (existingDownloads is not null)
                 return;
            
@@ -148,7 +148,7 @@ namespace M3u8Downloader_H.ViewModels
 
         private void ProcessDownload(Uri uri, string? name,string? method,string? key,string? iv, string? savePath = default, string? pluginKey = default!, IEnumerable<KeyValuePair<string,string>>? headers = default)
         {
-            string tmpVideoName = PathEx.GenerateFileNameWithoutExtension(name);
+            string tmpVideoName = PathEx.GenerateFileNameWithoutExtension(uri,name);
             string fileFullPath = Path.Combine(savePath ?? settingsService.SavePath, tmpVideoName);
             FileEx.EnsureFileNotExist(fileFullPath);
 
@@ -163,29 +163,29 @@ namespace M3u8Downloader_H.ViewModels
             EnqueueDownload(download);
         }
 
-        private void ProcessDownload(string content, Uri? uri, string? name, string? savePath, string? pluginKey = default!, IEnumerable<KeyValuePair<string, string>>? headers = default)
-        {
-            string tmpVideoName = PathEx.GenerateFileNameWithoutExtension(name);
-            string fileFullPath = Path.Combine(savePath ?? settingsService.SavePath, tmpVideoName);
-            FileEx.EnsureFileNotExist(fileFullPath);
-
-            string? tmpPluginKey = pluginKey is not null
-                                 ? pluginKey
-                                 : string.IsNullOrWhiteSpace(settingsService.PluginKey)
-                                 ? uri?.GetHostName()
-                                 : settingsService.PluginKey;
-            DownloadViewModel download = DownloadViewModel.CreateDownloadViewModel(uri, content, headers, fileFullPath, tmpVideoName, pluginService[tmpPluginKey]);
-            if (download is null) return;
-
-            EnqueueDownload(download);
-        }
+//         private void ProcessDownload(string content, Uri? uri, string? name, string? savePath, string? pluginKey = default!, IEnumerable<KeyValuePair<string, string>>? headers = default)
+//         {
+//             string tmpVideoName = PathEx.GenerateFileNameWithoutExtension(uri,name);
+//             string fileFullPath = Path.Combine(savePath ?? settingsService.SavePath, tmpVideoName);
+//             FileEx.EnsureFileNotExist(fileFullPath);
+// 
+//             string? tmpPluginKey = pluginKey is not null
+//                                  ? pluginKey
+//                                  : string.IsNullOrWhiteSpace(settingsService.PluginKey)
+//                                  ? uri?.GetHostName()
+//                                  : settingsService.PluginKey;
+//             DownloadViewModel download = DownloadViewModel.CreateDownloadViewModel(uri, content, headers, fileFullPath, tmpVideoName, pluginService[tmpPluginKey]);
+//             if (download is null) return;
+// 
+//             EnqueueDownload(download);
+//         }
 
         private void ProcessDownload(M3UFileInfo m3UFileInfo, string? name, string? savePath = default!, string? pluginKey = default!, IEnumerable<KeyValuePair<string, string>>? headers = default!)
         {
             if (!m3UFileInfo.MediaFiles.Any())
                 throw new ArgumentException("m3u8的数据不能为空");
 
-            string tmpVideoName = PathEx.GenerateFileNameWithoutExtension(name);
+            string tmpVideoName = PathEx.GenerateFileNameWithoutExtension(m3UFileInfo.MediaFiles[0].Uri, name);
             string fileFullPath = Path.Combine(savePath ?? settingsService.SavePath, tmpVideoName);
             FileEx.EnsureFileNotExist(fileFullPath);
 
