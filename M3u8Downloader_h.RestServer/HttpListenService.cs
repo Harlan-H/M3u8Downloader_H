@@ -74,12 +74,19 @@ namespace M3u8Downloader_H.RestServer
                     return;
                 }
 
-                M3UFileInfo? m3UFileInfo = new M3UFileReaderWithJson().GetM3u8FileInfo(requestWithContent.Url!, requestWithContent.Content);
+                M3UFileInfo? m3UFileInfo = new M3UFileReaderWithStream().GetM3u8FileInfo(requestWithContent.Url!, requestWithContent.Content);
                 if (m3UFileInfo is null)
                 {
-                    response.Json(Response.Error("m3u8序列化失败,请检查传入的参数是否有误"));
+                    response.Json(Response.Error("m3u8内容读取失败,请检查传入的参数是否有误"));
                     return;
                 }
+
+                if(m3UFileInfo!.MediaFiles is null || !m3UFileInfo.MediaFiles.Any())
+                {
+                    response.Json(Response.Error("m3u8的ts列表为空"));
+                    return;
+                }
+
 
                 requestWithContent.Validate();
                 DownloadByM3uFileInfoAction(m3UFileInfo,  requestWithContent.VideoName, requestWithContent.SavePath, requestWithContent.PluginKey, requestWithContent.Headers);

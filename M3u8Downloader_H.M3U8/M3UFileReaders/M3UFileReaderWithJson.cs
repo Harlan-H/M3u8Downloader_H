@@ -5,7 +5,7 @@ using M3u8Downloader_H.M3U8.Extensions;
 
 namespace M3u8Downloader_H.M3U8.M3UFileReaders
 {
-    public sealed class M3UFileReaderWithJson : M3UFileReaderBase
+    internal sealed class M3UFileReaderWithJson : M3UFileReaderBase
     {
 
         public override M3UFileInfo Read(Stream stream)
