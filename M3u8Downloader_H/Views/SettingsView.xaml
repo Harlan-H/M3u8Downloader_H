@@ -128,18 +128,6 @@
                         <ToggleButton   HorizontalAlignment="Left"  Margin="10 0 0 0" Style="{StaticResource MaterialDesignSwitchToggleButton}" ToolTip="{Binding IsResetName,Converter={x:Static converters:BoolToStringConverters.Instance}}"  IsChecked="{Binding IsResetName}" />
                     </DockPanel>
                     
-                    <DockPanel Margin="8 0 8 0">
-                        <DockPanel.ToolTip>
-                            <TextBlock>
-                                <Run Text="当下载的缓存目录相同时，是否继续下载"/>
-                                <LineBreak/>
-                                <Run Text="选择开启,则继续下载.选择关闭,则取消下载" />
-                            </TextBlock>
-                        </DockPanel.ToolTip>
-                        <TextBlock Style="{StaticResource TextBlockStyle}"  Text="相同缓存" />
-                        <ToggleButton  HorizontalAlignment="Left"  Margin="10 0 0 0" Style="{StaticResource MaterialDesignSwitchToggleButton}"  ToolTip="{Binding SkipDirectoryExist,Converter={x:Static converters:BoolToStringConverters.Instance}}" IsChecked="{Binding SkipDirectoryExist}" />
-                    </DockPanel>
-
                     <DockPanel Margin="8 0 8 0" >
                         <DockPanel.ToolTip>
                             <TextBlock>

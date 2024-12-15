@@ -137,7 +137,6 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
 
                     await WriteToFileAsync(mediaPath, stream, token);
                     IsSuccessful = true;
-                    Log?.Info("{0} 下载完成", uri.OriginalString);
                     break;
                 }
                 catch (OperationCanceledException) when (!token.IsCancellationRequested)

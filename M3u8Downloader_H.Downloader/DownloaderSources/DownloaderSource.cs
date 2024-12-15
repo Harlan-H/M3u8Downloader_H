@@ -35,21 +35,20 @@ namespace M3u8Downloader_H.Downloader.DownloaderSources
         {
             if (_firstTimeToRun)
             {
-                CreateDirectory(DownloadParams.VideoFullPath, Settings.SkipDirectoryExist);
+                CreateDirectory(DownloadParams.VideoFullPath);
                 _firstTimeToRun = false;
             }
             
             return Task.CompletedTask;
         }
 
-        protected void CreateDirectory(string dirPath, bool skipExist = true)
+        protected void CreateDirectory(string dirPath)
         {
             DirectoryInfo directoryInfo = new(dirPath);
             if (directoryInfo.Exists)
             {
-                if (skipExist) return;
-
-                throw new Exception($"{dirPath} 目录已经存在，程序停止");
+                Log?.Info("找到缓存目录:{0},开始继续下载", dirPath);
+                return;
             }
             directoryInfo.Create();
             Log?.Info("创建缓存目录:{0}", dirPath);

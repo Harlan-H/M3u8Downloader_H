@@ -163,23 +163,6 @@ namespace M3u8Downloader_H.ViewModels
             EnqueueDownload(download);
         }
 
-//         private void ProcessDownload(string content, Uri? uri, string? name, string? savePath, string? pluginKey = default!, IEnumerable<KeyValuePair<string, string>>? headers = default)
-//         {
-//             string tmpVideoName = PathEx.GenerateFileNameWithoutExtension(uri,name);
-//             string fileFullPath = Path.Combine(savePath ?? settingsService.SavePath, tmpVideoName);
-//             FileEx.EnsureFileNotExist(fileFullPath);
-// 
-//             string? tmpPluginKey = pluginKey is not null
-//                                  ? pluginKey
-//                                  : string.IsNullOrWhiteSpace(settingsService.PluginKey)
-//                                  ? uri?.GetHostName()
-//                                  : settingsService.PluginKey;
-//             DownloadViewModel download = DownloadViewModel.CreateDownloadViewModel(uri, content, headers, fileFullPath, tmpVideoName, pluginService[tmpPluginKey]);
-//             if (download is null) return;
-// 
-//             EnqueueDownload(download);
-//         }
-
         private void ProcessDownload(M3UFileInfo m3UFileInfo, string? name, string? savePath = default!, string? pluginKey = default!, IEnumerable<KeyValuePair<string, string>>? headers = default!)
         {
             if (!m3UFileInfo.MediaFiles.Any())

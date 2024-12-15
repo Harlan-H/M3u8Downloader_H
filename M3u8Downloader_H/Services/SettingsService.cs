@@ -3,6 +3,8 @@ using M3u8Downloader_H.Attributes;
 using M3u8Downloader_H.Settings.Services;
 using M3u8Downloader_H.Settings.Models;
 using System.Collections.Generic;
+using System;
+
 
 
 #if !DEBUG
@@ -11,7 +13,7 @@ using System.IO;
 
 namespace M3u8Downloader_H.Services
 {
-    public class SettingsService : SettingsManager, ISettings
+    public class SettingsService : SettingsManager, ICloneable, ISettings
     {
         /// <summary>
         /// 线程数量
@@ -34,6 +36,8 @@ namespace M3u8Downloader_H.Services
 #endif
         public string PluginKey { get; set; } = default!;
         public string SelectedFormat { get; set; } = "默认";
+
+        [JsonIgnore]
         public bool SkipDirectoryExist { get; set; } = true;
         public bool ForcedMerger { get; set; }
         public bool IsCleanUp { get; set; } = true;
@@ -64,6 +68,48 @@ namespace M3u8Downloader_H.Services
 #if DEBUG
             Configuration.DirectoryName = @"e:\desktop\";
 #endif
+        }
+
+
+        public object Clone()
+        {
+            return new SettingsService()
+            {
+                MaxThreadCount = MaxThreadCount,
+                MaxConcurrentDownloadCount = MaxConcurrentDownloadCount,
+                RetryCount = RetryCount,
+                SavePath = SavePath,
+                PluginKey = PluginKey,
+                SelectedFormat = SelectedFormat,
+                ForcedMerger = ForcedMerger,
+                IsCleanUp = IsCleanUp,
+                IsPlaySound = IsPlaySound,
+                SkipRequestError = SkipRequestError,
+                IsResetAddress = IsResetAddress,
+                ProxyAddress = ProxyAddress,
+                Headers = Headers,
+                RecordDuration = RecordDuration,
+                Timeouts = Timeouts,
+            };
+        }
+
+        public void CopyFrom(SettingsService other)
+        {
+            MaxThreadCount = other.MaxThreadCount;
+            MaxConcurrentDownloadCount = other.MaxConcurrentDownloadCount;
+            RetryCount = other.RetryCount;
+            SavePath = other.SavePath;
+            PluginKey = other.PluginKey;
+            SelectedFormat = other.SelectedFormat;
+            ForcedMerger = other.ForcedMerger;
+            IsCleanUp = other.IsCleanUp;
+            IsPlaySound = other.IsPlaySound;
+            SkipRequestError = other.SkipRequestError;
+            IsResetAddress = other.IsResetAddress;
+            ProxyAddress = other.ProxyAddress;
+            Headers = other.Headers;
+            RecordDuration = other.RecordDuration;
+            Timeouts = other.Timeouts;
         }
 
     }

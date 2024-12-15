@@ -10,7 +10,7 @@ namespace M3u8Downloader_H.Utils
 {
     internal static class PathEx
     {
-
+        //生成唯一hash值,只要地址不改变hash就不会变
         public static string GenerateFileNameWithoutExtension(Uri? uri, string? fileName)
         {
             string tmpFileName;

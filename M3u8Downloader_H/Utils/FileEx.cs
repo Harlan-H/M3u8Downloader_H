@@ -1,7 +1,9 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection.Emit;
 using M3u8Downloader_H.Exceptions;
+using Newtonsoft.Json.Linq;
 
 namespace M3u8Downloader_H.Utils
 {
@@ -20,30 +22,5 @@ namespace M3u8Downloader_H.Utils
                 }
             }
         }
-
-        public static void EnsureFileNotExist(string savepath, string filename)
-        {
-            try
-            {
-                DirectoryInfo dir = new(savepath);
-                FileInfo[] files = dir.GetFiles();
-                foreach (var file in files)
-                {
-                    string noExtension = Path.GetFileNameWithoutExtension(file.Name);
-                    if (noExtension == filename)
-                    {
-                        if (file.Length > 0)
-                        {
-                            throw new FileExistsException($"【{filename}】\n文件已经存在，请修改名称后再次尝试");
-                        }
-                        break;
-                    }
-                }
-            }catch(DirectoryNotFoundException)
-            {
-
-            }
-        }
-
     }
 }
