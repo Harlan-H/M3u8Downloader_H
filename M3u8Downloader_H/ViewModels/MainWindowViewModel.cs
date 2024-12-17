@@ -91,7 +91,10 @@ namespace M3u8Downloader_H.ViewModels
         {
             var existingDownloads = Downloads.Where(d =>  d.VideoName == download.VideoName && d.SavePath == download.SavePath ).FirstOrDefault();
             if (existingDownloads is not null)
+            {
+                Notifications.Enqueue($"{download.VideoName} 已经在下载列表中!");
                 return;
+            }
            
             download.OnStart();
             Downloads.Insert(0, download);

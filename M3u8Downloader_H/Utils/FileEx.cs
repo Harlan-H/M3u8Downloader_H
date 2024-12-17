@@ -18,7 +18,7 @@ namespace M3u8Downloader_H.Utils
                 FileInfo fileInfo = new(filePath);
                 if (fileInfo.Exists && fileInfo.Length > 0)
                 {
-                    throw new FileExistsException($"【{filename}】\n文件已经存在，请修改名称后再次尝试");
+                    throw new FileExistsException($"【{filename}】文件已经存在，请修改名称后再次尝试");
                 }
             }
         }

@@ -53,6 +53,7 @@
   </ItemGroup>
 
 
+
   <ItemGroup>
 	  <Resource Include="Assets\weixin.png">
 		  <CopyToOutputDirectory>Never</CopyToOutputDirectory>
