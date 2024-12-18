@@ -1,11 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
-	<Version>3.14.5.0</Version>
+	<Version>3.14.6.0</Version>
     <Authors>Harlan</Authors>
-    <AssemblyVersion>3.14.5.0</AssemblyVersion>
+    <AssemblyVersion>3.14.6.0</AssemblyVersion>
   </PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)'=='Release'">

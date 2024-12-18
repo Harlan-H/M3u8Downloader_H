@@ -50,7 +50,6 @@ namespace M3u8Downloader_H
 
         protected override async void OnStartup(object sender, StartupEventArgs e)
         {
-            ServicePointManager.DefaultConnectionLimit = 2000;
             await DisplayRootViewForAsync<MainWindowViewModel>();
         }
 

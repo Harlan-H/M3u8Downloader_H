@@ -1,12 +1,11 @@
 name: main
 
 on: 
-  push:
-    branches:
-      - master
-      - develop
-    tags:
-      - "*"
+  workflow_dispatch:
+    inputs:
+      tags:
+        description: '版本号'
+        required: true
 
 jobs:
   package:
@@ -49,7 +48,6 @@ jobs:
           path: M3u8Downloader_H/bin/PublishSingleFile
 
   deploy:
-    if: ${{ github.event_name == 'push' && github.ref_type == 'tag' }}
     needs: package
     runs-on: ubuntu-latest
 
@@ -93,8 +91,8 @@ jobs:
             #
               | 名称 | 描述 | 
               |-------|-------|
-              | [m3u8Downloader_H.zip](https://github.com/Harlan-H/M3u8Downloader_H/releases/download/${{github.ref_name}}/M3u8Downloader_H.zip) | 需要运行库版本,程序文件夹中的dotnet-9.0-runtime-x64.exe | 
-              | [M3u8Downloader_H-SingleFile.zip](https://github.com/Harlan-H/M3u8Downloader_H/releases/download/${{github.ref_name}}/M3u8Downloader_H-SingleFile.zip) | 无需运行库版本,可能某些功能无法使用 | 
+              | [m3u8Downloader_H.zip](https://github.com/Harlan-H/M3u8Downloader_H/releases/download/${{ github.event.inputs.tags }}/M3u8Downloader_H.zip) | 需要运行库版本,程序文件夹中的dotnet-9.0-runtime-x64.exe | 
+              | [M3u8Downloader_H-SingleFile.zip](https://github.com/Harlan-H/M3u8Downloader_H/releases/download/${{ github.event.inputs.tags }}/M3u8Downloader_H-SingleFile.zip) | 无需运行库版本,可能某些功能无法使用 | 
               - 如果你是win7用户且程序双击没反应 那么就必须安装KB4457144 [跳转环境问题](https://github.com/Harlan-H/M3u8Downloader_H/wiki#%E7%8E%AF%E5%A2%83%E9%97%AE%E9%A2%98)
 
           draft: false
