@@ -6,10 +6,7 @@ using System.Threading.Tasks;
 
 namespace M3u8Downloader_H.Exceptions
 {
-    public class FileExistsException : Exception
+    public class FileExistsException(string? message) : Exception(message)
     {
-        public FileExistsException(string? message) : base(message)
-        {
-        }
     }
 }

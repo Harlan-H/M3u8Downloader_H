@@ -12,11 +12,11 @@ namespace M3u8Downloader_H.M3U8.AttributeReader.AttributeReaders
 
         public void Write(M3UFileInfo fileInfo, string value, IEnumerator<string> reader, Uri baseUri)
         {
-            var source = value.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+            var source = value.Split([','], StringSplitOptions.RemoveEmptyEntries)
                               .Select(e => KV.Parse(e, '='))
                               .ToList();
 
-            fileInfo.Streams ??= new List<M3UStreamInfo>();
+            fileInfo.Streams ??= [];
 
             var m3UstreamInfo = new M3UStreamInfo();
             foreach (var keyValuePair in source)

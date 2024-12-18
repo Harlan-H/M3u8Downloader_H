@@ -7,16 +7,12 @@ using M3u8Downloader_H.Common.M3u8Infos;
 
 namespace M3u8Downloader_H.Combiners.M3uCombiners
 {
-    internal class M3uCombiner : IM3uCombiner
+    internal class M3uCombiner(string dirPath) : IM3uCombiner
     {
-        protected readonly string cacheFullPath;
+        protected readonly string cacheFullPath = dirPath;
         protected FileStream videoFileStream = default!;
 
         public IProgress<double> Progress { get; set; } = default!;
-        public M3uCombiner(string dirPath)
-        {
-            cacheFullPath = dirPath;
-        }
 
         protected virtual Stream HandleData(string path) => File.OpenRead(path);
 

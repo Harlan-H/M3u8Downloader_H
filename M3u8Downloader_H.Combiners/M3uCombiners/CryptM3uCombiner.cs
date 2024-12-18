@@ -4,15 +4,9 @@ using M3u8Downloader_H.Common.M3u8Infos;
 
 namespace M3u8Downloader_H.Combiners.M3uCombiners
 {
-    internal class CryptM3uCombiner : M3uCombiner
+    internal class CryptM3uCombiner(M3UFileInfo m3UFileInfo, string videoFullName) : M3uCombiner(videoFullName)
     {
-        private readonly M3UFileInfo m3UFileInfo;
-
-        public CryptM3uCombiner(M3UFileInfo m3UFileInfo, string videoFullName) : base(videoFullName)
-        {
-            this.m3UFileInfo = m3UFileInfo;
-        }
-
+        private readonly M3UFileInfo m3UFileInfo = m3UFileInfo;
 
         public override void Initialization(string videoName)
         {

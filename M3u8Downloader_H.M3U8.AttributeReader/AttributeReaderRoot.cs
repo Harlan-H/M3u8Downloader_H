@@ -17,7 +17,7 @@ namespace M3u8Downloader_H.M3U8.AttributeReader
             attributeReaders = InitAttributeReaders();
         }
 
-        private static IReadOnlyDictionary<string, Type> InitAttributeReaders()
+        private static Dictionary<string, Type> InitAttributeReaders()
         {
             Assembly asm = typeof(M3U8ReaderAttribute).Assembly;
             return asm.GetTypes()

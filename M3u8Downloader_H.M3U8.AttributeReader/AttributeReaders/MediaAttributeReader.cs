@@ -31,9 +31,9 @@ namespace M3u8Downloader_H.M3U8.AttributeReader.AttributeReaders
 
         public void Write(M3UFileInfo fileInfo, string value, IEnumerator<string> reader, Uri baseUri)
         {
-            fileInfo.MediaFiles ??= new List<M3UMediaInfo>();
+            fileInfo.MediaFiles ??= [];
             var m3UmediaInfo = new M3UMediaInfo();
-            var strArray = value.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+            var strArray = value.Split([','], StringSplitOptions.RemoveEmptyEntries);
             if (strArray.Length != 0)
             {
                 m3UmediaInfo.Duration = To.Value<float>(strArray[0]) ?? 0;

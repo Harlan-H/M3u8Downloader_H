@@ -1,10 +1,12 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq.Expressions;
 
 namespace M3u8Downloader_H.Settings.Services
 {
-    public class SettingsManager : ICloneable
+    public class SettingsManager
     {
 
         [JsonIgnore]
@@ -19,14 +21,6 @@ namespace M3u8Downloader_H.Settings.Services
         public SettingsManager()
         {
         }
-
-        public object Clone()
-        {
-            var clone = (SettingsManager)Activator.CreateInstance(GetType());
-            clone.CopyFrom(this);
-            return clone;
-        }
-
 
         public virtual void Save()
         {
@@ -69,21 +63,6 @@ namespace M3u8Downloader_H.Settings.Services
             {
 
             }
-        }
-
-        public virtual void Reset()
-        {
-            var referenceSettings = (SettingsManager)Activator.CreateInstance(GetType());
-            CopyFrom(referenceSettings);
-        }
-
-        public virtual void CopyFrom(SettingsManager settingsManager)
-        {
-            if (settingsManager == null)
-                throw new ArgumentNullException(nameof(settingsManager));
-
-            var serialize = JsonConvert.SerializeObject(settingsManager);
-            JsonConvert.PopulateObject(serialize, this);
         }
 
     }

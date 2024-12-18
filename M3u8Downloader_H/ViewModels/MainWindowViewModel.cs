@@ -21,14 +21,14 @@ using System.Security.Principal;
 
 namespace M3u8Downloader_H.ViewModels
 {
-    public class MainWindowViewModel : Screen
+    public class MainWindowViewModel(SettingsService settingsService, PluginService pluginService) : Screen
     {
-        private readonly SettingsService settingsService;
-        private readonly HttpListenService httpListenService;
-        private readonly PluginService pluginService;
+        private readonly SettingsService settingsService = settingsService;
+        private readonly HttpListenService httpListenService = HttpListenService.Instance;
+        private readonly PluginService pluginService = pluginService;
 
         public ISnackbarMessageQueue Notifications { get; } = new SnackbarMessageQueue(TimeSpan.FromSeconds(5));
-        public BindableCollection<DownloadViewModel> Downloads { get; } = new BindableCollection<DownloadViewModel>();
+        public BindableCollection<DownloadViewModel> Downloads { get; } = [];
 
         [DoNotNotify]
         public IList<DownloadViewModel> SelectedDownloads { get; set; } = Array.Empty<DownloadViewModel>();
@@ -41,13 +41,6 @@ namespace M3u8Downloader_H.ViewModels
         public bool IsBusy { get; private set; }
 
         public bool IsShowDialog { get; private set; }
-
-        public MainWindowViewModel( SettingsService settingsService,PluginService pluginService)
-        {
-            this.settingsService = settingsService;
-            this.pluginService = pluginService;
-            httpListenService = HttpListenService.Instance;
-        }
 
         protected override Task OnInitializeAsync(CancellationToken cancellationToken)
         {
@@ -68,7 +61,7 @@ namespace M3u8Downloader_H.ViewModels
                         try
                         {
                             httpListenService.Run($"http://+:{i}/");
-                            httpListenService.Initialization(ProcessDownload, ProcessDownload, ProcessDownload);
+                            httpListenService.Initialization(ProcessDownload, ProcessDownload);
                             HttpServicePort = i;
                             break;
                         }
@@ -96,9 +89,12 @@ namespace M3u8Downloader_H.ViewModels
 
         private void EnqueueDownload(DownloadViewModel download)
         {
-            var existingDownloads = Downloads.Where(d => d.VideoName == download.VideoName).FirstOrDefault();
+            var existingDownloads = Downloads.Where(d =>  d.VideoName == download.VideoName && d.SavePath == download.SavePath ).FirstOrDefault();
             if (existingDownloads is not null)
+            {
+                Notifications.Enqueue($"{download.VideoName} 已经在下载列表中!");
                 return;
+            }
            
             download.OnStart();
             Downloads.Insert(0, download);
@@ -155,7 +151,7 @@ namespace M3u8Downloader_H.ViewModels
 
         private void ProcessDownload(Uri uri, string? name,string? method,string? key,string? iv, string? savePath = default, string? pluginKey = default!, IEnumerable<KeyValuePair<string,string>>? headers = default)
         {
-            string tmpVideoName = PathEx.GenerateFileNameWithoutExtension(name);
+            string tmpVideoName = PathEx.GenerateFileNameWithoutExtension(uri,name);
             string fileFullPath = Path.Combine(savePath ?? settingsService.SavePath, tmpVideoName);
             FileEx.EnsureFileNotExist(fileFullPath);
 
@@ -170,29 +166,12 @@ namespace M3u8Downloader_H.ViewModels
             EnqueueDownload(download);
         }
 
-        private void ProcessDownload(string content, Uri? uri, string? name, string? savePath, string? pluginKey = default!, IEnumerable<KeyValuePair<string, string>>? headers = default)
-        {
-            string tmpVideoName = PathEx.GenerateFileNameWithoutExtension(name);
-            string fileFullPath = Path.Combine(savePath ?? settingsService.SavePath, tmpVideoName);
-            FileEx.EnsureFileNotExist(fileFullPath);
-
-            string? tmpPluginKey = pluginKey is not null
-                                 ? pluginKey
-                                 : string.IsNullOrWhiteSpace(settingsService.PluginKey)
-                                 ? uri?.GetHostName()
-                                 : settingsService.PluginKey;
-            DownloadViewModel download = DownloadViewModel.CreateDownloadViewModel(uri, content, headers, fileFullPath, tmpVideoName, pluginService[tmpPluginKey]);
-            if (download is null) return;
-
-            EnqueueDownload(download);
-        }
-
         private void ProcessDownload(M3UFileInfo m3UFileInfo, string? name, string? savePath = default!, string? pluginKey = default!, IEnumerable<KeyValuePair<string, string>>? headers = default!)
         {
             if (!m3UFileInfo.MediaFiles.Any())
                 throw new ArgumentException("m3u8的数据不能为空");
 
-            string tmpVideoName = PathEx.GenerateFileNameWithoutExtension(name);
+            string tmpVideoName = PathEx.GenerateFileNameWithoutExtension(m3UFileInfo.MediaFiles[0].Uri, name);
             string fileFullPath = Path.Combine(savePath ?? settingsService.SavePath, tmpVideoName);
             FileEx.EnsureFileNotExist(fileFullPath);
 

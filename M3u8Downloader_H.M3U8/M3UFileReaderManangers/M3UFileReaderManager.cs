@@ -14,19 +14,13 @@ using System.Threading.Tasks;
 
 namespace M3u8Downloader_H.M3U8.M3UFileReaderManangers
 {
-    public class M3UFileReaderManager : IM3UFileInfoMananger
+    public class M3UFileReaderManager(IM3uFileReader? M3UFileReader, HttpClient httpClient, IDictionary<string, IAttributeReader>? attributeReaders = default!) : IM3UFileInfoMananger
     {
-        private readonly HttpClient _httpClient;
-        private readonly M3UFileReaderWithStream _m3UFileReaderWithStream;
+        private readonly HttpClient _httpClient = httpClient;
+        private readonly M3UFileReaderWithStream _m3UFileReaderWithStream = M3UFileReaderFactory.CreateM3UFileReader(M3UFileReader, attributeReaders);
 
         public TimeSpan TimeOuts { get; set; } = TimeSpan.FromSeconds(10);
         public ILog? Log { get; set; }
-
-        public M3UFileReaderManager(IM3uFileReader? M3UFileReader,HttpClient httpClient, IDictionary<string, IAttributeReader>? attributeReaders = default!)
-        {
-            _httpClient = httpClient;
-            _m3UFileReaderWithStream = M3UFileReaderFactory.CreateM3UFileReader(M3UFileReader, attributeReaders);
-        }
 
         public async Task<M3UFileInfo> GetM3u8FileInfo(Uri uri, IEnumerable<KeyValuePair<string, string>>? headers, CancellationToken cancellationToken = default)
         {
@@ -50,11 +44,6 @@ namespace M3u8Downloader_H.M3U8.M3UFileReaderManangers
             throw new InvalidOperationException($"'{uri.OriginalString}' 请求失败，请检查网络是否可以访问");
         }
 
-        public M3UFileInfo GetM3u8FileInfo(Uri uri, string content)
-        {
-            var m3u8FileInfo =  _m3UFileReaderWithStream.GetM3u8FileInfo(uri, content);
-            return checkM3u8FileInfo(m3u8FileInfo, uri);
-        }
 
         public M3UFileInfo GetM3u8FileInfo(string ext, Uri uri)
         {
@@ -72,13 +61,9 @@ namespace M3u8Downloader_H.M3U8.M3UFileReaderManangers
         private M3UFileInfo checkM3u8FileInfo(M3UFileInfo m3u8FileInfo,Uri uri)
         {
             if (m3u8FileInfo.MediaFiles != null && m3u8FileInfo.MediaFiles.Any())
-            {
                 return m3u8FileInfo;
-            }
             else
-            {
-                throw new InvalidDataException($"'{uri.OriginalString}' 没有包含任何数据");
-            }
+                throw new InvalidDataException($"'{uri.OriginalString}' 没有包含任何数据"); 
         }
 
         protected virtual Task<(Uri?,Stream)> GetM3u8FileStreamAsync(Uri uri, IEnumerable<KeyValuePair<string, string>>? headers, CancellationToken cancellationToken = default)

@@ -14,11 +14,8 @@ namespace M3u8Downloader_H.Common.Utils
 
             foreach (var prop in objectType.GetProperties().Where(p => p.CanRead && p.CanWrite))
             {
-                var jsonPropertyAttr = prop.GetCustomAttributes(true).OfType<JsonPropertyAttribute>().FirstOrDefault();
-                if (jsonPropertyAttr == null)
-                {
-                    throw new JsonReaderException($"{nameof(JsonPropertyAttribute)} is mandatory when using {nameof(JsonPathConverter)}");
-                }
+                var jsonPropertyAttr = prop.GetCustomAttributes(true).OfType<JsonPropertyAttribute>().FirstOrDefault() 
+                        ?? throw new JsonReaderException($"{nameof(JsonPropertyAttribute)} is mandatory when using {nameof(JsonPathConverter)}");
 
                 var jsonPath = jsonPropertyAttr.PropertyName;
                 var token = jObject.SelectToken(jsonPath!);

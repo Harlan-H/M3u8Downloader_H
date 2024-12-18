@@ -128,18 +128,6 @@
                         <ToggleButton   HorizontalAlignment="Left"  Margin="10 0 0 0" Style="{StaticResource MaterialDesignSwitchToggleButton}" ToolTip="{Binding IsResetName,Converter={x:Static converters:BoolToStringConverters.Instance}}"  IsChecked="{Binding IsResetName}" />
                     </DockPanel>
                     
-                    <DockPanel Margin="8 0 8 0">
-                        <DockPanel.ToolTip>
-                            <TextBlock>
-                                <Run Text="当下载的缓存目录相同时，是否继续下载"/>
-                                <LineBreak/>
-                                <Run Text="选择开启,则继续下载.选择关闭,则取消下载" />
-                            </TextBlock>
-                        </DockPanel.ToolTip>
-                        <TextBlock Style="{StaticResource TextBlockStyle}"  Text="相同缓存" />
-                        <ToggleButton  HorizontalAlignment="Left"  Margin="10 0 0 0" Style="{StaticResource MaterialDesignSwitchToggleButton}"  ToolTip="{Binding SkipDirectoryExist,Converter={x:Static converters:BoolToStringConverters.Instance}}" IsChecked="{Binding SkipDirectoryExist}" />
-                    </DockPanel>
-
                     <DockPanel Margin="8 0 8 0" >
                         <DockPanel.ToolTip>
                             <TextBlock>
@@ -169,6 +157,11 @@
                     <DockPanel  Margin="8 0 8 0" ToolTip="视频合并之后会执行清理，如果需要开启">
                         <TextBlock Style="{StaticResource TextBlockStyle}" Text="清理缓存" />
                         <ToggleButton   HorizontalAlignment="Left"  Margin="10 0 0 0" Style="{StaticResource MaterialDesignSwitchToggleButton}" ToolTip="{Binding IsCleanUp,Converter={x:Static converters:BoolToStringConverters.Instance}}"  IsChecked="{Binding IsCleanUp}" />
+                    </DockPanel>
+
+                    <DockPanel  Margin="8 0 8 0" ToolTip="当程序成功或者失败之后是否播放提示音">
+                        <TextBlock Style="{StaticResource TextBlockStyle}" Text="播提示音" />
+                        <ToggleButton   HorizontalAlignment="Left"  Margin="10 0 0 0" Style="{StaticResource MaterialDesignSwitchToggleButton}" ToolTip="{Binding IsPlaySound,Converter={x:Static converters:BoolToStringConverters.Instance}}"  IsChecked="{Binding IsPlaySound}" />
                     </DockPanel>
                 </WrapPanel>
                 
@@ -203,17 +196,9 @@
                         <TextBlock>
                             <Run Text="必须是http代理 例如：http://127.0.0.1:7890  注意冒号是英文得冒号" />
                             <LineBreak />
-                            <Run Text="设置代理时有两种方案：" />
+                            <Run Text="设置代理保存后请重启程序即代理生效" />
                             <LineBreak />
-                            <Run Text="1.当程序启动的时候没有进行过任何下载得时候设置代理" />
-                            <LineBreak />
-                            <Run Text="2.当程序已经下载过得，设置代理需要重新启动程序才能生效" />
-                            <LineBreak />
-                            <Run Text="同理取消代理也跟设置方法一样" />
-                            <LineBreak />
-                            <Run Text="1.当程序没有进行过任何下载得时候删除代理得字符串保存,即可直接生效" />
-                            <LineBreak />
-                            <Run Text="2.当程序已经进行过下载，删除代理得字符串之后需要重新启动程序才能生效" />
+                            <Run Text="删除所有内容保存后重启程序即取消代理" />
                         </TextBlock>
                     </DockPanel.ToolTip>
                     <TextBlock Text="代理地址" Style="{StaticResource TextBlockStyle}"/>
@@ -223,7 +208,9 @@
                             Content="连接测试"
                             materialDesign:ButtonProgressAssist.IsIndeterminate="{Binding DataContext.IsActive,RelativeSource={RelativeSource AncestorType=UserControl}}" >
                     </Button>
-                    <TextBox Name="proxyTextBox" FontSize="15"   Margin="5" Text="{Binding ProxyAddress}" />
+                    <TextBox Name="proxyTextBox" FontSize="15"   Margin="5" Text="{Binding ProxyAddress}"
+                             materialDesign:HintAssist.Hint="http://127.0.0.1:7890 保存后请重启程序"
+                             />
                 </DockPanel>
 
                 <DockPanel Margin="8 0 8 0">

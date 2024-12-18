@@ -83,13 +83,11 @@ namespace M3u8Downloader_H.Combiners
             if (allowed_extensions)
                 arguments.Add("-allowed_extensions").Add("ALL");
 
-            arguments.Add("-i").Add(m3u8FilePath);
-
-            arguments.Add("-f").Add(Settings.SelectedFormat);
-
-            arguments
-                .Add("-c:a").Add("copy")
-                .Add("-c:v").Add("copy");
+            arguments.Add("-i").Add(m3u8FilePath)
+                     .Add("-f").Add(Settings.SelectedFormat)
+                     .Add("-c:a").Add("copy")
+                     .Add("-c:v").Add("copy")
+                     .Add("-bsf:a").Add("aac_adtstoasc");
 
             var tmpOutputFile = Path.ChangeExtension(DownloadParams.VideoFullName, Settings.SelectedFormat);
             DownloadParams.ChangeVideoNameDelegate(tmpOutputFile);

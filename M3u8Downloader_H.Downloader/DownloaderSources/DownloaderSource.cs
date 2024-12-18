@@ -7,10 +7,10 @@ using M3u8Downloader_H.Settings.Models;
 
 namespace M3u8Downloader_H.Downloader.DownloaderSources
 {
-    internal abstract class DownloaderSource : IDownloaderSource
+    internal abstract class DownloaderSource(IDownloadService? downloadService) : IDownloaderSource
     {
         private bool _firstTimeToRun = true;
-        private readonly IDownloadService? downloadService;
+        private readonly IDownloadService? downloadService = downloadService;
         public IEnumerable<KeyValuePair<string, string>>? Headers { get; set; } = default!;
         public M3UFileInfo M3UFileInfo { get; set; } = default!;
         public IDownloadParams DownloadParams { get; set; } = default!;
@@ -19,12 +19,6 @@ namespace M3u8Downloader_H.Downloader.DownloaderSources
 
         public Func< Uri,IEnumerable<KeyValuePair<string, string>>?, CancellationToken, Task<M3UFileInfo>> GetLiveFileInfoFunc { get;  set ; } = default!;
         public ILog? Log { get ; set ; }
-
-        public DownloaderSource(IDownloadService? downloadService)
-        {
-            this.downloadService = downloadService;
-        }
-
 
         protected M3u8Downloader CreateDownloader()
         {
@@ -41,21 +35,20 @@ namespace M3u8Downloader_H.Downloader.DownloaderSources
         {
             if (_firstTimeToRun)
             {
-                CreateDirectory(DownloadParams.VideoFullPath, Settings.SkipDirectoryExist);
+                CreateDirectory(DownloadParams.VideoFullPath);
                 _firstTimeToRun = false;
             }
             
             return Task.CompletedTask;
         }
 
-        protected void CreateDirectory(string dirPath, bool skipExist = true)
+        protected void CreateDirectory(string dirPath)
         {
             DirectoryInfo directoryInfo = new(dirPath);
             if (directoryInfo.Exists)
             {
-                if (skipExist) return;
-
-                throw new Exception($"{dirPath} 目录已经存在，程序停止");
+                Log?.Info("找到缓存目录:{0},开始继续下载", dirPath);
+                return;
             }
             directoryInfo.Create();
             Log?.Info("创建缓存目录:{0}", dirPath);

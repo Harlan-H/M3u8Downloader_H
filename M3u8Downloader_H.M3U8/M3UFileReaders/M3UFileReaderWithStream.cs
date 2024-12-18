@@ -9,15 +9,9 @@ using M3u8Downloader_H.Common.Utils;
 
 namespace M3u8Downloader_H.M3U8.M3UFileReaders
 {
-    public class M3UFileReaderWithStream : M3UFileReaderBase
+    public class M3UFileReaderWithStream(IDictionary<string, IAttributeReader>? attributeReaders = default!) : M3UFileReaderBase
     {
-        private readonly IDictionary<string, IAttributeReader> attributeReaders = default!;
-
-        public M3UFileReaderWithStream(IDictionary<string, IAttributeReader>? attributeReaders = default!)
-        {
-            this.attributeReaders = attributeReaders ?? AttributeReaderRoot.Instance.AttributeReaders;
-        }
-
+        private readonly IDictionary<string, IAttributeReader> attributeReaders = attributeReaders ?? AttributeReaderRoot.Instance.AttributeReaders;
 
         public override M3UFileInfo Read(Stream stream)
         {

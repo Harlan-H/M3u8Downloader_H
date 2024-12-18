@@ -6,15 +6,13 @@ using System.Text.Json;
 using M3u8Downloader_H.Common.M3u8Infos;
 using M3u8Downloader_H.M3U8.M3UFileReaders;
 using M3u8Downloader_H.M3U8.Extensions;
-using System;
 
 namespace M3u8Downloader_H.RestServer
 {
     public class HttpListenService
     {
         private readonly HttpListen httpListen = new();
-        private Action<Uri, string?, string?, string?, string?, string?, string?, IEnumerable<KeyValuePair<string, string>>?> DownloadByUrlAction = default!;
-        private Action<string, Uri?, string?, string?, string?, IEnumerable<KeyValuePair<string, string>>?> DownloadByContentAction = default!;
+        private Action<Uri, string?, string?, string?, string?, string?, string?, IEnumerable<KeyValuePair<string, string>>?> DownloadByUrlAction = default!;        
         private Action<M3UFileInfo, string?, string?, string?, IEnumerable<KeyValuePair<string, string>>?> DownloadByM3uFileInfoAction = default!;
 
         private readonly JsonSerializerOptions jsonSerializerOptions;
@@ -32,11 +30,9 @@ namespace M3u8Downloader_H.RestServer
 
         public void Initialization(
             Action<Uri, string?, string?, string?, string?, string?,string?,IEnumerable<KeyValuePair<string, string>>?> downloadByUrl,
-            Action<string, Uri?, string?, string?, string?,IEnumerable<KeyValuePair<string, string>>?> downloadByContent,
             Action<M3UFileInfo, string?, string?, string?, IEnumerable<KeyValuePair<string, string>>?> downloadByM3uFileInfo)
         {
             DownloadByUrlAction = downloadByUrl;
-            DownloadByContentAction = downloadByContent;
             DownloadByM3uFileInfoAction = downloadByM3uFileInfo;
         }
 
@@ -78,8 +74,22 @@ namespace M3u8Downloader_H.RestServer
                     return;
                 }
 
+                M3UFileInfo? m3UFileInfo = new M3UFileReaderWithStream().GetM3u8FileInfo(requestWithContent.Url!, requestWithContent.Content);
+                if (m3UFileInfo is null)
+                {
+                    response.Json(Response.Error("m3u8内容读取失败,请检查传入的参数是否有误"));
+                    return;
+                }
+
+                if(m3UFileInfo!.MediaFiles is null || !m3UFileInfo.MediaFiles.Any())
+                {
+                    response.Json(Response.Error("m3u8的ts列表为空"));
+                    return;
+                }
+
+
                 requestWithContent.Validate();
-                DownloadByContentAction(requestWithContent.Content, requestWithContent.Url, requestWithContent.VideoName, requestWithContent.SavePath, requestWithContent.PluginKey, requestWithContent.Headers);
+                DownloadByM3uFileInfoAction(m3UFileInfo,  requestWithContent.VideoName, requestWithContent.SavePath, requestWithContent.PluginKey, requestWithContent.Headers);
 
                 response.Json(Response.Success());
             }

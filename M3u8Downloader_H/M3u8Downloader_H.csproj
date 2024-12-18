@@ -2,18 +2,17 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net6.0-windows</TargetFramework>
-    <UseWPF>true</UseWPF>
-    <UseWindowsForms>true</UseWindowsForms>
+    <TargetFramework>net9.0-windows7.0</TargetFramework>
     <RootNamespace>M3u8Downloader_H</RootNamespace>
     <Platforms>AnyCPU;x64</Platforms>
-    <AssemblyVersion>3.14.5.0</AssemblyVersion>
-    <Version>3.14.5.0</Version>
+    <AssemblyVersion>3.14.6.0</AssemblyVersion>
+    <Version>3.14.6.0</Version>
     <PackageId>m3u8视频下载器</PackageId>
     <Product>m3u8视频下载器</Product>
     <ApplicationIcon>icon.ico</ApplicationIcon>
     <Authors>Harlan</Authors>
     <Nullable>enable</Nullable>
+    <UseWPF>True</UseWPF>
   </PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)'=='Release'">
@@ -40,7 +39,7 @@
     </ItemGroup>
 	
   <ItemGroup>
-    <PackageReference Include="Caliburn.Micro" Version="4.0.212" />
+    <PackageReference Include="Caliburn.Micro" Version="4.0.230" />
     <PackageReference Include="MaterialDesignThemes" Version="4.9.0" />
     <PackageReference Include="PropertyChanged.Fody" Version="4.1.0" PrivateAssets="All" />
   </ItemGroup>
@@ -52,6 +51,7 @@
     <ProjectReference Include="..\M3u8Downloader_H.Core\M3u8Downloader_H.Core.csproj" />
     <ProjectReference Include="..\M3u8Downloader_H.M3U8\M3u8Downloader_H.M3U8.csproj" />
   </ItemGroup>
+
 
 
   <ItemGroup>

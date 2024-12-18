@@ -39,8 +39,8 @@ namespace M3u8Downloader_H.Common.M3u8Infos
             AllowCache = m3UFileInfo.AllowCache;
             PlaylistType = m3UFileInfo.PlaylistType;
             Key = m3UFileInfo.Key;
-            Streams = m3UFileInfo.Streams.ToList();
-            MediaFiles = m3UFileInfo.MediaFiles.ToList();
+            Streams = [.. m3UFileInfo.Streams];
+            MediaFiles = [.. m3UFileInfo.MediaFiles];
         }
 
 

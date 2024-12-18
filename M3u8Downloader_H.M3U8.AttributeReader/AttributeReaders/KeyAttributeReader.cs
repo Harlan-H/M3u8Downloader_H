@@ -16,11 +16,11 @@ namespace M3u8Downloader_H.M3U8.AttributeReader.AttributeReaders
             if (fileInfo.Key is not null) return;
 
             var source =
-                value.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                value.Split([','], StringSplitOptions.RemoveEmptyEntries)
                      .Select(e => KV.Parse(e, '='))
                      .ToList();
 
-            if (!source.Any()) return;
+            if (source.Count == 0) return;
 
             var m3ukeyinfo = new M3UKeyInfo();
             foreach (var keyValuePair in source)

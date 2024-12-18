@@ -4,14 +4,9 @@ using M3u8Downloader_H.Plugin;
 
 namespace M3u8Downloader_H.Downloader.DownloaderSources
 {
-    internal class DownloadVodSource : DownloaderSource
+    internal class DownloadVodSource(HttpClient httpClient, IDownloadService? downloadService) : DownloaderSource(downloadService)
     {
-        private readonly HttpClient _httpClient;
-
-        public DownloadVodSource(HttpClient httpClient, IDownloadService? downloadService) : base(downloadService)
-        {
-            this._httpClient = httpClient;
-        }
+        private readonly HttpClient _httpClient = httpClient;
 
         public override async Task DownloadAsync(Action<bool> IsLiveAction, CancellationToken cancellationToken = default)
         {

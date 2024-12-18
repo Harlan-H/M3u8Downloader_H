@@ -11,7 +11,7 @@ namespace M3u8Downloader_H.Common.Utils
                 return new KeyValuePair<string, string>();
 
             var strArray = text.Split(
-                new[] { separator }, 2, StringSplitOptions.RemoveEmptyEntries
+                [separator], 2, StringSplitOptions.RemoveEmptyEntries
             );
 
             if (strArray.Length == 2)
