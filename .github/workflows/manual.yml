@@ -28,7 +28,7 @@ jobs:
       - name: Publish
         run: |
           dotnet publish M3u8Downloader_H/ -o M3u8Downloader_H/bin/Publish --configuration Release
-          dotnet publish M3u8Downloader_H/ -o M3u8Downloader_H/bin/PublishSingleFile -c Release --self-contained true -r win7-x64  -p:PublishSingleFile=true
+          dotnet publish M3u8Downloader_H/ -o M3u8Downloader_H/bin/PublishSingleFile -c Release --self-contained true -r win-x64  -p:PublishSingleFile=true
 
       - name: Download .NET 9 SDK And Copy .NET 9 SDK
         run: |
