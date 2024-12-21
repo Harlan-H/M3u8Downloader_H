@@ -257,7 +257,7 @@
                             <Run  FontWeight="Bold"  Text="以管理员身份运行" />
                             <Run Text="本程序" />
                             <LineBreak />
-                            <Run Text="RestApi仅限安装过.net6运行库的版本使用,SingleFile版本可能不支持" />
+                            <Run Text="RestApi仅限安装过.net9运行库的版本使用,SingleFile版本可能不支持" />
                             <LineBreak />
                             <Run Text="详细的RestApi使用方法，请看帮助文档" />
                             <Run FontWeight="SemiBold" Text="Rest Api" />
@@ -289,7 +289,7 @@
                                     </MenuItem.Icon>
                                 </MenuItem>
                                 <MenuItem Header="复制错误信息" cal:Message.Attach="CopyFailReason($DataContext)"/>
-                                <MenuItem Header="复制所有日志" cal:Message.Attach="CopyLogs($DataContext)"/>
+                                <MenuItem Header="复制日志" cal:Message.Attach="CopyLogs($DataContext)"/>
                                 <Separator />
                                 <MenuItem Header="停止下载所有选择项" cal:Message.Attach="StopDownloads" >
                                     <MenuItem.Icon>

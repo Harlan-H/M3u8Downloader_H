@@ -53,6 +53,8 @@ namespace M3u8Downloader_H.RestServer
                 }
 
                 requestWithURI.Validate();
+                if (!string.IsNullOrWhiteSpace(requestWithURI.SavePath))
+                    requestWithURI.SavePath = requestWithURI.SavePath.Replace('/', Path.DirectorySeparatorChar);
                 DownloadByUrlAction(requestWithURI.Url, requestWithURI.VideoName, requestWithURI.Method, requestWithURI.Key, requestWithURI.Iv, requestWithURI.SavePath, requestWithURI.PluginKey, requestWithURI.Headers);
 
                 response.Json(Response.Success());
@@ -89,6 +91,8 @@ namespace M3u8Downloader_H.RestServer
 
 
                 requestWithContent.Validate();
+                if(!string.IsNullOrWhiteSpace(requestWithContent.SavePath))
+                    requestWithContent.SavePath = requestWithContent.SavePath.Replace('/', Path.DirectorySeparatorChar);
                 DownloadByM3uFileInfoAction(m3UFileInfo,  requestWithContent.VideoName, requestWithContent.SavePath, requestWithContent.PluginKey, requestWithContent.Headers);
 
                 response.Json(Response.Success());
@@ -111,9 +115,11 @@ namespace M3u8Downloader_H.RestServer
                     response.Json(Response.Error("序列化失败"));
                     return;
                 }
-               
+
                 requestWithM3U8FileInfo.Validate();
                 requestWithM3U8FileInfo.M3u8FileInfo.PlaylistType = "VOD";
+                if (!string.IsNullOrWhiteSpace(requestWithM3U8FileInfo.SavePath))
+                    requestWithM3U8FileInfo.SavePath = requestWithM3U8FileInfo.SavePath.Replace('/', Path.DirectorySeparatorChar);
                 DownloadByM3uFileInfoAction(requestWithM3U8FileInfo.M3u8FileInfo, requestWithM3U8FileInfo.VideoName, requestWithM3U8FileInfo.SavePath, requestWithM3U8FileInfo.PluginKey, requestWithM3U8FileInfo.Headers);
 
                 response.Json(Response.Success());
