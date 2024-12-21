@@ -82,6 +82,7 @@ jobs:
       - name: Create release
         uses: softprops/action-gh-release@v1
         with:
+          tag_name: ${{ github.event.inputs.tags }}
           body: |
             ${{ steps.get_desc.outputs.release_body }}
 

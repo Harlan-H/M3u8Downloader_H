@@ -90,6 +90,7 @@ namespace M3u8Downloader_H.Combiners
                      .Add("-bsf:a").Add("aac_adtstoasc");
 
             var tmpOutputFile = Path.ChangeExtension(DownloadParams.VideoFullName, Settings.SelectedFormat);
+            Log?.Info("开始转码:%s", tmpOutputFile);
             DownloadParams.ChangeVideoNameDelegate(tmpOutputFile);
             arguments
                 .Add("-nostdin")

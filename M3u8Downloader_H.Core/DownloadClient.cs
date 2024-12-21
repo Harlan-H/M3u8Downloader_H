@@ -30,6 +30,7 @@ namespace M3u8Downloader_H.Core
         private M3uDownloaderClient? m3UDownloaderClient;
         private M3uCombinerClient? m3UCombinerClient;
         private IM3u8UriManager? m3U8UriManager;
+        private bool _theFirstTime = true;
 
         public string M3uContent { get; set; } = default!;
         public M3UFileInfo M3u8FileInfo { get; set; } = default!;
@@ -100,8 +101,16 @@ namespace M3u8Downloader_H.Core
 
         public async Task GetM3U8FileInfo(CancellationToken cancellationToken)
         {
-            if (M3u8FileInfo is not null)
+            if (!_theFirstTime) 
                 return;
+
+            if (M3u8FileInfo is not null )
+            {
+                _log.Info("获取视频流{0}个", M3u8FileInfo.MediaFiles.Count);
+                DownloadParams.VideoFullName = DownloadParams.VideoFullPath + (M3u8FileInfo.Map is not null ? Path.GetExtension(M3u8FileInfo.Map?.Title) : ".ts");
+                _theFirstTime = false;
+                return;
+            }
 
 
             if (_url.IsFile)
@@ -118,6 +127,7 @@ namespace M3u8Downloader_H.Core
                 M3u8FileInfo.Key = M3UKeyInfo;
 
             DownloadParams.VideoFullName = DownloadParams.VideoFullPath + (M3u8FileInfo.Map is not null ? Path.GetExtension(M3u8FileInfo.Map?.Title) : ".ts");
+            _theFirstTime = false;
         }
     }
 }
