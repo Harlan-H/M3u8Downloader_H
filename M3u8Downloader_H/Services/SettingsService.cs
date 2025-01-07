@@ -4,6 +4,10 @@ using M3u8Downloader_H.Settings.Services;
 using M3u8Downloader_H.Settings.Models;
 using System.Collections.Generic;
 using System;
+using M3u8Downloader_H.Utils;
+using M3u8Downloader_H.Converters;
+using M3u8Downloader_H.Abstractions.M3uDownloaders;
+using M3u8Downloader_H.Abstractions.Meger;
 
 
 
@@ -13,7 +17,7 @@ using System.IO;
 
 namespace M3u8Downloader_H.Services
 {
-    public class SettingsService : SettingsManager, ICloneable, ISettings
+    public class SettingsService : SettingsManager, ICloneable, IDownloaderSetting,IMergeSetting
     {
         /// <summary>
         /// 线程数量
@@ -60,8 +64,9 @@ namespace M3u8Downloader_H.Services
 #else
         public double RecordDuration { get; set; } = 60 * 60 * 12;
 #endif
-        [Range(1,300)]
-        public int Timeouts { get; set; } = 10;
+        [TimeRange(1, 300)]
+        [JsonConverter(typeof(TimespanConverter))]
+        public TimeSpan Timeouts { get; set; } = TimeSpan.FromSeconds(10);
 
         public SettingsService()
         {
@@ -110,6 +115,11 @@ namespace M3u8Downloader_H.Services
             Headers = other.Headers;
             RecordDuration = other.RecordDuration;
             Timeouts = other.Timeouts;
+        }
+
+        public void UpdateConcurrentDownloadCount()
+        {
+            ThrottlingSemaphore.Instance.MaxCount = MaxConcurrentDownloadCount;
         }
 
     }

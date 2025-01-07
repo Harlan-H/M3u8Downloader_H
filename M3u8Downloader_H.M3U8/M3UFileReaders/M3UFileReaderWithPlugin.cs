@@ -1,5 +1,5 @@
 ﻿using M3u8Downloader_H.Common.M3u8Infos;
-using M3u8Downloader_H.Plugin;
+using M3u8Downloader_H.Abstractions.Plugins;
 using System.IO;
 
 namespace M3u8Downloader_H.M3U8.M3UFileReaders

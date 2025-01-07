@@ -82,7 +82,7 @@ namespace M3u8Downloader_H.Common.Extensions
                     return Convert.FromBase64String(stringdata);
                 }
             }
-            throw new InvalidCastException($"无法解析的密钥,请确定是否为AES-128,AES-192,AES-256");
+            throw new InvalidCastException("无法解析的密钥,请确定是否为AES-128,AES-192,AES-256");
         }
     }
 }

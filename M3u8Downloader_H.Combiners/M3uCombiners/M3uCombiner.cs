@@ -7,7 +7,7 @@ using M3u8Downloader_H.Common.M3u8Infos;
 
 namespace M3u8Downloader_H.Combiners.M3uCombiners
 {
-    internal class M3uCombiner(string dirPath) : IM3uCombiner
+    internal class M3uCombiner(string dirPath) : IDisposable
     {
         protected readonly string cacheFullPath = dirPath;
         protected FileStream videoFileStream = default!;
@@ -35,7 +35,7 @@ namespace M3u8Downloader_H.Combiners.M3uCombiners
             await MegerVideoInternalAsync(m3UMapInfo, cancellationToken);
         }
 
-        public async ValueTask Start(M3UFileInfo m3UFileInfo, bool forceMerge, CancellationToken cancellationToken)
+        public async ValueTask StartMerging(M3UFileInfo m3UFileInfo, bool forceMerge, CancellationToken cancellationToken)
         {
 
             for (int i = 0; i < m3UFileInfo.MediaFiles.Count; i++)

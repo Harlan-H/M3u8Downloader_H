@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Threading;
+using System.Timers;
 
 namespace M3u8Downloader_H.Utils
 {
@@ -13,15 +13,16 @@ namespace M3u8Downloader_H.Utils
         public DownloadRateSource(Action<long> Handler)
         {
             _handler = Handler;
-            _timer = new Timer(s => TimerCallback());
+            _timer =  new Timer(1000);
+            _timer.Elapsed += TimerCallback;
         }
 
         public void Run()
         {
-            _timer.Change(0, 1000);
+            _timer.Enabled = true;
         }
 
-        private void TimerCallback()
+        private void TimerCallback(object? sender, ElapsedEventArgs e)
         {
             var bit = _BitRateValue;
             var bytes = bit - _lastBitRateValue;
@@ -31,11 +32,12 @@ namespace M3u8Downloader_H.Utils
 
         public void Dispose()
         {
+            _timer.Enabled = false;
             _timer.Dispose();
             _handler(-1);
             GC.SuppressFinalize(this);
         }
 
-        public void Report(long value) => Interlocked.Add(ref _BitRateValue, value);
+        public void Report(long value) => System.Threading.Interlocked.Add(ref _BitRateValue, value);
     }
 }

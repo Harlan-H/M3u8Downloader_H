@@ -4,14 +4,14 @@ using System.Collections.Generic;
 using System.IO;
 using M3u8Downloader_H.M3U8.AttributeReader;
 using M3u8Downloader_H.Common.M3u8Infos;
-using M3u8Downloader_H.Plugin;
 using M3u8Downloader_H.Common.Utils;
+using M3u8Downloader_H.Abstractions.Plugins;
 
 namespace M3u8Downloader_H.M3U8.M3UFileReaders
 {
-    public class M3UFileReaderWithStream(IDictionary<string, IAttributeReader>? attributeReaders = default!) : M3UFileReaderBase
+    public class M3UFileReaderWithStream() : M3UFileReaderBase
     {
-        private readonly IDictionary<string, IAttributeReader> attributeReaders = attributeReaders ?? AttributeReaderRoot.Instance.AttributeReaders;
+        public IDictionary<string, IAttributeReader> AttributeReaders { get; set; } = default!;
 
         public override M3UFileInfo Read(Stream stream)
         {
@@ -36,8 +36,8 @@ namespace M3u8Downloader_H.M3U8.M3UFileReaders
                 var keyValuePair = KV.Parse(text);
                 var CompareKey = keyValuePair.Key;
 
-                if (!attributeReaders.TryGetValue(CompareKey ?? text, out IAttributeReader? attributeReader))
-                    attributeReaders.TryGetValue("#EXT-X-DISCONTINUITY", out attributeReader);
+                if (!AttributeReaders.TryGetValue(CompareKey ?? text, out IAttributeReader? attributeReader))
+                    AttributeReaders.TryGetValue("#EXT-X-DISCONTINUITY", out attributeReader);
 
                 if (attributeReader is null)
                     throw new InvalidDataException($"{text} 无法识别的标签,可能是非标准的标签，你可以删除此行，然后拖拽m3u8文件到请求地址，再次尝试下载");

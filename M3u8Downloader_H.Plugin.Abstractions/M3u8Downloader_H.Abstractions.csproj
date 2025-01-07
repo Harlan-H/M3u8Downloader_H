@@ -16,4 +16,8 @@
     <ProjectReference Include="..\M3u8Downloader_H.Common\M3u8Downloader_H.Common.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="M3U8\" />
+  </ItemGroup>
+
 </Project>

@@ -88,7 +88,7 @@
                             </DataTrigger>
 
                             <DataTrigger Binding="{Binding Status}" Value="{x:Static model:DownloadStatus.StartedLive}" >
-                                <Setter Property="Text" Value="{Binding RecordDuration,Converter={x:Static converters:DoubleToTimespanConverters.Instance}}" />
+                                <Setter Property="Text" Value="{Binding ProgressNum,Converter={x:Static converters:DoubleToTimespanConverters.Instance}}" />
                             </DataTrigger>
 
                             <DataTrigger Binding="{Binding Status}" Value="{x:Static model:DownloadStatus.Enqueued}" >
@@ -108,7 +108,6 @@
                             <DataTrigger Binding="{Binding Status}" Value="{x:Static model:DownloadStatus.Failed}" >
                                 <Setter Property="Foreground" Value="{DynamicResource FailedBrush}" />
                                 <Setter Property="Text" Value="⚠ 错误" />
-                                <Setter Property="ToolTip" Value="{Binding FailReason}" />
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>

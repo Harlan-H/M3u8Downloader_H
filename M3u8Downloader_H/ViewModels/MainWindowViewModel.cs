@@ -23,10 +23,7 @@ namespace M3u8Downloader_H.ViewModels
 {
     public class MainWindowViewModel(SettingsService settingsService, PluginService pluginService) : Screen
     {
-        private readonly SettingsService settingsService = settingsService;
         private readonly HttpListenService httpListenService = HttpListenService.Instance;
-        private readonly PluginService pluginService = pluginService;
-
         public ISnackbarMessageQueue Notifications { get; } = new SnackbarMessageQueue(TimeSpan.FromSeconds(5));
         public BindableCollection<DownloadViewModel> Downloads { get; } = [];
 
@@ -50,13 +47,14 @@ namespace M3u8Downloader_H.ViewModels
             {
                 settingsService.Load();
                 settingsService.Validate();
+                settingsService.UpdateConcurrentDownloadCount();
 
                 pluginService.Load();
                 WindowsIdentity windowsIdentity = WindowsIdentity.GetCurrent();
                 WindowsPrincipal windowsPrincipal = new(windowsIdentity);
                 if(windowsPrincipal.IsInRole(WindowsBuiltInRole.Administrator))
                 {
-                    for (int i = 65432; i > 1024; i--)
+                    for (int i = 65432; i > 60000; i--)
                     {
                         try
                         {
@@ -81,7 +79,6 @@ namespace M3u8Downloader_H.ViewModels
             foreach (var item in Downloads)
                 item.OnCancel();
 
-            settingsService.Headers = default!;
             settingsService.Save();
             return base.CanCloseAsync(cancellationToken);
         }
@@ -140,16 +137,18 @@ namespace M3u8Downloader_H.ViewModels
                 catch (UriFormatException)
                 {
                     Notifications.Enqueue($"{result[0]} 不是正确的地址");
+                    break;
                 }
                 catch (FileExistsException e)
                 {
                     Notifications.Enqueue(e);
+                    break;
                 }
             }
         }
 
 
-        private void ProcessDownload(Uri uri, string? name,string? method,string? key,string? iv, string? savePath = default, string? pluginKey = default!, IEnumerable<KeyValuePair<string,string>>? headers = default)
+        private void ProcessDownload(Uri uri, string? name,string? method,string? key,string? iv, string? savePath = default, string? pluginKey = default!, IDictionary<string, string>? headers = default)
         {
             string tmpVideoName = PathEx.GenerateFileNameWithoutExtension(uri,name);
             string fileFullPath = Path.Combine(savePath ?? settingsService.SavePath, tmpVideoName);
@@ -160,13 +159,13 @@ namespace M3u8Downloader_H.ViewModels
                                 : string.IsNullOrWhiteSpace(settingsService.PluginKey)
                                 ? uri.GetHostName()
                                 : settingsService.PluginKey;
-            DownloadViewModel download = DownloadViewModel.CreateDownloadViewModel(uri, tmpVideoName,method,key,iv, headers ?? settingsService.Headers, fileFullPath, pluginService[tmpPluginKey]);
+            DownloadViewModel download = M3u8DownloadViewModel.CreateDownloadViewModel(uri, tmpVideoName,method,key,iv, headers ?? settingsService.Headers, fileFullPath, pluginService[tmpPluginKey]);
             if (download is null) return;
 
             EnqueueDownload(download);
         }
 
-        private void ProcessDownload(M3UFileInfo m3UFileInfo, string? name, string? savePath = default!, string? pluginKey = default!, IEnumerable<KeyValuePair<string, string>>? headers = default!)
+        private void ProcessDownload(M3UFileInfo m3UFileInfo, string? name, string? savePath = default!, string? pluginKey = default!, IDictionary<string, string>? headers = default!)
         {
             if (!m3UFileInfo.MediaFiles.Any())
                 throw new ArgumentException("m3u8的数据不能为空");
@@ -176,7 +175,7 @@ namespace M3u8Downloader_H.ViewModels
             FileEx.EnsureFileNotExist(fileFullPath);
 
             //这里因为不可能有url所以直接通过设置来判别使用某个插件
-            DownloadViewModel download = DownloadViewModel.CreateDownloadViewModel(m3UFileInfo, headers, tmpVideoName, fileFullPath, pluginService[pluginKey ?? settingsService.PluginKey]);
+            DownloadViewModel download = M3u8DownloadViewModel.CreateDownloadViewModel(m3UFileInfo, headers, tmpVideoName, fileFullPath, pluginService[pluginKey ?? settingsService.PluginKey]);
             if (download is null) return;
 
             EnqueueDownload(download);

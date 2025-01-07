@@ -12,7 +12,6 @@ namespace M3u8Downloader_H.ViewModels
 {
     public class SettingsViewModel(SettingsService settingService) : DialogScreen
     {
-        private readonly SettingsService settingService = settingService;
         public ISnackbarMessageQueue MyMessageQueue { get; } = new SnackbarMessageQueue(TimeSpan.FromSeconds(5));
         public bool IsActive { get; private set; }
         public bool? Status { get; set; } = default!;
@@ -34,6 +33,7 @@ namespace M3u8Downloader_H.ViewModels
             {
                 obj.Validate();
                 settingService.CopyFrom(obj);
+                settingService.UpdateConcurrentDownloadCount();
                 Close(true);
             }catch(Exception e)
             {

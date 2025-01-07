@@ -7,8 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "M3u8Downloader_H", "M3u8Dow
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "M3u8Downloader_H.Settings", "SettingsManager\M3u8Downloader_H.Settings.csproj", "{CD94D388-9BF6-453E-9AD7-D330072F54AB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "M3u8Downloader_H.Core", "M3u8Downloader_H.Core\M3u8Downloader_H.Core.csproj", "{6D90C959-D693-4567-9111-4468512E3950}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "M3u8Downloader_H.RestServer", "M3u8Downloader_h.RestServer\M3u8Downloader_H.RestServer.csproj", "{53A15C51-C1B4-40BC-BD57-B5248EC5813F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "M3u8Downloader_H.M3U8", "M3u8Downloader_H.M3U8\M3u8Downloader_H.M3U8.csproj", "{1972C6AD-2720-401B-B546-0C752ADBC0E8}"
@@ -19,7 +17,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "M3u8Downloader_H.Common", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "M3u8Downloader_H.M3U8.AttributeReader", "M3u8Downloader_H.M3U8.AttributeReader\M3u8Downloader_H.M3U8.AttributeReader.csproj", "{CCB3C5E8-D398-459D-ADD8-EA5DCBF5F660}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "M3u8Downloader_H.Plugin.Abstractions", "M3u8Downloader_H.Plugin.Abstractions\M3u8Downloader_H.Plugin.Abstractions.csproj", "{2044E0FB-43D0-4FA0-B589-F23C904CE6C9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "M3u8Downloader_H.Abstractions", "M3u8Downloader_H.Plugin.Abstractions\M3u8Downloader_H.Abstractions.csproj", "{2044E0FB-43D0-4FA0-B589-F23C904CE6C9}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "M3u8Downloader_H.Test", "M3u8Downloader_H.Test\M3u8Downloader_H.Test.csproj", "{224B2D03-394B-4C9A-B05F-856C5EF67F29}"
 EndProject
@@ -61,18 +59,6 @@ Global
 		{CD94D388-9BF6-453E-9AD7-D330072F54AB}.Release|x64.Build.0 = Release|Any CPU
 		{CD94D388-9BF6-453E-9AD7-D330072F54AB}.Release|x86.ActiveCfg = Release|Any CPU
 		{CD94D388-9BF6-453E-9AD7-D330072F54AB}.Release|x86.Build.0 = Release|Any CPU
-		{6D90C959-D693-4567-9111-4468512E3950}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6D90C959-D693-4567-9111-4468512E3950}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6D90C959-D693-4567-9111-4468512E3950}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{6D90C959-D693-4567-9111-4468512E3950}.Debug|x64.Build.0 = Debug|Any CPU
-		{6D90C959-D693-4567-9111-4468512E3950}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{6D90C959-D693-4567-9111-4468512E3950}.Debug|x86.Build.0 = Debug|Any CPU
-		{6D90C959-D693-4567-9111-4468512E3950}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6D90C959-D693-4567-9111-4468512E3950}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6D90C959-D693-4567-9111-4468512E3950}.Release|x64.ActiveCfg = Release|Any CPU
-		{6D90C959-D693-4567-9111-4468512E3950}.Release|x64.Build.0 = Release|Any CPU
-		{6D90C959-D693-4567-9111-4468512E3950}.Release|x86.ActiveCfg = Release|Any CPU
-		{6D90C959-D693-4567-9111-4468512E3950}.Release|x86.Build.0 = Release|Any CPU
 		{53A15C51-C1B4-40BC-BD57-B5248EC5813F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{53A15C51-C1B4-40BC-BD57-B5248EC5813F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{53A15C51-C1B4-40BC-BD57-B5248EC5813F}.Debug|x64.ActiveCfg = Debug|Any CPU

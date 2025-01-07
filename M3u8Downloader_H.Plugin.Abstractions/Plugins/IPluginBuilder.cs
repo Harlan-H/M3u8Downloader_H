@@ -1,4 +1,4 @@
-﻿namespace M3u8Downloader_H.Plugin
+﻿namespace M3u8Downloader_H.Abstractions.Plugins
 {
     public interface IPluginBuilder
     {
@@ -33,12 +33,6 @@
                 }
         }
         */
-        /// <summary>
-        /// 创建获取m3u8 uri的类
-        /// 如果你不需要处理，只要return null 即可
-        /// </summary>
-        /// <returns>返回实现了IGetM3u8InfoService接口的实例化</returns>
-        IM3u8UriProvider? CreateM3u8UriProvider();
 
         /// <summary>
         /// 获取m3u8文件流得类

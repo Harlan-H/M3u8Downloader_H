@@ -1,27 +1,27 @@
-﻿using M3u8Downloader_H.Common.M3u8Infos;
+﻿using System.Net;
+using M3u8Downloader_H.Common.M3u8Infos;
 using M3u8Downloader_H.Downloader.Extensions;
-using M3u8Downloader_H.Downloader.M3uDownloaders;
-using M3u8Downloader_H.Plugin;
-using System.Net;
 
-namespace M3u8Downloader_H.Downloader.DownloaderSources
+namespace M3u8Downloader_H.Downloader.M3uDownloaders
 {
-    internal class DownloadLiveSource(HttpClient httpClient, Uri url, IDownloadService? downloadService) : DownloaderSource(downloadService)
+    internal class LiveM3uDownloader(HttpClient httpClient) : DownloaderBase(httpClient)
     {
         private bool _firstTimeToRun = true;
+        private M3UFileInfo? _m3uFileInfo;
+        private float recordDuration;
         private static readonly Random _rand = Random.Shared;
-        private readonly HttpClient _httpClient = httpClient;
-        private readonly Uri url = url;
         private long _index;
+
+        public Func<Uri, IEnumerable<KeyValuePair<string, string>>?, CancellationToken, Task<M3UFileInfo>> GetLiveFileInfoFunc { get; set; } = default!;
 
         private void AddMedias(M3UFileInfo m3UFileinfo)
         {
-            if (ReferenceEquals(m3UFileinfo, M3UFileInfo))
+            if (ReferenceEquals(m3UFileinfo, _m3uFileInfo))
                 return;
 
             foreach (var item in m3UFileinfo.MediaFiles)
             {
-                M3UFileInfo.MediaFiles.Add(item);
+                _m3uFileInfo!.MediaFiles.Add(item);
             }
         }
 
@@ -38,45 +38,38 @@ namespace M3u8Downloader_H.Downloader.DownloaderSources
         {
             if (_firstTimeToRun)
             {
-                RenameTitle(M3UFileInfo.MediaFiles);
+                RenameTitle(_m3uFileInfo!.MediaFiles);
                 _firstTimeToRun = false;
-                return M3UFileInfo!;
+                return _m3uFileInfo!;
             }
 
-            var m3uFileInfo = await GetLiveFileInfos(url, Headers, cancellationToken);
+            var m3uFileInfo = await GetLiveFileInfos(DownloadParam.RequestUrl, DownloadParam.Headers, cancellationToken);
             RenameTitle(m3uFileInfo.MediaFiles);
             return m3uFileInfo;
         }
 
-        public override async Task DownloadAsync(Action<bool> IsLiveAction, CancellationToken cancellationToken = default)
+        public override async Task DownloadAsync(M3UFileInfo m3UFileInfo,  CancellationToken cancellationToken = default)
         {
-            await base.DownloadAsync(IsLiveAction, cancellationToken);
-            M3u8Downloader m3U8Downloader = CreateDownloader();
-            m3U8Downloader.HttpClient = _httpClient;
-            m3U8Downloader.Progress = DownloadParams.LiveProgress;
-            m3U8Downloader.DownloadRate = DownloadRate;
-            m3U8Downloader.Headers = Headers;
-            m3U8Downloader.RetryCount = Settings.RetryCount;
+            await base.DownloadAsync(m3UFileInfo,  cancellationToken);
+            DialogProgress.SetDownloadStatus(true);
+            _m3uFileInfo ??= m3UFileInfo;
 
-            IsLiveAction.Invoke(true);
-
-            FileInfo fileInfo = new(DownloadParams.VideoFullName);
+            FileInfo fileInfo = new(DownloadParam.VideoName);
             //当文件存在且大小不为零得情况下说明是旧得任务重新开始得
             if (!(fileInfo.Exists && fileInfo.Length > 0))
             {
                 Log?.Info("下载器开始初始化");
-                await m3U8Downloader.Initialization(cancellationToken);
-                await m3U8Downloader.DownloadMapInfoAsync(M3UFileInfo.Map, DownloadParams.VideoFullPath, Settings.SkipRequestError, cancellationToken);
+                await DownloadMapInfoAsync(m3UFileInfo.Map,  cancellationToken);
             }
 
             Log?.Info("直播录制开始");
             M3UFileInfo previousMediaInfo = await GetM3U8FileInfoAsync(cancellationToken);
             while (true)
             {
-                var duration = await m3U8Downloader.Start(previousMediaInfo, DownloadParams.VideoFullPath, 0, Settings.SkipRequestError, cancellationToken);
+                var duration = await Start(previousMediaInfo, _headers, cancellationToken);
                 AddMedias(previousMediaInfo);
 
-                if (previousMediaInfo.IsVod() || duration > Settings.RecordDuration)
+                if (previousMediaInfo.IsVod() || duration > DownloaderSetting.RecordDuration)
                 {
                     Log?.Info("已录制{0},录制结束", TimeSpan.FromSeconds(duration).ToString());
                     break;
@@ -86,7 +79,7 @@ namespace M3u8Downloader_H.Downloader.DownloaderSources
 
                 try
                 {
-                    previousMediaInfo = await GetM3u8FileInfos(url, Headers, previousMediaInfo, cancellationToken);
+                    previousMediaInfo = await GetM3u8FileInfos(DownloadParam.RequestUrl, _headers, previousMediaInfo, cancellationToken);
                 }
                 catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.NotFound)
                 {
@@ -94,6 +87,21 @@ namespace M3u8Downloader_H.Downloader.DownloaderSources
                 }
             }
 
+        }
+
+        public async Task<double> Start(M3UFileInfo m3UFileInfo, IEnumerable<KeyValuePair<string, string>>? Headers, CancellationToken cancellationToken = default)
+        {
+            foreach (var mediaFile in m3UFileInfo.MediaFiles)
+            {
+                string mediaPath = Path.Combine(DownloadParam.SavePath, mediaFile.Title);
+                bool isSuccessful = await DownloadAsynInternal(mediaFile, Headers,  mediaPath, DownloaderSetting.SkipRequestError, cancellationToken);
+                if(isSuccessful)
+                {
+                    recordDuration += mediaFile.Duration;
+                    DialogProgress.Report(recordDuration);
+                }
+            }
+            return recordDuration;
         }
 
         private async Task<M3UFileInfo> GetLiveFileInfos(Uri url, IEnumerable<KeyValuePair<string, string>>? Headers, CancellationToken cancellationToken = default)
@@ -104,7 +112,7 @@ namespace M3u8Downloader_H.Downloader.DownloaderSources
                 {
                     return await GetLiveFileInfoFunc(url, Headers, cancellationToken);
                 }
-                catch (HttpRequestException e) when (e.StatusCode == System.Net.HttpStatusCode.NotFound && i < 3)
+                catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.NotFound && i < 3)
                 {
                     Log?.Warn("获取直播数据失败,网页返回代码:{0},返回内容:{1},正在进行第{2}次重试", e.StatusCode, e.Message, i + 1);
                     await Task.Delay(2000, cancellationToken);
@@ -156,8 +164,6 @@ namespace M3u8Downloader_H.Downloader.DownloaderSources
             }
             return m3ufileinfo;
         }
-
-
 
     }
 }

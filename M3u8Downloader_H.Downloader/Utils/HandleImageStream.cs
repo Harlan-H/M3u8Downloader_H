@@ -6,10 +6,8 @@ using System.Threading.Tasks;
 
 namespace M3u8Downloader_H.Downloader.Utils
 {
-    internal class HandleImageStream : Stream
+    internal class HandleStreamInternal(Stream stream, IProgress<long> downloadrate) : Stream
     {
-        private readonly Stream stream;
-        private readonly IProgress<long> _downloadrate = default!;
         private IMemoryOwner<byte>? _memoryOwner;
         private Memory<byte> _tsMemory = Memory<byte>.Empty;
         private int _position;
@@ -26,12 +24,6 @@ namespace M3u8Downloader_H.Downloader.Utils
         {
             get => _position;
             set => _position = (int)value;
-        }
-
-        public HandleImageStream(Stream stream,IProgress<long> downloadrate)
-        {
-            this.stream = stream;
-            _downloadrate = downloadrate;
         }
 
         protected override void Dispose(bool disposing)
@@ -81,7 +73,7 @@ namespace M3u8Downloader_H.Downloader.Utils
                 bytesRead = await stream.ReadAsync(buffer, cancellationToken);
                 _position += bytesRead;
             }
-            _downloadrate?.Report(bytesRead);
+            downloadrate?.Report(bytesRead);
             return bytesRead;
         }
 
@@ -116,7 +108,7 @@ namespace M3u8Downloader_H.Downloader.Utils
         {
             int bytesRead = stream.Read(buffer, offset, count);
             _position += bytesRead;
-            _downloadrate?.Report(bytesRead);
+            downloadrate?.Report(bytesRead);
             return bytesRead;
         }
     }

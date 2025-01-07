@@ -14,9 +14,11 @@ namespace M3u8Downloader_H
     public class Bootstrapper : BootstrapperBase
     {
         private readonly SimpleContainer simpleContainer = new();
+        private readonly Func<Type, DependencyObject, object, Type> defaultLocator = ViewLocator.LocateTypeForModelType;
         public Bootstrapper()
         {
             Initialize();
+            ViewLocator.LocateTypeForModelType = MyLocateTypeForModelType;
         }
 
         protected override void Configure()
@@ -26,11 +28,11 @@ namespace M3u8Downloader_H
 
             simpleContainer
                 .Singleton<SettingsService>()
-                .Singleton<DownloadService>()
+               // .Singleton<DownloadService>()
                 .Singleton<SoundService>()
                 .Singleton<PluginService>()
                 .PerRequest<MainWindowViewModel>()
-                .PerRequest<DownloadViewModel>();
+                .PerRequest<DownloadViewModel>(); 
         }
 
         protected override object GetInstance(Type service, string key)
@@ -51,6 +53,17 @@ namespace M3u8Downloader_H
         protected override async void OnStartup(object sender, StartupEventArgs e)
         {
             await DisplayRootViewForAsync<MainWindowViewModel>();
+        }
+
+        private Type MyLocateTypeForModelType(Type modelType,DependencyObject displayLocation,object context)
+        {
+            var viewType = defaultLocator(modelType, displayLocation, context);
+            while (viewType == null && modelType != typeof(object))
+            {
+                modelType = modelType!.BaseType!;
+                viewType = defaultLocator(modelType, displayLocation, context);
+            }
+            return viewType!;
         }
 
 

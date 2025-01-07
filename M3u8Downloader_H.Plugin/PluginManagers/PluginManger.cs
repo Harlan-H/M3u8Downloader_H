@@ -1,6 +1,6 @@
-﻿using M3u8Downloader_H.Common.Interfaces;
+﻿using M3u8Downloader_H.Abstractions.Common;
+using M3u8Downloader_H.Abstractions.Plugins;
 using M3u8Downloader_H.Plugin.AttributeReaderManagers;
-using Newtonsoft.Json.Linq;
 using System.Reflection;
 
 namespace M3u8Downloader_H.Plugin.PluginManagers
@@ -13,8 +13,6 @@ namespace M3u8Downloader_H.Plugin.PluginManagers
 
         public IDownloadService? PluginService { get; private set; }
 
-        public IM3u8UriProvider? M3U8UriProvider { get; private set; }
-
         public IM3uFileReader? M3UFileReaderInterface { get; private set; }
 
         public IM3u8FileInfoStreamService? M3U8FileInfoStreamService { get; private set; }
@@ -26,7 +24,6 @@ namespace M3u8Downloader_H.Plugin.PluginManagers
 
         private void Build()
         {
-            M3U8UriProvider = pluginBuilder.CreateM3u8UriProvider();
             M3UFileReaderInterface = pluginBuilder.CreateM3u8FileReader();
             M3U8FileInfoStreamService = pluginBuilder.CreateM3U8FileInfoStreamService();
             var attributeReaderManager = new AttributeReaderManager();
@@ -46,8 +43,6 @@ namespace M3u8Downloader_H.Plugin.PluginManagers
             ConstructorInfo constructor = type.GetConstructors()[0];
             ParameterInfo[] parameterInfos = constructor.GetParameters();
 
-
-            
             IPluginBuilder pluginBuilder;
             if (parameterInfos.Length == 0)
                 pluginBuilder = (IPluginBuilder)constructor.Invoke(null);

@@ -12,8 +12,8 @@ namespace M3u8Downloader_H.RestServer
     public class HttpListenService
     {
         private readonly HttpListen httpListen = new();
-        private Action<Uri, string?, string?, string?, string?, string?, string?, IEnumerable<KeyValuePair<string, string>>?> DownloadByUrlAction = default!;        
-        private Action<M3UFileInfo, string?, string?, string?, IEnumerable<KeyValuePair<string, string>>?> DownloadByM3uFileInfoAction = default!;
+        private Action<Uri, string?, string?, string?, string?, string?, string?, IDictionary<string, string>?> DownloadByUrlAction = default!;        
+        private Action<M3UFileInfo, string?, string?, string?, IDictionary<string, string>?> DownloadByM3uFileInfoAction = default!;
 
         private readonly JsonSerializerOptions jsonSerializerOptions;
         private readonly static HttpListenService instance = new();
@@ -29,8 +29,8 @@ namespace M3u8Downloader_H.RestServer
         }
 
         public void Initialization(
-            Action<Uri, string?, string?, string?, string?, string?,string?,IEnumerable<KeyValuePair<string, string>>?> downloadByUrl,
-            Action<M3UFileInfo, string?, string?, string?, IEnumerable<KeyValuePair<string, string>>?> downloadByM3uFileInfo)
+            Action<Uri, string?, string?, string?, string?, string?,string?, IDictionary<string, string>?> downloadByUrl,
+            Action<M3UFileInfo, string?, string?, string?, IDictionary<string, string>?> downloadByM3uFileInfo)
         {
             DownloadByUrlAction = downloadByUrl;
             DownloadByM3uFileInfoAction = downloadByM3uFileInfo;

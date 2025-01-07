@@ -1,29 +1,63 @@
-﻿using M3u8Downloader_H.Common.M3u8Infos;
-using M3u8Downloader_H.M3U8.M3UFileReaderManangers;
+﻿using M3u8Downloader_H.M3U8.M3UFileReaderManangers;
 using M3u8Downloader_H.Plugin.PluginManagers;
-using System.IO;
 using System.Net.Http;
-using System.Reflection.PortableExecutable;
-using System.Threading.Tasks;
-using System.Threading;
-using System;
+using M3u8Downloader_H.M3U8.M3UFileReaders;
+using M3u8Downloader_H.M3U8.AttributeReader;
+using System.Collections.Generic;
+using M3u8Downloader_H.Abstractions.Plugins;
+using M3u8Downloader_H.Abstractions.M3uDownloaders;
+using M3u8Downloader_H.Abstractions.Common;
 
 namespace M3u8Downloader_H.M3U8
 {
-    public class M3u8FileInfoClient(HttpClient httpClient, IPluginManager? PluginManager)
+    public class M3u8FileInfoClient(HttpClient httpClient, IPluginManager? PluginManager, IDownloadParam DownloadParam)
     {
-        private readonly HttpClient httpClient = httpClient;
-        private readonly IPluginManager? pluginManager = PluginManager;
-        private M3UFileReaderManager? _m3UFileReaderManager;
+        public IDownloaderSetting DownloaderSetting { get; set; } = default!;
 
-        public M3UFileReaderManager M3UFileReader { get => _m3UFileReaderManager ??= CreateM3u8FileInfoManager(); }
-
-        public M3UFileReaderManager CreateM3u8FileInfoManager()
+        public M3UFileReaderManager M3UFileReadManager
         {
-            M3UFileReaderManager m3UFileReaderManager = pluginManager?.M3U8FileInfoStreamService is not null
-                ? new PluginM3UFileReaderManager(pluginManager.M3U8FileInfoStreamService, pluginManager?.M3UFileReaderInterface, httpClient, pluginManager?.AttributeReaders)
-                 : new M3UFileReaderManager(pluginManager?.M3UFileReaderInterface, httpClient, pluginManager?.AttributeReaders);
-            return m3UFileReaderManager;
+            get
+            {
+                M3UFileReaderManager m3UFileReaderManager;
+                if (PluginManager?.M3U8FileInfoStreamService is not null)
+                    m3UFileReaderManager = new PluginM3UFileReaderManager(PluginManager?.M3U8FileInfoStreamService!, httpClient);
+                else
+                    m3UFileReaderManager = new M3UFileReaderManager(httpClient);
+
+                m3UFileReaderManager.M3u8FileReader = M3u8FileReader;
+                m3UFileReaderManager.DownloadParam = DownloadParam;
+                m3UFileReaderManager.DownloaderSetting  = DownloaderSetting;
+                return m3UFileReaderManager;
+            }
         }
+
+        internal M3UFileReaderWithStream M3u8FileReader
+        {
+            get
+            {
+                M3UFileReaderWithStream m3UFileReaderWithStream ;
+                if (PluginManager?.M3UFileReaderInterface is not null)
+                    m3UFileReaderWithStream =  new M3UFileReaderWithPlugin(PluginManager?.M3UFileReaderInterface!);
+                else
+                    m3UFileReaderWithStream =  new M3UFileReaderWithStream();
+
+                m3UFileReaderWithStream.AttributeReaders = AttributeReaders;
+                return m3UFileReaderWithStream;
+            }
+        }
+
+
+        internal IDictionary<string, IAttributeReader> AttributeReaders
+        {
+            get
+            {
+                if (PluginManager?.AttributeReaders is not null)
+                    return PluginManager?.AttributeReaders!;
+                else
+                    return AttributeReaderRoot.Instance.AttributeReaders;
+            }
+        }
+
+
     }
 }

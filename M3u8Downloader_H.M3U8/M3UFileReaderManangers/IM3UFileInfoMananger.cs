@@ -1,4 +1,4 @@
-﻿using M3u8Downloader_H.Common.Interfaces;
+﻿using M3u8Downloader_H.Abstractions.Common;
 using M3u8Downloader_H.Common.M3u8Infos;
 using System;
 using System.Collections.Generic;

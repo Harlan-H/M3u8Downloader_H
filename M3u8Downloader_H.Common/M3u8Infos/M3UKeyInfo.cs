@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Text;
+using M3u8Downloader_H.Common.Extensions;
 
 namespace M3u8Downloader_H.Common.M3u8Infos
 {
@@ -11,6 +13,32 @@ namespace M3u8Downloader_H.Common.M3u8Infos
         public byte[] BKey { get; set; } = default!;
 
         public byte[] IV { get; set; } = default!;
+
+        public M3UKeyInfo()
+        {
+            
+        }
+
+        public M3UKeyInfo(string method, string key)
+        {
+            Method = method;
+            BKey = Encoding.UTF8.GetBytes(key);
+            IV = null!;
+        }
+
+        public M3UKeyInfo(string method, string key, string iv)
+        {
+            Method = method;
+            BKey = Encoding.UTF8.GetBytes(key);
+            IV = iv?.ToHex()!;
+        }
+
+        public M3UKeyInfo(string method, byte[] key, byte[] iv)
+        {
+            Method = method;
+            BKey = key;
+            IV = iv;
+        }
     }
     
     public partial class M3UKeyInfo :IEquatable<M3UKeyInfo>

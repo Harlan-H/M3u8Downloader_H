@@ -1,4 +1,4 @@
-﻿namespace M3u8Downloader_H.Plugin
+﻿namespace M3u8Downloader_H.Abstractions.Plugins
 {
     public interface IM3u8FileInfoStreamService
     {
@@ -14,6 +14,6 @@
         /// <param name="headers">请求头</param>
         /// <param name="cancellationToken">取消的令牌</param>
         /// <returns>返回得到得m3u8数据流</returns>
-        Task<(Uri?,Stream)> GetM3u8FileStreamAsync(Uri uri, IEnumerable<KeyValuePair<string, string>>? headers, CancellationToken cancellationToken = default);
+        Task<Stream> GetM3u8FileStreamAsync(Uri uri, IEnumerable<KeyValuePair<string, string>>? headers, CancellationToken cancellationToken = default);
     }
 }

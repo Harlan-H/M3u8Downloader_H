@@ -8,21 +8,20 @@ using Caliburn.Micro;
 using M3u8Downloader_H.Services;
 using M3u8Downloader_H.Utils;
 using M3u8Downloader_H.Models;
-using M3u8Downloader_H.Core.Extensions;
-using M3u8Downloader_H.Common.M3u8Infos;
-using M3u8Downloader_H.Core;
 using System.Text;
 using System.Linq;
+using System.Timers;
+using M3u8Downloader_H.Abstractions.Common;
 
 namespace M3u8Downloader_H.ViewModels
 {
-    public partial class DownloadViewModel(DownloadService downloadService, SettingsService settingsService, SoundService soundService) : PropertyChangedBase, Common.Interfaces.ILog
+    public abstract  partial  class DownloadViewModel(SettingsService settingsService, SoundService soundService) : PropertyChangedBase, Abstractions.Common.ILog,IDownloadParam
     {
-        private readonly DownloadService downloadService = downloadService;
-        private readonly SoundService soundService = soundService;
-        private readonly SettingsService settingsService = settingsService;
+        private readonly ThrottlingSemaphore throttlingSemaphore = ThrottlingSemaphore.Instance;
         private CancellationTokenSource? cancellationTokenSource;
-        private DownloadClient _downloadClient= default!;
+
+        //包含扩展名
+        protected string VideoFullName = default!;
 
         public BindableCollection<LogParams> Logs { get; } = [];
         public Uri RequestUrl { get; set; } = default!;
@@ -31,9 +30,9 @@ namespace M3u8Downloader_H.ViewModels
 
         public string SavePath { get; set; } = default!;
 
-        public double ProgressNum { get; set; }
+        public IDictionary<string, string>? Headers { get; set; }
 
-        public double RecordDuration { get; set; }
+        public double ProgressNum { get; set; }
 
         public long DownloadRateBytes { get; set; } = -1;
 
@@ -44,6 +43,8 @@ namespace M3u8Downloader_H.ViewModels
         public bool IsProgressIndeterminate => IsActive && Status < DownloadStatus.StartedVod;
 
         public string? FailReason { get; private set; } = string.Empty;
+
+        protected abstract void StartDownload(CancellationToken cancellationToken);
 
         public bool CanOnStart => !IsActive;
 
@@ -59,18 +60,9 @@ namespace M3u8Downloader_H.ViewModels
                 try
                 {
                     cancellationTokenSource = new CancellationTokenSource();
+                    using var semaphore = await throttlingSemaphore.AcquireAsync(cancellationTokenSource.Token);
 
-                    Status = DownloadStatus.Parsed;
-                    await _downloadClient.GetM3u8Uri(cancellationTokenSource.Token);
-
-                    await _downloadClient.GetM3U8FileInfo(cancellationTokenSource.Token);
-
-                    Status = DownloadStatus.Enqueued;
-                    using DownloadRateSource downloadRate = new(s => DownloadRateBytes = s);
-                    void downloadStatus(bool s) => Status = s ? DownloadStatus.StartedLive : DownloadStatus.StartedVod;
-                    await downloadService.DownloadAsync(_downloadClient.Downloader, downloadRate, downloadStatus, cancellationTokenSource.Token);
-
-                    await _downloadClient.Merger.Converter(_downloadClient.M3u8FileInfo.IsFile, cancellationTokenSource.Token);
+                    StartDownload(cancellationTokenSource.Token);
                     soundService.PlaySuccess(settingsService.IsPlaySound);
                     Status = DownloadStatus.Completed;
                 }
@@ -100,10 +92,10 @@ namespace M3u8Downloader_H.ViewModels
         {
             if (!CanOnShowFile)
                 return;
-
+            
             try
             {
-                Process.Start("explorer", $"/select, \"{_downloadClient.DownloadParams.VideoFullName}\"");
+                Process.Start("explorer", $"/select, \"{Path.Combine(SavePath,VideoFullName)}\"");
             }
             catch (Exception)
             {
@@ -121,12 +113,13 @@ namespace M3u8Downloader_H.ViewModels
         }
 
         public bool CanOnRestart => CanOnStart && Status != DownloadStatus.Completed;
+
         public void OnRestart() => OnStart();
 
 
         public void DeleteCache()
         {
-            DirectoryInfo directory = new(_downloadClient.DownloadParams.VideoFullPath);
+            DirectoryInfo directory = new(SavePath);
             if (directory.Exists)
                 directory.Delete(true);
         }
@@ -160,75 +153,49 @@ namespace M3u8Downloader_H.ViewModels
         }
     }
 
+
     public partial class DownloadViewModel
     {
-        public static DownloadViewModel CreateDownloadViewModel(
-            Uri requesturl,
-            string videoname,
-            string? method,
-            string? key,
-            string? iv,
-            IEnumerable<KeyValuePair<string, string>>? headers,
-            string cachePath,
-            Type? pluginType)
+        protected class DownloadProgress(DownloadViewModel downloadViewModel) : IDialogProgress, IDisposable
         {
-            DownloadViewModel viewModel = IoC.Get<DownloadViewModel>();
-            viewModel.RequestUrl = requesturl;
-            viewModel.VideoName = videoname;
-            viewModel.SavePath = cachePath;
+            private readonly TimerContainer timerContainer = TimerContainer.Instance;
+            private long _lastBytes;
+            private long _countBytes;
+            private double _currentProgress;
 
-            viewModel._downloadClient = new(Http.Client, requesturl, headers, viewModel, pluginType)
+            public void Dispose()
             {
-                Settings = viewModel.settingsService,
-                DownloadParams = new DownloadParam()
-                {
-                    VideoFullPath = cachePath,
-                    VideoFullName = videoname,
-                    LiveProgress = new Progress<double>(d => viewModel.RecordDuration = d),
-                    VodProgress = new Progress<double>(d => viewModel.ProgressNum = d),
-                    ChangeVideoNameDelegate = videoName => viewModel._downloadClient.DownloadParams.VideoFullName = videoName
-                }
-            };
-
-            if (!string.IsNullOrWhiteSpace(key))
-            {
-                viewModel._downloadClient.SetKeyInfo(method!, key, iv!);
+                _lastBytes = 0;
+                _countBytes = 0;
             }
 
-
-            return viewModel;
-        }
-
-
-        //当传入的是M3UFileInfo 此时因为他不是文件或者http地址 没有办法判断具体的缓存目录
-        public static DownloadViewModel CreateDownloadViewModel(
-            M3UFileInfo m3UFileInfo,
-            IEnumerable<KeyValuePair<string, string>>? headers,
-            string videoname,
-            string videoPath,
-            Type? pluginType)
-        {
-            DownloadViewModel viewModel = IoC.Get<DownloadViewModel>();
-            viewModel.VideoName = videoname;
-            viewModel.SavePath = videoPath;
-
-            viewModel._downloadClient = new(Http.Client, default!, headers, viewModel,pluginType)
+            private void OnTimedEvent(Object? source, ElapsedEventArgs e)
             {
-                M3u8FileInfo = m3UFileInfo,
-                Settings = viewModel.settingsService,
-                DownloadParams = new DownloadParam()
-                {
-                    VideoFullPath = videoPath,
-                    VideoFullName = videoname,
-                    LiveProgress = new Progress<double>(d => viewModel.RecordDuration = d),
-                    VodProgress = new Progress<double>(d => viewModel.ProgressNum = d),
-                    ChangeVideoNameDelegate = videoName => viewModel._downloadClient.DownloadParams.VideoFullName = videoName
-                }
-            };
+                long tmpBytes = _countBytes;
+                downloadViewModel.DownloadRateBytes = tmpBytes - _lastBytes;
+                _lastBytes = tmpBytes;
+                downloadViewModel.ProgressNum = _currentProgress;
+            }
 
+            public IDisposable Acquire() => timerContainer.AddTimerCallback(OnTimedEvent);
 
-            return viewModel;
+            public void Report(long value)
+            {
+                Interlocked.Increment(ref _countBytes);
+            }
+
+            public void Report(double value)
+            {
+                _currentProgress = value;
+            }
+
+            public void SetDownloadStatus(bool IsLiveDownloading)
+            {
+                downloadViewModel.Status = IsLiveDownloading ? DownloadStatus.StartedLive : DownloadStatus.StartedVod;
+            }
         }
     }
+
+   
 
 }
