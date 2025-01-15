@@ -8,7 +8,7 @@ namespace M3u8Downloader_H.Abstractions.M3uDownloaders
 {
     public interface IDownloaderSetting
     {
-        public TimeSpan Timeouts { get; }
+        public int Timeouts { get; }
         public int RetryCount { get; }
         public bool SkipRequestError { get; }
         public int MaxThreadCount { get; }

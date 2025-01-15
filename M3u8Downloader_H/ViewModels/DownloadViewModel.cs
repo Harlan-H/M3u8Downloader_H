@@ -44,7 +44,7 @@ namespace M3u8Downloader_H.ViewModels
 
         public string? FailReason { get; private set; } = string.Empty;
 
-        protected abstract void StartDownload(CancellationToken cancellationToken);
+        protected abstract Task StartDownload(CancellationToken cancellationToken);
 
         public bool CanOnStart => !IsActive;
 
@@ -62,7 +62,7 @@ namespace M3u8Downloader_H.ViewModels
                     cancellationTokenSource = new CancellationTokenSource();
                     using var semaphore = await throttlingSemaphore.AcquireAsync(cancellationTokenSource.Token);
 
-                    StartDownload(cancellationTokenSource.Token);
+                    await StartDownload(cancellationTokenSource.Token);
                     soundService.PlaySuccess(settingsService.IsPlaySound);
                     Status = DownloadStatus.Completed;
                 }
@@ -181,7 +181,7 @@ namespace M3u8Downloader_H.ViewModels
 
             public void Report(long value)
             {
-                Interlocked.Increment(ref _countBytes);
+                Interlocked.Add(ref _countBytes, value);
             }
 
             public void Report(double value)

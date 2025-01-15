@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace M3u8Downloader_H.Converters
 {
@@ -14,7 +10,7 @@ namespace M3u8Downloader_H.Converters
         {
             if (value == -1)
                 return string.Empty;
-            return string.Format("{0:0.#} {1}/s", GetLargestWholeNumberValue(value), GetLargestWholeNumberSymbol(value));
+            return string.Format("{0,4:F1} {1}/s", GetLargestWholeNumberValue(value), GetLargestWholeNumberSymbol(value));
         }
 
         public override long ConvertBack(string value, Type targetType, object parameter, CultureInfo culture)

@@ -64,9 +64,8 @@ namespace M3u8Downloader_H.Services
 #else
         public double RecordDuration { get; set; } = 60 * 60 * 12;
 #endif
-        [TimeRange(1, 300)]
-        [JsonConverter(typeof(TimespanConverter))]
-        public TimeSpan Timeouts { get; set; } = TimeSpan.FromSeconds(10);
+        [Range(1, 300)]
+        public int Timeouts { get; set; } = 10;
 
         public SettingsService()
         {

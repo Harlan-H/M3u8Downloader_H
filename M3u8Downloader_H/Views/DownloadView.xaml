@@ -15,6 +15,9 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
     xmlns:wpf="clr-namespace:MaterialDesignThemes.Wpf;assembly=MaterialDesignThemes.Wpf">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"  />
+    </UserControl.Resources>
 
     <Grid >
         <Grid.RowDefinitions >
@@ -30,10 +33,10 @@
             <ColumnDefinition Width="48" />
         </Grid.ColumnDefinitions>
         <!-- 地址  -->
-        <TextBlock Grid.Column="0" TextTrimming="CharacterEllipsis" FontSize="14" VerticalAlignment="Center" ToolTip="{Binding RequestUrl,TargetNullValue=似乎没有请求地址哦}" Text="{Binding RequestUrl,TargetNullValue=似乎没有请求地址哦}" />
+        <TextBlock Grid.Column="0" TextTrimming="CharacterEllipsis" FontSize="14" VerticalAlignment="Center" ToolTip="{Binding RequestUrl,TargetNullValue=似乎没有请求地址哦}" Text="{Binding RequestUrl,TargetNullValue=似乎没有请求地址哦}" d:Text="https://www.xfdniafno.com/index.m3u8" />
 
         <!-- 名称 -->
-        <TextBlock Grid.Column="1" TextTrimming="CharacterEllipsis" Margin="15 0 10 0" FontSize="14" VerticalAlignment="Center" ToolTip="{Binding VideoName}"  Text="{Binding VideoName}"  />
+        <TextBlock Grid.Column="1" TextTrimming="CharacterEllipsis" Margin="15 0 10 0" FontSize="14" VerticalAlignment="Center" ToolTip="{Binding VideoName}"  Text="{Binding VideoName}" d:Text="xxfenioafneaiofni"  />
 
         <!-- 下载速率 -->
         <TextBlock Grid.Column="2" FontSize="13"  Margin="5 0 0 0"  VerticalAlignment="Center"  Text="{Binding DownloadRateBytes,Converter={x:Static converters:LongToBitrateConverter.Instance}}" d:Text="1113.6 MB/s" />
@@ -48,6 +51,7 @@
                          Margin="0,0,6,0"
                          Maximum="1"
                          Minimum="0"
+                         d:Value="0.35"
                          IsIndeterminate="{Binding IsProgressIndeterminate}"
                          Value="{Binding ProgressNum, Mode=OneWay}">
                 <ProgressBar.Style>
@@ -149,7 +153,7 @@
                             </Grid>
                             <ControlTemplate.Triggers>
                                 <Trigger Property="UIElement.IsMouseOver" Value="true">
-                                    <Setter TargetName="border" Value="{Binding Foreground , RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource BrushOpacityConverter}, ConverterParameter=0.16}" Property="Background" />
+                                    <Setter TargetName="border" Value="{Binding Foreground , RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={x:Static materialDesign:BrushOpacityConverter.Instance}, ConverterParameter=0.16}" Property="Background" />
                                     <Setter TargetName="border" Property="Cursor" Value="Hand"/>
                                 </Trigger>
                             </ControlTemplate.Triggers>
@@ -185,7 +189,7 @@
         <ItemsControl Grid.Row="1" Height="130" ItemsSource="{Binding Logs}"
                       ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                       ScrollViewer.VerticalScrollBarVisibility="Auto"
-                      Visibility="{Binding IsChecked, ElementName=VisibilityBtn, Converter={StaticResource BooleanToVisibilityConverter}}" >
+                      Visibility="{Binding IsChecked, ElementName=VisibilityBtn, Converter={x:Static materialDesign:BooleanToVisibilityConverter.CollapsedInstance}}" >
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                     <VirtualizingStackPanel/>

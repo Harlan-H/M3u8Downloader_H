@@ -26,7 +26,7 @@ namespace M3u8Downloader_H.ViewModels
         private M3UKeyInfo M3UKeyInfo = default!;
         private bool _theFirstTime = true;
 
-        protected override async void StartDownload(CancellationToken cancellationToken)
+        protected override async Task StartDownload(CancellationToken cancellationToken)
         {
             Status = DownloadStatus.Parsed;
             await GetM3U8FileInfo(cancellationToken);

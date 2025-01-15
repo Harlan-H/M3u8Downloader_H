@@ -15,7 +15,7 @@
         WindowStartupLocation="CenterScreen"
         WindowStyle="None"
         MinHeight="580" MinWidth="800" 
-        Height="580" Width="800">
+        Height="780" Width="1000">
     
     <i:Interaction.Behaviors>
         <behavior:WindowSystemCommandBehavior />
@@ -95,103 +95,100 @@
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
-                <!--  操作区 -->
-                <Grid Grid.Row="0" Height="95" Name="videoDownloadInfoGrid" DataContext="{Binding VideoDownloadInfo}">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition  />
-                        <ColumnDefinition Width="auto" />
-                    </Grid.ColumnDefinitions>
-                    <StackPanel >
-                        <TextBox Text="{Binding RequestUrl,Delay=150}" Margin="8" 
-                                 materialDesign:TextFieldAssist.HasClearButton="True"
-                                 materialDesign:HintAssist.Hint="下载地址,m3u8,txt,json,xml文件(文件可以直接拖拽到此)"  FontSize="18"  VerticalAlignment="Center" >
-                            <i:Interaction.Behaviors>
-                                <behavior:DragAndDropBehaviour />
-                            </i:Interaction.Behaviors>
-                        </TextBox>
-                        <TextBox Text="{Binding VideoName,Delay=150}" Margin="8" 
-                                 materialDesign:TextFieldAssist.HasClearButton="True"
-                                 materialDesign:HintAssist.Hint="视频名称(可以不填写,不写默认随机名称)" FontSize="18"  VerticalAlignment="Center">
-                        </TextBox>
-                        
-                        <!-- 密钥填写区  -->
-                        <DockPanel  Margin="8" >
-                            <ComboBox SelectedValue="{Binding Method,TargetNullValue=AES-128}" FontSize="18" >
-                                <ComboBox.ItemsSource>
-                                    <x:Array Type="{x:Type sys:String}">
-                                        <sys:String>AES-128</sys:String>
-                                        <sys:String>AES-192</sys:String>
-                                        <sys:String>AES-256</sys:String>
-                                    </x:Array>
-                                </ComboBox.ItemsSource>
-                            </ComboBox>
-                            <TextBox Text="{Binding Key}"  Margin="5 0 0 0" FontSize="18"
-                                     materialDesign:HintAssist.Hint="KEY(字符串或者base64)" />
-                        </DockPanel>
-                        <TextBox Text="{Binding Iv}"  Margin="8"  FontSize="18" 
-                                  materialDesign:HintAssist.Hint="IV(例如0x11223344556677888877665544332211)"/>
-                    </StackPanel>
-                    <Grid Grid.Column="1" >
-                        <StackPanel VerticalAlignment="Center">
-                        <Button cal:Message.Attach="ProcessDownload($DataContext)" materialDesign:ElevationAssist.Elevation="Dp2"
-                            Margin="5" Width="150" >
-                            <materialDesign:PackIcon Kind="Download" Width="24" Height="24" />
-                        </Button>
-                            <ToggleButton Margin="5" Cursor="Hand" HorizontalAlignment="Center" FontSize="13">
-                                <ToggleButton.Template>
-                                    <ControlTemplate TargetType="ToggleButton">
-                                        <TextBlock >
-                                            <ContentPresenter />
-                                        </TextBlock>
-                                    </ControlTemplate>
-                                </ToggleButton.Template>
-                                <ToggleButton.Style>
-                                    <Style TargetType="ToggleButton">
-                                        <Setter Property="Foreground" Value="Blue" />
-                                        <Style.Triggers>
-                                            <Trigger Property="IsMouseOver" Value="true">
-                                                <Setter Property="Foreground" Value="#af0000ff" />
-                                            </Trigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </ToggleButton.Style>
+                <TabControl  
+                    materialDesign:ColorZoneAssist.Mode="PrimaryMid"
+                    >      
+                    <TabItem Width="200"
+                          Header="M3U8">
+                            <!--  操作区 -->
+                            <Grid Height="191" Name="videoDownloadInfoGrid" DataContext="{Binding VideoDownloadInfo}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition  />
+                                    <ColumnDefinition Width="auto" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel >
+                                    <TextBox Text="{Binding RequestUrl,Delay=150}" Margin="8" 
+                  materialDesign:TextFieldAssist.HasClearButton="True"
+                  materialDesign:HintAssist.Hint="下载地址,m3u8,txt,json,xml文件(文件可以直接拖拽到此)"  FontSize="18"  VerticalAlignment="Center" >
+                                        <i:Interaction.Behaviors>
+                                            <behavior:DragAndDropBehaviour />
+                                        </i:Interaction.Behaviors>
+                                    </TextBox>
+                                    <TextBox Text="{Binding VideoName,Delay=150}" Margin="8" 
+                  materialDesign:TextFieldAssist.HasClearButton="True"
+                  materialDesign:HintAssist.Hint="视频名称(可以不填写,不写默认随机名称)" FontSize="18"  VerticalAlignment="Center">
+                                    </TextBox>
 
-                                <Grid>
-                                    <Grid.ColumnDefinitions >
-                                        <ColumnDefinition Width="auto" />
-                                        <ColumnDefinition Width="4"/>
-                                        <ColumnDefinition />
-                                    </Grid.ColumnDefinitions>
-                                    <ContentControl Name="expend" RenderTransformOrigin="0.5,0.5">
-                                        <ContentControl.RenderTransform>
-                                            <RotateTransform x:Name="rotate" />
-                                        </ContentControl.RenderTransform>
-                                        <Path Stroke="{Binding Path=Foreground,RelativeSource={RelativeSource AncestorType=ToggleButton}}"  VerticalAlignment="Center" HorizontalAlignment="Center"   Data="M 1,1.5 L 4.5,5 L 8,1.5"/>
-                                    </ContentControl>
-                                    <TextBlock Grid.Column="2" Text="高级模式" />
-                                </Grid>
-                                <ToggleButton.Triggers>
-                                    <EventTrigger RoutedEvent="ToggleButton.Checked">
-                                        <BeginStoryboard>
-                                            <Storyboard>
-                                                <DoubleAnimation Storyboard.TargetName="expend" Storyboard.TargetProperty="RenderTransform.Angle" To="180" Duration="0:0:0.3" />
-                                                <DoubleAnimation Storyboard.TargetName="videoDownloadInfoGrid" Storyboard.TargetProperty="Height" To="191" Duration="0:0:0.3" />
-                                            </Storyboard>
-                                        </BeginStoryboard>
-                                    </EventTrigger>
-                                    <EventTrigger RoutedEvent="ToggleButton.Unchecked">
-                                        <BeginStoryboard>
-                                            <Storyboard>
-                                                <DoubleAnimation Storyboard.TargetName="expend" Storyboard.TargetProperty="RenderTransform.Angle" To="0" Duration="0:0:0.3" />
-                                                <DoubleAnimation Storyboard.TargetName="videoDownloadInfoGrid" Storyboard.TargetProperty="Height" To="95" Duration="0:0:0.3" />
-                                            </Storyboard>
-                                        </BeginStoryboard>
-                                    </EventTrigger>
-                                </ToggleButton.Triggers>
-                            </ToggleButton>
-                        </StackPanel>
-                    </Grid>
-                </Grid>
+                                    <!-- 密钥填写区  -->
+                                    <DockPanel  Margin="8" >
+                                        <ComboBox SelectedValue="{Binding Method,TargetNullValue=AES-128}" FontSize="18" >
+                                            <ComboBox.ItemsSource>
+                                                <x:Array Type="{x:Type sys:String}">
+                                                    <sys:String>AES-128</sys:String>
+                                                    <sys:String>AES-192</sys:String>
+                                                    <sys:String>AES-256</sys:String>
+                                                </x:Array>
+                                            </ComboBox.ItemsSource>
+                                        </ComboBox>
+                                        <TextBox Text="{Binding Key}"  Margin="5 0 0 0" FontSize="18"
+                      materialDesign:HintAssist.Hint="KEY(字符串或者base64)" />
+                                    </DockPanel>
+                                    <TextBox Text="{Binding Iv}"  Margin="8"  FontSize="18" 
+                   materialDesign:HintAssist.Hint="IV(例如0x11223344556677888877665544332211)"/>
+                                </StackPanel>
+
+                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                <Button cal:Message.Attach="ProcessDownload($DataContext)" materialDesign:ElevationAssist.Elevation="Dp2"  Margin="5" Width="150" >
+                                    <materialDesign:PackIcon Kind="Download" Width="24" Height="24" />
+                                </Button>
+                              
+                            </StackPanel>
+                        </Grid>
+                        </TabItem>
+                        <TabItem Width="200"
+                          Header="视频音频">
+                        <Grid Height="191" Name="mediaDownloadInfoGrid">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition  />
+                                <ColumnDefinition Width="auto" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel >
+                                <TextBox Text="" Margin="8" 
+                                          materialDesign:TextFieldAssist.HasClearButton="True"
+                                          materialDesign:HintAssist.Hint="视频地址mp4,flv等视频格式地址"  FontSize="18"  VerticalAlignment="Center" >
+                                </TextBox>
+                                <TextBox Text="" Margin="8" 
+                                          materialDesign:TextFieldAssist.HasClearButton="True"
+                                          materialDesign:HintAssist.Hint="音频地址aac等音频格式地址"  FontSize="18"  VerticalAlignment="Center" >
+                                </TextBox>
+                                <TextBox Text="" Margin="8" 
+                                          materialDesign:TextFieldAssist.HasClearButton="True"
+                                          materialDesign:HintAssist.Hint="字幕地址srt等字幕格式地址"  FontSize="18"  VerticalAlignment="Center" >
+                                </TextBox>
+                                <TextBox Text="{Binding VideoName,Delay=150}" Margin="8" 
+                                            materialDesign:TextFieldAssist.HasClearButton="True"
+                                            materialDesign:HintAssist.Hint="视频名称(可以不填写,不写默认随机名称)" FontSize="18"  VerticalAlignment="Center">
+                                </TextBox>
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                <Button cal:Message.Attach="ProcessDownload($DataContext)" materialDesign:ElevationAssist.Elevation="Dp2"  Margin="5" Width="150" >
+                                    <materialDesign:PackIcon Kind="Download" Width="24" Height="24" />
+                                </Button>
+
+                            </StackPanel>
+                        </Grid>
+                    </TabItem>
+                    <TabItem Width="200"
+                            Header="高级模式">
+                                            <TextBlock
+                              Margin="8"
+                              Text="PrimaryLight Tab 3" />          
+                    </TabItem>
+                </TabControl>
+   
+
+
 
                 <!--  展示区  -->
                 <Grid Grid.Row="1">
@@ -211,6 +208,9 @@
                             FontWeight="Light"
                             TextAlignment="Center"
                             TextWrapping="Wrap">
+                            <Run FontWeight="SemiBold" Text="M3U8" />
+                            <Run Text="选项卡为专门下载m3u8相关视频" />
+                            <LineBreak />
                             <Run Text="复制" />
                             <Run FontWeight="SemiBold" Text="m3u8链接地址" />
                             <Run Text="或者拖拽" />
@@ -219,13 +219,20 @@
                             <Run FontWeight="SemiBold" Text="下载地址" />
                             <Run Text="处" />
                             <LineBreak />
-                            <Run Text="点击" />
-                            <Run FontWeight="SemiBold" Text="下载" />
-                            <Run Text="将会进行下载或者合并操作" />
+                            <Run FontWeight="SemiBold" Text="视频音频" />
+                            <Run Text="选项卡是专门下载mp4,flv,mp3等长视频的" />
                             <LineBreak />
-                            <Run Text="点击" />
+                            <Run Text="视频有声音的只用复制" />
+                            <Run FontWeight="SemiBold" Text="mp4,flv等地址" />
+                            <Run Text="到" />
+                            <Run FontWeight="SemiBold" Text="视频地址" />
+                            <Run Text="处" />
+                            <LineBreak />
+                            <Run Text="视频和音频是分离的" />
+                            <Run Text="可以将视频,音频地址复制到对应的位置" />
+                            <LineBreak />
                             <Run FontWeight="SemiBold" Text="高级模式" />
-                            <Run Text="可以填写密钥信息" />
+                            <Run Text="主要是通过插件方式实现对各种网站及软件的适配,实现一键化下载,后续版本开放" />
                             <LineBreak />
                             <Run Text="批量操作" />
                             <Run FontWeight="SemiBold" Text="Ctrl + a" />
@@ -256,8 +263,6 @@
                             <Run Text="不影响程序使用,如需此功能请" />
                             <Run  FontWeight="Bold"  Text="以管理员身份运行" />
                             <Run Text="本程序" />
-                            <LineBreak />
-                            <Run Text="RestApi仅限安装过.net9运行库的版本使用,SingleFile版本可能不支持" />
                             <LineBreak />
                             <Run Text="详细的RestApi使用方法，请看帮助文档" />
                             <Run FontWeight="SemiBold" Text="Rest Api" />

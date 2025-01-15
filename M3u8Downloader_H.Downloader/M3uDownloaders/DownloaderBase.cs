@@ -57,7 +57,7 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
                 try
                 {
                     using CancellationTokenSource cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(token);
-                    cancellationTokenSource.CancelAfter(DownloaderSetting.Timeouts);
+                    cancellationTokenSource.CancelAfter(TimeSpan.FromSeconds(DownloaderSetting.Timeouts));
                     (Stream tmpstream, string contentType) = await httpClient.GetResponseContentAsync(m3UMediaInfo.Uri, headers, m3UMediaInfo.RangeValue, token);
                     using Stream stream = DownloadAfter(new HandleStreamInternal(tmpstream, DialogProgress), contentType, token);
 

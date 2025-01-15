@@ -32,7 +32,7 @@ namespace M3u8Downloader_H
                 .Singleton<SoundService>()
                 .Singleton<PluginService>()
                 .PerRequest<MainWindowViewModel>()
-                .PerRequest<DownloadViewModel>(); 
+                .PerRequest<M3u8DownloadViewModel>(); 
         }
 
         protected override object GetInstance(Type service, string key)

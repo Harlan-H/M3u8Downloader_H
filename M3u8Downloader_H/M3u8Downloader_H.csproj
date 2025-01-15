@@ -40,7 +40,7 @@
 	
   <ItemGroup>
     <PackageReference Include="Caliburn.Micro" Version="4.0.230" />
-    <PackageReference Include="MaterialDesignThemes" Version="4.9.0" />
+    <PackageReference Include="MaterialDesignThemes" Version="5.2.1" />
     <PackageReference Include="PropertyChanged.Fody" Version="4.1.0" PrivateAssets="All" />
   </ItemGroup>
 

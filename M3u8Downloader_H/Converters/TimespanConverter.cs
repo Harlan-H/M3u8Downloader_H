@@ -16,7 +16,7 @@ namespace M3u8Downloader_H.Converters
 
         public override void WriteJson(JsonWriter writer, TimeSpan value, JsonSerializer serializer)
         {
-            var timespanFormatted = value.ToString(TimeSpanFormatString);
+            var timespanFormatted = $"{value.ToString(TimeSpanFormatString)}";
             writer.WriteValue(timespanFormatted);
         }
 
