@@ -18,6 +18,7 @@ using Caliburn.Micro;
 using System.Threading;
 using PropertyChanged;
 using System.Security.Principal;
+using M3u8Downloader_H.Abstractions.Common;
 
 namespace M3u8Downloader_H.ViewModels
 {
@@ -132,7 +133,8 @@ namespace M3u8Downloader_H.ViewModels
                 string[] result = item.Trim().Split(settingsService.Separator, 2);
                 try
                 {
-                    ProcessDownload(new Uri(result[0], UriKind.Absolute), result.Length > 1 ? result[1] : null, null, null,null);
+                    M3u8DownloadParams m3U8DownloadParams = new(new Uri(result[0], UriKind.Absolute), result.Length > 1 ? result[1] : null);
+                    ProcessDownload(m3U8DownloadParams,null);
                 }
                 catch (UriFormatException)
                 {
@@ -148,34 +150,38 @@ namespace M3u8Downloader_H.ViewModels
         }
 
 
-        private void ProcessDownload(Uri uri, string? name,string? method,string? key,string? iv, string? savePath = default, string? pluginKey = default!, IDictionary<string, string>? headers = default)
+        private void ProcessDownload(IM3u8DownloadParam m3U8DownloadParam, string? pluginKey = default!)
         {
-            string tmpVideoName = PathEx.GenerateFileNameWithoutExtension(uri,name);
-            string fileFullPath = Path.Combine(savePath ?? settingsService.SavePath, tmpVideoName);
+            string tmpVideoName = PathEx.GenerateFileNameWithoutExtension(m3U8DownloadParam.RequestUrl, m3U8DownloadParam.VideoName);
+            string fileFullPath = Path.Combine(m3U8DownloadParam.SavePath ?? settingsService.SavePath, tmpVideoName);
             FileEx.EnsureFileNotExist(fileFullPath);
+
+            m3U8DownloadParam.VideoName = tmpVideoName;
 
             string tmpPluginKey = pluginKey is not null
                                 ? pluginKey
                                 : string.IsNullOrWhiteSpace(settingsService.PluginKey)
-                                ? uri.GetHostName()
+                                ? m3U8DownloadParam.RequestUrl.GetHostName()
                                 : settingsService.PluginKey;
-            DownloadViewModel download = M3u8DownloadViewModel.CreateDownloadViewModel(uri, tmpVideoName,method,key,iv, headers ?? settingsService.Headers, fileFullPath, pluginService[tmpPluginKey]);
+            DownloadViewModel download = M3u8DownloadViewModel.CreateDownloadViewModel(m3U8DownloadParam, pluginService[tmpPluginKey]);
             if (download is null) return;
 
             EnqueueDownload(download);
         }
 
-        private void ProcessDownload(M3UFileInfo m3UFileInfo, string? name, string? savePath = default!, string? pluginKey = default!, IDictionary<string, string>? headers = default!)
+        private void ProcessDownload(IM3u8FileInfoDownloadParam m3U8DownloadParam, string? pluginKey = default!)
         {
-            if (!m3UFileInfo.MediaFiles.Any())
+            if (!m3U8DownloadParam.M3UFileInfos.MediaFiles.Any())
                 throw new ArgumentException("m3u8的数据不能为空");
 
-            string tmpVideoName = PathEx.GenerateFileNameWithoutExtension(m3UFileInfo.MediaFiles[0].Uri, name);
-            string fileFullPath = Path.Combine(savePath ?? settingsService.SavePath, tmpVideoName);
+            string tmpVideoName = PathEx.GenerateFileNameWithoutExtension(m3U8DownloadParam.M3UFileInfos.MediaFiles[0].Uri, m3U8DownloadParam.VideoName);
+            string fileFullPath = Path.Combine(m3U8DownloadParam.SavePath ?? settingsService.SavePath, tmpVideoName);
             FileEx.EnsureFileNotExist(fileFullPath);
 
+            m3U8DownloadParam.VideoName = tmpVideoName;
+
             //这里因为不可能有url所以直接通过设置来判别使用某个插件
-            DownloadViewModel download = M3u8DownloadViewModel.CreateDownloadViewModel(m3UFileInfo, headers, tmpVideoName, fileFullPath, pluginService[pluginKey ?? settingsService.PluginKey]);
+            DownloadViewModel download = M3u8DownloadViewModel.CreateDownloadViewModel(m3U8DownloadParam, pluginService[pluginKey ?? settingsService.PluginKey]);
             if (download is null) return;
 
             EnqueueDownload(download);

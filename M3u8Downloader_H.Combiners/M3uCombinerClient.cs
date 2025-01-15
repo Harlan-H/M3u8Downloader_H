@@ -8,17 +8,16 @@ using M3u8Downloader_H.Core.VideoConverter;
 
 namespace M3u8Downloader_H.Combiners
 {
-    public class M3uCombinerClient(IDownloadParam DownloadParams)
+    public class M3uCombinerClient(ILog Log, IDownloadParamBase DownloadParams)
     {
 #if DEBUG
         private readonly FFmpeg _ffmpeg = new (@"F:\源代码\库\ffmpeg-4.3.1-2020-11-19-full_build-shared\bin\ffmpeg.exe");
 #else
         private readonly FFmpeg  _ffmpeg = new("./ffmpeg.exe");
 #endif
-
+        private string _cachePath = Path.Combine(DownloadParams.SavePath, DownloadParams.VideoName);
         public M3UFileInfo M3UFileInfo { get; set; } = default!;
         public IDialogProgress DialogProgress { get; set; } = default!;
-        private ILog? Log => (ILog)DownloadParams;
        // public IDownloadParam DownloadParams { get; set; } = default!;
         public IMergeSetting Settings { get; set; } = default!;
 
@@ -38,7 +37,7 @@ namespace M3u8Downloader_H.Combiners
                 await VideoMerge(isFile, cancellationToken);
             }
             Log?.Info("合并完成");
-            RemoveCacheDirectory(DownloadParams.VideoName);
+            RemoveCacheDirectory(_cachePath);
         }
 
         //通过xml,目录,json等方式可能无法判断流的时长，所以采用原先的转码方案
@@ -46,25 +45,25 @@ namespace M3u8Downloader_H.Combiners
         {
             await VideoMerge(isFile, cancellationToken);
             //todo 
-            await ConverterToMp4(DownloadParams.VideoName, false, cancellationToken);
-            File.Delete(DownloadParams.VideoName);
+            await ConverterToMp4(_cachePath, false, cancellationToken);
+            File.Delete(_cachePath);
         }
 
         protected async ValueTask ConvertWithM3u8File(CancellationToken cancellationToken)
         {
-            string m3u8FilePath = Path.Combine(DownloadParams.SavePath, "generated.m3u8");
+            string m3u8FilePath = Path.Combine(_cachePath, "generated.m3u8");
             if (Settings.ForcedMerger)
-                M3UFileInfo.MediaFiles = M3UFileInfo.MediaFiles.Where(m => File.Exists(Path.Combine(DownloadParams.SavePath, m.Title))).ToList();
+                M3UFileInfo.MediaFiles = M3UFileInfo.MediaFiles.Where(m => File.Exists(Path.Combine(_cachePath, m.Title))).ToList();
             await M3UFileInfo.WriteToAsync(m3u8FilePath, cancellationToken);
-            await ConverterToMp4($"{DownloadParams.SavePath}.{Settings.SelectedFormat}" , true, cancellationToken);
+            await ConverterToMp4($"{_cachePath}.{Settings.SelectedFormat}" , true, cancellationToken);
             File.Delete(m3u8FilePath);
         }
 
         protected async ValueTask VideoMerge(bool isFile, CancellationToken cancellationToken = default)
         {
             using M3uCombiner m3UCombiner = isFile && M3UFileInfo.Key is not null
-                ? new CryptM3uCombiner(M3UFileInfo, DownloadParams.SavePath)
-                : new M3uCombiner(DownloadParams.SavePath);
+                ? new CryptM3uCombiner(M3UFileInfo, _cachePath)
+                : new M3uCombiner(_cachePath);
 
             m3UCombiner.Progress = DialogProgress;
             m3UCombiner.Initialization(DownloadParams.VideoName);

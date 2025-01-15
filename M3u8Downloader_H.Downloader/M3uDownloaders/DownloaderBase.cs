@@ -12,12 +12,12 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
     {
         private bool _firstTimeToRun = true;
 
-        internal IDownloadParam DownloadParam { get; set; } = default!;
+        internal IDownloadParamBase DownloadParam { get; set; } = default!;
         internal IDownloaderSetting DownloaderSetting { get; set; } = default!;
+        internal ILog Log { get; set; } = default!;
         internal IDialogProgress DialogProgress {  get; set; } = default!;       
         internal Action<bool>? IsLiveDownloading { get; set; } = default!;
 
-        protected ILog Log { get => (ILog)DownloadParam; }
         protected IEnumerable<KeyValuePair<string, string>>? _headers => DownloadParam.Headers ?? DownloaderSetting.Headers;
 
         public async ValueTask DownloadMapInfoAsync(M3UMediaInfo? m3UMapInfo, CancellationToken cancellationToken = default)

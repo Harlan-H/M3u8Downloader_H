@@ -10,7 +10,7 @@ using M3u8Downloader_H.Abstractions.Common;
 
 namespace M3u8Downloader_H.M3U8
 {
-    public class M3u8FileInfoClient(HttpClient httpClient, IPluginManager? PluginManager, IDownloadParam DownloadParam)
+    public class M3u8FileInfoClient(HttpClient httpClient, IPluginManager? PluginManager,ILog log, IM3u8DownloadParam DownloadParam)
     {
         public IDownloaderSetting DownloaderSetting { get; set; } = default!;
 
@@ -27,6 +27,7 @@ namespace M3u8Downloader_H.M3U8
                 m3UFileReaderManager.M3u8FileReader = M3u8FileReader;
                 m3UFileReaderManager.DownloadParam = DownloadParam;
                 m3UFileReaderManager.DownloaderSetting  = DownloaderSetting;
+                m3UFileReaderManager.Log = log;
                 return m3UFileReaderManager;
             }
         }

@@ -17,10 +17,10 @@ namespace M3u8Downloader_H.M3U8.M3UFileReaderManangers
     public class M3UFileReaderManager(HttpClient httpClient)
     {
         internal M3UFileReaderWithStream M3u8FileReader { get; set; } = default!;
-        internal IDownloadParam DownloadParam { get; set; } = default!;
+        internal IM3u8DownloadParam DownloadParam { get; set; } = default!;
         internal IDownloaderSetting DownloaderSetting { get; set; } = default!;
+        internal ILog? Log { get; set; } = default!;
         internal TimeSpan TimeOuts { get; } = TimeSpan.FromSeconds(15);
-        internal ILog? Log => (ILog)DownloadParam;
 
         public async Task<M3UFileInfo> GetM3u8FileInfo(CancellationToken cancellationToken = default)
         {

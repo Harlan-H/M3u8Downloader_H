@@ -8,7 +8,7 @@ using M3u8Downloader_H.Abstractions.Common;
 
 namespace M3u8Downloader_H.Downloader
 {
-    public class M3uDownloaderClient(HttpClient httpClient, IPluginManager? PluginManager, IDownloadParam DownloadParam)
+    public class M3uDownloaderClient(HttpClient httpClient, IPluginManager? PluginManager, ILog log, IDownloadParamBase DownloadParam)
     {
         private DownloaderBase? _m3u8downloader;
 
@@ -34,6 +34,7 @@ namespace M3u8Downloader_H.Downloader
                     _m3u8downloader = new M3u8Downloader(httpClient);
 
                 _m3u8downloader.DownloadParam = DownloadParam;
+                _m3u8downloader.Log = log;
                 _m3u8downloader.DownloaderSetting = DownloaderSetting;
                 _m3u8downloader.DialogProgress = DialogProgress;
                 return _m3u8downloader;

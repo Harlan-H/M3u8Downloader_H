@@ -15,10 +15,11 @@ using M3u8Downloader_H.Abstractions.Common;
 
 namespace M3u8Downloader_H.ViewModels
 {
-    public abstract  partial  class DownloadViewModel(SettingsService settingsService, SoundService soundService) : PropertyChangedBase, Abstractions.Common.ILog,IDownloadParam
+    public abstract  partial  class DownloadViewModel(SettingsService settingsService, SoundService soundService) : PropertyChangedBase, Abstractions.Common.ILog
     {
         private readonly ThrottlingSemaphore throttlingSemaphore = ThrottlingSemaphore.Instance;
         private CancellationTokenSource? cancellationTokenSource;
+        protected IDownloadParamBase DownloadParam = default!;
 
         //包含扩展名
         protected string VideoFullName = default!;
@@ -27,10 +28,6 @@ namespace M3u8Downloader_H.ViewModels
         public Uri RequestUrl { get; set; } = default!;
 
         public string VideoName { get; set; } = default!;
-
-        public string SavePath { get; set; } = default!;
-
-        public IDictionary<string, string>? Headers { get; set; }
 
         public double ProgressNum { get; set; }
 
@@ -88,14 +85,14 @@ namespace M3u8Downloader_H.ViewModels
         }
 
         public bool CanOnShowFile => Status == DownloadStatus.Completed;
-        public void OnShowFile()
+        public virtual void OnShowFile()
         {
             if (!CanOnShowFile)
                 return;
-            
+
             try
             {
-                Process.Start("explorer", $"/select, \"{Path.Combine(SavePath,VideoFullName)}\"");
+                Process.Start("explorer", $"/select, \"{Path.Combine(DownloadParam.SavePath, DownloadParam.VideoName)}\"");
             }
             catch (Exception)
             {
@@ -119,7 +116,9 @@ namespace M3u8Downloader_H.ViewModels
 
         public void DeleteCache()
         {
-            DirectoryInfo directory = new(SavePath);
+            string videoName = Path.GetFileNameWithoutExtension(DownloadParam.VideoName);
+            string cachePath = Path.Combine(DownloadParam.SavePath, videoName);
+            DirectoryInfo directory = new(cachePath);
             if (directory.Exists)
                 directory.Delete(true);
         }

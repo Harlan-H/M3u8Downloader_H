@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace M3u8Downloader_H.Abstractions.Common
 {
-    internal interface IMediaDownloadParam : IDownloadParamBase
+    public interface IMediaDownloadParam : IDownloadParamBase
     {
         IList<IStreamInfo> StreamInfos { get; }
     }

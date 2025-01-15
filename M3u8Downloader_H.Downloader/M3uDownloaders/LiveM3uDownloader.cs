@@ -1,16 +1,19 @@
 ﻿using System.Net;
+using System.Net.Http;
+using M3u8Downloader_H.Abstractions.Common;
 using M3u8Downloader_H.Common.M3u8Infos;
 using M3u8Downloader_H.Downloader.Extensions;
 
 namespace M3u8Downloader_H.Downloader.M3uDownloaders
 {
-    internal class LiveM3uDownloader(HttpClient httpClient) : DownloaderBase(httpClient)
+    internal class LiveM3uDownloader(HttpClient httpClient): DownloaderBase(httpClient)
     {
         private bool _firstTimeToRun = true;
         private M3UFileInfo? _m3uFileInfo;
         private float recordDuration;
         private static readonly Random _rand = Random.Shared;
         private long _index;
+        private string? _cachePath;
 
         public Func<Uri, IEnumerable<KeyValuePair<string, string>>?, CancellationToken, Task<M3UFileInfo>> GetLiveFileInfoFunc { get; set; } = default!;
 
@@ -43,7 +46,7 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
                 return _m3uFileInfo!;
             }
 
-            var m3uFileInfo = await GetLiveFileInfos(DownloadParam.RequestUrl, DownloadParam.Headers, cancellationToken);
+            var m3uFileInfo = await GetLiveFileInfos(((IM3u8DownloadParam)DownloadParam).RequestUrl, DownloadParam.Headers, cancellationToken);
             RenameTitle(m3uFileInfo.MediaFiles);
             return m3uFileInfo;
         }
@@ -79,7 +82,7 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
 
                 try
                 {
-                    previousMediaInfo = await GetM3u8FileInfos(DownloadParam.RequestUrl, _headers, previousMediaInfo, cancellationToken);
+                    previousMediaInfo = await GetM3u8FileInfos(((IM3u8DownloadParam)DownloadParam).RequestUrl, _headers, previousMediaInfo, cancellationToken);
                 }
                 catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.NotFound)
                 {
@@ -91,9 +94,10 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
 
         public async Task<double> Start(M3UFileInfo m3UFileInfo, IEnumerable<KeyValuePair<string, string>>? Headers, CancellationToken cancellationToken = default)
         {
+            _cachePath ??= Path.Combine(DownloadParam.SavePath, DownloadParam.VideoName);
             foreach (var mediaFile in m3UFileInfo.MediaFiles)
             {
-                string mediaPath = Path.Combine(DownloadParam.SavePath, mediaFile.Title);
+                string mediaPath = Path.Combine(_cachePath, mediaFile.Title);
                 bool isSuccessful = await DownloadAsynInternal(mediaFile, Headers,  mediaPath, DownloaderSetting.SkipRequestError, cancellationToken);
                 if(isSuccessful)
                 {
