@@ -44,6 +44,9 @@ namespace M3u8Downloader_H.ViewModels
         {
             DisplayName = $"m3u8视频下载器 by:Harlan";
 
+            VideoDownloadInfo.HandleTextAction = HandleTxt;
+            VideoDownloadInfo.NormalProcessDownloadAction = ProcessDownload;
+
             _ = Task.Run(() =>
             {
                 settingsService.Load();
@@ -105,11 +108,12 @@ namespace M3u8Downloader_H.ViewModels
             IsBusy = true;   
             try
             {
-                (Uri uri,string ext) = obj.Validate();
-                if(ext == "txt")
+                obj.DoProcess(); 
+               /* (Uri uri,string ext) = obj.Validate();
+                if (ext == "txt")
                     HandleTxt(uri);
                 else
-                    ProcessDownload(uri, obj.VideoName, obj.Method, obj.Key, obj.Iv);
+                    ProcessDownload(obj.Clone());*/
                 
                 //只有操作成功才会清空
                 obj.Reset(settingsService.IsResetAddress, settingsService.IsResetName);
@@ -134,7 +138,7 @@ namespace M3u8Downloader_H.ViewModels
                 try
                 {
                     M3u8DownloadParams m3U8DownloadParams = new(new Uri(result[0], UriKind.Absolute), result.Length > 1 ? result[1] : null);
-                    ProcessDownload(m3U8DownloadParams,null);
+                    ProcessDownload(m3U8DownloadParams);
                 }
                 catch (UriFormatException)
                 {
@@ -152,11 +156,10 @@ namespace M3u8Downloader_H.ViewModels
 
         private void ProcessDownload(IM3u8DownloadParam m3U8DownloadParam, string? pluginKey = default!)
         {
-            string tmpVideoName = PathEx.GenerateFileNameWithoutExtension(m3U8DownloadParam.RequestUrl, m3U8DownloadParam.VideoName);
-            string fileFullPath = Path.Combine(m3U8DownloadParam.SavePath ?? settingsService.SavePath, tmpVideoName);
+            m3U8DownloadParam.SavePath ??= settingsService.SavePath;
+            m3U8DownloadParam.VideoName = PathEx.GenerateFileNameWithoutExtension(m3U8DownloadParam.RequestUrl, m3U8DownloadParam.VideoName);
+            string fileFullPath = Path.Combine(m3U8DownloadParam.SavePath, m3U8DownloadParam.VideoName);
             FileEx.EnsureFileNotExist(fileFullPath);
-
-            m3U8DownloadParam.VideoName = tmpVideoName;
 
             string tmpPluginKey = pluginKey is not null
                                 ? pluginKey
@@ -174,11 +177,11 @@ namespace M3u8Downloader_H.ViewModels
             if (!m3U8DownloadParam.M3UFileInfos.MediaFiles.Any())
                 throw new ArgumentException("m3u8的数据不能为空");
 
-            string tmpVideoName = PathEx.GenerateFileNameWithoutExtension(m3U8DownloadParam.M3UFileInfos.MediaFiles[0].Uri, m3U8DownloadParam.VideoName);
-            string fileFullPath = Path.Combine(m3U8DownloadParam.SavePath ?? settingsService.SavePath, tmpVideoName);
+            m3U8DownloadParam.SavePath ??= settingsService.SavePath;
+            m3U8DownloadParam.VideoName = PathEx.GenerateFileNameWithoutExtension(m3U8DownloadParam.M3UFileInfos.MediaFiles[0].Uri, m3U8DownloadParam.VideoName);
+            string fileFullPath = Path.Combine(m3U8DownloadParam.SavePath, m3U8DownloadParam.VideoName);
             FileEx.EnsureFileNotExist(fileFullPath);
 
-            m3U8DownloadParam.VideoName = tmpVideoName;
 
             //这里因为不可能有url所以直接通过设置来判别使用某个插件
             DownloadViewModel download = M3u8DownloadViewModel.CreateDownloadViewModel(m3U8DownloadParam, pluginService[pluginKey ?? settingsService.PluginKey]);

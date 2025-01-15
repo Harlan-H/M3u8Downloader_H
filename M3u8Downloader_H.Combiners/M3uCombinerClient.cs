@@ -15,10 +15,9 @@ namespace M3u8Downloader_H.Combiners
 #else
         private readonly FFmpeg  _ffmpeg = new("./ffmpeg.exe");
 #endif
-        private string _cachePath = Path.Combine(DownloadParams.SavePath, DownloadParams.VideoName);
+        private readonly string _cachePath = Path.Combine(DownloadParams.SavePath, DownloadParams.VideoName);
         public M3UFileInfo M3UFileInfo { get; set; } = default!;
         public IDialogProgress DialogProgress { get; set; } = default!;
-       // public IDownloadParam DownloadParams { get; set; } = default!;
         public IMergeSetting Settings { get; set; } = default!;
 
 
@@ -66,7 +65,7 @@ namespace M3u8Downloader_H.Combiners
                 : new M3uCombiner(_cachePath);
 
             m3UCombiner.Progress = DialogProgress;
-            m3UCombiner.Initialization(DownloadParams.VideoName);
+            m3UCombiner.Initialization(DownloadParams.VideoFullName);
             await m3UCombiner.MegerVideoHeader(M3UFileInfo.Map, cancellationToken);
             await m3UCombiner.StartMerging(M3UFileInfo, Settings.ForcedMerger, cancellationToken);
         }
@@ -84,14 +83,16 @@ namespace M3u8Downloader_H.Combiners
                      .Add("-c:v").Add("copy")
                      .Add("-bsf:a").Add("aac_adtstoasc");
 
+           
             var tmpOutputFile = Path.ChangeExtension(DownloadParams.VideoName, Settings.SelectedFormat);
             Log?.Info("开始转码:{0}", tmpOutputFile);
-            //DownloadParams.ChangeVideoNameDelegate(tmpOutputFile);
             arguments
                 .Add("-nostdin")
                 .Add("-y").Add(tmpOutputFile);
 
-            await _ffmpeg.ExecuteAsync(arguments.Build(), DialogProgress, cancellationToken);
+            DownloadParams.VideoFullName = tmpOutputFile;
+
+           await _ffmpeg.ExecuteAsync(arguments.Build(), DialogProgress, cancellationToken);
         }
 
 

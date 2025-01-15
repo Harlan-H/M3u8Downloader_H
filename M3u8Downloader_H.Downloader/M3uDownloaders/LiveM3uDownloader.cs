@@ -9,6 +9,7 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
     internal class LiveM3uDownloader(HttpClient httpClient): DownloaderBase(httpClient)
     {
         private bool _firstTimeToRun = true;
+        private IM3u8DownloadParam _downloadParam = default!;
         private M3UFileInfo? _m3uFileInfo;
         private float recordDuration;
         private static readonly Random _rand = Random.Shared;
@@ -43,10 +44,16 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
             {
                 RenameTitle(_m3uFileInfo!.MediaFiles);
                 _firstTimeToRun = false;
+
+                if (DownloadParam is IM3u8DownloadParam downloadParam)
+                    _downloadParam = downloadParam;
+                else
+                    throw new Exception("传入的DownloadParam有误");
                 return _m3uFileInfo!;
             }
 
-            var m3uFileInfo = await GetLiveFileInfos(((IM3u8DownloadParam)DownloadParam).RequestUrl, DownloadParam.Headers, cancellationToken);
+
+            var m3uFileInfo = await GetLiveFileInfos(_downloadParam.RequestUrl, DownloadParam.Headers, cancellationToken);
             RenameTitle(m3uFileInfo.MediaFiles);
             return m3uFileInfo;
         }
@@ -82,7 +89,7 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
 
                 try
                 {
-                    previousMediaInfo = await GetM3u8FileInfos(((IM3u8DownloadParam)DownloadParam).RequestUrl, _headers, previousMediaInfo, cancellationToken);
+                    previousMediaInfo = await GetM3u8FileInfos(_downloadParam.RequestUrl, _headers, previousMediaInfo, cancellationToken);
                 }
                 catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.NotFound)
                 {

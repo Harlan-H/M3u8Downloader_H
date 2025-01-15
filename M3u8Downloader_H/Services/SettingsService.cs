@@ -1,11 +1,9 @@
 ﻿using Newtonsoft.Json;
 using M3u8Downloader_H.Attributes;
 using M3u8Downloader_H.Settings.Services;
-using M3u8Downloader_H.Settings.Models;
 using System.Collections.Generic;
 using System;
 using M3u8Downloader_H.Utils;
-using M3u8Downloader_H.Converters;
 using M3u8Downloader_H.Abstractions.M3uDownloaders;
 using M3u8Downloader_H.Abstractions.Meger;
 

@@ -6,14 +6,15 @@ using System.Text.Json;
 using M3u8Downloader_H.Common.M3u8Infos;
 using M3u8Downloader_H.M3U8.M3UFileReaders;
 using M3u8Downloader_H.M3U8.Extensions;
+using M3u8Downloader_H.Abstractions.Common;
 
 namespace M3u8Downloader_H.RestServer
 {
     public class HttpListenService
     {
         private readonly HttpListen httpListen = new();
-        private Action<Uri, string?, string?, string?, string?, string?, string?, IDictionary<string, string>?> DownloadByUrlAction = default!;        
-        private Action<M3UFileInfo, string?, string?, string?, IDictionary<string, string>?> DownloadByM3uFileInfoAction = default!;
+        private Action<IM3u8DownloadParam, string?> DownloadByUrlAction = default!;        
+        private Action<IM3u8FileInfoDownloadParam, string?> DownloadByM3uFileInfoAction = default!;
 
         private readonly JsonSerializerOptions jsonSerializerOptions;
         private readonly static HttpListenService instance = new();
@@ -29,8 +30,8 @@ namespace M3u8Downloader_H.RestServer
         }
 
         public void Initialization(
-            Action<Uri, string?, string?, string?, string?, string?,string?, IDictionary<string, string>?> downloadByUrl,
-            Action<M3UFileInfo, string?, string?, string?, IDictionary<string, string>?> downloadByM3uFileInfo)
+            Action<IM3u8DownloadParam, string?> downloadByUrl,
+            Action<IM3u8FileInfoDownloadParam, string?> downloadByM3uFileInfo)
         {
             DownloadByUrlAction = downloadByUrl;
             DownloadByM3uFileInfoAction = downloadByM3uFileInfo;
@@ -55,7 +56,7 @@ namespace M3u8Downloader_H.RestServer
                 requestWithURI.Validate();
                 if (!string.IsNullOrWhiteSpace(requestWithURI.SavePath))
                     requestWithURI.SavePath = requestWithURI.SavePath.Replace('/', Path.DirectorySeparatorChar);
-                DownloadByUrlAction(requestWithURI.Url, requestWithURI.VideoName, requestWithURI.Method, requestWithURI.Key, requestWithURI.Iv, requestWithURI.SavePath, requestWithURI.PluginKey, requestWithURI.Headers);
+                DownloadByUrlAction(requestWithURI,requestWithURI.PluginKey);
 
                 response.Json(Response.Success());
             }
@@ -88,12 +89,16 @@ namespace M3u8Downloader_H.RestServer
                     response.Json(Response.Error("m3u8的ts列表为空"));
                     return;
                 }
-
-
                 requestWithContent.Validate();
-                if(!string.IsNullOrWhiteSpace(requestWithContent.SavePath))
-                    requestWithContent.SavePath = requestWithContent.SavePath.Replace('/', Path.DirectorySeparatorChar);
-                DownloadByM3uFileInfoAction(m3UFileInfo,  requestWithContent.VideoName, requestWithContent.SavePath, requestWithContent.PluginKey, requestWithContent.Headers);
+
+                RequestWithM3u8FileInfo requestWithM3U8FileInfo = new()
+                {
+                    M3UFileInfos = m3UFileInfo,
+                    VideoName = requestWithContent.VideoName,
+                    SavePath = !string.IsNullOrWhiteSpace(requestWithContent.SavePath)? requestWithContent.SavePath.Replace('/', Path.DirectorySeparatorChar) : requestWithContent.SavePath,
+                    Headers = requestWithContent.Headers,
+                };
+                DownloadByM3uFileInfoAction(requestWithM3U8FileInfo, requestWithContent.PluginKey);
 
                 response.Json(Response.Success());
             }
@@ -117,10 +122,10 @@ namespace M3u8Downloader_H.RestServer
                 }
 
                 requestWithM3U8FileInfo.Validate();
-                requestWithM3U8FileInfo.M3u8FileInfo.PlaylistType = "VOD";
+                requestWithM3U8FileInfo.M3UFileInfos.PlaylistType = "VOD";
                 if (!string.IsNullOrWhiteSpace(requestWithM3U8FileInfo.SavePath))
                     requestWithM3U8FileInfo.SavePath = requestWithM3U8FileInfo.SavePath.Replace('/', Path.DirectorySeparatorChar);
-                DownloadByM3uFileInfoAction(requestWithM3U8FileInfo.M3u8FileInfo, requestWithM3U8FileInfo.VideoName, requestWithM3U8FileInfo.SavePath, requestWithM3U8FileInfo.PluginKey, requestWithM3U8FileInfo.Headers);
+                DownloadByM3uFileInfoAction(requestWithM3U8FileInfo, requestWithM3U8FileInfo.PluginKey);
 
                 response.Json(Response.Success());
             }

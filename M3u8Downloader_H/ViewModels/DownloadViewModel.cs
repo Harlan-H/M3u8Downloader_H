@@ -21,13 +21,12 @@ namespace M3u8Downloader_H.ViewModels
         private CancellationTokenSource? cancellationTokenSource;
         protected IDownloadParamBase DownloadParam = default!;
 
-        //包含扩展名
-        protected string VideoFullName = default!;
-
         public BindableCollection<LogParams> Logs { get; } = [];
         public Uri RequestUrl { get; set; } = default!;
 
         public string VideoName { get; set; } = default!;
+
+        public string SavePath => DownloadParam.SavePath;
 
         public double ProgressNum { get; set; }
 
@@ -92,7 +91,7 @@ namespace M3u8Downloader_H.ViewModels
 
             try
             {
-                Process.Start("explorer", $"/select, \"{Path.Combine(DownloadParam.SavePath, DownloadParam.VideoName)}\"");
+                Process.Start("explorer", $"/select, \"{Path.Combine(DownloadParam.SavePath, DownloadParam.VideoFullName)}\"");
             }
             catch (Exception)
             {
@@ -116,8 +115,7 @@ namespace M3u8Downloader_H.ViewModels
 
         public void DeleteCache()
         {
-            string videoName = Path.GetFileNameWithoutExtension(DownloadParam.VideoName);
-            string cachePath = Path.Combine(DownloadParam.SavePath, videoName);
+            string cachePath = Path.Combine(DownloadParam.SavePath, DownloadParam.VideoName);
             DirectoryInfo directory = new(cachePath);
             if (directory.Exists)
                 directory.Delete(true);

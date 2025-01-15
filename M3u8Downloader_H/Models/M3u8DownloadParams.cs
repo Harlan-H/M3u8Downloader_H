@@ -7,7 +7,7 @@ using M3u8Downloader_H.Abstractions.Common;
 
 namespace M3u8Downloader_H.Models
 {
-    class M3u8DownloadParams : IM3u8DownloadParam
+    public class M3u8DownloadParams : IM3u8DownloadParam
     {
         public Uri RequestUrl { get; set; } = default!;
 
@@ -19,7 +19,9 @@ namespace M3u8Downloader_H.Models
 
         public string VideoName { get; set; } = default!;
 
-        public string SavePath { get;  } = default!;
+        public string VideoFullName { get; set; } = default!;
+
+        public string SavePath { get; set; } = default!;
 
         public IDictionary<string, string> Headers { get; set; } = default!;
 
@@ -30,9 +32,14 @@ namespace M3u8Downloader_H.Models
                 VideoName = videoname;
         }
 
-        public M3u8DownloadParams()
+        public M3u8DownloadParams(Uri url, string? videoname,string method,string? key,string? iv)
         {
-            
+            RequestUrl = url;
+            if (videoname is not null)
+                VideoName = videoname;
+            Method = method;
+            Key = key;
+            Iv = iv;
         }
     }
 }
