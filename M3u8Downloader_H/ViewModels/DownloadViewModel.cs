@@ -20,6 +20,7 @@ namespace M3u8Downloader_H.ViewModels
         private readonly ThrottlingSemaphore throttlingSemaphore = ThrottlingSemaphore.Instance;
         private CancellationTokenSource? cancellationTokenSource;
         protected IDownloadParamBase DownloadParam = default!;
+        protected DownloadProgress? downloadProgress;
 
         public BindableCollection<LogParams> Logs { get; } = [];
         public Uri RequestUrl { get; set; } = default!;
@@ -55,6 +56,7 @@ namespace M3u8Downloader_H.ViewModels
             {
                 try
                 {
+                    Status = DownloadStatus.Enqueued;
                     cancellationTokenSource = new CancellationTokenSource();
                     using var semaphore = await throttlingSemaphore.AcquireAsync(cancellationTokenSource.Token);
 
@@ -77,6 +79,7 @@ namespace M3u8Downloader_H.ViewModels
                 finally
                 {
                     IsActive = false;
+                    downloadProgress?.Clear();
                     cancellationTokenSource?.Dispose();
                 }
 
@@ -153,17 +156,19 @@ namespace M3u8Downloader_H.ViewModels
 
     public partial class DownloadViewModel
     {
-        protected class DownloadProgress(DownloadViewModel downloadViewModel) : IDialogProgress, IDisposable
+        protected class DownloadProgress(DownloadViewModel downloadViewModel) : IDialogProgress
         {
             private readonly TimerContainer timerContainer = TimerContainer.Instance;
             private long _lastBytes;
             private long _countBytes;
             private double _currentProgress;
 
-            public void Dispose()
+            public void Clear()
             {
-                _lastBytes = 0;
                 _countBytes = 0;
+                _lastBytes = 0;
+                _currentProgress = 0;
+                downloadViewModel.DownloadRateBytes = -1;
             }
 
             private void OnTimedEvent(Object? source, ElapsedEventArgs e)

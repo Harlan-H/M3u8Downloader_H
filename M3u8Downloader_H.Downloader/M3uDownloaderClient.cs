@@ -15,6 +15,8 @@ namespace M3u8Downloader_H.Downloader
         public IDownloaderSetting DownloaderSetting { get; set; } = default!;
         public IDialogProgress DialogProgress { get; set; } = default!;
         public M3UFileInfo M3UFileInfo { get; set; } = default!;
+        public Func<CancellationToken, Task<M3UFileInfo>> GetLiveFileInfoFunc { get; set; } = default!;
+
         public DownloaderBase M3u8Downloader
         {
             get
@@ -23,7 +25,13 @@ namespace M3u8Downloader_H.Downloader
                     return _m3u8downloader;
 
                 if (!M3UFileInfo.IsVod())
-                    _m3u8downloader = new LiveM3uDownloader(httpClient);
+                {
+                    LiveM3uDownloader liveM3UDownloader = new(httpClient)
+                    {
+                        GetLiveFileInfoFunc = GetLiveFileInfoFunc
+                    };
+                    _m3u8downloader = liveM3UDownloader;
+                }
                 else if(M3UFileInfo.MediaFiles.Any(m => m.Uri.IsFile))
                     _m3u8downloader = new NullDownloader(httpClient);
                 else if (M3UFileInfo.Key is not null)

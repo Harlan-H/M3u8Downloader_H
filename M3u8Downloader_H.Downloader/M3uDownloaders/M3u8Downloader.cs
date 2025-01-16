@@ -23,14 +23,16 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
             Task[] Tasks = new Task[DownloaderSetting.MaxThreadCount];
             try
             {
-                string cachePath = Path.Combine(DownloadParam.SavePath, DownloadParam.VideoName);
                 for (int i = 0; i < DownloaderSetting.MaxThreadCount; i++)
                 {
-                    Tasks[i] = DownloadCallBack(m3UFileInfo, cachePath, _headers, DownloaderSetting.SkipRequestError, cancellationToken);
+                    Tasks[i] = DownloadCallBack(m3UFileInfo, _cachePath, _headers, DownloaderSetting.SkipRequestError, cancellationToken);
                 }
 
                 Log?.Info("{0}条线程已开启", DownloaderSetting.MaxThreadCount);
                 await Task.WhenAll(Tasks);
+
+                Log?.Info("下载完成");
+                IsCompleted = true;
             }
             finally
             {

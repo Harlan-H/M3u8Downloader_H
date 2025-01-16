@@ -8,10 +8,10 @@ namespace M3u8Downloader_H.Models
 {
     public enum DownloadStatus
     {
+        Enqueued,
         Parsed,
         StartedLive,
         StartedVod,
-        Enqueued,
         Completed,
         Failed,
         Canceled

@@ -9,14 +9,12 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
     internal class LiveM3uDownloader(HttpClient httpClient): DownloaderBase(httpClient)
     {
         private bool _firstTimeToRun = true;
-        private IM3u8DownloadParam _downloadParam = default!;
         private M3UFileInfo? _m3uFileInfo;
         private float recordDuration;
         private static readonly Random _rand = Random.Shared;
         private long _index;
-        private string? _cachePath;
 
-        public Func<Uri, IEnumerable<KeyValuePair<string, string>>?, CancellationToken, Task<M3UFileInfo>> GetLiveFileInfoFunc { get; set; } = default!;
+        public Func<CancellationToken, Task<M3UFileInfo>> GetLiveFileInfoFunc { get; set; } = default!;
 
         private void AddMedias(M3UFileInfo m3UFileinfo)
         {
@@ -44,16 +42,11 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
             {
                 RenameTitle(_m3uFileInfo!.MediaFiles);
                 _firstTimeToRun = false;
-
-                if (DownloadParam is IM3u8DownloadParam downloadParam)
-                    _downloadParam = downloadParam;
-                else
-                    throw new Exception("传入的DownloadParam有误");
                 return _m3uFileInfo!;
             }
 
 
-            var m3uFileInfo = await GetLiveFileInfos(_downloadParam.RequestUrl, DownloadParam.Headers, cancellationToken);
+            var m3uFileInfo = await GetLiveFileInfos(cancellationToken);
             RenameTitle(m3uFileInfo.MediaFiles);
             return m3uFileInfo;
         }
@@ -64,15 +57,9 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
             DialogProgress.SetDownloadStatus(true);
             _m3uFileInfo ??= m3UFileInfo;
 
-            FileInfo fileInfo = new(DownloadParam.VideoName);
-            //当文件存在且大小不为零得情况下说明是旧得任务重新开始得
-            if (!(fileInfo.Exists && fileInfo.Length > 0))
-            {
-                Log?.Info("下载器开始初始化");
-                await DownloadMapInfoAsync(m3UFileInfo.Map,  cancellationToken);
-            }
 
             Log?.Info("直播录制开始");
+           // await DownloadMapInfoAsync(m3UFileInfo.Map,  cancellationToken);
             M3UFileInfo previousMediaInfo = await GetM3U8FileInfoAsync(cancellationToken);
             while (true)
             {
@@ -89,19 +76,18 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
 
                 try
                 {
-                    previousMediaInfo = await GetM3u8FileInfos(_downloadParam.RequestUrl, _headers, previousMediaInfo, cancellationToken);
+                    previousMediaInfo = await GetM3u8FileInfos(previousMediaInfo, cancellationToken);
                 }
                 catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.NotFound)
                 {
                     break;
                 }
             }
-
+            IsCompleted = true;
         }
 
         public async Task<double> Start(M3UFileInfo m3UFileInfo, IEnumerable<KeyValuePair<string, string>>? Headers, CancellationToken cancellationToken = default)
         {
-            _cachePath ??= Path.Combine(DownloadParam.SavePath, DownloadParam.VideoName);
             foreach (var mediaFile in m3UFileInfo.MediaFiles)
             {
                 string mediaPath = Path.Combine(_cachePath, mediaFile.Title);
@@ -115,13 +101,13 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
             return recordDuration;
         }
 
-        private async Task<M3UFileInfo> GetLiveFileInfos(Uri url, IEnumerable<KeyValuePair<string, string>>? Headers, CancellationToken cancellationToken = default)
+        private async Task<M3UFileInfo> GetLiveFileInfos(CancellationToken cancellationToken = default)
         {
             for (int i = 0; i < 4; i++)
             {
                 try
                 {
-                    return await GetLiveFileInfoFunc(url, Headers, cancellationToken);
+                    return await GetLiveFileInfoFunc(cancellationToken);
                 }
                 catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.NotFound && i < 3)
                 {
@@ -131,7 +117,7 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
                 }
             }
 
-            throw new InvalidOperationException($"'{url.OriginalString}' 请求失败，请检查网络是否可以访问");
+            throw new InvalidOperationException($"请求失败，请检查网络是否可以访问");
         }
 
         /// <summary>
@@ -143,14 +129,14 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
         /// <param name="cancellationToken">token</param>
         /// <returns>新得m3u8数据</returns>
         /// <exception cref="HttpRequestException">当5次数据都是重复，则判定直播结束</exception>
-        public async Task<M3UFileInfo> GetM3u8FileInfos(Uri url, IEnumerable<KeyValuePair<string, string>>? Headers, M3UFileInfo oldM3u8FileInfo, CancellationToken cancellationToken = default)
+        public async Task<M3UFileInfo> GetM3u8FileInfos(M3UFileInfo oldM3u8FileInfo, CancellationToken cancellationToken = default)
         {
             bool IsEnded = true;
             M3UFileInfo m3ufileinfo = default!;
             var oldMediafile = oldM3u8FileInfo.MediaFiles.Last();
             for (int i = 0; i < 5; i++)
             {
-                m3ufileinfo = await GetLiveFileInfos(url, Headers, cancellationToken);
+                m3ufileinfo = await GetLiveFileInfos(cancellationToken);
                 //判断新的内容里 上次最后一条数据所在的位置，同时跳过那条数据 取出剩下所有内容
                 IEnumerable<M3UMediaInfo> newMediaInfos = m3ufileinfo.MediaFiles.Skip(m => m == oldMediafile);
                 if (!newMediaInfos.Any())
@@ -162,7 +148,7 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
                     await Task.Delay(TimeSpan.FromSeconds(delayTime), cancellationToken);
                     continue;
                 }
-                Log?.Info("获取到新的直播数量有{0}个", newMediaInfos.Count());
+                Log?.Info("获取到新的直播数据有{0}个", newMediaInfos.Count());
                 //重新修改成新的名称，方便中途停止及后续合并
                 m3ufileinfo.MediaFiles = RenameTitle(newMediaInfos);
                 IsEnded = false;

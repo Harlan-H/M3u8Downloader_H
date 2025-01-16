@@ -25,6 +25,7 @@ namespace M3u8Downloader_H.ViewModels
         private M3uCombinerClient m3UCombinerClient = default!;
         private M3UFileInfo M3U8FileInfo = default!;
         private M3UKeyInfo M3UKeyInfo = default!;
+
         private bool _theFirstTime = true;
 
         protected override async Task StartDownload(CancellationToken cancellationToken)
@@ -33,7 +34,7 @@ namespace M3u8Downloader_H.ViewModels
             await GetM3U8FileInfo(cancellationToken);
 
             Status = DownloadStatus.Enqueued;
-            using DownloadProgress downloadProgress = new(this);
+            downloadProgress ??= new(this);
             using var acquire = downloadProgress.Acquire();
             await DownloadAsync(downloadProgress,cancellationToken);
 
@@ -50,7 +51,7 @@ namespace M3u8Downloader_H.ViewModels
             if (M3U8FileInfo is not null)
             {
                 Info("获取视频流{0}个", M3U8FileInfo.MediaFiles.Count);
-                DownloadParam.VideoFullName = DownloadParam.VideoName +  M3U8FileInfo.Map is not null ? Path.GetExtension(M3U8FileInfo.Map?.Title!) : ".ts";
+                DownloadParam.VideoFullName = DownloadParam.VideoName +  (M3U8FileInfo.Map is not null ? Path.GetExtension(M3U8FileInfo.Map?.Title!) : ".ts");
                 _theFirstTime = false;
                 return;
             }
@@ -69,7 +70,7 @@ namespace M3u8Downloader_H.ViewModels
             if (M3UKeyInfo is not null)
                 M3U8FileInfo.Key = M3UKeyInfo;
 
-            DownloadParam.VideoFullName = DownloadParam.VideoName + M3U8FileInfo.Map is not null ? Path.GetExtension(M3U8FileInfo.Map?.Title!) : ".ts";
+            DownloadParam.VideoFullName = DownloadParam.VideoName + (M3U8FileInfo.Map is not null ? Path.GetExtension(M3U8FileInfo.Map?.Title!) : ".ts");
             _theFirstTime = false;
         }
 
@@ -79,6 +80,10 @@ namespace M3u8Downloader_H.ViewModels
             m3UDownloaderClient.DownloaderSetting = settingsService;
             m3UDownloaderClient.M3UFileInfo = M3U8FileInfo;
             m3UDownloaderClient.DialogProgress = downloadProgress;
+            m3UDownloaderClient.GetLiveFileInfoFunc = m3U8FileInfoClient.M3UFileReadManager.GetM3u8FileInfo;
+
+            if (m3UDownloaderClient.M3u8Downloader.IsCompleted)
+                return;
 
             await m3UDownloaderClient.M3u8Downloader.DownloadMapInfoAsync(M3U8FileInfo.Map, cancellationToken);
             await m3UDownloaderClient.M3u8Downloader.DownloadAsync(M3U8FileInfo, cancellationToken);

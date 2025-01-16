@@ -18,14 +18,17 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
         internal IDialogProgress DialogProgress {  get; set; } = default!;       
         internal Action<bool>? IsLiveDownloading { get; set; } = default!;
 
+        public bool IsCompleted { get; protected set; } = false;
+
         protected IEnumerable<KeyValuePair<string, string>>? _headers => DownloadParam.Headers ?? DownloaderSetting.Headers;
+        protected string _cachePath => Path.Combine(DownloadParam.SavePath, DownloadParam.VideoName);
 
         public async ValueTask DownloadMapInfoAsync(M3UMediaInfo? m3UMapInfo, CancellationToken cancellationToken = default)
         {
             if (m3UMapInfo is null)
                 return;
 
-            string mediaPath = Path.Combine(DownloadParam.SavePath, m3UMapInfo.Title);
+            string mediaPath = Path.Combine(_cachePath, m3UMapInfo.Title);
             FileInfo fileInfo = new(mediaPath);
             if (fileInfo.Exists && fileInfo.Length > 0)
                 return;
@@ -41,7 +44,7 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
         {
             if (_firstTimeToRun)
             {
-                CreateDirectory(DownloadParam.SavePath);
+                CreateDirectory(_cachePath);
                 _firstTimeToRun = false;
             }
 

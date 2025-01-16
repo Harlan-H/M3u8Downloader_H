@@ -13,11 +13,8 @@
              xmlns:behavior="clr-namespace:M3u8Downloader_H.Behaviors"
              d:DataContext="{d:DesignInstance Type=viewmodels:DownloadViewModel}"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800"
-    xmlns:wpf="clr-namespace:MaterialDesignThemes.Wpf;assembly=MaterialDesignThemes.Wpf">
-    <UserControl.Resources>
-        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"  />
-    </UserControl.Resources>
+             d:DesignHeight="450" d:DesignWidth="800">
+   
 
     <Grid >
         <Grid.RowDefinitions >
@@ -32,16 +29,16 @@
             <ColumnDefinition Width="100"/>
             <ColumnDefinition Width="48" />
         </Grid.ColumnDefinitions>
-        <!-- 地址  -->
+         <!--地址-->  
         <TextBlock Grid.Column="0" TextTrimming="CharacterEllipsis" FontSize="14" VerticalAlignment="Center" ToolTip="{Binding RequestUrl,TargetNullValue=似乎没有请求地址哦}" Text="{Binding RequestUrl,TargetNullValue=似乎没有请求地址哦}" d:Text="https://www.xfdniafno.com/index.m3u8" />
 
-        <!-- 名称 -->
+         <!--名称--> 
         <TextBlock Grid.Column="1" TextTrimming="CharacterEllipsis" Margin="15 0 10 0" FontSize="14" VerticalAlignment="Center" ToolTip="{Binding VideoName}"  Text="{Binding VideoName}" d:Text="xxfenioafneaiofni"  />
 
-        <!-- 下载速率 -->
-        <TextBlock Grid.Column="2" FontSize="13"  Margin="5 0 0 0"  VerticalAlignment="Center"  Text="{Binding DownloadRateBytes,Converter={x:Static converters:LongToBitrateConverter.Instance}}" d:Text="1113.6 MB/s" />
+         <!--下载速率--> 
+        <TextBlock Grid.Column="2" FontSize="13" Margin="5 0 6 0" HorizontalAlignment="Right"  VerticalAlignment="Center"  Text="{Binding DownloadRateBytes,Converter={x:Static converters:LongToBitrateConverter.Instance}}" d:Text="1113.6  B/s" />
 
-        <!-- 状态 -->
+        <!-- 状态  -->
         <Grid Grid.Column="3" VerticalAlignment="Center" Margin="5 0 0 0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="auto" />
@@ -52,11 +49,13 @@
                          Maximum="1"
                          Minimum="0"
                          d:Value="0.35"
-                         IsIndeterminate="{Binding IsProgressIndeterminate}"
-                         Value="{Binding ProgressNum, Mode=OneWay}">
+                         >
                 <ProgressBar.Style>
                     <Style BasedOn="{StaticResource MaterialDesignCircularProgressBar}" TargetType="{x:Type ProgressBar}">
                         <Style.Triggers>
+                            <DataTrigger Binding="{Binding Status}" Value="{x:Static model:DownloadStatus.Parsed}">
+                                <Setter Property="IsIndeterminate" Value="True" />
+                            </DataTrigger>
                             <DataTrigger Binding="{Binding Status}" Value="{x:Static model:DownloadStatus.Enqueued}">
                                 <Setter Property="Visibility" Value="Collapsed" />
                             </DataTrigger>
@@ -69,7 +68,15 @@
                             <DataTrigger Binding="{Binding Status}" Value="{x:Static model:DownloadStatus.Failed}">
                                 <Setter Property="Visibility" Value="Collapsed" />
                             </DataTrigger>
-                        </Style.Triggers>
+                           <DataTrigger Binding="{Binding Status}" Value="{x:Static model:DownloadStatus.StartedLive}">
+                                    <Setter Property="Value" Value="0" />
+                                    <Setter Property="IsIndeterminate" Value="True" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding Status}" Value="{x:Static model:DownloadStatus.StartedVod}">
+                                    <Setter Property="Value" Value="{Binding ProgressNum, Mode=OneWay}" />
+                            </DataTrigger>
+
+                            </Style.Triggers>
                     </Style>
                 </ProgressBar.Style>
             </ProgressBar>
@@ -124,21 +131,21 @@
                                             Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
 
             <Button Padding="4,0,0,0" VerticalAlignment="Center"  ToolTip="停止下载" 
-                                                    Style="{DynamicResource MaterialDesignFlatButton}"
+                                                    Style="{DynamicResource  MaterialDesignFlatButton}"
                                                     x:Name="OnCancel"
                                                     Visibility="{Binding CanOnCancel,Converter={StaticResource booltovis}}">
                 <materialDesign:PackIcon Width="24" Height="24" Kind="StopCircleOutline" />
             </Button>
 
-            <Button Padding="4,0,0,0"  VerticalAlignment="Center"  ToolTip="重新下载" 
-                                                    Style="{DynamicResource MaterialDesignFlatButton}"
+            <Button Padding="4,0,0,0"  VerticalAlignment="Center"  ToolTip="重新下载"  
+                                                    Style="{DynamicResource  MaterialDesignFlatButton}"
                                                     x:Name="OnRestart"
                                                     Visibility="{Binding CanOnRestart,Converter={StaticResource booltovis}}">
                 <materialDesign:PackIcon Width="24" Height="24" Kind="Restart" />
             </Button>
 
             <Button Padding="4,0,0,0" VerticalAlignment="Center"  ToolTip="显示文件所在目录" 
-                                                    Style="{DynamicResource MaterialDesignFlatButton}"
+                                                    Style="{DynamicResource  MaterialDesignFlatButton}"
                                                     x:Name="OnShowFile"
                                                     Visibility="{Binding CanOnShowFile,Converter={StaticResource booltovis}}">
                 <materialDesign:PackIcon Width="24" Height="24" Kind="FileFindOutline" />
@@ -161,7 +168,7 @@
                     </ToggleButton.Template>
                     <ToggleButton.Style>
                         <Style TargetType="ToggleButton">
-                            <Setter Property="Foreground" Value="{DynamicResource PrimaryHueMidBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource MaterialDesign.Brush.Primary}" />
                             <Setter Property="HorizontalContentAlignment" Value="Center" />
                             <Style.Triggers>
                                 <Trigger Property="IsChecked" Value="True">

@@ -147,12 +147,12 @@
                         </TabItem>
                         <TabItem Width="200"
                           Header="视频音频">
-                        <Grid Height="191" Name="mediaDownloadInfoGrid">
+                      <!--  <Grid Height="191" Name="mediaDownloadInfoGrid">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition  />
                                 <ColumnDefinition Width="auto" />
                             </Grid.ColumnDefinitions>
-                            <StackPanel >
+                           <StackPanel >
                                 <TextBox Text="" Margin="8" 
                                           materialDesign:TextFieldAssist.HasClearButton="True"
                                           materialDesign:HintAssist.Hint="视频地址mp4,flv等视频格式地址"  FontSize="18"  VerticalAlignment="Center" >
@@ -165,7 +165,7 @@
                                           materialDesign:TextFieldAssist.HasClearButton="True"
                                           materialDesign:HintAssist.Hint="字幕地址srt等字幕格式地址"  FontSize="18"  VerticalAlignment="Center" >
                                 </TextBox>
-                                <TextBox Text="{Binding VideoName,Delay=150}" Margin="8" 
+                                <TextBox Text="" Margin="8" 
                                             materialDesign:TextFieldAssist.HasClearButton="True"
                                             materialDesign:HintAssist.Hint="视频名称(可以不填写,不写默认随机名称)" FontSize="18"  VerticalAlignment="Center">
                                 </TextBox>
@@ -177,9 +177,9 @@
                                 </Button>
 
                             </StackPanel>
-                        </Grid>
+                        </Grid>-->
                     </TabItem>
-                    <TabItem Width="200"
+                    <TabItem Width="200" IsEnabled="False"
                             Header="高级模式">
                                             <TextBlock
                               Margin="8"

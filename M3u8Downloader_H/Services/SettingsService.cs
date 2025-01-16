@@ -34,7 +34,8 @@ namespace M3u8Downloader_H.Services
 #if DEBUG
         public string SavePath { get; set; } = @"E:\desktop\download";
 #else
-        public string SavePath { get; set; } = Path.Combine(System.Environment.CurrentDirectory, "download");
+       
+        public string SavePath { get; set; } = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "download");
 #endif
         public string PluginKey { get; set; } = default!;
         public string SelectedFormat { get; set; } = "默认";
