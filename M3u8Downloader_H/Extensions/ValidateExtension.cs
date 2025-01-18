@@ -8,44 +8,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace M3u8Downloader_H.Extensions
+namespace M3u8Downloader_H.Extensions;
+
+public static class ValidateExtension
 {
-    public static class ValidateExtension
+    public static void Validate(this SettingsService obj)
     {
-        public static (Uri, string) Validate(this VideoDownloadInfo obj)
+        Type type = obj.GetType();
+        foreach (var prop in type.GetProperties())
         {
-            Type type = obj.GetType();
-            foreach (var prop in type.GetProperties())
-            {
-                if (!prop.IsDefined(typeof(ExtensionAttribute), false)) continue;
+            if (!prop.IsDefined(typeof(BaseAttribute), false)) continue;
 
-                ExtensionAttribute attribute = (ExtensionAttribute)prop.GetCustomAttributes(typeof(ExtensionAttribute), false)[0];
-                (Uri uri, string? ext) = attribute.Validate(prop.GetValue(obj));
-                if (ext is null)
-                   throw new InvalidOperationException(attribute.ExceptionMsg);
-
-                if (ext == "")
-                {
-                    FileAttributes fileAttribute = File.GetAttributes(uri.OriginalString);
-                    if (fileAttribute != FileAttributes.Directory)
-                        throw new InvalidOperationException("请确认是否为文件夹");
-                }
-                return (uri, ext);
-            }
-            return (default!, default!);
+            BaseAttribute attribute = (BaseAttribute)prop.GetCustomAttributes(typeof(BaseAttribute), false)[0];
+            attribute.Validate(obj, prop, prop.GetValue(obj));
         }
-
-        public static void Validate(this SettingsService obj)
-        {
-            Type type = obj.GetType();
-            foreach (var prop in type.GetProperties())
-            {
-                if (!prop.IsDefined(typeof(BaseAttribute), false)) continue;
-
-                BaseAttribute attribute = (BaseAttribute)prop.GetCustomAttributes(typeof(BaseAttribute), false)[0];
-                attribute.Validate(obj, prop, prop.GetValue(obj));
-            }
-        }
-
     }
+
 }

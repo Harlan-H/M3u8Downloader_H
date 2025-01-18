@@ -21,12 +21,13 @@ namespace M3u8Downloader_H.ViewModels
     {
         private readonly SettingsService settingsService = settingsService;
         private M3u8FileInfoClient m3U8FileInfoClient = default!;
-        private M3uDownloaderClient m3UDownloaderClient = default!;
+        private DownloaderClient m3UDownloaderClient = default!;
         private M3uCombinerClient m3UCombinerClient = default!;
         private M3UFileInfo M3U8FileInfo = default!;
         private M3UKeyInfo M3UKeyInfo = default!;
 
-        private bool _theFirstTime = true;
+        private bool _isParsed = false;
+        private bool _isDownloaded = false;
 
         protected override async Task StartDownload(CancellationToken cancellationToken)
         {
@@ -44,18 +45,18 @@ namespace M3u8Downloader_H.ViewModels
 
         private async Task GetM3U8FileInfo(CancellationToken cancellationToken)
         {
-            m3U8FileInfoClient.DownloaderSetting = settingsService;
-            if (!_theFirstTime)
+            if (_isParsed)
                 return;
 
             if (M3U8FileInfo is not null)
             {
                 Info("获取视频流{0}个", M3U8FileInfo.MediaFiles.Count);
                 DownloadParam.VideoFullName = DownloadParam.VideoName +  (M3U8FileInfo.Map is not null ? Path.GetExtension(M3U8FileInfo.Map?.Title!) : ".ts");
-                _theFirstTime = false;
+                _isParsed = true;
                 return;
             }
 
+            m3U8FileInfoClient.DownloaderSetting = settingsService;
             if (RequestUrl.IsFile)
             {
                 string ext = Path.GetExtension(RequestUrl.OriginalString).Trim('.');
@@ -71,22 +72,26 @@ namespace M3u8Downloader_H.ViewModels
                 M3U8FileInfo.Key = M3UKeyInfo;
 
             DownloadParam.VideoFullName = DownloadParam.VideoName + (M3U8FileInfo.Map is not null ? Path.GetExtension(M3U8FileInfo.Map?.Title!) : ".ts");
-            _theFirstTime = false;
+            _isParsed = true;
         }
 
 
         private async Task DownloadAsync(IDialogProgress downloadProgress,CancellationToken cancellationToken)
         {
+            if (_isDownloaded)
+                return;
+
             m3UDownloaderClient.DownloaderSetting = settingsService;
             m3UDownloaderClient.M3UFileInfo = M3U8FileInfo;
             m3UDownloaderClient.DialogProgress = downloadProgress;
-            m3UDownloaderClient.GetLiveFileInfoFunc = m3U8FileInfoClient.M3UFileReadManager.GetM3u8FileInfo;
 
-            if (m3UDownloaderClient.M3u8Downloader.IsCompleted)
-                return;
+            //当使用m3u8数据接口传入时 m3U8FileInfoClient是不创建的 所以需要加判断
+            if (m3U8FileInfoClient is not null)
+                m3UDownloaderClient.GetLiveFileInfoFunc = m3U8FileInfoClient.M3UFileReadManager.GetM3u8FileInfo;
 
             await m3UDownloaderClient.M3u8Downloader.DownloadMapInfoAsync(M3U8FileInfo.Map, cancellationToken);
             await m3UDownloaderClient.M3u8Downloader.DownloadAsync(M3U8FileInfo, cancellationToken);
+            _isDownloaded = true;
         }
 
         private async Task MergeAsync(IDialogProgress progress,CancellationToken cancellationToken)
@@ -113,19 +118,18 @@ namespace M3u8Downloader_H.ViewModels
 
             PluginManger? pluginManger = PluginManger.CreatePluginMangaer(pluginType, Http.Client, viewModel);
             viewModel.m3U8FileInfoClient = new M3u8FileInfoClient(Http.Client, pluginManger, viewModel, m3U8DownloadParam);
-            viewModel.m3UDownloaderClient = new M3uDownloaderClient(Http.Client, pluginManger, viewModel, m3U8DownloadParam);
+            viewModel.m3UDownloaderClient = new DownloaderClient(Http.Client, pluginManger, viewModel, m3U8DownloadParam);
             viewModel.m3UCombinerClient = new M3uCombinerClient(viewModel, m3U8DownloadParam);
 
             if (!string.IsNullOrWhiteSpace(m3U8DownloadParam.Key))
             {
                 viewModel.M3UKeyInfo = new M3UKeyInfo(m3U8DownloadParam.Method!, m3U8DownloadParam.Key!, m3U8DownloadParam.Iv!);
             }
-
             return viewModel;
         }
 
 
-        //当传入的是M3UFileInfo 此时因为他不是文件或者http地址 没有办法判断具体的缓存目录
+        //当使用接口传入m3u8数据时一定不是直播所以不需要创建M3u8FileInfoClient
         public static DownloadViewModel CreateDownloadViewModel(
             IM3u8FileInfoDownloadParam m3U8DownloadParam,
             Type? pluginType)
@@ -136,7 +140,7 @@ namespace M3u8Downloader_H.ViewModels
             viewModel.VideoName = m3U8DownloadParam.VideoName;
 
             PluginManger? pluginManger = PluginManger.CreatePluginMangaer(pluginType, Http.Client, viewModel);
-            viewModel.m3UDownloaderClient = new M3uDownloaderClient(Http.Client, pluginManger, viewModel, m3U8DownloadParam);
+            viewModel.m3UDownloaderClient = new DownloaderClient(Http.Client, pluginManger, viewModel, m3U8DownloadParam);
             viewModel.m3UCombinerClient = new M3uCombinerClient(viewModel, m3U8DownloadParam);
             return viewModel;
         }

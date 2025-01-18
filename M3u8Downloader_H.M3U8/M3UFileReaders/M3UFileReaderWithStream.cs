@@ -9,9 +9,10 @@ using M3u8Downloader_H.Abstractions.Plugins;
 
 namespace M3u8Downloader_H.M3U8.M3UFileReaders
 {
-    public class M3UFileReaderWithStream() : M3UFileReaderBase
+    public class M3UFileReaderWithStream(IDictionary<string, IAttributeReader>? attributeReaders = default!) : M3UFileReaderBase
     {
-        public IDictionary<string, IAttributeReader> AttributeReaders { get; set; } = default!;
+        public IDictionary<string, IAttributeReader> AttributeReaders = attributeReaders ?? AttributeReaderRoot.Instance.AttributeReaders;
+
 
         public override M3UFileInfo Read(Stream stream)
         {

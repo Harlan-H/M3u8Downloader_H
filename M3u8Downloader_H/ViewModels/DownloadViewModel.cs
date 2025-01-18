@@ -12,6 +12,7 @@ using System.Text;
 using System.Linq;
 using System.Timers;
 using M3u8Downloader_H.Abstractions.Common;
+using Newtonsoft.Json.Linq;
 
 namespace M3u8Downloader_H.ViewModels
 {
@@ -26,8 +27,6 @@ namespace M3u8Downloader_H.ViewModels
         public Uri RequestUrl { get; set; } = default!;
 
         public string VideoName { get; set; } = default!;
-
-        public string SavePath => DownloadParam.SavePath;
 
         public double ProgressNum { get; set; }
 
@@ -151,6 +150,18 @@ namespace M3u8Downloader_H.ViewModels
             }
             return sb.ToString();
         }
+
+
+    }
+
+    public partial class DownloadViewModel : IEquatable<DownloadViewModel>
+    {
+        
+        public bool Equals(DownloadViewModel? other) => GetHashCode() == other?.GetHashCode();
+        public override bool Equals(object? obj) =>  obj is DownloadViewModel  downloadviewmodel && Equals(downloadviewmodel);
+        public override int GetHashCode() => StringComparer.Ordinal.GetHashCode(DownloadParam.SavePath + VideoName);
+        public static bool operator ==(DownloadViewModel downloadviewmode, DownloadViewModel downloadviewmode1) => downloadviewmode.Equals(downloadviewmode1);
+        public static bool operator !=(DownloadViewModel downloadviewmode, DownloadViewModel downloadviewmode1) => !(downloadviewmode == downloadviewmode1);
     }
 
 

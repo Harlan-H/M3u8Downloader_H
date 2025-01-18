@@ -9,11 +9,11 @@ namespace M3u8Downloader_H.Abstractions.Common
     public interface IDownloadParamBase
     {
         //没有扩展名的名称
-        string VideoName { get; set; }
+        string VideoName { get;  }
 
         //包含扩展名的名称
-        string VideoFullName { get; set; }
-        string SavePath { get; set; }
+        string VideoFullName { get;  set; }
+        string SavePath { get;  }
         IDictionary<string, string>? Headers { get; }
     }
 }

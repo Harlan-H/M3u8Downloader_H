@@ -90,7 +90,7 @@ namespace M3u8Downloader_H.ViewModels
 
         private void EnqueueDownload(DownloadViewModel download)
         {
-            var existingDownloads = Downloads.Where(d =>  d.VideoName == download.VideoName && d.SavePath == download.SavePath ).FirstOrDefault();
+            var existingDownloads = Downloads.Where(d =>  d == download ).FirstOrDefault();
             if (existingDownloads is not null)
             {
                 Notifications.Enqueue($"{download.VideoName} 已经在下载列表中!");
@@ -109,12 +109,7 @@ namespace M3u8Downloader_H.ViewModels
             try
             {
                 obj.DoProcess(); 
-               /* (Uri uri,string ext) = obj.Validate();
-                if (ext == "txt")
-                    HandleTxt(uri);
-                else
-                    ProcessDownload(obj.Clone());*/
-                
+
                 //只有操作成功才会清空
                 obj.Reset(settingsService.IsResetAddress, settingsService.IsResetName);
             }

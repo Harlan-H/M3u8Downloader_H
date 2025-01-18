@@ -76,7 +76,7 @@
                                     <Setter Property="Value" Value="{Binding ProgressNum, Mode=OneWay}" />
                             </DataTrigger>
 
-                            </Style.Triggers>
+                        </Style.Triggers>
                     </Style>
                 </ProgressBar.Style>
             </ProgressBar>

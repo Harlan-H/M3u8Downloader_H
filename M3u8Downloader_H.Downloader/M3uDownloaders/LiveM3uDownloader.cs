@@ -83,7 +83,6 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
                     break;
                 }
             }
-            IsCompleted = true;
         }
 
         public async Task<double> Start(M3UFileInfo m3UFileInfo, IEnumerable<KeyValuePair<string, string>>? Headers, CancellationToken cancellationToken = default)

@@ -38,9 +38,12 @@ namespace M3u8Downloader_H.Common.M3u8Infos
             TargetDuration = m3UFileInfo.TargetDuration;
             AllowCache = m3UFileInfo.AllowCache;
             PlaylistType = m3UFileInfo.PlaylistType;
+            Map = m3UFileInfo.Map;
+            ProgramDateTime = m3UFileInfo.ProgramDateTime;
             Key = m3UFileInfo.Key;
             Streams = [.. m3UFileInfo.Streams];
             MediaFiles = [.. m3UFileInfo.MediaFiles];
+            UserData = m3UFileInfo.UserData;
         }
 
 

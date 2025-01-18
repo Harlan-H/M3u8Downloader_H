@@ -46,6 +46,8 @@ namespace M3u8Downloader_H.Models
 
         public void DoProcess()
         {
+            if(string.IsNullOrWhiteSpace(RequestUrl))
+                throw new InvalidOperationException("下载地址不能为空");
 
             Uri uri = new(RequestUrl!, UriKind.Absolute);
             if (!uri.IsFile)

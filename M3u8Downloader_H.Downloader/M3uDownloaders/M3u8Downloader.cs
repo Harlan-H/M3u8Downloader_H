@@ -32,7 +32,6 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
                 await Task.WhenAll(Tasks);
 
                 Log?.Info("下载完成");
-                IsCompleted = true;
             }
             finally
             {

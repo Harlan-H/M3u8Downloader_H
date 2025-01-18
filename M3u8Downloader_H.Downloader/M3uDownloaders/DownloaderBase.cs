@@ -16,9 +16,6 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
         internal IDownloaderSetting DownloaderSetting { get; set; } = default!;
         internal ILog Log { get; set; } = default!;
         internal IDialogProgress DialogProgress {  get; set; } = default!;       
-        internal Action<bool>? IsLiveDownloading { get; set; } = default!;
-
-        public bool IsCompleted { get; protected set; } = false;
 
         protected IEnumerable<KeyValuePair<string, string>>? _headers => DownloadParam.Headers ?? DownloaderSetting.Headers;
         protected string _cachePath => Path.Combine(DownloadParam.SavePath, DownloadParam.VideoName);

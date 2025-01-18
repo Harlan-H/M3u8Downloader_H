@@ -2,9 +2,6 @@
 using M3u8Downloader_H.Plugin.PluginManagers;
 using System.Net.Http;
 using M3u8Downloader_H.M3U8.M3UFileReaders;
-using M3u8Downloader_H.M3U8.AttributeReader;
-using System.Collections.Generic;
-using M3u8Downloader_H.Abstractions.Plugins;
 using M3u8Downloader_H.Abstractions.M3uDownloaders;
 using M3u8Downloader_H.Abstractions.Common;
 
@@ -40,25 +37,10 @@ namespace M3u8Downloader_H.M3U8
                 if (PluginManager?.M3UFileReaderInterface is not null)
                     m3UFileReaderWithStream =  new M3UFileReaderWithPlugin(PluginManager?.M3UFileReaderInterface!);
                 else
-                    m3UFileReaderWithStream =  new M3UFileReaderWithStream();
+                    m3UFileReaderWithStream =  new M3UFileReaderWithStream(PluginManager?.AttributeReaders);
 
-                m3UFileReaderWithStream.AttributeReaders = AttributeReaders;
                 return m3UFileReaderWithStream;
             }
         }
-
-
-        internal IDictionary<string, IAttributeReader> AttributeReaders
-        {
-            get
-            {
-                if (PluginManager?.AttributeReaders is not null)
-                    return PluginManager?.AttributeReaders!;
-                else
-                    return AttributeReaderRoot.Instance.AttributeReaders;
-            }
-        }
-
-
     }
 }
