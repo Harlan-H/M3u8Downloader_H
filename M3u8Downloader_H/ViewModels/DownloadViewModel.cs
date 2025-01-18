@@ -13,6 +13,7 @@ using System.Linq;
 using System.Timers;
 using M3u8Downloader_H.Abstractions.Common;
 using Newtonsoft.Json.Linq;
+using M3u8Downloader_H.Abstractions.Extensions;
 
 namespace M3u8Downloader_H.ViewModels
 {
@@ -93,7 +94,7 @@ namespace M3u8Downloader_H.ViewModels
 
             try
             {
-                Process.Start("explorer", $"/select, \"{Path.Combine(DownloadParam.SavePath, DownloadParam.VideoFullName)}\"");
+                Process.Start("explorer", $"/select, \"{DownloadParam.GetVideoFullPath()}\"");
             }
             catch (Exception)
             {

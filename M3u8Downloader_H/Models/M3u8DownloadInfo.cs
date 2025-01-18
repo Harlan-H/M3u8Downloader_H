@@ -7,14 +7,16 @@ using Caliburn.Micro;
 using M3u8Downloader_H.Abstractions.Common;
 using M3u8Downloader_H.Attributes;
 using M3u8Downloader_H.Common.Utils;
+using M3u8Downloader_H.Services;
 
 
 namespace M3u8Downloader_H.Models
 {
-    public class VideoDownloadInfo : PropertyChangedBase
+    public class M3u8DownloadInfo : PropertyChangedBase
     {
         private static readonly string[] extensionArr = ["", "m3u8", "json", "txt", "xml"];
-       // [Extension(["", "m3u8", "json", "txt", "xml"], ExceptionMsg = "请确认是否为.m3u8或.txt或.json或.xml或文件夹")]
+
+        // [Extension(["", "m3u8", "json", "txt", "xml"], ExceptionMsg = "请确认是否为.m3u8或.txt或.json或.xml或文件夹")]
         public string RequestUrl { get; set; } = default!;
         public string VideoName { get; set; } = default!;
 
@@ -23,12 +25,8 @@ namespace M3u8Downloader_H.Models
         public string? Iv { get; set; } = default!;
 
         public Action<Uri> HandleTextAction { get; set; } = default!;
-        public Action<IM3u8DownloadParam, string?> NormalProcessDownloadAction { get; set; } = default!;
+        public Action<M3u8DownloadParams, string?> NormalProcessDownloadAction { get; set; } = default!;
 
-        public VideoDownloadInfo()
-        {
-
-        }
 
         public void Reset(bool resetUrl,bool resetName)
         {
@@ -39,12 +37,8 @@ namespace M3u8Downloader_H.Models
             Iv = null;
         }
 
-        public M3u8DownloadParams Clone()
-        {
-            return new M3u8DownloadParams(new Uri(RequestUrl), VideoName, Method, Key, Iv);
-        }
 
-        public void DoProcess()
+        public void DoProcess(SettingsService settingsService)
         {
             if(string.IsNullOrWhiteSpace(RequestUrl))
                 throw new InvalidOperationException("下载地址不能为空");
@@ -52,7 +46,8 @@ namespace M3u8Downloader_H.Models
             Uri uri = new(RequestUrl!, UriKind.Absolute);
             if (!uri.IsFile)
             {
-                NormalProcessDownloadAction(Clone(), null);
+                M3u8DownloadParams m3U8DownloadParams = new(settingsService, new Uri(RequestUrl), VideoName, Method, Key, Iv);
+                NormalProcessDownloadAction(m3U8DownloadParams, null);
                 return;
             }
 
@@ -70,7 +65,8 @@ namespace M3u8Downloader_H.Models
             }
             else
             {
-                NormalProcessDownloadAction(Clone(), null);
+                M3u8DownloadParams m3U8DownloadParams = new(settingsService, new Uri(RequestUrl), VideoName, Method, Key, Iv);
+                NormalProcessDownloadAction(m3U8DownloadParams, null);
                 return;
             }
         }

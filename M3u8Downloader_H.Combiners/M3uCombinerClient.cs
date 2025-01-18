@@ -1,5 +1,6 @@
 ﻿using CliWrap.Builders;
 using M3u8Downloader_H.Abstractions.Common;
+using M3u8Downloader_H.Abstractions.Extensions;
 using M3u8Downloader_H.Abstractions.Meger;
 using M3u8Downloader_H.Combiners.Extensions;
 using M3u8Downloader_H.Combiners.M3uCombiners;
@@ -15,7 +16,7 @@ namespace M3u8Downloader_H.Combiners
 #else
         private readonly FFmpeg  _ffmpeg = new("./ffmpeg.exe");
 #endif
-        private readonly string _cachePath = Path.Combine(DownloadParams.SavePath, DownloadParams.VideoName);
+        private readonly string _cachePath = DownloadParams.GetCachePath();
         public M3UFileInfo M3UFileInfo { get; set; } = default!;
         public IDialogProgress DialogProgress { get; set; } = default!;
         public IMergeSetting Settings { get; set; } = default!;
@@ -43,8 +44,8 @@ namespace M3u8Downloader_H.Combiners
         protected async ValueTask ConvertWithFile(bool isFile, CancellationToken cancellationToken)
         {
             await VideoMerge(isFile, cancellationToken);
-            await ConvertToMp4(Path.Combine(DownloadParams.SavePath, DownloadParams.VideoFullName), false, cancellationToken);
-            File.Delete(Path.Combine(DownloadParams.SavePath, DownloadParams.VideoFullName));
+            await ConvertToMp4( DownloadParams.GetVideoFullPath(), false, cancellationToken);
+            File.Delete(DownloadParams.GetVideoFullPath());
         }
 
         protected async ValueTask ConvertWithM3u8File(CancellationToken cancellationToken)
@@ -64,7 +65,7 @@ namespace M3u8Downloader_H.Combiners
                 : new M3uCombiner(_cachePath);
 
             m3UCombiner.Progress = DialogProgress;
-            m3UCombiner.Initialization(Path.Combine(DownloadParams.SavePath, DownloadParams.VideoFullName));
+            m3UCombiner.Initialization(DownloadParams.GetVideoFullPath());
             await m3UCombiner.MegerVideoHeader(M3UFileInfo.Map, cancellationToken);
             await m3UCombiner.StartMerging(M3UFileInfo, Settings.ForcedMerger, cancellationToken);
         }
@@ -84,7 +85,7 @@ namespace M3u8Downloader_H.Combiners
 
            
             var tmpOutputFile = Path.ChangeExtension(DownloadParams.VideoName, Settings.SelectedFormat);
-            DownloadParams.VideoFullName = tmpOutputFile;
+            DownloadParams.SetVideoFullName(tmpOutputFile);
             Log?.Info("开始转码:{0}", tmpOutputFile);
             arguments
                 .Add("-nostdin")

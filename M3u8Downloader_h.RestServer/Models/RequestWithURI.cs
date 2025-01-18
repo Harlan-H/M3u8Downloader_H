@@ -18,5 +18,10 @@ namespace M3u8Downloader_H.RestServer.Models
 
         [JsonIgnore]
         public string VideoFullName { get; set; } = default!;
+
+        public void SetVideoFullName(string v)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

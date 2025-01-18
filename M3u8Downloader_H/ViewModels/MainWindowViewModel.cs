@@ -7,7 +7,7 @@ using System.Net;
 using System.Threading.Tasks;
 using System.Windows;
 using M3u8Downloader_H.Exceptions;
-using M3u8Downloader_H.Common.M3u8Infos;
+using M3u8Downloader_H.Abstractions.Extensions;
 using M3u8Downloader_H.Models;
 using M3u8Downloader_H.Services;
 using M3u8Downloader_H.Utils;
@@ -30,7 +30,7 @@ namespace M3u8Downloader_H.ViewModels
 
         [DoNotNotify]
         public IList<DownloadViewModel> SelectedDownloads { get; set; } = Array.Empty<DownloadViewModel>();
-        public VideoDownloadInfo VideoDownloadInfo { get; } = new VideoDownloadInfo();
+        public M3u8DownloadInfo VideoDownloadInfo { get; } = new M3u8DownloadInfo();
 
         public string VersionString => $"v{App.VersionString}";
 
@@ -103,12 +103,12 @@ namespace M3u8Downloader_H.ViewModels
 
 
         public bool CanProcessDownload => !IsBusy;
-        public void ProcessDownload(VideoDownloadInfo obj)
+        public void ProcessDownload(M3u8DownloadInfo obj)
         {
             IsBusy = true;   
             try
             {
-                obj.DoProcess(); 
+                obj.DoProcess(settingsService); 
 
                 //只有操作成功才会清空
                 obj.Reset(settingsService.IsResetAddress, settingsService.IsResetName);
@@ -132,7 +132,7 @@ namespace M3u8Downloader_H.ViewModels
                 string[] result = item.Trim().Split(settingsService.Separator, 2);
                 try
                 {
-                    M3u8DownloadParams m3U8DownloadParams = new(new Uri(result[0], UriKind.Absolute), result.Length > 1 ? result[1] : null);
+                    M3u8DownloadParams m3U8DownloadParams = new(settingsService,new Uri(result[0], UriKind.Absolute), result.Length > 1 ? result[1] : null);
                     ProcessDownload(m3U8DownloadParams);
                 }
                 catch (UriFormatException)
@@ -148,13 +148,14 @@ namespace M3u8Downloader_H.ViewModels
             }
         }
 
-
         private void ProcessDownload(IM3u8DownloadParam m3U8DownloadParam, string? pluginKey = default!)
         {
-            m3U8DownloadParam.SavePath ??= settingsService.SavePath;
-            m3U8DownloadParam.VideoName = PathEx.GenerateFileNameWithoutExtension(m3U8DownloadParam.RequestUrl, m3U8DownloadParam.VideoName);
-            string fileFullPath = Path.Combine(m3U8DownloadParam.SavePath, m3U8DownloadParam.VideoName);
-            FileEx.EnsureFileNotExist(fileFullPath);
+            ProcessDownload(new M3u8DownloadParams(settingsService, m3U8DownloadParam), pluginKey);
+        }
+
+        private void ProcessDownload(M3u8DownloadParams m3U8DownloadParam, string? pluginKey = default!)
+        {
+            FileEx.EnsureFileNotExist(m3U8DownloadParam.GetCachePath());
 
             string tmpPluginKey = pluginKey is not null
                                 ? pluginKey
@@ -172,14 +173,11 @@ namespace M3u8Downloader_H.ViewModels
             if (!m3U8DownloadParam.M3UFileInfos.MediaFiles.Any())
                 throw new ArgumentException("m3u8的数据不能为空");
 
-            m3U8DownloadParam.SavePath ??= settingsService.SavePath;
-            m3U8DownloadParam.VideoName = PathEx.GenerateFileNameWithoutExtension(m3U8DownloadParam.M3UFileInfos.MediaFiles[0].Uri, m3U8DownloadParam.VideoName);
-            string fileFullPath = Path.Combine(m3U8DownloadParam.SavePath, m3U8DownloadParam.VideoName);
-            FileEx.EnsureFileNotExist(fileFullPath);
-
+            M3u8DownloadParams m3U8DownloadParams = new(settingsService, m3U8DownloadParam.M3UFileInfos.MediaFiles[0].Uri, m3U8DownloadParam);
+            FileEx.EnsureFileNotExist(m3U8DownloadParam.GetCachePath());
 
             //这里因为不可能有url所以直接通过设置来判别使用某个插件
-            DownloadViewModel download = M3u8DownloadViewModel.CreateDownloadViewModel(m3U8DownloadParam, pluginService[pluginKey ?? settingsService.PluginKey]);
+            DownloadViewModel download = M3u8DownloadViewModel.CreateDownloadViewModel(m3U8DownloadParam.M3UFileInfos, m3U8DownloadParams, pluginService[pluginKey ?? settingsService.PluginKey]);
             if (download is null) return;
 
             EnqueueDownload(download);

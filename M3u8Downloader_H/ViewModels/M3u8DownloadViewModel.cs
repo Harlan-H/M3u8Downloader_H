@@ -24,7 +24,7 @@ namespace M3u8Downloader_H.ViewModels
         private DownloaderClient m3UDownloaderClient = default!;
         private M3uCombinerClient m3UCombinerClient = default!;
         private M3UFileInfo M3U8FileInfo = default!;
-        private M3UKeyInfo M3UKeyInfo = default!;
+        private M3UKeyInfo? M3UKeyInfo;
 
         private bool _isParsed = false;
         private bool _isDownloaded = false;
@@ -51,7 +51,7 @@ namespace M3u8Downloader_H.ViewModels
             if (M3U8FileInfo is not null)
             {
                 Info("获取视频流{0}个", M3U8FileInfo.MediaFiles.Count);
-                DownloadParam.VideoFullName = DownloadParam.VideoName +  (M3U8FileInfo.Map is not null ? Path.GetExtension(M3U8FileInfo.Map?.Title!) : ".ts");
+                DownloadParam.SetVideoFullName(DownloadParam.VideoName + (M3U8FileInfo.Map is not null ? Path.GetExtension(M3U8FileInfo.Map?.Title!) : ".ts"));
                 _isParsed = true;
                 return;
             }
@@ -71,7 +71,7 @@ namespace M3u8Downloader_H.ViewModels
             if (M3UKeyInfo is not null)
                 M3U8FileInfo.Key = M3UKeyInfo;
 
-            DownloadParam.VideoFullName = DownloadParam.VideoName + (M3U8FileInfo.Map is not null ? Path.GetExtension(M3U8FileInfo.Map?.Title!) : ".ts");
+            DownloadParam.SetVideoFullName(DownloadParam.VideoName + (M3U8FileInfo.Map is not null ? Path.GetExtension(M3U8FileInfo.Map?.Title!) : ".ts"));
             _isParsed = true;
         }
 
@@ -108,7 +108,7 @@ namespace M3u8Downloader_H.ViewModels
     public partial class M3u8DownloadViewModel
     {
         public static DownloadViewModel CreateDownloadViewModel(
-            IM3u8DownloadParam m3U8DownloadParam,
+            M3u8DownloadParams m3U8DownloadParam,
             Type? pluginType)
         {
             M3u8DownloadViewModel viewModel = IoC.Get<M3u8DownloadViewModel>();
@@ -121,22 +121,21 @@ namespace M3u8Downloader_H.ViewModels
             viewModel.m3UDownloaderClient = new DownloaderClient(Http.Client, pluginManger, viewModel, m3U8DownloadParam);
             viewModel.m3UCombinerClient = new M3uCombinerClient(viewModel, m3U8DownloadParam);
 
-            if (!string.IsNullOrWhiteSpace(m3U8DownloadParam.Key))
-            {
-                viewModel.M3UKeyInfo = new M3UKeyInfo(m3U8DownloadParam.Method!, m3U8DownloadParam.Key!, m3U8DownloadParam.Iv!);
-            }
+            viewModel.M3UKeyInfo = m3U8DownloadParam.GetM3uKeyInfo();
+            
             return viewModel;
         }
 
 
         //当使用接口传入m3u8数据时一定不是直播所以不需要创建M3u8FileInfoClient
         public static DownloadViewModel CreateDownloadViewModel(
-            IM3u8FileInfoDownloadParam m3U8DownloadParam,
+            M3UFileInfo m3UFileInfo,
+            M3u8DownloadParams m3U8DownloadParam,
             Type? pluginType)
         {
             M3u8DownloadViewModel viewModel = IoC.Get<M3u8DownloadViewModel>();
             viewModel.DownloadParam = m3U8DownloadParam;
-            viewModel.M3U8FileInfo = m3U8DownloadParam.M3UFileInfos;
+            viewModel.M3U8FileInfo = m3UFileInfo;
             viewModel.VideoName = m3U8DownloadParam.VideoName;
 
             PluginManger? pluginManger = PluginManger.CreatePluginMangaer(pluginType, Http.Client, viewModel);

@@ -4,6 +4,7 @@ using M3u8Downloader_H.Downloader.Extensions;
 using M3u8Downloader_H.Downloader.Utils;
 using M3u8Downloader_H.Abstractions.M3uDownloaders;
 using M3u8Downloader_H.Abstractions.Common;
+using M3u8Downloader_H.Abstractions.Extensions;
 
 
 namespace M3u8Downloader_H.Downloader.M3uDownloaders
@@ -18,7 +19,7 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
         internal IDialogProgress DialogProgress {  get; set; } = default!;       
 
         protected IEnumerable<KeyValuePair<string, string>>? _headers => DownloadParam.Headers ?? DownloaderSetting.Headers;
-        protected string _cachePath => Path.Combine(DownloadParam.SavePath, DownloadParam.VideoName);
+        protected string _cachePath => DownloadParam.GetCachePath();
 
         public async ValueTask DownloadMapInfoAsync(M3UMediaInfo? m3UMapInfo, CancellationToken cancellationToken = default)
         {

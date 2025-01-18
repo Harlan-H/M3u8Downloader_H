@@ -12,8 +12,10 @@ namespace M3u8Downloader_H.Abstractions.Common
         string VideoName { get;  }
 
         //包含扩展名的名称
-        string VideoFullName { get;  set; }
+        string VideoFullName { get;  }
         string SavePath { get;  }
         IDictionary<string, string>? Headers { get; }
+
+        void SetVideoFullName(string videoName);
     }
 }
