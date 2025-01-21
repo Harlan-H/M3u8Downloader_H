@@ -8,7 +8,7 @@ namespace M3u8Downloader_H.RestServer.Utils
     internal class HttpListen
     {
         private HttpListener _httpListener = default!;
-        private readonly Dictionary<string, Action<HttpListenerRequest, HttpListenerResponse>> callbackPostDict = new();
+        private readonly Dictionary<string, Action<HttpListenerRequest, HttpListenerResponse>> callbackPostDict = [];
         public HttpListen()
         {
 

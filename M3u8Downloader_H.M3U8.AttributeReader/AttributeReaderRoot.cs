@@ -22,7 +22,7 @@ namespace M3u8Downloader_H.M3U8.AttributeReader
             Assembly asm = typeof(M3U8ReaderAttribute).Assembly;
             return asm.GetTypes()
                 .Where(t => t.IsDefined(typeof(M3U8ReaderAttribute), false))
-                .Select(t => (M3U8ReaderAttribute)t.GetCustomAttribute(typeof(M3U8ReaderAttribute), false)!)
+                .Select(t => t.GetCustomAttribute<M3U8ReaderAttribute>(false)!)
                 .ToDictionary(x => x.Key!, x => x.Type!);
         }
 

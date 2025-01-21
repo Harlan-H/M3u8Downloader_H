@@ -49,7 +49,6 @@ namespace M3u8Downloader_H.M3U8.M3UFileReaderManangers
         {
             M3UFileInfo m3UFileInfo = ext switch
             {
-                "xml" => new M3UFileReaderWithXml().GetM3u8FileInfo(uri),
                 "json" => new M3UFileReaderWithJson().GetM3u8FileInfo(uri),
                 "" => new M3UFileReaderWithDirectory().GetM3u8FileInfo(uri,(Stream)null!),
                 "m3u8" => M3u8FileReader.GetM3u8FileInfo(uri),

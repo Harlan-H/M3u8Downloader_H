@@ -11,6 +11,8 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
     {
         public override Task DownloadAsync(M3UFileInfo m3UFileInfo, CancellationToken cancellationToken = default)
         {
+            base.DownloadAsync(m3UFileInfo, cancellationToken);
+
             return Task.CompletedTask;
         }
     }

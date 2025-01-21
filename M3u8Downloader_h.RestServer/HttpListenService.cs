@@ -10,11 +10,14 @@ using M3u8Downloader_H.Abstractions.Common;
 
 namespace M3u8Downloader_H.RestServer
 {
+    using DownloadByUrlActionType = Action<IM3u8DownloadParam, string?>;
+    using DownloadByM3uFileInfoActionType = Action<IM3u8FileInfoDownloadParam, string?>;
+
     public class HttpListenService
     {
         private readonly HttpListen httpListen = new();
-        private Action<IM3u8DownloadParam, string?> DownloadByUrlAction = default!;        
-        private Action<IM3u8FileInfoDownloadParam, string?> DownloadByM3uFileInfoAction = default!;
+        private DownloadByUrlActionType DownloadByUrlAction = default!;        
+        private DownloadByM3uFileInfoActionType DownloadByM3uFileInfoAction = default!;
 
         private readonly JsonSerializerOptions jsonSerializerOptions;
         private readonly static HttpListenService instance = new();
@@ -30,8 +33,8 @@ namespace M3u8Downloader_H.RestServer
         }
 
         public void Initialization(
-            Action<IM3u8DownloadParam, string?> downloadByUrl,
-            Action<IM3u8FileInfoDownloadParam, string?> downloadByM3uFileInfo)
+            DownloadByUrlActionType downloadByUrl,
+            DownloadByM3uFileInfoActionType downloadByM3uFileInfo)
         {
             DownloadByUrlAction = downloadByUrl;
             DownloadByM3uFileInfoAction = downloadByM3uFileInfo;

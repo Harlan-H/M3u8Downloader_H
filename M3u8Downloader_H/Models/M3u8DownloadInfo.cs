@@ -14,9 +14,8 @@ namespace M3u8Downloader_H.Models
 {
     public class M3u8DownloadInfo : PropertyChangedBase
     {
-        private static readonly string[] extensionArr = ["", "m3u8", "json", "txt", "xml"];
+        private static readonly string[] extensionArr = ["", "m3u8", "json", "txt"];
 
-        // [Extension(["", "m3u8", "json", "txt", "xml"], ExceptionMsg = "请确认是否为.m3u8或.txt或.json或.xml或文件夹")]
         public string RequestUrl { get; set; } = default!;
         public string VideoName { get; set; } = default!;
 
@@ -53,7 +52,7 @@ namespace M3u8Downloader_H.Models
 
 
             string ext = Path.GetExtension(RequestUrl).Trim('.');
-            string? extension = extensionArr.Where(e => e == ext).FirstOrDefault() ?? throw new InvalidOperationException("请确认是否为.m3u8或.txt或.json或.xml或文件夹");
+            string extension = extensionArr.Where(e => e == ext).FirstOrDefault() ?? throw new InvalidOperationException("请确认是否为.m3u8或.txt或.json或文件夹");
             if (extension == "")
             {
                 FileAttributes fileAttribute = File.GetAttributes(RequestUrl);

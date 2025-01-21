@@ -109,7 +109,7 @@
                                 <StackPanel >
                                     <TextBox Text="{Binding RequestUrl,Delay=150}" Margin="8" 
                   materialDesign:TextFieldAssist.HasClearButton="True"
-                  materialDesign:HintAssist.Hint="下载地址,m3u8,txt,json,xml文件(文件可以直接拖拽到此)"  FontSize="18"  VerticalAlignment="Center" >
+                  materialDesign:HintAssist.Hint="下载地址,m3u8,txt,json文件(文件可以直接拖拽到此)"  FontSize="18"  VerticalAlignment="Center" >
                                         <i:Interaction.Behaviors>
                                             <behavior:DragAndDropBehaviour />
                                         </i:Interaction.Behaviors>
@@ -214,7 +214,7 @@
                             <Run Text="复制" />
                             <Run FontWeight="SemiBold" Text="m3u8链接地址" />
                             <Run Text="或者拖拽" />
-                            <Run FontWeight="SemiBold" Text="xml,m3u8,json,txt文件" />
+                            <Run FontWeight="SemiBold" Text="m3u8,json,txt文件" />
                             <Run Text="到" />
                             <Run FontWeight="SemiBold" Text="下载地址" />
                             <Run Text="处" />

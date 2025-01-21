@@ -1,6 +1,5 @@
 ﻿using Caliburn.Micro;
 using M3u8Downloader_H.Common.M3u8Infos;
-using System.Collections.Generic;
 using System;
 using M3u8Downloader_H.Models;
 using M3u8Downloader_H.Services;
@@ -13,7 +12,6 @@ using System.Threading;
 using System.IO;
 using M3u8Downloader_H.Abstractions.Common;
 using M3u8Downloader_H.Combiners;
-using System.Diagnostics;
 
 namespace M3u8Downloader_H.ViewModels
 {

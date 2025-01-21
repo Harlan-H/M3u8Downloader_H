@@ -17,19 +17,20 @@ namespace M3u8Downloader_H.Models
 
         public string? Iv { get;  } = default!;
 
-        public string VideoName { get; set; } = default!;
+        public string VideoName { get; private set; } = default!;
 
-        public string VideoFullName { get; set; } = default!;
+        public string VideoFullName { get; private set; } = default!;
 
-        public string SavePath { get; set; } = default!;
+        public string SavePath { get;  } = default!;
 
-        public IDictionary<string, string> Headers { get; set; } = default!;
+        public IDictionary<string, string> Headers { get;  } = default!;
 
         public M3u8DownloadParams(SettingsService settingsService,Uri url,string? videoname)
         {
             RequestUrl = url;
             VideoName = PathEx.GenerateFileNameWithoutExtension(url, videoname);
             SavePath = settingsService.SavePath;
+            Headers = settingsService.Headers!;
         }
 
         public M3u8DownloadParams(SettingsService settingsService,Uri url, string? videoname,string method,string? key,string? iv)
@@ -40,6 +41,7 @@ namespace M3u8Downloader_H.Models
             Method = method;
             Key = key;
             Iv = iv;
+            Headers = settingsService.Headers!;
         }
 
         public M3u8DownloadParams(SettingsService settingsService,IM3u8DownloadParam downloadParamBase)
