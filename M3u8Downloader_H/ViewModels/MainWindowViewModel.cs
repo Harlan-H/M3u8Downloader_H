@@ -32,6 +32,8 @@ namespace M3u8Downloader_H.ViewModels
         public IList<DownloadViewModel> SelectedDownloads { get; set; } = Array.Empty<DownloadViewModel>();
         public M3u8DownloadInfo VideoDownloadInfo { get; } = new M3u8DownloadInfo();
 
+        public MediaDownloadInfo MediaDownloadInfo { get; } = new MediaDownloadInfo();
+
         public string VersionString => $"v{App.VersionString}";
 
         public int? HttpServicePort { get; set; }
@@ -45,7 +47,8 @@ namespace M3u8Downloader_H.ViewModels
             DisplayName = $"m3u8视频下载器 by:Harlan";
 
             VideoDownloadInfo.HandleTextAction = HandleTxt;
-            VideoDownloadInfo.NormalProcessDownloadAction = ProcessDownload;
+            VideoDownloadInfo.NormalProcessDownloadAction = ProcessM3u8Download;
+            MediaDownloadInfo.NormalProcessDownloadAction = ProcessMediaDownload;
 
             _ = Task.Run(() =>
             {
@@ -63,7 +66,7 @@ namespace M3u8Downloader_H.ViewModels
                         try
                         {
                             httpListenService.Run($"http://+:{i}/");
-                            httpListenService.Initialization(ProcessDownload, ProcessDownload);
+                            httpListenService.Initialization(ProcessM3u8Download, ProcessM3u8Download);
                             HttpServicePort = i;
                             break;
                         }
@@ -102,8 +105,8 @@ namespace M3u8Downloader_H.ViewModels
         }
 
 
-        public bool CanProcessDownload => !IsBusy;
-        public void ProcessDownload(M3u8DownloadInfo obj)
+        public bool CanProcessM3u8Download => !IsBusy;
+        public void ProcessM3u8Download(M3u8DownloadInfo obj)
         {
             IsBusy = true;   
             try
@@ -123,6 +126,27 @@ namespace M3u8Downloader_H.ViewModels
             }
         }
 
+
+        public bool CanProcessMediaDownload => !IsBusy;
+        public void ProcessMediaDownload(MediaDownloadInfo mediaDownloadInfo)
+        {
+            IsBusy = true;
+            try
+            {
+                mediaDownloadInfo.DoProcess(settingsService);
+
+                mediaDownloadInfo.Reset(settingsService.IsResetAddress, settingsService.IsResetName);
+            }
+            catch (Exception e)
+            {
+                Notifications.Enqueue(e.ToString());
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+
         private void HandleTxt(Uri uri)
         {
             foreach (var item in File.ReadLines(uri.OriginalString))
@@ -133,7 +157,7 @@ namespace M3u8Downloader_H.ViewModels
                 try
                 {
                     M3u8DownloadParams m3U8DownloadParams = new(settingsService,new Uri(result[0], UriKind.Absolute), result.Length > 1 ? result[1] : null);
-                    ProcessDownload(m3U8DownloadParams);
+                    ProcessM3u8Download(m3U8DownloadParams);
                 }
                 catch (UriFormatException)
                 {
@@ -148,12 +172,22 @@ namespace M3u8Downloader_H.ViewModels
             }
         }
 
-        private void ProcessDownload(IM3u8DownloadParam m3U8DownloadParam, string? pluginKey = default!)
+        private void ProcessMediaDownload(MediaDownloadParams mediaDownloadParams)
         {
-            ProcessDownload(new M3u8DownloadParams(settingsService, m3U8DownloadParam), pluginKey);
+            FileEx.EnsureFileNotExist(mediaDownloadParams.GetCachePath());
+
+            DownloadViewModel download = MediaDownloadViewModel.CreateDownloadViewModel(mediaDownloadParams);
+            if (download is null) return;
+
+            EnqueueDownload(download);
         }
 
-        private void ProcessDownload(M3u8DownloadParams m3U8DownloadParam, string? pluginKey = default!)
+        private void ProcessM3u8Download(IM3u8DownloadParam m3U8DownloadParam, string? pluginKey = default!)
+        {
+            ProcessM3u8Download(new M3u8DownloadParams(settingsService, m3U8DownloadParam), pluginKey);
+        }
+
+        private void ProcessM3u8Download(M3u8DownloadParams m3U8DownloadParam, string? pluginKey = default!)
         {
             FileEx.EnsureFileNotExist(m3U8DownloadParam.GetCachePath());
 
@@ -168,7 +202,7 @@ namespace M3u8Downloader_H.ViewModels
             EnqueueDownload(download);
         }
 
-        private void ProcessDownload(IM3u8FileInfoDownloadParam m3U8DownloadParam, string? pluginKey = default!)
+        private void ProcessM3u8Download(IM3u8FileInfoDownloadParam m3U8DownloadParam, string? pluginKey = default!)
         {
             if (!m3U8DownloadParam.M3UFileInfos.MediaFiles.Any())
                 throw new ArgumentException("m3u8的数据不能为空");

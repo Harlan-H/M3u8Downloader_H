@@ -4,6 +4,7 @@ using M3u8Downloader_H.Downloader.M3uDownloaders;
 using M3u8Downloader_H.Abstractions.M3uDownloaders;
 using M3u8Downloader_H.Plugin.PluginManagers;
 using M3u8Downloader_H.Abstractions.Common;
+using M3u8Downloader_H.Downloader.MediaDownloads;
 
 
 namespace M3u8Downloader_H.Downloader
@@ -15,11 +16,11 @@ namespace M3u8Downloader_H.Downloader
         public M3UFileInfo M3UFileInfo { get; set; } = default!;
         public Func<CancellationToken, Task<M3UFileInfo>> GetLiveFileInfoFunc { get; set; } = default!;
 
-        public DownloaderBase M3u8Downloader
+        public M3uDownloaders.DownloaderBase M3u8Downloader
         {
             get
             {
-                DownloaderBase _m3u8downloader;
+                M3uDownloaders.DownloaderBase _m3u8downloader;
                 if (!M3UFileInfo.IsVod())
                 {
                     LiveM3uDownloader liveM3UDownloader = new(httpClient)
@@ -42,6 +43,25 @@ namespace M3u8Downloader_H.Downloader
                 _m3u8downloader.DownloaderSetting = DownloaderSetting;
                 _m3u8downloader.DialogProgress = DialogProgress;
                 return _m3u8downloader;
+            }
+        }
+
+        public MediaDownloads.DownloaderBase MediaDownloader
+        {
+            get
+            {
+                IMediaDownloadParam mediaDownloadParam = (IMediaDownloadParam)DownloadParam;
+                MediaDownloads.DownloaderBase mediaDownloader;
+                if (mediaDownloadParam.IsVideoStream)
+                    mediaDownloader = new MediaDownloader(httpClient);
+                else
+                    mediaDownloader = new LiveVideoDownloader(httpClient);
+
+                mediaDownloader.DownloadParam = mediaDownloadParam;
+                mediaDownloader.Log = log;
+                mediaDownloader.DownloaderSetting = DownloaderSetting;
+                mediaDownloader.DialogProgress = DialogProgress;
+                return mediaDownloader;
             }
         }
     }

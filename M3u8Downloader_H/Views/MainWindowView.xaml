@@ -138,7 +138,7 @@
                                 </StackPanel>
 
                             <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                <Button cal:Message.Attach="ProcessDownload($DataContext)" materialDesign:ElevationAssist.Elevation="Dp2"  Margin="5" Width="150" >
+                                <Button cal:Message.Attach="ProcessM3u8Download($DataContext)" materialDesign:ElevationAssist.Elevation="Dp2"  Margin="5" Width="150" >
                                     <materialDesign:PackIcon Kind="Download" Width="24" Height="24" />
                                 </Button>
                               
@@ -147,37 +147,44 @@
                         </TabItem>
                         <TabItem Width="200"
                           Header="视频音频">
-                      <!--  <Grid Height="191" Name="mediaDownloadInfoGrid">
+                        <Grid Height="191" Name="mediaDownloadInfoGrid" DataContext="{Binding MediaDownloadInfo}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition  />
                                 <ColumnDefinition Width="auto" />
                             </Grid.ColumnDefinitions>
-                           <StackPanel >
-                                <TextBox Text="" Margin="8" 
+                            <StackPanel >
+                                <DockPanel  Margin="8" >
+                                    <ComboBox SelectedIndex="{Binding StreamIndex,Mode=OneWayToSource}" FontSize="18" >
+                                        <ComboBoxItem Content="视频" IsSelected="True" />
+                                        <ComboBoxItem Content="直播" />
+                                    </ComboBox>
+                                    <TextBox Text="{Binding VideoUrl}" Margin="8" 
                                           materialDesign:TextFieldAssist.HasClearButton="True"
                                           materialDesign:HintAssist.Hint="视频地址mp4,flv等视频格式地址"  FontSize="18"  VerticalAlignment="Center" >
-                                </TextBox>
-                                <TextBox Text="" Margin="8" 
+                                    </TextBox>
+                                </DockPanel>
+                                
+                                <TextBox Text="{Binding AudioUrl}" Margin="8" 
                                           materialDesign:TextFieldAssist.HasClearButton="True"
-                                          materialDesign:HintAssist.Hint="音频地址aac等音频格式地址"  FontSize="18"  VerticalAlignment="Center" >
+                                          materialDesign:HintAssist.Hint="音频地址aac等音频格式地址(音视频分离使用,没有可以不填)"  FontSize="18"  VerticalAlignment="Center" >
                                 </TextBox>
-                                <TextBox Text="" Margin="8" 
+                                <TextBox Text="{Binding SubtitleUrl}" Margin="8" 
                                           materialDesign:TextFieldAssist.HasClearButton="True"
-                                          materialDesign:HintAssist.Hint="字幕地址srt等字幕格式地址"  FontSize="18"  VerticalAlignment="Center" >
+                                          materialDesign:HintAssist.Hint="字幕地址srt等字幕格式地址(没有可以不填)"  FontSize="18"  VerticalAlignment="Center" >
                                 </TextBox>
-                                <TextBox Text="" Margin="8" 
+                                <TextBox Text="{Binding VideoName}" Margin="8" 
                                             materialDesign:TextFieldAssist.HasClearButton="True"
                                             materialDesign:HintAssist.Hint="视频名称(可以不填写,不写默认随机名称)" FontSize="18"  VerticalAlignment="Center">
                                 </TextBox>
                             </StackPanel>
 
                             <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                <Button cal:Message.Attach="ProcessDownload($DataContext)" materialDesign:ElevationAssist.Elevation="Dp2"  Margin="5" Width="150" >
+                                <Button cal:Message.Attach="ProcessMediaDownload($DataContext)" materialDesign:ElevationAssist.Elevation="Dp2"  Margin="5" Width="150" >
                                     <materialDesign:PackIcon Kind="Download" Width="24" Height="24" />
                                 </Button>
 
                             </StackPanel>
-                        </Grid>-->
+                        </Grid>
                     </TabItem>
                     <TabItem Width="200" IsEnabled="False"
                             Header="高级模式">

@@ -8,6 +8,8 @@ namespace M3u8Downloader_H.Abstractions.Common
 {
     public interface IMediaDownloadParam : IDownloadParamBase
     {
-        IList<IStreamInfo> StreamInfos { get; }
+        bool IsVideoStream { get; }
+        IList<IStreamInfo> Medias { get; }
+        Uri Subtitle { get; }
     }
 }

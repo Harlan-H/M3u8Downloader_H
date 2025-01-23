@@ -28,8 +28,12 @@ namespace M3u8Downloader_H.Downloader.Utils
 
         protected override void Dispose(bool disposing)
         {
-            stream?.Dispose();
-            _memoryOwner?.Dispose();
+            if (disposing)
+            {
+                stream?.Dispose();
+                _memoryOwner?.Dispose();
+            }
+
             base.Dispose(disposing);
         }
 

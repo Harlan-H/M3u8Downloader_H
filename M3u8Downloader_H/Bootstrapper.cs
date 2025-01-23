@@ -28,11 +28,12 @@ namespace M3u8Downloader_H
 
             simpleContainer
                 .Singleton<SettingsService>()
-               // .Singleton<DownloadService>()
+                // .Singleton<DownloadService>()
                 .Singleton<SoundService>()
                 .Singleton<PluginService>()
                 .PerRequest<MainWindowViewModel>()
-                .PerRequest<M3u8DownloadViewModel>(); 
+                .PerRequest<M3u8DownloadViewModel>()
+                .PerRequest<MediaDownloadViewModel>();
         }
 
         protected override object GetInstance(Type service, string key)
