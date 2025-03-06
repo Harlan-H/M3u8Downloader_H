@@ -121,15 +121,11 @@
 
                                     <!-- 密钥填写区  -->
                                     <DockPanel  Margin="8" >
-                                        <ComboBox SelectedValue="{Binding Method,TargetNullValue=AES-128}" FontSize="18" >
-                                            <ComboBox.ItemsSource>
-                                                <x:Array Type="{x:Type sys:String}">
-                                                    <sys:String>AES-128</sys:String>
-                                                    <sys:String>AES-192</sys:String>
-                                                    <sys:String>AES-256</sys:String>
-                                                </x:Array>
-                                            </ComboBox.ItemsSource>
-                                        </ComboBox>
+                                    <ComboBox SelectedValue="{Binding Method,Mode=OneWayToSource}" FontSize="18" >
+                                        <ComboBoxItem Content="AES-128" IsSelected="True"/>
+                                        <ComboBoxItem Content="AES-192" />
+                                        <ComboBoxItem Content="AES-256" />
+                                    </ComboBox>
                                         <TextBox Text="{Binding Key}"  Margin="5 0 0 0" FontSize="18"
                       materialDesign:HintAssist.Hint="KEY(字符串或者base64)" />
                                     </DockPanel>
@@ -145,7 +141,7 @@
                             </StackPanel>
                         </Grid>
                         </TabItem>
-                        <TabItem Width="200"
+                    <TabItem Width="200"
                           Header="视频音频">
                         <Grid Height="191" Name="mediaDownloadInfoGrid" DataContext="{Binding MediaDownloadInfo}">
                             <Grid.ColumnDefinitions>
@@ -163,7 +159,7 @@
                                           materialDesign:HintAssist.Hint="视频地址mp4,flv等视频格式地址"  FontSize="18"  VerticalAlignment="Center" >
                                     </TextBox>
                                 </DockPanel>
-                                
+
                                 <TextBox Text="{Binding AudioUrl}" Margin="8" 
                                           materialDesign:TextFieldAssist.HasClearButton="True"
                                           materialDesign:HintAssist.Hint="音频地址aac等音频格式地址(音视频分离使用,没有可以不填)"  FontSize="18"  VerticalAlignment="Center" >
@@ -185,12 +181,6 @@
 
                             </StackPanel>
                         </Grid>
-                    </TabItem>
-                    <TabItem Width="200" IsEnabled="False"
-                            Header="高级模式">
-                                            <TextBlock
-                              Margin="8"
-                              Text="PrimaryLight Tab 3" />          
                     </TabItem>
                 </TabControl>
    
@@ -237,9 +227,6 @@
                             <LineBreak />
                             <Run Text="视频和音频是分离的" />
                             <Run Text="可以将视频,音频地址复制到对应的位置" />
-                            <LineBreak />
-                            <Run FontWeight="SemiBold" Text="高级模式" />
-                            <Run Text="主要是通过插件方式实现对各种网站及软件的适配,实现一键化下载,后续版本开放" />
                             <LineBreak />
                             <Run Text="批量操作" />
                             <Run FontWeight="SemiBold" Text="Ctrl + a" />

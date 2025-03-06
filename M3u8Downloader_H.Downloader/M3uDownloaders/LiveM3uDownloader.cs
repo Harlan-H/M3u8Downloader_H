@@ -59,7 +59,6 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
 
 
             Log?.Info("直播录制开始");
-           // await DownloadMapInfoAsync(m3UFileInfo.Map,  cancellationToken);
             M3UFileInfo previousMediaInfo = await GetM3U8FileInfoAsync(cancellationToken);
             while (true)
             {

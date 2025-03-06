@@ -115,13 +115,18 @@ namespace M3u8Downloader_H.ViewModels
 
         public void OnRestart() => OnStart();
 
-
-        public void DeleteCache()
+        public void DeleteCache(bool isDelete = true,bool isShowLog = false)
         {
-            string cachePath = Path.Combine(DownloadParam.SavePath, DownloadParam.VideoName);
-            DirectoryInfo directory = new(cachePath);
-            if (directory.Exists)
-                directory.Delete(true);
+            if (!isDelete)
+                return;
+
+            DirectoryInfo directory = new(DownloadParam.GetCachePath());
+            if (!directory.Exists) return ;
+                
+            directory.Delete(true);
+
+            if(isShowLog)
+                Info("删除{0}目录成功", directory);
         }
 
         public void Info(string format, params object[] args)
@@ -160,7 +165,7 @@ namespace M3u8Downloader_H.ViewModels
         
         public bool Equals(DownloadViewModel? other) => GetHashCode() == other?.GetHashCode();
         public override bool Equals(object? obj) =>  obj is DownloadViewModel  downloadviewmodel && Equals(downloadviewmodel);
-        public override int GetHashCode() => StringComparer.Ordinal.GetHashCode(DownloadParam.SavePath + VideoName);
+        public override int GetHashCode() => StringComparer.Ordinal.GetHashCode(DownloadParam.GetCachePath());
         public static bool operator ==(DownloadViewModel downloadviewmode, DownloadViewModel downloadviewmode1) => downloadviewmode.Equals(downloadviewmode1);
         public static bool operator !=(DownloadViewModel downloadviewmode, DownloadViewModel downloadviewmode1) => !(downloadviewmode == downloadviewmode1);
     }

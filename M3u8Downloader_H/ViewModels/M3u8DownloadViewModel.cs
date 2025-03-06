@@ -38,6 +38,8 @@ namespace M3u8Downloader_H.ViewModels
             await DownloadAsync(downloadProgress,cancellationToken);
 
             await MergeAsync(downloadProgress, cancellationToken);
+
+            DeleteCache(settingsService.IsCleanUp,true);
         }
 
 
