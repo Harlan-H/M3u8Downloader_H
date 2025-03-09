@@ -98,7 +98,7 @@
                 <TabControl  
                     materialDesign:ColorZoneAssist.Mode="PrimaryMid"
                     >      
-                    <TabItem Width="200"
+                    <TabItem Width="300"
                           Header="M3U8">
                             <!--  操作区 -->
                             <Grid Height="191" Name="videoDownloadInfoGrid" DataContext="{Binding VideoDownloadInfo}">
@@ -141,15 +141,15 @@
                             </StackPanel>
                         </Grid>
                         </TabItem>
-                    <TabItem Width="200"
+                    <TabItem Width="300" 
                           Header="视频音频">
-                        <Grid Height="191" Name="mediaDownloadInfoGrid" DataContext="{Binding MediaDownloadInfo}">
+                        <Grid  Height="191" Name="mediaDownloadInfoGrid" DataContext="{Binding MediaDownloadInfo}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition  />
                                 <ColumnDefinition Width="auto" />
                             </Grid.ColumnDefinitions>
                             <StackPanel >
-                                <DockPanel  Margin="8" >
+                                <DockPanel  Margin="8,0,0,0">
                                     <ComboBox SelectedIndex="{Binding StreamIndex,Mode=OneWayToSource}" FontSize="18" >
                                         <ComboBoxItem Content="视频" IsSelected="True" />
                                         <ComboBoxItem Content="直播" />
@@ -178,7 +178,6 @@
                                 <Button cal:Message.Attach="ProcessMediaDownload($DataContext)" materialDesign:ElevationAssist.Elevation="Dp2"  Margin="5" Width="150" >
                                     <materialDesign:PackIcon Kind="Download" Width="24" Height="24" />
                                 </Button>
-
                             </StackPanel>
                         </Grid>
                     </TabItem>
