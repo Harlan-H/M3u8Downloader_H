@@ -1,9 +1,9 @@
-﻿<Window x:Class="M3u8Downloader_H.Views.MainWindowView"
+﻿<UserControl x:Class="M3u8Downloader_H.Views.Menus.MainWindowView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:M3u8Downloader_H.ViewModels"
+        xmlns:local="clr-namespace:M3u8Downloader_H.ViewModels.Menus"
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:behavior="clr-namespace:M3u8Downloader_H.Behaviors"
         mc:Ignorable="d"
@@ -12,80 +12,15 @@
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         d:DataContext="{d:DesignInstance Type=local:MainWindowViewModel}"
-        WindowStartupLocation="CenterScreen"
-        WindowStyle="None"
-        MinHeight="580" MinWidth="800" 
-        Height="780" Width="1000">
-    
-    <i:Interaction.Behaviors>
-        <behavior:WindowSystemCommandBehavior />
-        <behavior:DragMoveWindowBehavior />
-    </i:Interaction.Behaviors>
-    <WindowChrome.WindowChrome>
-        <WindowChrome GlassFrameThickness="1" CornerRadius="0" CaptionHeight="0"/>
-    </WindowChrome.WindowChrome>
+       >
 
     <Grid>
         <Grid.RowDefinitions >
-            <RowDefinition Height="26.4" />
             <RowDefinition />
             <RowDefinition Height="30" />
         </Grid.RowDefinitions>
-        <Grid Grid.Row="0" >
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-            <StackPanel Orientation="Horizontal">
-                <Image Source="pack://application:,,,/icon.ico" 
-                                            Height="{x:Static SystemParameters.SmallIconHeight}"
-                                            Width="{x:Static SystemParameters.SmallIconWidth}"
-                                            Margin="7,0,5,0" VerticalAlignment="Center"/>
-                <ContentControl IsTabStop="False"
-                                Foreground="Black"
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center"
-                                FontSize="{DynamicResource {x:Static SystemFonts.CaptionFontSize}}"
-                                Content="{Binding DisplayName}" />
-            </StackPanel>
-            <StackPanel Grid.Column="1"
-                        HorizontalAlignment="Right"
-                        VerticalAlignment="Stretch"
-                        Background="Transparent"
-                        Orientation="Horizontal"
-                        WindowChrome.IsHitTestVisibleInChrome="True"
-                        Margin="0,-1,-1,0">
-                <materialDesign:PopupBox >
-                    <StackPanel >
-                        <Button cal:Message.Attach="ShowSettings"
-                                Content=" 设  置 "  
-                                FontSize="15"  />
-                        <Button cal:Message.Attach="ShowAbout"
-                                Content=" 关  于 " 
-                                FontSize="15" 
-                                IsEnabled="{Binding CanShowSettings}" />
-                        <Button cal:Message.Attach="ShowSponsor"
-                            Content=" 赞  助 " 
-                                FontSize="15" 
-                                IsEnabled="{Binding CanShowSettings}" />
-                    </StackPanel>
-                </materialDesign:PopupBox>
-                <Button Style="{DynamicResource MaterialDesignFlatButton}"
-                                    Foreground="Black"
-                                    Command="{Binding Source={x:Static SystemCommands.MinimizeWindowCommand}}"
-                                    HorizontalAlignment="Right" VerticalAlignment="Center"
-                                    ContentTemplate="{StaticResource MinimizeWhite}"
-                                    IsTabStop="False" />
-                <Button Background="Red"
-                        Command="{Binding Source={x:Static SystemCommands.CloseWindowCommand}}"
-                        ContentTemplate="{StaticResource CloseWhite}"
-                        Style="{StaticResource TitleBarButtonStyle}"
-                        IsTabStop="False" />
-            </StackPanel>
-        </Grid>
 
         <materialDesign:DialogHost
-            Grid.Row="1"
             CloseOnClickAway="False"
             SnackbarMessageQueue="{Binding Notifications}"
             Style="{DynamicResource MaterialDesignEmbeddedDialogHost}">
@@ -95,99 +30,22 @@
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
-                <TabControl  
-                    materialDesign:ColorZoneAssist.Mode="PrimaryMid"
-                    >      
-                    <TabItem Width="300"
-                          Header="M3U8">
-                            <!--  操作区 -->
-                            <Grid Height="191" Name="videoDownloadInfoGrid" DataContext="{Binding VideoDownloadInfo}">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition  />
-                                    <ColumnDefinition Width="auto" />
-                                </Grid.ColumnDefinitions>
-                                <StackPanel >
-                                    <TextBox Text="{Binding RequestUrl,Delay=150}" Margin="8" 
-                  materialDesign:TextFieldAssist.HasClearButton="True"
-                  materialDesign:HintAssist.Hint="下载地址,m3u8,txt,json文件(文件可以直接拖拽到此)"  FontSize="18"  VerticalAlignment="Center" >
-                                        <i:Interaction.Behaviors>
-                                            <behavior:DragAndDropBehaviour />
-                                        </i:Interaction.Behaviors>
-                                    </TextBox>
-                                    <TextBox Text="{Binding VideoName,Delay=150}" Margin="8" 
-                  materialDesign:TextFieldAssist.HasClearButton="True"
-                  materialDesign:HintAssist.Hint="视频名称(可以不填写,不写默认随机名称)" FontSize="18"  VerticalAlignment="Center">
-                                    </TextBox>
-
-                                    <!-- 密钥填写区  -->
-                                    <DockPanel  Margin="8" >
-                                    <ComboBox SelectedValue="{Binding Method,Mode=OneWayToSource}" FontSize="18" >
-                                        <ComboBoxItem Content="AES-128" IsSelected="True"/>
-                                        <ComboBoxItem Content="AES-192" />
-                                        <ComboBoxItem Content="AES-256" />
-                                    </ComboBox>
-                                        <TextBox Text="{Binding Key}"  Margin="5 0 0 0" FontSize="18"
-                      materialDesign:HintAssist.Hint="KEY(字符串或者base64)" />
-                                    </DockPanel>
-                                    <TextBox Text="{Binding Iv}"  Margin="8"  FontSize="18" 
-                   materialDesign:HintAssist.Hint="IV(例如0x11223344556677888877665544332211)"/>
-                                </StackPanel>
-
-                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                <Button cal:Message.Attach="ProcessM3u8Download($DataContext)" materialDesign:ElevationAssist.Elevation="Dp2"  Margin="5" Width="150" >
-                                    <materialDesign:PackIcon Kind="Download" Width="24" Height="24" />
-                                </Button>
-                              
-                            </StackPanel>
-                        </Grid>
-                        </TabItem>
-                    <TabItem Width="300" 
-                          Header="视频音频">
-                        <Grid  Height="191" Name="mediaDownloadInfoGrid" DataContext="{Binding MediaDownloadInfo}">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition  />
-                                <ColumnDefinition Width="auto" />
-                            </Grid.ColumnDefinitions>
-                            <StackPanel >
-                                <DockPanel  Margin="8,0,0,0">
-                                    <ComboBox SelectedIndex="{Binding StreamIndex,Mode=OneWayToSource}" FontSize="18" >
-                                        <ComboBoxItem Content="视频" IsSelected="True" />
-                                        <ComboBoxItem Content="直播" />
-                                    </ComboBox>
-                                    <TextBox Text="{Binding VideoUrl}" Margin="8" 
-                                          materialDesign:TextFieldAssist.HasClearButton="True"
-                                          materialDesign:HintAssist.Hint="视频地址mp4,flv等视频格式地址"  FontSize="18"  VerticalAlignment="Center" >
-                                    </TextBox>
-                                </DockPanel>
-
-                                <TextBox Text="{Binding AudioUrl}" Margin="8" 
-                                          materialDesign:TextFieldAssist.HasClearButton="True"
-                                          materialDesign:HintAssist.Hint="音频地址aac等音频格式地址(音视频分离使用,没有可以不填)"  FontSize="18"  VerticalAlignment="Center" >
-                                </TextBox>
-                                <TextBox Text="{Binding SubtitleUrl}" Margin="8" 
-                                          materialDesign:TextFieldAssist.HasClearButton="True"
-                                          materialDesign:HintAssist.Hint="字幕地址srt等字幕格式地址(没有可以不填)"  FontSize="18"  VerticalAlignment="Center" >
-                                </TextBox>
-                                <TextBox Text="{Binding VideoName}" Margin="8" 
-                                            materialDesign:TextFieldAssist.HasClearButton="True"
-                                            materialDesign:HintAssist.Hint="视频名称(可以不填写,不写默认随机名称)" FontSize="18"  VerticalAlignment="Center">
-                                </TextBox>
-                            </StackPanel>
-
-                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                <Button cal:Message.Attach="ProcessMediaDownload($DataContext)" materialDesign:ElevationAssist.Elevation="Dp2"  Margin="5" Width="150" >
-                                    <materialDesign:PackIcon Kind="Download" Width="24" Height="24" />
-                                </Button>
-                            </StackPanel>
-                        </Grid>
-                    </TabItem>
+                <TabControl Name="SubWindows" Margin="5,0">
+                    <TabControl.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding DisplayName}"  />
+                        </DataTemplate>
+                    </TabControl.ItemTemplate>
+                    <TabControl.ItemContainerStyle>
+                        <Style TargetType="TabItem" BasedOn="{StaticResource MaterialDesignTabItem}">
+                            <Setter Property="Width" Value="200" />
+                        </Style>
+                    </TabControl.ItemContainerStyle>
                 </TabControl>
-   
-
 
 
                 <!--  展示区  -->
-                <Grid Grid.Row="1">
+                <Grid Grid.Row="2">
                     
                     <!-- 占位区 -->
                     <StackPanel
@@ -270,7 +128,7 @@
                               ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                               x:Name="Downloads"
                               SelectionMode="Extended"
-                              Margin="2" >
+                              Margin="5,0" >
                         <i:Interaction.Behaviors>
                             <behavior:ListBoxMultiSelectionBehavior SelectedItems="{Binding SelectedDownloads,Mode=TwoWay}" />
                         </i:Interaction.Behaviors>
@@ -329,15 +187,14 @@
                 </Grid>
             </Grid>
         </materialDesign:DialogHost>
-        <Grid Grid.Row="2" VerticalAlignment="Center">
+        <Grid Grid.Row="1" VerticalAlignment="Center" >
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
                 <ColumnDefinition />
                 <ColumnDefinition Width="100" />
             </Grid.ColumnDefinitions>
-            <TextBlock Margin="5 0 0 0" d:Text="http://111.111.111.111:12345" Text="{Binding HttpServicePort,TargetNullValue=RestApi初始化失败如需此以管理员权限身份运行此程序,Converter={x:Static converters:PortToLocalAddress.Instance}}" />
-            <TextBlock Grid.Column="1" d:Text="http://127.0.0.1:12345" Text="{Binding HttpServicePort,TargetNullValue=RestApi初始化失败如需请以管理员权限身份运行此程序,StringFormat=http://127.0.0.1:\{0\}}" />
-            <TextBlock Grid.Column="2"  d:Text="v3.11.11" HorizontalAlignment="Right" Margin="0 0 10 0" Text="{Binding VersionString}" />
+            <TextBlock Margin="5 0 0 0" HorizontalAlignment="Center" d:Text="http://111.111.111.111:12345" Text="{Binding HttpServicePort,TargetNullValue=RestApi初始化失败如需此以管理员权限身份运行此程序,Converter={x:Static converters:PortToLocalAddress.Instance}}" />
+            <TextBlock Grid.Column="1"  HorizontalAlignment="Center" d:Text="http://127.0.0.1:12345" Text="{Binding HttpServicePort,TargetNullValue=RestApi初始化失败如需请以管理员权限身份运行此程序,StringFormat=http://127.0.0.1:\{0\}}" />
         </Grid>
     </Grid>
-</Window>
+</UserControl>

@@ -13,14 +13,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace M3u8Downloader_H.Views
+namespace M3u8Downloader_H.Views.Windows
 {
     /// <summary>
-    /// AboutView.xaml 的交互逻辑
+    /// M3u8ConverterView.xaml 的交互逻辑
     /// </summary>
-    public partial class AboutView : UserControl
+    public partial class M3u8ConverterView : UserControl
     {
-        public AboutView()
+        public M3u8ConverterView()
         {
             InitializeComponent();
         }

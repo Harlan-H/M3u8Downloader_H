@@ -1,30 +1,30 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 using Caliburn.Micro;
 using M3u8Downloader_H.Extensions;
 using M3u8Downloader_H.Services;
-using M3u8Downloader_H.ViewModels.FrameWork;
 using MaterialDesignThemes.Wpf;
 
-namespace M3u8Downloader_H.ViewModels
+namespace M3u8Downloader_H.ViewModels.Menus
 {
-    public class SettingsViewModel(SettingsService settingService) : DialogScreen
+    public class SettingsViewModel(SettingsService settingService) : Screen
     {
         public ISnackbarMessageQueue MyMessageQueue { get; } = new SnackbarMessageQueue(TimeSpan.FromSeconds(5));
-        public bool IsActive { get; private set; }
-        public bool? Status { get; set; } = default!;
+        public bool IsActived { get; private set; }
 
-        public SettingsService SettingsServiceClone { get; set; } = (SettingsService)settingService.Clone();
+        public SettingsService SettingsServiceClone { get;private set; } = default!;
 
         public string[] Formats { get; } = { "默认", "mp4" };
 
         public BindableCollection<string> PluginKeys { get; } = [];
 
-        public void OnCloseDialog()
+        protected override Task OnActivateAsync(CancellationToken cancellationToken)
         {
-            Close(false);
+            OnResetSettingInfo();
+            return base.OnActivateAsync(cancellationToken);
         }
 
         public void OnSubmitSettingInfo(SettingsService obj)
@@ -34,14 +34,18 @@ namespace M3u8Downloader_H.ViewModels
                 obj.Validate();
                 settingService.CopyFrom(obj);
                 settingService.UpdateConcurrentDownloadCount();
-                Close(true);
             }catch(Exception e)
             {
                 MyMessageQueue.Enqueue($"提交失败,错误信息:{e.Message}");
             }
         }
 
-        public bool CanTryConnectProxy => !IsActive;
+        public void OnResetSettingInfo()
+        {
+            SettingsServiceClone = (SettingsService)settingService.Clone();
+        }
+
+        public bool CanTryConnectProxy => !IsActived;
 
         public async void TryConnectProxy(string proxy)
         {
@@ -49,9 +53,9 @@ namespace M3u8Downloader_H.ViewModels
             {
                 MyMessageQueue.Enqueue("请输入代理地址后,再次点击");
                 return;
-            }    
+            }
 
-            IsActive = true;
+            IsActived = true;
             try
             {
                 using HttpClientHandler clientHandler = new()
@@ -73,7 +77,7 @@ namespace M3u8Downloader_H.ViewModels
             }
             finally
             {
-                IsActive = false;
+                IsActived = false;
             }
         }
 

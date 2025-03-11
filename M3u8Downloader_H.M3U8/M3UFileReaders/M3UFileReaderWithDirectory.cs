@@ -51,7 +51,7 @@ namespace M3u8Downloader_H.M3U8.M3UFileReaders
                 .Where(f => f.Name.EndsWith(".ts", StringComparison.CurrentCultureIgnoreCase) || f.Name.EndsWith(".tmp", StringComparison.CurrentCultureIgnoreCase))
                 .OrderBy(f => f.Name, new SpecialComparer());
 
-            List<M3UMediaInfo> m3UMediaInfos = new();
+            List<M3UMediaInfo> m3UMediaInfos = [];
             foreach (var fileinfo in tmpFileInfos)
             {
                 var m3umediainfo = GetM3UMediaInfo(fileinfo.FullName, fileinfo.Name);

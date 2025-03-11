@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Collections.Generic;
 using Caliburn.Micro;
 using M3u8Downloader_H.Services;
 using M3u8Downloader_H.Utils;
@@ -12,7 +11,6 @@ using System.Text;
 using System.Linq;
 using System.Timers;
 using M3u8Downloader_H.Abstractions.Common;
-using Newtonsoft.Json.Linq;
 using M3u8Downloader_H.Abstractions.Extensions;
 
 namespace M3u8Downloader_H.ViewModels

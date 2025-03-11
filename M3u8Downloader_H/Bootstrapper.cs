@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using Caliburn.Micro;
 using M3u8Downloader_H.Services;
 using M3u8Downloader_H.ViewModels;
+using M3u8Downloader_H.ViewModels.Menus;
+using System.Windows.Documents;
 #if !DEBUG
 using System.Windows.Threading;
 #endif
@@ -31,7 +33,12 @@ namespace M3u8Downloader_H
                 // .Singleton<DownloadService>()
                 .Singleton<SoundService>()
                 .Singleton<PluginService>()
-                .PerRequest<MainWindowViewModel>()
+                .Singleton<SponsorViewModel>()
+                .Singleton<AboutViewModel>()
+                .Singleton<SettingsViewModel>()
+                .Singleton<MainWindowViewModel>()
+                .Singleton<ConverterViewModel>()
+                .Singleton<DashboardViewModel>()
                 .PerRequest<M3u8DownloadViewModel>()
                 .PerRequest<MediaDownloadViewModel>();
         }
@@ -53,7 +60,7 @@ namespace M3u8Downloader_H
 
         protected override async void OnStartup(object sender, StartupEventArgs e)
         {
-            await DisplayRootViewForAsync<MainWindowViewModel>();
+            await DisplayRootViewForAsync<DashboardViewModel>();
         }
 
         private Type MyLocateTypeForModelType(Type modelType,DependencyObject displayLocation,object context)

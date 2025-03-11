@@ -13,14 +13,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace M3u8Downloader_H.Views
+namespace M3u8Downloader_H.Views.Windows
 {
     /// <summary>
-    /// SponsorView.xaml 的交互逻辑
+    /// M3u8WindowView.xaml 的交互逻辑
     /// </summary>
-    public partial class SponsorView : UserControl
+    public partial class M3u8WindowView : UserControl
     {
-        public SponsorView()
+        public M3u8WindowView()
         {
             InitializeComponent();
         }

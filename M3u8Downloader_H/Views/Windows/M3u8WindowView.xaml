@@ -1,0 +1,54 @@
+﻿<UserControl x:Class="M3u8Downloader_H.Views.Windows.M3u8WindowView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:M3u8Downloader_H.ViewModels.Windows"
+             xmlns:cal="http://www.caliburnproject.org"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:behavior="clr-namespace:M3u8Downloader_H.Behaviors"
+             mc:Ignorable="d" 
+             d:DataContext="{d:DesignInstance Type=local:M3u8WindowViewModel}"
+             d:DesignHeight="450" d:DesignWidth="800">
+    
+    <Grid Name="videoDownloadInfoGrid" DataContext="{Binding VideoDownloadInfo}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition  />
+            <ColumnDefinition Width="auto" />
+        </Grid.ColumnDefinitions>
+        <StackPanel >
+            <TextBox Text="{Binding RequestUrl,Delay=150}" Margin="8" 
+                        materialDesign:TextFieldAssist.HasClearButton="True"
+                        materialDesign:HintAssist.Hint="下载地址,m3u8,txt,json文件(文件可以直接拖拽到此)"  FontSize="18"  VerticalAlignment="Center" >
+                <i:Interaction.Behaviors>
+                    <behavior:DragAndDropBehaviour />
+                </i:Interaction.Behaviors>
+            </TextBox>
+            <TextBox Text="{Binding VideoName,Delay=150}" Margin="8" 
+                    materialDesign:TextFieldAssist.HasClearButton="True"
+                    materialDesign:HintAssist.Hint="视频名称(可以不填写,不写默认随机名称)" FontSize="18"  VerticalAlignment="Center">
+            </TextBox>
+
+            <!-- 密钥填写区  -->
+            <DockPanel  Margin="8" >
+                <ComboBox SelectedValue="{Binding Method,Mode=OneWayToSource}" FontSize="18" >
+                    <ComboBoxItem Content="AES-128" IsSelected="True"/>
+                    <ComboBoxItem Content="AES-192" />
+                    <ComboBoxItem Content="AES-256" />
+                </ComboBox>
+                <TextBox Text="{Binding Key}"  Margin="5 0 0 0" FontSize="18"
+                        materialDesign:HintAssist.Hint="KEY(字符串或者base64)" />
+            </DockPanel>
+            <TextBox Text="{Binding Iv}"  Margin="8"  FontSize="18" 
+                        materialDesign:HintAssist.Hint="IV(例如0x11223344556677888877665544332211)"/>
+        </StackPanel>
+
+        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+            <Button cal:Message.Attach="ProcessM3u8Download($DataContext)" materialDesign:ElevationAssist.Elevation="Dp2"  Margin="5" Width="150" >
+                <materialDesign:PackIcon Kind="Download" Width="24" Height="24" />
+            </Button>
+
+        </StackPanel>
+    </Grid>
+</UserControl>
