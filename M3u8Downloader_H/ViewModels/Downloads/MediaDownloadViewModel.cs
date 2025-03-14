@@ -55,8 +55,8 @@ namespace M3u8Downloader_H.ViewModels
             viewModel.RequestUrl = m3U8DownloadParam.Medias[0].Url;
             viewModel.VideoName = m3U8DownloadParam.VideoName;
 
-            viewModel.m3UDownloaderClient = new DownloaderClient(Http.Client, null, viewModel, m3U8DownloadParam);
-            viewModel.m3UCombinerClient = new M3uCombinerClient(viewModel, m3U8DownloadParam);
+            viewModel.m3UDownloaderClient = new DownloaderClient(Http.Client, null, viewModel.Log, m3U8DownloadParam);
+            viewModel.m3UCombinerClient = new M3uCombinerClient(viewModel.Log, m3U8DownloadParam);
 
             return viewModel;
         }

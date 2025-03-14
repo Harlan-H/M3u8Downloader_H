@@ -3,26 +3,25 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using Caliburn.Micro;
 using M3u8Downloader_H.Services;
 using M3u8Downloader_H.Utils;
 using M3u8Downloader_H.Models;
-using System.Text;
-using System.Linq;
 using System.Timers;
 using M3u8Downloader_H.Abstractions.Common;
 using M3u8Downloader_H.Abstractions.Extensions;
+using Caliburn.Micro;
+using M3u8Downloader_H.ViewModels.Utils;
 
 namespace M3u8Downloader_H.ViewModels
 {
-    public abstract  partial  class DownloadViewModel(SettingsService settingsService, SoundService soundService) : PropertyChangedBase, Abstractions.Common.ILog
+    public abstract  partial  class DownloadViewModel(SettingsService settingsService, SoundService soundService) : PropertyChangedBase
     {
         private readonly ThrottlingSemaphore throttlingSemaphore = ThrottlingSemaphore.Instance;
         private CancellationTokenSource? cancellationTokenSource;
         protected IDownloadParamBase DownloadParam = default!;
         protected DownloadProgress? downloadProgress;
 
-        public BindableCollection<LogParams> Logs { get; } = [];
+        public MyLog Log { get; set; } = new();
         public Uri RequestUrl { get; set; } = default!;
 
         public string VideoName { get; set; } = default!;
@@ -65,14 +64,14 @@ namespace M3u8Downloader_H.ViewModels
                 catch (OperationCanceledException) when (cancellationTokenSource!.IsCancellationRequested)
                 {
                     Status = DownloadStatus.Canceled;
-                    Info("已经停止下载");
+                    Log.Info("已经停止下载");
                 }
                 catch (Exception e)
                 {
                     soundService.PlayError(settingsService.IsPlaySound);
                     Status = DownloadStatus.Failed;
                     FailReason = e.ToString();
-                    Error(e);
+                    Log.Error(e);
                 }
                 finally
                 {
@@ -124,37 +123,8 @@ namespace M3u8Downloader_H.ViewModels
             directory.Delete(true);
 
             if(isShowLog)
-                Info("删除{0}目录成功", directory);
+                Log.Info("删除{0}目录成功", directory);
         }
-
-        public void Info(string format, params object[] args)
-        {
-            Logs.Add(new LogParams(LogType.Info, string.Format(format, args)));
-        }
-
-        public void Warn(string format, params object[] args)
-        {
-            Logs.Add(new LogParams(LogType.Warning, string.Format(format, args)));
-        }
-
-        public void Error(Exception exception)
-        {
-            Logs.Add(new LogParams(LogType.Error, exception.Message));
-        }
-
-        public string CopyLog()
-        {
-            StringBuilder sb = new();
-            foreach (var log in Logs.ToArray())
-            {
-                sb.Append(log.Time.ToString("yyyy-MM-dd HH:mm:ss"));
-                sb.Append(' ');
-                sb.Append(log.Message);
-                sb.Append(Environment.NewLine);
-            }
-            return sb.ToString();
-        }
-
 
     }
 

@@ -32,11 +32,22 @@
             <SolidColorBrush x:Key="foreGroundBrush">Gray</SolidColorBrush>
 
 
-            <Style x:Key="TextBlockStyle" TargetType="{x:Type TextBlock}">
+            <Style x:Key="TextBlockStyle" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource MaterialDesignTextBlock}">
                 <Setter Property="VerticalAlignment" Value="Center" />
+                <Setter Property="Width" Value="90" />
                 <Setter Property="HorizontalAlignment" Value="Right" />
+                <Setter Property="FontSize" Value="20" />
+                <Setter Property="Margin" Value="5" />
+            </Style>
+
+            <Style x:Key="TextBoxStyle" TargetType="{x:Type TextBox}"  BasedOn="{StaticResource MaterialDesignTextBox}">
                 <Setter Property="FontSize" Value="18" />
                 <Setter Property="Margin" Value="5" />
+                <Setter Property="VerticalAlignment" Value="Center" />
+            </Style>
+
+            <Style x:Key="DockPannelStyle" TargetType="{x:Type DockPanel}" >
+                <Setter Property="Margin" Value="8,0,8,0" />
             </Style>
 
             <DataTemplate x:Key="CloseWhite">

@@ -174,7 +174,7 @@ namespace M3u8Downloader_H.ViewModels.Menus
 
         public void CopyFailReason(DownloadViewModel download) => Clipboard.SetText(download.FailReason);
 
-        public void CopyLogs(DownloadViewModel download) => Clipboard.SetText(download.CopyLog());
+        public void CopyLogs(DownloadViewModel download) => Clipboard.SetText(download.Log.CopyLog());
 
     }
 }

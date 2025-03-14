@@ -50,7 +50,7 @@ namespace M3u8Downloader_H.ViewModels
 
             if (M3U8FileInfo is not null)
             {
-                Info("获取视频流{0}个", M3U8FileInfo.MediaFiles.Count);
+                Log.Info("获取视频流{0}个", M3U8FileInfo.MediaFiles.Count);
                 DownloadParam.SetVideoFullName(DownloadParam.VideoName + (M3U8FileInfo.Map is not null ? Path.GetExtension(M3U8FileInfo.Map?.Title!) : ".ts"));
                 _isParsed = true;
                 return;
@@ -66,7 +66,7 @@ namespace M3u8Downloader_H.ViewModels
             {
                 M3U8FileInfo = await m3U8FileInfoClient.M3UFileReadManager.GetM3u8FileInfo(cancellationToken);
             }
-            Info("获取视频流{0}个", M3U8FileInfo.MediaFiles.Count);
+            Log.Info("获取视频流{0}个", M3U8FileInfo.MediaFiles.Count);
 
             if (M3UKeyInfo is not null)
                 M3U8FileInfo.Key = M3UKeyInfo;
@@ -116,10 +116,10 @@ namespace M3u8Downloader_H.ViewModels
             viewModel.RequestUrl = m3U8DownloadParam.RequestUrl;
             viewModel.VideoName = m3U8DownloadParam.VideoName;
 
-            PluginManger? pluginManger = PluginManger.CreatePluginMangaer(pluginType, Http.Client, viewModel);
-            viewModel.m3U8FileInfoClient = new M3u8FileInfoClient(Http.Client, pluginManger, viewModel, m3U8DownloadParam);
-            viewModel.m3UDownloaderClient = new DownloaderClient(Http.Client, pluginManger, viewModel, m3U8DownloadParam);
-            viewModel.m3UCombinerClient = new M3uCombinerClient(viewModel, m3U8DownloadParam);
+            PluginManger? pluginManger = PluginManger.CreatePluginMangaer(pluginType, Http.Client, viewModel.Log);
+            viewModel.m3U8FileInfoClient = new M3u8FileInfoClient(Http.Client, pluginManger, viewModel.Log, m3U8DownloadParam);
+            viewModel.m3UDownloaderClient = new DownloaderClient(Http.Client, pluginManger, viewModel.Log, m3U8DownloadParam);
+            viewModel.m3UCombinerClient = new M3uCombinerClient(viewModel.Log, m3U8DownloadParam);
 
             viewModel.M3UKeyInfo = m3U8DownloadParam.GetM3uKeyInfo();
             
@@ -138,9 +138,9 @@ namespace M3u8Downloader_H.ViewModels
             viewModel.M3U8FileInfo = m3UFileInfo;
             viewModel.VideoName = m3U8DownloadParam.VideoName;
 
-            PluginManger? pluginManger = PluginManger.CreatePluginMangaer(pluginType, Http.Client, viewModel);
-            viewModel.m3UDownloaderClient = new DownloaderClient(Http.Client, pluginManger, viewModel, m3U8DownloadParam);
-            viewModel.m3UCombinerClient = new M3uCombinerClient(viewModel, m3U8DownloadParam);
+            PluginManger? pluginManger = PluginManger.CreatePluginMangaer(pluginType, Http.Client, viewModel.Log);
+            viewModel.m3UDownloaderClient = new DownloaderClient(Http.Client, pluginManger, viewModel.Log, m3U8DownloadParam);
+            viewModel.m3UCombinerClient = new M3uCombinerClient(viewModel.Log, m3U8DownloadParam);
             return viewModel;
         }
     }

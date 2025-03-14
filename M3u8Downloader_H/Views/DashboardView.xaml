@@ -11,8 +11,8 @@
         xmlns:cal="http://www.caliburnproject.org"
         WindowStartupLocation="CenterScreen"
         WindowStyle="None"
-        MinHeight="720" MinWidth="800" 
-        Height="780" Width="1080"
+        MinHeight="740" MinWidth="980" 
+        Height="740" Width="1080"
     >
     <i:Interaction.Behaviors>
         <behavior:WindowSystemCommandBehavior />
