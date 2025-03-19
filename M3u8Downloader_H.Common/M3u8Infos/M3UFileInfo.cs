@@ -6,6 +6,7 @@ namespace M3u8Downloader_H.Common.M3u8Infos
 {
     public partial class M3UFileInfo 
     {
+
         public int? Version { get; set; }
 
         public int? MediaSequence { get; set; }
@@ -30,6 +31,8 @@ namespace M3u8Downloader_H.Common.M3u8Infos
         public object? UserData { get; set; }
 
         public bool IsFile => MediaFiles.Any(m => m.Uri.IsFile);
+
+        public bool IsCrypted => Key is not null;
 
         public M3UFileInfo(M3UFileInfo m3UFileInfo)
         {

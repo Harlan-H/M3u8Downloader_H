@@ -66,65 +66,89 @@
         </DockPanel>
 
         <DockPanel Style="{StaticResource DockPannelStyle}">
-            <TextBlock Text="进度"  Style="{StaticResource TextBlockStyle}"/>
+            <TextBlock Text="转码: "  Style="{StaticResource TextBlockStyle}"/>
+            <ComboBox  SelectedValue="{Binding Formats,Mode=OneWayToSource}" FontSize="18">
+                <ComboBoxItem Content="MP4" IsSelected="True" />
+                <ComboBoxItem Content="MKV" />
+            </ComboBox>
+        </DockPanel>
+
+        <DockPanel Style="{StaticResource DockPannelStyle}">
+            <TextBlock Text="保存路径: "  Style="{StaticResource TextBlockStyle}"/>
+            <Button DockPanel.Dock="Right" Style="{DynamicResource MaterialDesignFlatButton}"  Margin="2">
+                <materialDesign:PackIcon Kind="FolderOpenOutline"/>
+                <i:Interaction.Behaviors>
+                    <behavior:OpenFileDialogBehaviour IsFile="False" 
+                                          AttachedTextBox="{Binding ElementName=savePathTextBox}" 
+                                          />
+                </i:Interaction.Behaviors>
+            </Button>
+            <TextBox  Name="savePathTextBox" Text="{Binding SavePath}" Style="{StaticResource TextBoxStyle}"
+                      materialDesign:HintAssist.Hint="文件最终的输出路径"  />
+            
+        </DockPanel>
+
+        <Grid Margin="8,0,8,0">
             <ProgressBar Margin="5"
                     Height="20"
-                    Value="25"
+                    Value="{Binding Progress}"
                     />
-        </DockPanel>
-        
-        <DockPanel Style="{StaticResource DockPannelStyle}">
-            <TextBlock Text="日志输出"  Style="{StaticResource TextBlockStyle}"/>
-            <Border BorderThickness="1" 
-                    BorderBrush="{StaticResource MaterialDesign.Brush.Primary}"
-                    CornerRadius="20"
-                    Padding="10"
-                    >
-                <ItemsControl Grid.Row="1" Height="200" ItemsSource="{Binding Log.Logs}"
-               ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-               ScrollViewer.VerticalScrollBarVisibility="Auto">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <VirtualizingStackPanel/>
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.Template>
-                        <ControlTemplate TargetType="ItemsControl">
-                            <ScrollViewer VerticalScrollBarVisibility="Visible">
-                                <ItemsPresenter />
-                            </ScrollViewer>
-                        </ControlTemplate>
-                    </ItemsControl.Template>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <TextBlock FontSize="13">
-                             <Run Text="{Binding Time,StringFormat='yyyy-MM-dd HH:mm:ss',Mode=OneWay}"  />
-                             <Run Text="{Binding Message,Mode=OneWay}" >
-                                 <Run.Style>
-                                         <Style TargetType="Run">
-                                             <Style.Triggers>
-                                                 <DataTrigger Binding="{Binding Type}" Value="{x:Static model:LogType.Warning}">
-                                                     <Setter Property="Foreground" Value="Orange" />
-                                                 </DataTrigger>
+            <TextBlock Text="{Binding Progress,StringFormat=当前进度:{0,-3:P1}}"  
+                       FontSize="16"
+                       Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" />
+        </Grid>
 
-                                                 <DataTrigger Binding="{Binding Type}" Value="{x:Static model:LogType.Error}">
-                                                     <Setter Property="Foreground" Value="Red" />
-                                                 </DataTrigger>
-                                             </Style.Triggers>
-                                         </Style>
-                                     </Run.Style>
-                                 </Run>     
-                            </TextBlock>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                    <i:Interaction.Behaviors>
-                        <behavior:EnsureScrollingToBottomBehavior />
-                    </i:Interaction.Behaviors>
-                </ItemsControl>
-            </Border>
-        </DockPanel>
+        <Border BorderThickness="1" 
+                Margin="8"
+                BorderBrush="{StaticResource MaterialDesign.Brush.Primary}"
+                CornerRadius="20"
+                Padding="10"
+                >
+            <ItemsControl Grid.Row="1" Height="200" ItemsSource="{Binding Log.Logs}"
+            ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+            ScrollViewer.VerticalScrollBarVisibility="Auto">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <VirtualizingStackPanel/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.Template>
+                    <ControlTemplate TargetType="ItemsControl">
+                        <ScrollViewer VerticalScrollBarVisibility="Visible">
+                            <ItemsPresenter />
+                        </ScrollViewer>
+                    </ControlTemplate>
+                </ItemsControl.Template>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock FontSize="13">
+                            <Run Text="{Binding Time,StringFormat='yyyy-MM-dd HH:mm:ss',Mode=OneWay}"  />
+                            <Run Text="{Binding Message,Mode=OneWay}" >
+                                <Run.Style>
+                                        <Style TargetType="Run">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Type}" Value="{x:Static model:LogType.Warning}">
+                                                    <Setter Property="Foreground" Value="Orange" />
+                                                </DataTrigger>
 
-        <StackPanel Orientation="Horizontal"  HorizontalAlignment="Center" Margin="20">
+                                                <DataTrigger Binding="{Binding Type}" Value="{x:Static model:LogType.Error}">
+                                                    <Setter Property="Foreground" Value="Red" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Run.Style>
+                                </Run>
+                        </TextBlock>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+                <i:Interaction.Behaviors>
+                    <behavior:EnsureScrollingToBottomBehavior />
+                </i:Interaction.Behaviors>
+            </ItemsControl>
+        </Border>
+
+
+        <StackPanel Orientation="Horizontal"  HorizontalAlignment="Center" Margin="20" Height="40">
             <Button cal:Message.Attach="OnProcess"
                     Content="开始转码" 
                     Width="100" />

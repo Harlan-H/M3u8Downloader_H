@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Caliburn.Micro;
 using M3u8Downloader_H.Abstractions.Common;
 using M3u8Downloader_H.Extensions;
@@ -13,7 +10,6 @@ using M3u8Downloader_H.Abstractions.Extensions;
 using MaterialDesignThemes.Wpf;
 using M3u8Downloader_H.Exceptions;
 using System.IO;
-using System.Threading;
 
 namespace M3u8Downloader_H.ViewModels.Windows
 {

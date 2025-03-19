@@ -18,10 +18,10 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install .NET
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 9.0.x
 
@@ -36,13 +36,13 @@ jobs:
           Copy-Item dotnet-9.0-runtime-x64.exe M3u8Downloader_H/bin/Publish -Recurse
 
       - name: Upload artifacts normal
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: M3u8Downloader_H
           path: M3u8Downloader_H/bin/Publish
 
       - name: Upload artifacts single file
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: M3u8Downloader_H-SingleFile
           path: M3u8Downloader_H/bin/PublishSingleFile
@@ -53,13 +53,13 @@ jobs:
 
     steps:
       - name: Download artifacts normal
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: M3u8Downloader_H
           path: M3u8Downloader_H
 
       - name: Download artifacts single file
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: M3u8Downloader_H-SingleFile
           path: M3u8Downloader_H-SingleFile
@@ -80,7 +80,7 @@ jobs:
           echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Create release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.event.inputs.tags }}
           body: |

@@ -29,8 +29,6 @@ namespace M3u8Downloader_H.Downloader
                     };
                     _m3u8downloader = liveM3UDownloader;
                 }
-                else if(M3UFileInfo.MediaFiles.Any(m => m.Uri.IsFile))
-                    _m3u8downloader = new NullDownloader(httpClient);
                 else if (M3UFileInfo.Key is not null)
                     _m3u8downloader = new CryptM3uDownloader(httpClient, M3UFileInfo);
                 else if (PluginManager?.PluginService is not null)

@@ -96,11 +96,16 @@ namespace M3u8Downloader_H.ViewModels
 
         private async Task MergeAsync(IDialogProgress progress,CancellationToken cancellationToken)
         {
-            m3UCombinerClient.M3UFileInfo = M3U8FileInfo;
             m3UCombinerClient.Settings = settingsService;
             m3UCombinerClient.DialogProgress = progress;
 
-            await m3UCombinerClient.Converter(false, cancellationToken);
+            if(M3U8FileInfo.Map is not null)
+            {
+                m3UCombinerClient.M3u8FileMerger.Initialize(M3U8FileInfo);
+                await m3UCombinerClient.M3u8FileMerger.MegerVideoHeader(M3U8FileInfo.Map, cancellationToken);
+                await m3UCombinerClient.M3u8FileMerger.StartMerging(M3U8FileInfo, cancellationToken);
+            }else
+                await m3UCombinerClient.FFmpeg.ConvertToMp4(M3U8FileInfo, cancellationToken);
         }
 
     }

@@ -1,66 +1,51 @@
-﻿using System;
-using System.IO;
-using System.Security.Cryptography;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using M3u8Downloader_H.Abstractions.Common;
+using M3u8Downloader_H.Abstractions.Meger;
 using M3u8Downloader_H.Common.M3u8Infos;
+using M3u8Downloader_H.Abstractions.Extensions;
 
 namespace M3u8Downloader_H.Combiners.M3uCombiners
 {
-    internal class M3uCombiner(string dirPath) : IDisposable
+    public class M3uCombiner(ILog Log, IDownloadParamBase DownloadParams) : IDisposable
     {
-        protected readonly string cacheFullPath = dirPath;
-        protected FileStream videoFileStream = default!;
+        private bool _isFile = false;
+        private readonly FileStream videoFileStream = File.Create(DownloadParams.GetVideoFullPath());
+        public IDialogProgress DialogProgress { get; set; } = default!;
+        public IMergeSetting Settings { get; set; } = default!;
 
-        public IProgress<double> Progress { get; set; } = default!;
-
-        protected virtual Stream HandleData(string path) => File.OpenRead(path);
-
-        protected string GetTsPath(M3UMediaInfo m3UMediaInfo)
-        {
-            return m3UMediaInfo.Uri.IsFile ? m3UMediaInfo.Uri.OriginalString : Path.Combine(cacheFullPath, m3UMediaInfo.Title);
-        }
-
-        public virtual void Initialization(string videoName) 
-        {
-            if(videoName is not null)
-                videoFileStream = File.Create(videoName);
-        }
+        public void Initialize(M3UFileInfo m3UFileInfo) => _isFile = m3UFileInfo.IsFile;
 
         public async ValueTask MegerVideoHeader(M3UMediaInfo? m3UMapInfo, CancellationToken cancellationToken)
         {
             if (m3UMapInfo is null)
                 return;
 
+            Log.Info("开始合并fmp4头");
             await MegerVideoInternalAsync(m3UMapInfo, cancellationToken);
         }
 
-        public async ValueTask StartMerging(M3UFileInfo m3UFileInfo, bool forceMerge, CancellationToken cancellationToken)
+        public async ValueTask StartMerging(M3UFileInfo m3UFileInfo, CancellationToken cancellationToken)
         {
-
+            Log.Info("开始合并fmp4,数量:{0}", m3UFileInfo.MediaFiles.Count);
             for (int i = 0; i < m3UFileInfo.MediaFiles.Count; i++)
             {
                 try
                 {
                     cancellationToken.ThrowIfCancellationRequested();
                     await MegerVideoInternalAsync(m3UFileInfo.MediaFiles[i], cancellationToken);
-                    Progress.Report(i / (double)m3UFileInfo.MediaFiles.Count);
+                    DialogProgress.Report(i / (double)m3UFileInfo.MediaFiles.Count);
                 }
-                catch(CryptographicException)
-                {
-                    throw new CryptographicException("解密失败,请确认key,iv是否正确");
-                }
-                catch (Exception) when (forceMerge)
+                catch (Exception) when (Settings.ForcedMerger)
                 {
                     continue;
                 }
             }
-       }
+            Log.Info("fmp4合并完成");
+        }
 
         protected virtual async ValueTask MegerVideoInternalAsync(M3UMediaInfo m3UMediaInfo,CancellationToken cancellationToken)
         {
-            string tsFileName = GetTsPath(m3UMediaInfo);
-            using Stream tsStream = HandleData(tsFileName);
+            string tsFileName = _isFile ? m3UMediaInfo.Uri.OriginalString : Path.Combine(DownloadParams.GetCachePath(), m3UMediaInfo.Title);
+            using Stream tsStream = File.OpenRead(tsFileName);
             await tsStream.CopyToAsync(videoFileStream, cancellationToken);
         }
 

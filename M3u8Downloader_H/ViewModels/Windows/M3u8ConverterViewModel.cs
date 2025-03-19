@@ -9,6 +9,7 @@ using M3u8Downloader_H.Extensions;
 using M3u8Downloader_H.ViewModels.Utils;
 using PropertyChanged;
 using System.Windows.Input;
+using System.Diagnostics;
 
 namespace M3u8Downloader_H.ViewModels.Windows
 {
@@ -23,6 +24,9 @@ namespace M3u8Downloader_H.ViewModels.Windows
         public string Method { get; set; } = default!;
         public string Key {  get; set; } = default!;
         public string Iv { get; set; } = default!;
+        public string Formats { get; set; } = default!;
+        public string SavePath { get; set; } = default!;   
+        public double Progress  { get; set; } = default!;
         public MyLog Log { get; } = new();
 
         public M3u8ConverterViewModel()
@@ -44,7 +48,7 @@ namespace M3u8Downloader_H.ViewModels.Windows
             FileInfo fileInfo = new(newValue);
             if (!fileInfo.Exists)
             {
-                Log.Warn("{0}文件不存在", Path.GetFileName(newValue));
+                Log.Warn("{0}文件不存在", fileInfo.Name);
                 return;
             }
 
@@ -93,7 +97,9 @@ namespace M3u8Downloader_H.ViewModels.Windows
             Method = "AES-128";
             Key = default!;
             Iv = default!;
-            Log.Info("数据以全部清空");
+            SavePath = default!;
+            Progress = default!;
+            Log.Info("数据已全部清空");
         }
     }
 }

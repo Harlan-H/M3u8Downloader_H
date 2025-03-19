@@ -1,5 +1,4 @@
 ﻿using M3u8Downloader_H.Abstractions.Plugins;
-using M3u8Downloader_H.Plugin.Extensions;
 using System.Reflection;
 using System.Text.RegularExpressions;
 
