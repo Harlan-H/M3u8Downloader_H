@@ -21,7 +21,7 @@ namespace M3u8Downloader_H.ViewModels
         protected IDownloadParamBase DownloadParam = default!;
         protected DownloadProgress? downloadProgress;
 
-        public MyLog Log { get; set; } = new();
+        public MyLog Log { get; } = new();
         public Uri RequestUrl { get; set; } = default!;
 
         public string VideoName { get; set; } = default!;

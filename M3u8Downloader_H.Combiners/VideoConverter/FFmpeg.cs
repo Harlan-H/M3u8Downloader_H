@@ -21,6 +21,19 @@ namespace M3u8Downloader_H.Combiners.VideoConverter
             = new("./ffmpeg.exe");
 #endif
 
+        public async ValueTask ConvertToMp4(IMediaDownloadParam mediaDownloadParam,CancellationToken cancellationToken = default)
+        {
+            var arguments = new ArgumentsBuilder();
+            foreach (var item in mediaDownloadParam.Medias)
+            {
+                arguments.Add("-i").Add($"{DownloadParams.VideoName}.{item.MediaType}.tmp");
+            }
+            if (mediaDownloadParam.Subtitle is not null)
+                arguments.Add("-i").Add("");
+
+            await ExecuteAsync(arguments.Build(), DialogProgress, cancellationToken);
+        }
+
         public async ValueTask ConvertToMp4(string m3u8ConcatTxt, CancellationToken cancellationToken = default)
         {
             if (!File.Exists(m3u8ConcatTxt))

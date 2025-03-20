@@ -65,35 +65,12 @@
                      />
         </DockPanel>
 
-        <DockPanel Style="{StaticResource DockPannelStyle}">
-            <TextBlock Text="转码: "  Style="{StaticResource TextBlockStyle}"/>
-            <ComboBox  SelectedValue="{Binding Formats,Mode=OneWayToSource}" FontSize="18">
-                <ComboBoxItem Content="MP4" IsSelected="True" />
-                <ComboBoxItem Content="MKV" />
-            </ComboBox>
-        </DockPanel>
-
-        <DockPanel Style="{StaticResource DockPannelStyle}">
-            <TextBlock Text="保存路径: "  Style="{StaticResource TextBlockStyle}"/>
-            <Button DockPanel.Dock="Right" Style="{DynamicResource MaterialDesignFlatButton}"  Margin="2">
-                <materialDesign:PackIcon Kind="FolderOpenOutline"/>
-                <i:Interaction.Behaviors>
-                    <behavior:OpenFileDialogBehaviour IsFile="False" 
-                                          AttachedTextBox="{Binding ElementName=savePathTextBox}" 
-                                          />
-                </i:Interaction.Behaviors>
-            </Button>
-            <TextBox  Name="savePathTextBox" Text="{Binding SavePath}" Style="{StaticResource TextBoxStyle}"
-                      materialDesign:HintAssist.Hint="文件最终的输出路径"  />
-            
-        </DockPanel>
-
         <Grid Margin="8,0,8,0">
             <ProgressBar Margin="5"
                     Height="20"
                     Value="{Binding Progress}"
                     />
-            <TextBlock Text="{Binding Progress,StringFormat=当前进度:{0,-3:P1}}"  
+            <TextBlock Text="{Binding Progress,StringFormat=当前进度: {0:P1}}"  
                        FontSize="16"
                        Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" />
         </Grid>
@@ -107,6 +84,16 @@
             <ItemsControl Grid.Row="1" Height="200" ItemsSource="{Binding Log.Logs}"
             ScrollViewer.HorizontalScrollBarVisibility="Disabled"
             ScrollViewer.VerticalScrollBarVisibility="Auto">
+                <ItemsControl.Resources>
+                    <ContextMenu cal:Action.TargetWithoutContext="{Binding DataContext,RelativeSource={RelativeSource AncestorType=UserControl}}"  x:Key="ItemsControlContextMenu">
+                        <MenuItem Header="复制日志" cal:Message.Attach="CopyLogs" />
+                    </ContextMenu>
+                </ItemsControl.Resources>
+                <ItemsControl.ItemContainerStyle>
+                    <Style BasedOn="{StaticResource {x:Type ItemsControl}}" TargetType="{x:Type ItemsControl}">
+                        <Setter Property="ContextMenu" Value="{StaticResource ItemsControlContextMenu}" />
+                    </Style>
+                </ItemsControl.ItemContainerStyle>
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <VirtualizingStackPanel/>
@@ -153,8 +140,10 @@
                     Content="开始转码" 
                     Width="100" />
 
-            <Button  cal:Message.Attach="OnReset"
-                     Content="重置信息"  Width="100" Margin="10 0 0 0" />
+            <Button cal:Message.Attach="OnCancel"
+                    Content="停止转码"
+                    Width="100"  Margin="10 0 0 0" />
+
         </StackPanel>
     </StackPanel>
 </UserControl>

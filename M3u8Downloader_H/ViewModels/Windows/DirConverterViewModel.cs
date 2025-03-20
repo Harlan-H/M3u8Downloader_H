@@ -3,21 +3,28 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Caliburn.Micro;
 using M3u8Downloader_H.Common.M3u8Infos;
+using M3u8Downloader_H.Downloader;
 using M3u8Downloader_H.M3U8;
+using M3u8Downloader_H.Models;
+using M3u8Downloader_H.Services;
 using M3u8Downloader_H.Utils;
 using M3u8Downloader_H.ViewModels.Utils;
+using M3u8Downloader_H.Views.Menus;
 using PropertyChanged;
 
 namespace M3u8Downloader_H.ViewModels.Windows
 {
     public class DirConverterViewModel : Screen
     {
-
+        private CancellationTokenSource? cancellationTokenSource;
         private readonly M3u8FileInfoLocal m3U8FileInfoLocal;
         private M3UFileInfo _fileInfo = default!;
+
+        public bool IsStart { get; private set; } = false;
 
         [OnChangedMethod(nameof(OnM3u8DirUrlChanged))]
         public string M3u8DirUrl { get; set; } = default!;
@@ -30,7 +37,7 @@ namespace M3u8Downloader_H.ViewModels.Windows
         public double Progress { get; set; } = default!;
         public MyLog Log { get; } = new();
 
-        public DirConverterViewModel()
+        public DirConverterViewModel(SettingsService settingsService)
         {
             m3U8FileInfoLocal = new M3u8FileInfoLocal(Log);
         }
@@ -79,14 +86,62 @@ namespace M3u8Downloader_H.ViewModels.Windows
             }
         }
 
+        public bool CanOnProcess => !IsStart;
         public void OnProcess()
         {
-            if (!_fileInfo.MediaFiles.Any(m => m.Uri.IsFile))
-            {
-                Log.Warn("ts文件不是本地路径");
+            if (IsStart) {
                 return;
             }
+
+            IsStart = true;
+
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    if (!_fileInfo.MediaFiles.Any(m => m.Uri.IsFile))
+                    {
+                        Log.Warn("ts文件不是本地路径");
+                        return;
+                    }
+
+                    if (_fileInfo.Key is not null)
+                    {
+                        cancellationTokenSource = new();
+                        cancellationTokenSource.CancelAfter(TimeSpan.FromSeconds(10));
+
+                        DownloadParamsBase downloadParamsBase = new(VideoName, null);
+                        DownloaderLocal downloaderLocal = new(Log, downloadParamsBase)
+                        {
+                            DialogProgress = new DialogProgress(d => Progress = d)
+                        };
+
+                        downloaderLocal.M3u8Downloader.Initialization(_fileInfo);
+                        await downloaderLocal.M3u8Downloader.DownloadAsync(_fileInfo, cancellationTokenSource.Token);
+                    }
+
+                }
+                catch (OperationCanceledException) when (cancellationTokenSource!.IsCancellationRequested)
+                {
+                    Log.Info("已经停止合并");
+                }
+                finally {
+                    IsStart = false;
+                    cancellationTokenSource?.Dispose();
+                }
+            });
+            
         }
+
+        public bool CanOnCancel => IsStart;
+        public void OnCancel()
+        {
+            if (!CanOnCancel)
+                return;
+
+            cancellationTokenSource?.Cancel();
+        }
+
 
         public void OnReset()
         {

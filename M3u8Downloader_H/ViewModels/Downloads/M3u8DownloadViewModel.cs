@@ -51,7 +51,7 @@ namespace M3u8Downloader_H.ViewModels
             if (M3U8FileInfo is not null)
             {
                 Log.Info("获取视频流{0}个", M3U8FileInfo.MediaFiles.Count);
-                DownloadParam.SetVideoFullName(DownloadParam.VideoName + (M3U8FileInfo.Map is not null ? Path.GetExtension(M3U8FileInfo.Map?.Title!) : ".ts"));
+                DownloadParam.SetVideoFullName($"{DownloadParam.VideoName}.{settingsService.SelectedFormat}");
                 _isParsed = true;
                 return;
             }
@@ -71,7 +71,7 @@ namespace M3u8Downloader_H.ViewModels
             if (M3UKeyInfo is not null)
                 M3U8FileInfo.Key = M3UKeyInfo;
 
-            DownloadParam.SetVideoFullName(DownloadParam.VideoName + (M3U8FileInfo.Map is not null ? Path.GetExtension(M3U8FileInfo.Map?.Title!) : ".ts"));
+            DownloadParam.SetVideoFullName($"{DownloadParam.VideoName}.{settingsService.SelectedFormat}");
             _isParsed = true;
         }
 

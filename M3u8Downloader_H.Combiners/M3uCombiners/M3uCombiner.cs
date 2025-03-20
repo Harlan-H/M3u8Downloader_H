@@ -14,7 +14,7 @@ namespace M3u8Downloader_H.Combiners.M3uCombiners
 
         public void Initialize(M3UFileInfo m3UFileInfo) => _isFile = m3UFileInfo.IsFile;
 
-        public async ValueTask MegerVideoHeader(M3UMediaInfo? m3UMapInfo, CancellationToken cancellationToken)
+        public async ValueTask MegerVideoHeader(M3UMediaInfo? m3UMapInfo, CancellationToken cancellationToken = default)
         {
             if (m3UMapInfo is null)
                 return;
@@ -23,7 +23,7 @@ namespace M3u8Downloader_H.Combiners.M3uCombiners
             await MegerVideoInternalAsync(m3UMapInfo, cancellationToken);
         }
 
-        public async ValueTask StartMerging(M3UFileInfo m3UFileInfo, CancellationToken cancellationToken)
+        public async ValueTask StartMerging(M3UFileInfo m3UFileInfo, CancellationToken cancellationToken = default)
         {
             Log.Info("开始合并fmp4,数量:{0}", m3UFileInfo.MediaFiles.Count);
             for (int i = 0; i < m3UFileInfo.MediaFiles.Count; i++)

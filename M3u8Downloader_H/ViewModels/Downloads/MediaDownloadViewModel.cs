@@ -26,6 +26,8 @@ namespace M3u8Downloader_H.ViewModels
 
             await DownloadAsync(downloadProgress, cancellationToken);
 
+            await MergeAsync(downloadProgress, cancellationToken);
+
         }
 
         private async Task DownloadAsync(IDialogProgress downloadProgress, CancellationToken cancellationToken)
@@ -42,6 +44,14 @@ namespace M3u8Downloader_H.ViewModels
                 await m3UDownloaderClient.MediaDownloader.DownloadAsync(media, cancellationToken);
             }
             _isDownloaded = true;
+        }
+
+        private async Task MergeAsync(IDialogProgress downloadProgress, CancellationToken cancellationToken)
+        {
+            m3UCombinerClient.DialogProgress = downloadProgress;
+
+            IMediaDownloadParam mediaDownloadParam = (IMediaDownloadParam)DownloadParam;
+            await m3UCombinerClient.FFmpeg.ConvertToMp4(mediaDownloadParam, cancellationToken);
         }
     }
 

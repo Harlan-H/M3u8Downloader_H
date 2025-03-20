@@ -3,9 +3,9 @@ using M3u8Downloader_H.Common.M3u8Infos;
 
 namespace M3u8Downloader_H.Downloader.M3uDownloaders
 {
-    internal class OnlyDecryptDownloader(M3UFileInfo m3UFileInfo,HttpClient httpClient) : M3u8Downloader(httpClient)
+    public  class OnlyDecryptDownloader(HttpClient httpClient) : DownloaderBase(httpClient)
     {
-        public override ValueTask Initialization(CancellationToken cancellationToken = default)
+        public void Initialization(M3UFileInfo m3UFileInfo)
         {
             if (m3UFileInfo.Key is null)
                 throw new InvalidDataException("没有可用的密钥信息");
@@ -21,7 +21,7 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
                    ? m3UFileInfo.Key.BKey.TryParseKey(m3UFileInfo.Key.Method)
                    : throw new InvalidDataException("密钥为空");
             }
-            return base.Initialization(cancellationToken);
+            
         }
 
         public override async Task DownloadAsync(M3UFileInfo m3UFileInfo, CancellationToken cancellationToken = default)

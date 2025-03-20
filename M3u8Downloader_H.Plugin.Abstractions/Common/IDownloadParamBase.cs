@@ -8,6 +8,7 @@ namespace M3u8Downloader_H.Abstractions.Common
 {
     public interface IDownloadParamBase
     {
+        string CachePath { get; }
         //没有扩展名的名称
         string VideoName { get;  }
 

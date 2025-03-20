@@ -7,6 +7,7 @@ using M3u8Downloader_H.Services;
 using M3u8Downloader_H.ViewModels;
 using M3u8Downloader_H.ViewModels.Menus;
 using System.Windows.Documents;
+using M3u8Downloader_H.ViewModels.Windows;
 #if !DEBUG
 using System.Windows.Threading;
 #endif
@@ -33,12 +34,12 @@ namespace M3u8Downloader_H
                 // .Singleton<DownloadService>()
                 .Singleton<SoundService>()
                 .Singleton<PluginService>()
+                .Singleton<DashboardViewModel>()
                 .Singleton<SponsorViewModel>()
                 .Singleton<AboutViewModel>()
                 .Singleton<SettingsViewModel>()
                 .Singleton<MainWindowViewModel>()
                 .Singleton<ConverterViewModel>()
-                .Singleton<DashboardViewModel>()
                 .PerRequest<M3u8DownloadViewModel>()
                 .PerRequest<MediaDownloadViewModel>();
         }
@@ -66,7 +67,7 @@ namespace M3u8Downloader_H
         private Type MyLocateTypeForModelType(Type modelType,DependencyObject displayLocation,object context)
         {
             var viewType = defaultLocator(modelType, displayLocation, context);
-            while (viewType == null && modelType != typeof(object))
+            if (viewType == null && modelType != typeof(object))
             {
                 modelType = modelType!.BaseType!;
                 viewType = defaultLocator(modelType, displayLocation, context);

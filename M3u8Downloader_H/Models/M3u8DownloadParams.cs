@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Security.Policy;
 using M3u8Downloader_H.Abstractions.Common;
 using M3u8Downloader_H.Common.M3u8Infos;
 using M3u8Downloader_H.Services;
@@ -7,7 +8,7 @@ using M3u8Downloader_H.Utils;
 
 namespace M3u8Downloader_H.Models
 {
-    public class M3u8DownloadParams : IM3u8DownloadParam
+    public class M3u8DownloadParams : DownloadParamsBase, IM3u8DownloadParam
     {
         public Uri RequestUrl { get; } = default!;
 
@@ -17,60 +18,48 @@ namespace M3u8Downloader_H.Models
 
         public string? Iv { get;  } = default!;
 
-        public string VideoName { get; private set; } = default!;
-
-        public string VideoFullName { get; private set; } = default!;
-
-        public string SavePath { get;  } = default!;
-
-        public IDictionary<string, string> Headers { get;  } = default!;
 
         public M3u8DownloadParams(SettingsService settingsService,Uri url,string? videoname)
+            : base(PathEx.GenerateFileNameWithoutExtension(url, videoname),
+                settingsService.SavePath,
+                settingsService.Headers!)
         {
             RequestUrl = url;
-            VideoName = PathEx.GenerateFileNameWithoutExtension(url, videoname);
-            SavePath = settingsService.SavePath;
-            Headers = settingsService.Headers!;
         }
 
         public M3u8DownloadParams(SettingsService settingsService,Uri url, string? videoname,string method,string? key,string? iv)
+            : base(PathEx.GenerateFileNameWithoutExtension(url, videoname),
+                settingsService.SavePath,
+                settingsService.Headers!)
         {
-            SavePath = settingsService.SavePath;
             RequestUrl = url;
-            VideoName = PathEx.GenerateFileNameWithoutExtension(url, videoname);
             Method = method;
-            Key = key;
-            Iv = iv;
-            Headers = settingsService.Headers!;
+            if(key != null) 
+                Key = key;
+            if(iv != null) 
+                Iv = iv;
         }
 
         public M3u8DownloadParams(SettingsService settingsService,IM3u8DownloadParam downloadParamBase)
+             : base(PathEx.GenerateFileNameWithoutExtension(downloadParamBase.RequestUrl, downloadParamBase.VideoName),
+                downloadParamBase.SavePath ?? settingsService.SavePath,
+                downloadParamBase.Headers!)
         {
             RequestUrl = downloadParamBase.RequestUrl;
             Method = downloadParamBase.Method;
             Key = downloadParamBase.Key;
             Iv = downloadParamBase.Iv;
-            VideoName = PathEx.GenerateFileNameWithoutExtension(downloadParamBase.RequestUrl, downloadParamBase.VideoName);
             VideoFullName = downloadParamBase.VideoFullName;
-            SavePath = downloadParamBase.SavePath ?? settingsService.SavePath;
-            Headers = downloadParamBase.Headers!;
         }
 
         public M3u8DownloadParams(SettingsService settingsService,Uri requestUrl, IDownloadParamBase downloadParamBase)
+             : base(PathEx.GenerateFileNameWithoutExtension(requestUrl, downloadParamBase.VideoName),
+                downloadParamBase.SavePath ?? settingsService.SavePath,
+                downloadParamBase.Headers!)
         {
             VideoFullName = downloadParamBase.VideoFullName;
-            SavePath = downloadParamBase.SavePath ?? settingsService.SavePath;
-            Headers = downloadParamBase.Headers!;
-            VideoName = PathEx.GenerateFileNameWithoutExtension(requestUrl, downloadParamBase.VideoName);
         }
 
-        public void SetVideoFullName(string videoName)
-        {
-            if (string.IsNullOrWhiteSpace(videoName))
-                return;
-
-            VideoFullName = videoName;
-        }
 
         public M3UKeyInfo? GetM3uKeyInfo()
         {

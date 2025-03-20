@@ -15,6 +15,9 @@ namespace M3u8Downloader_H.RestServer.Models
         [JsonIgnore]
         public string VideoFullName { get; set; } = default!;
 
+        [JsonIgnore]
+        public string CachePath => throw new NotImplementedException();
+
         public void SetVideoFullName(string v)
         {
             throw new NotImplementedException();

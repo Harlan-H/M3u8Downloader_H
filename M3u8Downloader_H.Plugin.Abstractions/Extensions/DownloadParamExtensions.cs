@@ -6,13 +6,13 @@ namespace M3u8Downloader_H.Abstractions.Extensions
     {
         public static string GetCachePath<T>(this T obj) where T : IDownloadParamBase
         {
-            if(string.IsNullOrWhiteSpace(obj.SavePath))
+            if(string.IsNullOrWhiteSpace(obj.CachePath))
                 return string.Empty;
 
             if(string.IsNullOrWhiteSpace(obj.VideoName)) 
                 return string.Empty;
 
-            return Path.Combine(obj.SavePath,obj.VideoName);
+            return Path.Combine(obj.CachePath, obj.VideoName);
         }
 
         public static string GetVideoFullPath<T>(this T obj) where T : IDownloadParamBase
