@@ -3,12 +3,13 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-            xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:behavior="clr-namespace:M3u8Downloader_H.Behaviors"
              xmlns:local="clr-namespace:M3u8Downloader_H.ViewModels.Windows"
              xmlns:cal="http://caliburnmicro.com"
              xmlns:model="clr-namespace:M3u8Downloader_H.Models" 
+             d:DataContext="{d:DesignInstance Type=local:DirConverterViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <StackPanel Margin="8">
@@ -23,12 +24,12 @@
                                                    />
                 </i:Interaction.Behaviors>
             </Button>
-            <TextBox x:Name="dirPathTextBox" Text="{Binding M3u8FileUrl}" Style="{StaticResource TextBoxStyle}" 
+            <TextBox x:Name="dirPathTextBox" Text="{Binding M3u8DirUrl}" Style="{StaticResource TextBoxStyle}" 
                  IsReadOnly="True"
-                 materialDesign:HintAssist.Hint="m3u8,json文件地址(文件可以直接拖拽到此)" 
+                 materialDesign:HintAssist.Hint="ts的文件夹地址(文件夹可以直接拖拽到此)" 
                   >
                 <i:Interaction.Behaviors>
-                    <behavior:DragAndDropBehaviour FilterString=".m3u8|.json" />
+                    <behavior:DragAndDropBehaviour IsFile="False" />
                 </i:Interaction.Behaviors>
             </TextBox>
         </DockPanel>
@@ -63,6 +64,36 @@
                   />
         </DockPanel>
 
+        <ListBox ItemsSource="{Binding MediaItems}" Height="300" 
+                 ToolTip="该列表展示的顺序就是合并的顺序,如果顺序不正确可以通过拖动来修改顺序"
+                 HorizontalContentAlignment="Stretch" >
+            <ListBox.ItemContainerStyle>
+                <Style>
+
+                </Style>
+            </ListBox.ItemContainerStyle>
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="3*"/>
+                            <ColumnDefinition Width="30" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="{Binding Title}" ></TextBlock>
+                        <Button  VerticalAlignment="Center" HorizontalAlignment="Right"  ToolTip="删除此行" 
+                                            Style="{DynamicResource  MaterialDesignFlatButton}"
+                                cal:Message.Attach="OnDelete($DataContext)"
+                                            >
+                            <materialDesign:PackIcon Width="20" Height="20" Kind="CloseBoxOutline" />
+                        </Button>
+                        <i:Interaction.Behaviors>
+                            <behavior:ListItemDragAndDropBehavihor ItemSource="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}},Path=DataContext.MediaItems}"/>
+                        </i:Interaction.Behaviors>
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+
         <Grid Margin="8,0,8,0">
             <ProgressBar Margin="5"
                  Height="20"
@@ -79,7 +110,7 @@
              CornerRadius="20"
              Padding="10"
              >
-            <ItemsControl Grid.Row="1" Height="200" ItemsSource="{Binding Log.Logs}"
+            <ItemsControl Grid.Row="1" Height="100" ItemsSource="{Binding Log.Logs}"
          ScrollViewer.HorizontalScrollBarVisibility="Disabled"
          ScrollViewer.VerticalScrollBarVisibility="Auto">
                 <ItemsControl.Resources>
@@ -87,11 +118,11 @@
                         <MenuItem Header="复制日志" cal:Message.Attach="CopyLogs" />
                     </ContextMenu>
                 </ItemsControl.Resources>
-                <ItemsControl.ItemContainerStyle>
+              <!--  <ItemsControl.ItemContainerStyle>
                     <Style BasedOn="{StaticResource {x:Type ItemsControl}}" TargetType="{x:Type ItemsControl}">
                         <Setter Property="ContextMenu" Value="{StaticResource ItemsControlContextMenu}" />
                     </Style>
-                </ItemsControl.ItemContainerStyle>
+                </ItemsControl.ItemContainerStyle>-->
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <VirtualizingStackPanel/>

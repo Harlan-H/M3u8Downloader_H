@@ -37,7 +37,7 @@
 
         <DockPanel Style="{StaticResource DockPannelStyle}">
             <TextBlock Text="视频名称: "  Style="{StaticResource TextBlockStyle}"/>
-            <TextBox Text="{Binding VideoName}" Style="{StaticResource TextBoxStyle}" 
+            <TextBox Text="{Binding VideoName,Delay=150}" Style="{StaticResource TextBoxStyle}" 
                      materialDesign:TextFieldAssist.HasClearButton="True"
                     materialDesign:HintAssist.Hint="视频名称不写默认生成" 
                      />
@@ -89,11 +89,11 @@
                         <MenuItem Header="复制日志" cal:Message.Attach="CopyLogs" />
                     </ContextMenu>
                 </ItemsControl.Resources>
-                <ItemsControl.ItemContainerStyle>
+                <!--  <ItemsControl.ItemContainerStyle>
                     <Style BasedOn="{StaticResource {x:Type ItemsControl}}" TargetType="{x:Type ItemsControl}">
                         <Setter Property="ContextMenu" Value="{StaticResource ItemsControlContextMenu}" />
                     </Style>
-                </ItemsControl.ItemContainerStyle>
+                </ItemsControl.ItemContainerStyle>-->
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <VirtualizingStackPanel/>

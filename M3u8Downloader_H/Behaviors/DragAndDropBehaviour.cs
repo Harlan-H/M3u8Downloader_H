@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Xml.Linq;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace M3u8Downloader_H.Behaviors
 {
@@ -12,15 +13,27 @@ namespace M3u8Downloader_H.Behaviors
     {
         private static string[] _filterStringArr = [];
         private string _filePath = string.Empty;
+
         // Using a DependencyProperty as the backing store for FilterString.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty FilterStringProperty =
-            DependencyProperty.Register("FilterString", typeof(string), typeof(DragAndDropBehaviour),new PropertyMetadata(FilterStringChangedCallback));
+            DependencyProperty.Register("FilterString", typeof(string), typeof(DragAndDropBehaviour),new PropertyMetadata(string.Empty,FilterStringChangedCallback));
+
+        // Using a DependencyProperty as the backing store for IsFile.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty IsFileProperty =
+            DependencyProperty.Register("IsFile", typeof(bool), typeof(DragAndDropBehaviour), new PropertyMetadata(true));
 
         public string FilterString
         {
             get { return (string)GetValue(FilterStringProperty); }
             set { SetValue(FilterStringProperty, value); }
         }
+
+        public bool IsFile
+        {
+            get { return (bool)GetValue(IsFileProperty); }
+            set { SetValue(IsFileProperty, value); }
+        }
+
 
         public static void FilterStringChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -73,14 +86,19 @@ namespace M3u8Downloader_H.Behaviors
             if (text.Length > 1)
                 return;
 
+            FileAttributes fileAttributes = File.GetAttributes(text[0]);
             var ext = Path.GetExtension(text[0]);
-            if( _filterStringArr.Contains(ext))
+            if( IsFile && (fileAttributes & FileAttributes.Normal) > 0 && _filterStringArr.Contains(ext)
+                || !IsFile && (fileAttributes & FileAttributes.Directory) > 0)
             {
                 _filePath = text[0];
                 e.Handled = true;
             }
-            else 
+            else
+            {
                 e.Handled = false;
+            }
+                        
         }
     }
 }

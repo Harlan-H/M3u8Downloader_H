@@ -17,6 +17,7 @@ using System.Threading.Tasks;
 using M3u8Downloader_H.Combiners;
 using M3u8Downloader_H.Services;
 using System.Windows;
+using M3u8Downloader_H.Abstractions.Extensions;
 
 namespace M3u8Downloader_H.ViewModels.Windows
 {
@@ -33,6 +34,8 @@ namespace M3u8Downloader_H.ViewModels.Windows
 
         [OnChangedMethod(nameof(OnM3u8FileUrlChanged))]
         public string M3u8FileUrl { get; set; } = default!;
+
+        [OnChangedMethod(nameof(OnVideoNameChanged))]
         public string VideoName { get; set; } = default!;
         public string Method { get; set; } = default!;
         public string Key {  get; set; } = default!;
@@ -45,6 +48,20 @@ namespace M3u8Downloader_H.ViewModels.Windows
             m3U8FileInfoLocal = new M3u8FileInfoLocal(Log);
             this.settingsService = settingsService;
             _dialogProgress = new(d => Progress = d);
+        }
+
+        private void OnVideoNameChanged(string oldValue,string newValue)
+        {
+            if (string.IsNullOrWhiteSpace(newValue))
+                return;
+
+            if (oldValue == newValue)
+            {
+                Log.Warn("本次传入的视频名称和上次传入的一致");
+                return;
+            }
+
+            _downloadParams.SetVideoFullName(newValue);
         }
 
         private void OnM3u8FileUrlChanged(string oldValue, string newValue)
@@ -68,12 +85,13 @@ namespace M3u8Downloader_H.ViewModels.Windows
             Uri m3u8Uri;
             try
             {
+                Log.Info("开始解析m3u8文件");
                 m3u8Uri = new(newValue);
                 var ext = Path.GetExtension(newValue).Trim('.');
                 _fileInfo = m3U8FileInfoLocal.M3UFileReadManager.GetM3u8FileInfo(ext, m3u8Uri);
                 Log.Info("读取到{0}个文件数据", _fileInfo.MediaFiles.Count);
 
-                _downloadParams = new M3u8DownloadParams(settingsService, m3u8Uri, VideoName);
+                _downloadParams = new M3u8DownloadParams(settingsService, m3u8Uri, VideoName,Method,Key,Iv);
                 VideoName = _downloadParams.VideoName;
                 Log.Info("生成视频名称:{0}", VideoName);
                 if (_fileInfo.IsCrypted)
@@ -112,28 +130,30 @@ namespace M3u8Downloader_H.ViewModels.Windows
                         return;
                     }
 
+                    cancellationTokenSource = new();
+                    cancellationTokenSource.CancelAfter(TimeSpan.FromSeconds(10));
+
                     //解密
                     if (_fileInfo.Key is not null)
                     {
+                        Log.Info("开始解密视频文件");
                         DownloaderLocal downloaderLocal = new(Log, _downloadParams)
                         {
                             DialogProgress = _dialogProgress
                         };
 
-                        cancellationTokenSource = new();
-                        cancellationTokenSource.CancelAfter(TimeSpan.FromSeconds(10));
-
                         downloaderLocal.M3u8Downloader.Initialization(_fileInfo);
                         await downloaderLocal.M3u8Downloader.DownloadAsync(_fileInfo, cancellationTokenSource.Token);
+                        Log.Info("视频解密完成");
                     }
-
 
                     M3uCombinerClient m3UCombinerClient = new(Log, _downloadParams)
                     {
                         Settings = settingsService,
                         DialogProgress = _dialogProgress
                     };
-                    //合并
+
+                    Log.Info("开始视频合并转码");
                     if (_fileInfo.Map is not null)
                     {
                         m3UCombinerClient.M3u8FileMerger.Initialize(_fileInfo);
@@ -144,6 +164,7 @@ namespace M3u8Downloader_H.ViewModels.Windows
                     {
                         await m3UCombinerClient.FFmpeg.ConvertToMp4(_fileInfo, cancellationTokenSource.Token);
                     }
+                    Log.Info("转码完成,文件路径是:{0}", _downloadParams.GetVideoFullPath());
 
                 }
                 catch (OperationCanceledException) when (cancellationTokenSource!.IsCancellationRequested)
@@ -168,7 +189,5 @@ namespace M3u8Downloader_H.ViewModels.Windows
             cancellationTokenSource?.Cancel();
         }
 
-
-        public void CopyLogs() => Clipboard.SetText(Log.CopyLog());
     }
 }
