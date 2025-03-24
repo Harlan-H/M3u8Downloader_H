@@ -37,7 +37,7 @@
 
         <DockPanel Style="{StaticResource DockPannelStyle}">
             <TextBlock Text="视频名称: "  Style="{StaticResource TextBlockStyle}"/>
-            <TextBox Text="{Binding VideoName,Delay=150}" Style="{StaticResource TextBoxStyle}" 
+            <TextBox Text="{Binding VideoName}" Style="{StaticResource TextBoxStyle}" 
                      materialDesign:TextFieldAssist.HasClearButton="True"
                     materialDesign:HintAssist.Hint="视频名称不写默认生成" 
                      />

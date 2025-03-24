@@ -15,7 +15,5 @@ namespace M3u8Downloader_H.Abstractions.Common
         string VideoFullName { get;  }
         string SavePath { get;  }
         IDictionary<string, string>? Headers { get; }
-
-        void UpdateSavePath(string savePath);
     }
 }

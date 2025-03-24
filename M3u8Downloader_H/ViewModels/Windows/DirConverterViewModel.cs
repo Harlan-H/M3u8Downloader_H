@@ -1,16 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Caliburn.Micro;
 using M3u8Downloader_H.Abstractions.M3u8;
-using M3u8Downloader_H.Combiners;
 using M3u8Downloader_H.Common.DownloadPrams;
 using M3u8Downloader_H.Common.M3u8Infos;
 using M3u8Downloader_H.Core;
-using M3u8Downloader_H.Downloader;
 using M3u8Downloader_H.M3U8;
 using M3u8Downloader_H.Models;
 using M3u8Downloader_H.Services;
@@ -111,11 +107,15 @@ namespace M3u8Downloader_H.ViewModels.Windows
             {
                 try
                 {
+                    _downloadParams.VideoName = VideoName;
                     if (Key is not null)
                         _downloadParams.UpdateKeyInfo(Method, Key, Iv);
 
+                    M3UFileInfo m3UFileInfo = (M3UFileInfo)_m3u8FileInfo;
+                    m3UFileInfo.MediaFiles = MediaItems;
+
                     cancellationTokenSource = new();
-                    cancellationTokenSource.CancelAfter(TimeSpan.FromSeconds(10));
+                    cancellationTokenSource.CancelAfter(TimeSpan.FromSeconds(20));
 
                     DownloaderCoreClient downloaderCoreClient = new(_m3u8FileInfo, _downloadParams, settingsService, Log);
                     await downloaderCoreClient.Converter.StartMerge(_dialogProgress, cancellationTokenSource.Token);

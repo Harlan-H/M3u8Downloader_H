@@ -15,6 +15,7 @@ using M3u8Downloader_H.Common.DownloadPrams;
 using M3u8Downloader_H.Combiners;
 using M3u8Downloader_H.Abstractions.M3u8;
 using M3u8Downloader_H.Core;
+using System.Security.Policy;
 
 namespace M3u8Downloader_H.ViewModels.Windows
 {
@@ -31,8 +32,6 @@ namespace M3u8Downloader_H.ViewModels.Windows
 
         [OnChangedMethod(nameof(OnM3u8FileUrlChanged))]
         public string M3u8FileUrl { get; set; } = default!;
-
-        [OnChangedMethod(nameof(OnVideoNameChanged))]
         public string VideoName { get; set; } = default!;
         public string Method { get; set; } = default!;
         public string Key {  get; set; } = default!;
@@ -45,20 +44,6 @@ namespace M3u8Downloader_H.ViewModels.Windows
             m3U8FileInfoClient = new M3u8FileInfoClient(Log);
             this.settingsService = settingsService;
             _dialogProgress = new(d => Progress = d);
-        }
-
-        private void OnVideoNameChanged(string oldValue,string newValue)
-        {
-            if (string.IsNullOrWhiteSpace(newValue))
-                return;
-
-            if (oldValue == newValue)
-            {
-                Log.Warn("本次传入的视频名称和上次传入的一致");
-                return;
-            }
-
-            //_downloadParams.SetVideoFullName(newValue);
         }
 
         private void OnM3u8FileUrlChanged(string oldValue, string newValue)
@@ -82,6 +67,7 @@ namespace M3u8Downloader_H.ViewModels.Windows
             Uri m3u8Uri;
             try
             {
+                Reset();
                 Log.Info("开始解析m3u8文件");
                 m3u8Uri = new(newValue);
                 var ext = Path.GetExtension(newValue).Trim('.');
@@ -91,6 +77,7 @@ namespace M3u8Downloader_H.ViewModels.Windows
                 _downloadParams = new M3u8DownloadParams(m3u8Uri, VideoName, settingsService.SavePath, "mp4", null);
                 VideoName = _downloadParams.VideoName;
                 Log.Info("生成视频名称:{0}", VideoName);
+
                 if (_fileInfo.IsCrypted)
                 {
                     Method = _fileInfo.Key.Method;
@@ -122,11 +109,12 @@ namespace M3u8Downloader_H.ViewModels.Windows
                 try
                 {
 
+                    _downloadParams.VideoName = VideoName;
                     if (Key is not null)
                         _downloadParams.UpdateKeyInfo(Method, Key, Iv);
 
                     cancellationTokenSource = new();
-                    cancellationTokenSource.CancelAfter(TimeSpan.FromSeconds(10));
+                    cancellationTokenSource.CancelAfter(TimeSpan.FromSeconds(20));
 
                     DownloaderCoreClient downloaderCoreClient = new(_fileInfo, _downloadParams, settingsService, Log);
                     await downloaderCoreClient.Converter.StartMerge(_dialogProgress, cancellationTokenSource.Token);
@@ -154,5 +142,14 @@ namespace M3u8Downloader_H.ViewModels.Windows
             cancellationTokenSource?.Cancel();
         }
 
+
+        private void Reset()
+        {
+            VideoName = string.Empty;
+            Method = "AES-128";
+            Key = string.Empty;
+            Iv = string.Empty;
+            Progress = 0;
+        }
     }
 }

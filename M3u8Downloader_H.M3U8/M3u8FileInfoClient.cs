@@ -52,7 +52,7 @@ namespace M3u8Downloader_H.M3U8
         {
             get
             {
-                M3UFileReaderWithStream m3UFileReaderWithStream ;
+                M3UFileReaderWithStream m3UFileReaderWithStream;
                 if (pluginManager?.M3UFileReaderInterface is not null)
                     m3UFileReaderWithStream =  new M3UFileReaderWithPlugin(pluginManager?.M3UFileReaderInterface!);
                 else
