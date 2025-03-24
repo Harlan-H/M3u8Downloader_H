@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Net;
 using System.Windows;
 using System.Collections.Generic;
 using Caliburn.Micro;
 using M3u8Downloader_H.Services;
 using M3u8Downloader_H.ViewModels;
 using M3u8Downloader_H.ViewModels.Menus;
-using System.Windows.Documents;
-using M3u8Downloader_H.ViewModels.Windows;
 #if !DEBUG
 using System.Windows.Threading;
 #endif
@@ -17,11 +14,11 @@ namespace M3u8Downloader_H
     public class Bootstrapper : BootstrapperBase
     {
         private readonly SimpleContainer simpleContainer = new();
-        private readonly Func<Type, DependencyObject, object, Type> defaultLocator = ViewLocator.LocateTypeForModelType;
+      //  private readonly Func<Type, DependencyObject, object, Type> defaultLocator = ViewLocator.LocateTypeForModelType;
         public Bootstrapper()
         {
             Initialize();
-            ViewLocator.LocateTypeForModelType = MyLocateTypeForModelType;
+           // ViewLocator.LocateTypeForModelType = MyLocateTypeForModelType;
         }
 
         protected override void Configure()
@@ -40,8 +37,7 @@ namespace M3u8Downloader_H
                 .Singleton<SettingsViewModel>()
                 .Singleton<MainWindowViewModel>()
                 .Singleton<ConverterViewModel>()
-                .PerRequest<M3u8DownloadViewModel>()
-                .PerRequest<MediaDownloadViewModel>();
+                .PerRequest<DownloadViewModel>();
         }
 
         protected override object GetInstance(Type service, string key)
@@ -64,7 +60,7 @@ namespace M3u8Downloader_H
             await DisplayRootViewForAsync<DashboardViewModel>();
         }
 
-        private Type MyLocateTypeForModelType(Type modelType,DependencyObject displayLocation,object context)
+        /*private Type MyLocateTypeForModelType(Type modelType,DependencyObject displayLocation,object context)
         {
             var viewType = defaultLocator(modelType, displayLocation, context);
             if (viewType == null && modelType != typeof(object))
@@ -73,7 +69,7 @@ namespace M3u8Downloader_H
                 viewType = defaultLocator(modelType, displayLocation, context);
             }
             return viewType!;
-        }
+        }*/
 
 
 #if !DEBUG

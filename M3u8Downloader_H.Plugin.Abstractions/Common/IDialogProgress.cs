@@ -9,5 +9,7 @@ namespace M3u8Downloader_H.Abstractions.Common
     public interface IDialogProgress : IProgress<double>, IProgress<long>
     {
         void SetDownloadStatus(bool IsLiveDownloading);
+
+        IDisposable Acquire();
     }
 }

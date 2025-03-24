@@ -20,6 +20,7 @@ using PropertyChanged;
 using System.Security.Principal;
 using M3u8Downloader_H.Abstractions.Common;
 using M3u8Downloader_H.ViewModels.Windows;
+using M3u8Downloader_H.Common.Models;
 
 namespace M3u8Downloader_H.ViewModels.Menus
 {
@@ -37,7 +38,6 @@ namespace M3u8Downloader_H.ViewModels.Menus
         [DoNotNotify]
         public IList<DownloadViewModel> SelectedDownloads { get; set; } = Array.Empty<DownloadViewModel>();
 
-        
         public int? HttpServicePort { get; set; }
 
         public MainWindowViewModel(SettingsService settingsService, PluginService pluginService)
@@ -58,24 +58,11 @@ namespace M3u8Downloader_H.ViewModels.Menus
                 settingsService.UpdateConcurrentDownloadCount();
 
                 pluginService.Load();
-                WindowsIdentity windowsIdentity = WindowsIdentity.GetCurrent();
-                WindowsPrincipal windowsPrincipal = new(windowsIdentity);
+                WindowsPrincipal windowsPrincipal = new(WindowsIdentity.GetCurrent());
                 if(windowsPrincipal.IsInRole(WindowsBuiltInRole.Administrator))
                 {
-                    for (int i = 65432; i > 60000; i--)
-                    {
-                        try
-                        {
-                            httpListenService.Run($"http://+:{i}/");
-                            httpListenService.Initialization(m3U8WindowViewModel.ProcessM3u8Download, m3U8WindowViewModel.ProcessM3u8Download);
-                            HttpServicePort = i;
-                            break;
-                        }
-                        catch (HttpListenerException)
-                        {
-                            continue;
-                        }
-                    }
+                    httpListenService.Run(i => HttpServicePort = i);
+                    httpListenService.Initialization(m3U8WindowViewModel.ProcessM3u8Download, m3U8WindowViewModel.ProcessM3u8Download);
                 }
             }, cancellationToken);
 

@@ -1,7 +1,7 @@
 ﻿using M3u8Downloader_H.Abstractions.Common;
+using M3u8Downloader_H.Abstractions.M3u8;
 using M3u8Downloader_H.Abstractions.M3uDownloaders;
 using M3u8Downloader_H.Common.Extensions;
-using M3u8Downloader_H.Common.M3u8Infos;
 using M3u8Downloader_H.M3U8.Extensions;
 using M3u8Downloader_H.M3U8.M3UFileReaders;
 using System;
@@ -14,15 +14,27 @@ using System.Threading.Tasks;
 
 namespace M3u8Downloader_H.M3U8.M3UFileReaderManangers
 {
-    public class M3UFileReaderManager(HttpClient httpClient)
+    public class M3UFileReaderManager
     {
+        private readonly HttpClient httpClient = default!;
+
         internal M3UFileReaderWithStream M3u8FileReader { get; set; } = default!;
         internal IM3u8DownloadParam DownloadParam { get; set; } = default!;
         internal IDownloaderSetting DownloaderSetting { get; set; } = default!;
         internal ILog? Log { get; set; } = default!;
         internal TimeSpan TimeOuts { get; } = TimeSpan.FromSeconds(15);
 
-        public async Task<M3UFileInfo> GetM3u8FileInfo(CancellationToken cancellationToken = default)
+        public M3UFileReaderManager()
+        {
+            
+        }
+
+        public M3UFileReaderManager(HttpClient httpClient)
+        {
+            this.httpClient = httpClient;
+        }
+
+        public async Task<IM3uFileInfo> GetM3u8FileInfo(CancellationToken cancellationToken = default)
         {
             using CancellationTokenSource cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
             cancellationTokenSource.CancelAfter(TimeOuts);
@@ -45,9 +57,9 @@ namespace M3u8Downloader_H.M3U8.M3UFileReaderManangers
         }
 
 
-        public M3UFileInfo GetM3u8FileInfo(string ext, Uri uri)
+        public IM3uFileInfo GetM3u8FileInfo(string ext, Uri uri)
         {
-            M3UFileInfo m3UFileInfo = ext switch
+            IM3uFileInfo m3UFileInfo = ext switch
             {
                 "json" => new M3UFileReaderWithJson().GetM3u8FileInfo(uri),
                 "" => new M3UFileReaderWithDirectory().GetM3u8FileInfo(uri,(Stream)null!),
@@ -57,7 +69,7 @@ namespace M3u8Downloader_H.M3U8.M3UFileReaderManangers
             return checkM3u8FileInfo(m3UFileInfo, uri);
         }
 
-        private static M3UFileInfo checkM3u8FileInfo(M3UFileInfo m3u8FileInfo,Uri uri)
+        private static IM3uFileInfo checkM3u8FileInfo(IM3uFileInfo m3u8FileInfo,Uri uri)
         {
             if (m3u8FileInfo.MediaFiles != null && m3u8FileInfo.MediaFiles.Any())
                 return m3u8FileInfo;
@@ -71,13 +83,13 @@ namespace M3u8Downloader_H.M3U8.M3UFileReaderManangers
         }
 
 
-        protected async Task<M3UFileInfo> GetM3u8FileInfoInternal(Uri uri, IEnumerable<KeyValuePair<string, string>>? headers, CancellationToken cancellationToken = default)
+        protected async Task<IM3uFileInfo> GetM3u8FileInfoInternal(Uri uri, IEnumerable<KeyValuePair<string, string>>? headers, CancellationToken cancellationToken = default)
         {
             Stream stream = await httpClient.GetStreamAsync(uri, headers, cancellationToken);
-            M3UFileInfo m3uFileInfo = M3u8FileReader.GetM3u8FileInfo( uri, stream);
+            IM3uFileInfo m3uFileInfo = M3u8FileReader.GetM3u8FileInfo( uri, stream);
             if (m3uFileInfo.Streams != null && m3uFileInfo.Streams.Any())
             {
-                M3UStreamInfo m3UStreamInfo = m3uFileInfo.Streams.Count > 1 ? m3uFileInfo.Streams.OrderByDescending(s => s.Bandwidth).First() : m3uFileInfo.Streams.First();
+                IM3uStreamInfo m3UStreamInfo = m3uFileInfo.Streams.Count > 1 ? m3uFileInfo.Streams.OrderByDescending(s => s.Bandwidth).First() : m3uFileInfo.Streams.First();
                 return await GetM3u8FileInfoInternal(m3UStreamInfo.Uri, headers, cancellationToken);
             }
             return m3uFileInfo;

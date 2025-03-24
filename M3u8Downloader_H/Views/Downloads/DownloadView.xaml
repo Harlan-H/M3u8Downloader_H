@@ -7,11 +7,12 @@
              xmlns:converters="clr-namespace:M3u8Downloader_H.Converters"
              xmlns:cal="http://www.caliburnproject.org"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-             xmlns:model="clr-namespace:M3u8Downloader_H.Models" 
-             xmlns:viewmodels="clr-namespace:M3u8Downloader_H.ViewModels" 
+             xmlns:CommonModel="clr-namespace:M3u8Downloader_H.Common.Models;assembly=M3u8Downloader_H.Common" 
+             xmlns:viewCommonModels="clr-namespace:M3u8Downloader_H.ViewModels" 
+             xmlns:model="clr-namespace:M3u8Downloader_H.Models"
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:behavior="clr-namespace:M3u8Downloader_H.Behaviors"
-             d:DataContext="{d:DesignInstance Type=viewmodels:DownloadViewModel}"
+             d:DataContext="{d:DesignInstance Type=viewCommonModels:DownloadViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
    
@@ -53,26 +54,26 @@
                 <ProgressBar.Style>
                     <Style BasedOn="{StaticResource MaterialDesignCircularProgressBar}" TargetType="{x:Type ProgressBar}">
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding Status}" Value="{x:Static model:DownloadStatus.Parsed}">
+                                <DataTrigger Binding="{Binding Status}" Value="{x:Static CommonModel:DownloadStatus.Parsed}">
                                 <Setter Property="IsIndeterminate" Value="True" />
                             </DataTrigger>
-                            <DataTrigger Binding="{Binding Status}" Value="{x:Static model:DownloadStatus.Enqueued}">
+                            <DataTrigger Binding="{Binding Status}" Value="{x:Static CommonModel:DownloadStatus.Enqueued}">
                                 <Setter Property="Visibility" Value="Collapsed" />
                             </DataTrigger>
-                            <DataTrigger Binding="{Binding Status}" Value="{x:Static model:DownloadStatus.Canceled}">
+                            <DataTrigger Binding="{Binding Status}" Value="{x:Static CommonModel:DownloadStatus.Canceled}">
                                 <Setter Property="Visibility" Value="Collapsed" />
                             </DataTrigger>
-                            <DataTrigger Binding="{Binding Status}" Value="{x:Static model:DownloadStatus.Completed}">
+                            <DataTrigger Binding="{Binding Status}" Value="{x:Static CommonModel:DownloadStatus.Completed}">
                                 <Setter Property="Visibility" Value="Collapsed" />
                             </DataTrigger>
-                            <DataTrigger Binding="{Binding Status}" Value="{x:Static model:DownloadStatus.Failed}">
+                            <DataTrigger Binding="{Binding Status}" Value="{x:Static CommonModel:DownloadStatus.Failed}">
                                 <Setter Property="Visibility" Value="Collapsed" />
                             </DataTrigger>
-                           <DataTrigger Binding="{Binding Status}" Value="{x:Static model:DownloadStatus.StartedLive}">
+                           <DataTrigger Binding="{Binding Status}" Value="{x:Static CommonModel:DownloadStatus.StartedLive}">
                                     <Setter Property="Value" Value="0" />
                                     <Setter Property="IsIndeterminate" Value="True" />
                             </DataTrigger>
-                            <DataTrigger Binding="{Binding Status}" Value="{x:Static model:DownloadStatus.StartedVod}">
+                            <DataTrigger Binding="{Binding Status}" Value="{x:Static CommonModel:DownloadStatus.StartedVod}">
                                     <Setter Property="Value" Value="{Binding ProgressNum, Mode=OneWay}" />
                             </DataTrigger>
 
@@ -90,33 +91,33 @@
                     <Style BasedOn="{StaticResource {x:Type TextBlock}}" TargetType="{x:Type TextBlock}">
                         <Style.Triggers>
 
-                            <DataTrigger Binding="{Binding Status}" Value="{x:Static model:DownloadStatus.Parsed}" >
+                            <DataTrigger Binding="{Binding Status}" Value="{x:Static CommonModel:DownloadStatus.Parsed}" >
                                 <Setter Property="Text" Value="开始解析..." />
                             </DataTrigger>
 
-                            <DataTrigger Binding="{Binding Status}" Value="{x:Static model:DownloadStatus.StartedVod}" >
+                            <DataTrigger Binding="{Binding Status}" Value="{x:Static CommonModel:DownloadStatus.StartedVod}" >
                                 <Setter Property="Text" Value="{Binding ProgressNum,StringFormat=\{0:P1\}}" />
                             </DataTrigger>
 
-                            <DataTrigger Binding="{Binding Status}" Value="{x:Static model:DownloadStatus.StartedLive}" >
+                            <DataTrigger Binding="{Binding Status}" Value="{x:Static CommonModel:DownloadStatus.StartedLive}" >
                                 <Setter Property="Text" Value="{Binding ProgressNum,Converter={x:Static converters:DoubleToTimespanConverters.Instance}}" />
                             </DataTrigger>
 
-                            <DataTrigger Binding="{Binding Status}" Value="{x:Static model:DownloadStatus.Enqueued}" >
+                            <DataTrigger Binding="{Binding Status}" Value="{x:Static CommonModel:DownloadStatus.Enqueued}" >
                                 <Setter Property="Text" Value="等待下载..." />
                             </DataTrigger>
 
-                            <DataTrigger Binding="{Binding Status}" Value="{x:Static model:DownloadStatus.Completed}" >
+                            <DataTrigger Binding="{Binding Status}" Value="{x:Static CommonModel:DownloadStatus.Completed}" >
                                 <Setter Property="Foreground" Value="{DynamicResource SuccessBrush}" />
                                 <Setter Property="Text" Value="✔ 完成" />
                             </DataTrigger>
 
-                            <DataTrigger Binding="{Binding Status}" Value="{x:Static model:DownloadStatus.Canceled}" >
+                            <DataTrigger Binding="{Binding Status}" Value="{x:Static CommonModel:DownloadStatus.Canceled}" >
                                 <Setter Property="Foreground" Value="{DynamicResource CanceledBrush}" />
                                 <Setter Property="Text" Value="⏹ 停止" />
                             </DataTrigger>
 
-                            <DataTrigger Binding="{Binding Status}" Value="{x:Static model:DownloadStatus.Failed}" >
+                            <DataTrigger Binding="{Binding Status}" Value="{x:Static CommonModel:DownloadStatus.Failed}" >
                                 <Setter Property="Foreground" Value="{DynamicResource FailedBrush}" />
                                 <Setter Property="Text" Value="⚠ 错误" />
                             </DataTrigger>

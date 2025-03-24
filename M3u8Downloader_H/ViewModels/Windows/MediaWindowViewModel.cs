@@ -7,6 +7,7 @@ using M3u8Downloader_H.Utils;
 using MaterialDesignThemes.Wpf;
 using System.Threading.Tasks;
 using System.Threading;
+using M3u8Downloader_H.Common.DownloadPrams;
 
 namespace M3u8Downloader_H.ViewModels.Windows
 {
@@ -51,7 +52,7 @@ namespace M3u8Downloader_H.ViewModels.Windows
         {
             FileEx.EnsureFileNotExist(mediaDownloadParams.GetCachePath());
 
-            DownloadViewModel download = MediaDownloadViewModel.CreateDownloadViewModel(mediaDownloadParams);
+            DownloadViewModel download = DownloadViewModel.CreateDownloadViewModel(mediaDownloadParams);
             if (download is null) return;
 
             EnqueueDownloadAction(download);

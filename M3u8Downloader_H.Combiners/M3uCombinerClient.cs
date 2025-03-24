@@ -1,11 +1,7 @@
-﻿using CliWrap.Builders;
-using M3u8Downloader_H.Abstractions.Common;
-using M3u8Downloader_H.Abstractions.Extensions;
-using M3u8Downloader_H.Abstractions.Meger;
-using M3u8Downloader_H.Combiners.Extensions;
+﻿using M3u8Downloader_H.Abstractions.Common;
+using M3u8Downloader_H.Abstractions.Settings;
 using M3u8Downloader_H.Combiners.M3uCombiners;
 using M3u8Downloader_H.Combiners.VideoConverter;
-using M3u8Downloader_H.Common.M3u8Infos;
 
 namespace M3u8Downloader_H.Combiners
 {

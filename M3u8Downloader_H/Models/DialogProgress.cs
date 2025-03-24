@@ -11,6 +11,11 @@ namespace M3u8Downloader_H.Models
     {
         private readonly Action<double> action = action;
 
+        public IDisposable Acquire()
+        {
+            throw new NotImplementedException();
+        }
+
         public void Report(double value)
         {
             action.Invoke(value);

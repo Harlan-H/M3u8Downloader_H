@@ -10,6 +10,8 @@ using M3u8Downloader_H.Abstractions.Extensions;
 using MaterialDesignThemes.Wpf;
 using M3u8Downloader_H.Exceptions;
 using System.IO;
+using M3u8Downloader_H.Abstractions.M3u8;
+using M3u8Downloader_H.Common.DownloadPrams;
 
 namespace M3u8Downloader_H.ViewModels.Windows
 {
@@ -33,6 +35,8 @@ namespace M3u8Downloader_H.ViewModels.Windows
             notifications = Notifications;
         }
 
+
+
         public bool CanProcessM3u8Download => !IsBusy;
         public void ProcessM3u8Download(M3u8DownloadInfo obj)
         {
@@ -55,26 +59,6 @@ namespace M3u8Downloader_H.ViewModels.Windows
         }
 
 
-        public bool CanProcessMediaDownload => !IsBusy;
-        public void ProcessMediaDownload(MediaDownloadInfo mediaDownloadInfo)
-        {
-            IsBusy = true;
-            try
-            {
-                mediaDownloadInfo.DoProcess(settingsService);
-
-                mediaDownloadInfo.Reset(settingsService.IsResetAddress, settingsService.IsResetName);
-            }
-            catch (Exception e)
-            {
-                notifications.Enqueue(e.ToString());
-            }
-            finally
-            {
-                IsBusy = false;
-            }
-        }
-
         private void HandleTxt(Uri uri)
         {
             foreach (var item in File.ReadLines(uri.OriginalString))
@@ -84,7 +68,7 @@ namespace M3u8Downloader_H.ViewModels.Windows
                 string[] result = item.Trim().Split(settingsService.Separator, 2);
                 try
                 {
-                    M3u8DownloadParams m3U8DownloadParams = new(settingsService, new Uri(result[0], UriKind.Absolute), result.Length > 1 ? result[1] : null);
+                    M3u8DownloadParams m3U8DownloadParams = new(new Uri(result[0], UriKind.Absolute), result.Length > 1 ? result[1] : null, settingsService.SavePath, settingsService.SelectedFormat, settingsService.Headers);
                     ProcessM3u8Download(m3U8DownloadParams);
                 }
                 catch (UriFormatException)
@@ -103,12 +87,6 @@ namespace M3u8Downloader_H.ViewModels.Windows
 
         public void ProcessM3u8Download(IM3u8DownloadParam m3U8DownloadParam, string? pluginKey = default!)
         {
-            ProcessM3u8Download(new M3u8DownloadParams(settingsService, m3U8DownloadParam), pluginKey);
-        }
-
-
-        private void ProcessM3u8Download(M3u8DownloadParams m3U8DownloadParam, string? pluginKey = default!)
-        {
             FileEx.EnsureFileNotExist(m3U8DownloadParam.GetCachePath());
 
             string tmpPluginKey = pluginKey is not null
@@ -116,22 +94,18 @@ namespace M3u8Downloader_H.ViewModels.Windows
                                 : string.IsNullOrWhiteSpace(settingsService.PluginKey)
                                 ? m3U8DownloadParam.RequestUrl.GetHostName()
                                 : settingsService.PluginKey;
-            DownloadViewModel download = M3u8DownloadViewModel.CreateDownloadViewModel(m3U8DownloadParam, pluginService[tmpPluginKey]);
+            DownloadViewModel download = DownloadViewModel.CreateDownloadViewModel(m3U8DownloadParam, pluginService[tmpPluginKey]);
             if (download is null) return;
 
             EnqueueDownloadAction(download);
         }
 
-        public void ProcessM3u8Download(IM3u8FileInfoDownloadParam m3U8DownloadParam, string? pluginKey = default!)
+        public void ProcessM3u8Download(IDownloadParamBase m3U8DownloadParam,IM3uFileInfo m3UFileInfo,  string? pluginKey = default!)
         {
-            if (!m3U8DownloadParam.M3UFileInfos.MediaFiles.Any())
-                throw new ArgumentException("m3u8的数据不能为空");
-
-            M3u8DownloadParams m3U8DownloadParams = new(settingsService, m3U8DownloadParam.M3UFileInfos.MediaFiles[0].Uri, m3U8DownloadParam);
             FileEx.EnsureFileNotExist(m3U8DownloadParam.GetCachePath());
 
             //这里因为不可能有url所以直接通过设置来判别使用某个插件
-            DownloadViewModel download = M3u8DownloadViewModel.CreateDownloadViewModel(m3U8DownloadParam.M3UFileInfos, m3U8DownloadParams, pluginService[pluginKey ?? settingsService.PluginKey]);
+            DownloadViewModel download = DownloadViewModel.CreateDownloadViewModel(m3UFileInfo, m3U8DownloadParam, pluginService[pluginKey ?? settingsService.PluginKey]);
             if (download is null) return;
 
             EnqueueDownloadAction(download);

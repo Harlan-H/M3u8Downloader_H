@@ -1,10 +1,12 @@
 ﻿using M3u8Downloader_H.Common.M3u8Infos;
 using M3u8Downloader_H.Common.Extensions;
 using System.Text;
+using M3u8Downloader_H.Common.M3u8;
+using M3u8Downloader_H.Abstractions.M3u8;
 
 namespace M3u8Downloader_H.Downloader.M3uDownloaders
 {
-    internal class CryptM3uDownloader(HttpClient httpClient, M3UFileInfo m3UFileInfo) : M3u8Downloader(httpClient)
+    internal class CryptM3uDownloader(HttpClient httpClient, IM3uFileInfo m3UFileInfo) : M3u8Downloader(httpClient)
     {
         private readonly HttpClient httpClient = httpClient;
 
@@ -13,7 +15,7 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
             if (m3UFileInfo.Key is null)
                 throw new InvalidDataException("没有可用的密钥信息");
 
-
+            M3UFileInfo m3uFileinfoTmp = (M3UFileInfo)m3UFileInfo;
             if (m3UFileInfo.Key.Uri != null && m3UFileInfo.Key.BKey == null)
             {
                 try
@@ -23,7 +25,7 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
                         : await httpClient.GetByteArrayAsync(m3UFileInfo.Key.Uri, _headers, cancellationToken);
 
                     Log?.Info("获取到密钥:{0}", Encoding.UTF8.GetString(data));
-                    m3UFileInfo.Key.BKey = data.TryParseKey(m3UFileInfo.Key.Method);
+                    m3uFileinfoTmp.Key = M3uKeyInfoHelper.GetKeyInfoInstance(m3UFileInfo.Key.Method, data, m3UFileInfo.Key.IV);
                 }
                 catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
                 {
@@ -35,8 +37,8 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
                 }
             }else
             {
-                m3UFileInfo.Key.BKey = m3UFileInfo.Key.BKey != null
-                    ? m3UFileInfo.Key.BKey.TryParseKey(m3UFileInfo.Key.Method)
+                m3uFileinfoTmp.Key = m3UFileInfo.Key.BKey != null
+                    ? m3uFileinfoTmp.Key = M3uKeyInfoHelper.GetKeyInfoInstance(m3UFileInfo.Key)
                     : throw new InvalidDataException("密钥为空");
             }
         }

@@ -12,12 +12,8 @@
 		<DebugType>None</DebugType>
 	</PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\M3u8Downloader_H.Common\M3u8Downloader_H.Common.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="M3U8\" />
-  </ItemGroup>
+	<ItemGroup>
+	  <Folder Include="Media\" />
+	</ItemGroup>
 
 </Project>

@@ -1,30 +1,19 @@
-﻿using M3u8Downloader_H.Common.Extensions;
+﻿using M3u8Downloader_H.Abstractions.M3u8;
+using M3u8Downloader_H.Common.Extensions;
+using M3u8Downloader_H.Common.M3u8;
 using M3u8Downloader_H.Common.M3u8Infos;
 
 namespace M3u8Downloader_H.Downloader.M3uDownloaders
 {
-    public  class OnlyDecryptDownloader(HttpClient httpClient) : DownloaderBase(httpClient)
+    public  class OnlyDecryptDownloader() : DownloaderBase()
     {
-        public void Initialization(M3UFileInfo m3UFileInfo)
+        private IM3uKeyInfo _keyInfo = default!;
+        public void Initialization(IM3uKeyInfo keyinfo)
         {
-            if (m3UFileInfo.Key is null)
-                throw new InvalidDataException("没有可用的密钥信息");
-
-
-            if (m3UFileInfo.Key.Uri != null && m3UFileInfo.Key.BKey == null)
-            {
-                throw new HttpRequestException("密钥不能是网络地址");
-            }
-            else
-            {
-                m3UFileInfo.Key.BKey = m3UFileInfo.Key.BKey != null
-                   ? m3UFileInfo.Key.BKey.TryParseKey(m3UFileInfo.Key.Method)
-                   : throw new InvalidDataException("密钥为空");
-            }
-            
+            _keyInfo = keyinfo;
         }
 
-        public override async Task DownloadAsync(M3UFileInfo m3UFileInfo, CancellationToken cancellationToken = default)
+        public override async Task DownloadAsync(IM3uFileInfo m3UFileInfo, CancellationToken cancellationToken = default)
         {
             await base.DownloadAsync(m3UFileInfo, cancellationToken);
             DialogProgress.SetDownloadStatus(false);
@@ -40,7 +29,7 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
                 }
  
                 using var fileStream = fileInfo.OpenRead();
-                using Stream stream = fileStream.AesDecrypt(m3UFileInfo.Key.BKey, m3UFileInfo.Key.IV);
+                using Stream stream = fileStream.AesDecrypt(_keyInfo.BKey, _keyInfo.IV);
 
                 string mediaPath = Path.Combine(_cachePath, m3UFileInfo.MediaFiles[i].Title);
                 await WriteToFileAsync(mediaPath, stream, cancellationToken);

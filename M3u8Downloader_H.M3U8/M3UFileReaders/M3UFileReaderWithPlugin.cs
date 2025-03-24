@@ -1,6 +1,6 @@
-﻿using M3u8Downloader_H.Common.M3u8Infos;
-using M3u8Downloader_H.Abstractions.Plugins;
+﻿using M3u8Downloader_H.Abstractions.Plugins;
 using System.IO;
+using M3u8Downloader_H.Abstractions.M3u8;
 
 namespace M3u8Downloader_H.M3U8.M3UFileReaders
 {
@@ -8,6 +8,6 @@ namespace M3u8Downloader_H.M3U8.M3UFileReaders
     {
         private readonly IM3uFileReader m3UFileReader = m3UFileReader;
 
-        public override M3UFileInfo Read(Stream stream) => m3UFileReader.Read(RequestUri, stream);
+        public override IM3uFileInfo Read(Stream stream) => m3UFileReader.Read(RequestUri, stream);
     }
 }

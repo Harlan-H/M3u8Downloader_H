@@ -2,20 +2,18 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Caliburn.Micro;
-using M3u8Downloader_H.Abstractions.Common;
+using M3u8Downloader_H.Abstractions.M3u8;
 using M3u8Downloader_H.Combiners;
+using M3u8Downloader_H.Common.DownloadPrams;
 using M3u8Downloader_H.Common.M3u8Infos;
+using M3u8Downloader_H.Core;
 using M3u8Downloader_H.Downloader;
 using M3u8Downloader_H.M3U8;
 using M3u8Downloader_H.Models;
 using M3u8Downloader_H.Services;
-using M3u8Downloader_H.Utils;
-using M3u8Downloader_H.ViewModels.Utils;
-using M3u8Downloader_H.Views.Menus;
 using PropertyChanged;
 
 namespace M3u8Downloader_H.ViewModels.Windows
@@ -23,11 +21,11 @@ namespace M3u8Downloader_H.ViewModels.Windows
     public class DirConverterViewModel : Screen
     {
         private CancellationTokenSource? cancellationTokenSource = default!;
-        private readonly M3u8FileInfoLocal m3U8FileInfoLocal;
+        private readonly M3u8FileInfoClient m3U8FileInfoClient;
         private M3u8DownloadParams _downloadParams = default!;
         private readonly DialogProgress _dialogProgress = default!;
         private readonly SettingsService settingsService;
-        private M3UFileInfo _m3u8FileInfo = default!;
+        private IM3uFileInfo _m3u8FileInfo = default!;
 
         public bool IsStart { get; private set; } = false;
 
@@ -40,11 +38,11 @@ namespace M3u8Downloader_H.ViewModels.Windows
         public double Progress { get; set; } = default!;
         public MyLog Log { get; } = new();
 
-        public BindableCollection<M3UMediaInfo> MediaItems { get; set; } = [];
+        public BindableCollection<IM3uMediaInfo> MediaItems { get; set; } = [];
 
         public DirConverterViewModel(SettingsService settingsService)
         {
-            m3U8FileInfoLocal = new M3u8FileInfoLocal(Log);
+            m3U8FileInfoClient = new M3u8FileInfoClient(Log);
             _dialogProgress = new(d => Progress = d);
             this.settingsService = settingsService;
         }
@@ -67,19 +65,22 @@ namespace M3u8Downloader_H.ViewModels.Windows
                 return;
             }
 
+            
             Uri m3u8Uri;
             try
             {
-                MediaItems.Clear();
+                Reset();
+
                 m3u8Uri = new(newValue);
                 var ext = Path.GetExtension(newValue).Trim('.');
-                _m3u8FileInfo = m3U8FileInfoLocal.M3UFileReadManager.GetM3u8FileInfo(ext, m3u8Uri);
+                _m3u8FileInfo = m3U8FileInfoClient.DefaultM3uFileReadManager.GetM3u8FileInfo(ext, m3u8Uri);
+                MediaItems.AddRange(_m3u8FileInfo.MediaFiles);
                 Log.Info("读取到{0}个文件数据", _m3u8FileInfo.MediaFiles.Count);
 
-                MediaItems.AddRange(_m3u8FileInfo.MediaFiles);
-                _downloadParams = new M3u8DownloadParams(settingsService, m3u8Uri, VideoName);
+                _downloadParams = new M3u8DownloadParams(m3u8Uri, VideoName, settingsService.SavePath,"mp4",null);
                 VideoName = _downloadParams.VideoName;
                 Log.Info("生成视频名称:{0}", VideoName);
+
                 if (_m3u8FileInfo.Key is not null)
                 {
                     Method = _m3u8FileInfo.Key.Method;
@@ -110,43 +111,14 @@ namespace M3u8Downloader_H.ViewModels.Windows
             {
                 try
                 {
-                    if (!_m3u8FileInfo.MediaFiles.Any(m => m.Uri.IsFile))
-                    {
-                        Log.Warn("ts文件不是本地路径");
-                        return;
-                    }
+                    if (Key is not null)
+                        _downloadParams.UpdateKeyInfo(Method, Key, Iv);
 
                     cancellationTokenSource = new();
                     cancellationTokenSource.CancelAfter(TimeSpan.FromSeconds(10));
-                    //解密
-                    if (_m3u8FileInfo.Key is not null)
-                    {
-                        DownloaderLocal downloaderLocal = new(Log, _downloadParams)
-                        {
-                            DialogProgress = _dialogProgress
-                        };
 
-                        downloaderLocal.M3u8Downloader.Initialization(_m3u8FileInfo);
-                        await downloaderLocal.M3u8Downloader.DownloadAsync(_m3u8FileInfo, cancellationTokenSource.Token);
-                    }
-
-
-                    M3uCombinerClient m3UCombinerClient = new(Log, _downloadParams)
-                    {
-                        Settings = settingsService,
-                        DialogProgress = _dialogProgress
-                    };
-                    //合并
-                    if (_m3u8FileInfo.Map is not null)
-                    {
-                        m3UCombinerClient.M3u8FileMerger.Initialize(_m3u8FileInfo);
-                        await m3UCombinerClient.M3u8FileMerger.MegerVideoHeader(_m3u8FileInfo.Map, cancellationTokenSource.Token);
-                        await m3UCombinerClient.M3u8FileMerger.StartMerging(_m3u8FileInfo, cancellationTokenSource.Token);
-                    }
-                    else
-                    {
-                        await m3UCombinerClient.FFmpeg.ConvertToMp4(_m3u8FileInfo, cancellationTokenSource.Token);
-                    }
+                    DownloaderCoreClient downloaderCoreClient = new(_m3u8FileInfo, _downloadParams, settingsService, Log);
+                    await downloaderCoreClient.Converter.StartMerge(_dialogProgress, cancellationTokenSource.Token);
 
                 }
                 catch (OperationCanceledException) when (cancellationTokenSource!.IsCancellationRequested)
@@ -171,5 +143,15 @@ namespace M3u8Downloader_H.ViewModels.Windows
             cancellationTokenSource?.Cancel();
         }
 
+
+        private void Reset()
+        {
+            VideoName = string.Empty;
+            Method = "AES-128";
+            Key = string.Empty;
+            Iv = string.Empty;
+            Progress = 0;
+            MediaItems.Clear();
+        }
     }
 }

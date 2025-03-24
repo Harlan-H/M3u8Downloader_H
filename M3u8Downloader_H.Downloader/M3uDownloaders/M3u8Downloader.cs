@@ -1,4 +1,5 @@
 ﻿using M3u8Downloader_H.Abstractions.Common;
+using M3u8Downloader_H.Abstractions.M3u8;
 using M3u8Downloader_H.Common.M3u8Infos;
 
 namespace M3u8Downloader_H.Downloader.M3uDownloaders
@@ -13,7 +14,7 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
         public virtual ValueTask Initialization(CancellationToken cancellationToken = default) => ValueTask.CompletedTask;
 
 
-        public override async Task DownloadAsync(M3UFileInfo m3UFileInfo,  CancellationToken cancellationToken = default)
+        public override async Task DownloadAsync(IM3uFileInfo m3UFileInfo,  CancellationToken cancellationToken = default)
         {
             await base.DownloadAsync(m3UFileInfo, cancellationToken);
             DialogProgress.SetDownloadStatus(false);
@@ -46,7 +47,7 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
                 throw new DataMisalignedException($"下载数量不完整,完成数{downloadedCount}/{m3UFileInfo.MediaFiles.Count}");
         }
 
-        private async Task DownloadCallBack(M3UFileInfo m3UFileInfo, string savepath, IEnumerable<KeyValuePair<string, string>>? headers, bool skipRequestError, CancellationToken token)
+        private async Task DownloadCallBack(IM3uFileInfo m3UFileInfo, string savepath, IEnumerable<KeyValuePair<string, string>>? headers, bool skipRequestError, CancellationToken token)
         {
             int localIndex;
             while (true)
@@ -61,7 +62,7 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
                     break;
                 }
 
-                M3UMediaInfo mediaInfo = m3UFileInfo.MediaFiles[localIndex];
+                IM3uMediaInfo mediaInfo = m3UFileInfo.MediaFiles[localIndex];
                 string mediaPath = Path.Combine(savepath, mediaInfo.Title);
                 FileInfo fileInfo = new(mediaPath);
                 if (fileInfo.Exists && fileInfo.Length > 0)

@@ -1,4 +1,4 @@
-﻿using M3u8Downloader_H.Common.M3u8Infos;
+﻿using M3u8Downloader_H.Abstractions.M3u8;
 
 namespace M3u8Downloader_H.Abstractions.Plugins
 {
@@ -16,6 +16,6 @@ namespace M3u8Downloader_H.Abstractions.Plugins
         /// <param name="value">匹配到标签的冒号之后的内容</param>
         /// <param name="reader">控制当前取到的内容，或者取下一行内容的参数</param>
         /// <param name="baseUri">请求的原始的主url,就是那个.m3u8的地址</param>
-        void Write(M3UFileInfo m3UFileInfo, string value, IEnumerator<string> reader, Uri baseUri);
+        void Write(IM3uFileInfo m3UFileInfo, string value, IEnumerator<string> reader, Uri baseUri);
     }
 }

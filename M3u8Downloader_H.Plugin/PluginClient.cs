@@ -8,7 +8,6 @@ namespace M3u8Downloader_H.Plugin.PluginClients
     {
         private static readonly string _filterStr = "M3u8Downloader_H.*.plugin.dll";
         private readonly Dictionary<string, Type> _pluginDict = [];
-        private readonly FileSystemWatcher watcher = new();
         public IEnumerable<string> Keys => _pluginDict.Keys;
 
         public string PluginPath { get; set; } = default!;
@@ -16,33 +15,6 @@ namespace M3u8Downloader_H.Plugin.PluginClients
         private PluginClient()
         {
 
-        }
-
-        public void Init()
-        {
-            watcher.Path = PluginPath;
-            watcher.Filter = _filterStr;
-            watcher.NotifyFilter = NotifyFilters.FileName;
-            watcher.Created += OnCreated;
-            watcher.Deleted += OnDeleted;
-        }
-
-        private void OnDeleted(object sender, FileSystemEventArgs e)
-        {
-            if (string.IsNullOrEmpty(e.Name)) return;
-
-            string key = _pluginKeyRegex().Match(e.Name).Groups[1].Value;
-            if (_pluginDict.ContainsKey(key))
-            {
-                _pluginDict.Remove(key);
-            }
-        }
-
-        private void OnCreated(object sender, FileSystemEventArgs e)
-        {
-            if (string.IsNullOrEmpty(e.Name)) return;
-
-            LoadFile(e.FullPath, e.Name!);
         }
 
         public void Load()
@@ -54,7 +26,6 @@ namespace M3u8Downloader_H.Plugin.PluginClients
                 {
                     LoadFile(item.FullName, item.Name);
                 }
-                watcher.EnableRaisingEvents = true;
             }
             catch (DirectoryNotFoundException)
             {

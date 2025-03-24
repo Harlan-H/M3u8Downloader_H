@@ -1,4 +1,5 @@
-﻿using M3u8Downloader_H.Common.Extensions;
+﻿using M3u8Downloader_H.Abstractions.M3u8;
+using M3u8Downloader_H.Common.Extensions;
 using M3u8Downloader_H.Common.M3u8Infos;
 using M3u8Downloader_H.M3U8.Extensions;
 using System;
@@ -24,7 +25,7 @@ namespace M3u8Downloader_H.M3U8.M3UFileReaders
             return this;
         }
 
-        protected M3UKeyInfo? GetM3UKeyInfo(string? method, string? uri, string? key, string? iv)
+        protected IM3uKeyInfo? GetM3UKeyInfo(string? method, string? uri, string? key, string? iv)
         {
             if (uri == null && key == null && iv == null)
                 return null;
@@ -40,7 +41,7 @@ namespace M3u8Downloader_H.M3U8.M3UFileReaders
         }
 
 
-        protected M3UMediaInfo GetM3UMediaInfo(string uri, string? title)
+        protected IM3uMediaInfo GetM3UMediaInfo(string uri, string? title)
         {
             M3UMediaInfo m3UMediaInfo = new()
             {
@@ -50,6 +51,6 @@ namespace M3u8Downloader_H.M3U8.M3UFileReaders
             return m3UMediaInfo;
         }
 
-        public abstract M3UFileInfo Read(Stream stream);
+        public abstract IM3uFileInfo Read(Stream stream);
     }
 }

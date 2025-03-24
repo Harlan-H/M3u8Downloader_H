@@ -10,16 +10,22 @@ using System.Timers;
 using M3u8Downloader_H.Abstractions.Common;
 using M3u8Downloader_H.Abstractions.Extensions;
 using Caliburn.Micro;
-using M3u8Downloader_H.ViewModels.Utils;
+using M3u8Downloader_H.Common.Models;
+using M3u8Downloader_H.Abstractions.M3u8;
+using M3u8Downloader_H.Common.DownloadPrams;
+using M3u8Downloader_H.Core;
 
 namespace M3u8Downloader_H.ViewModels
 {
-    public abstract  partial  class DownloadViewModel(SettingsService settingsService, SoundService soundService) : PropertyChangedBase
+    public  partial class DownloadViewModel(SettingsService settingsService, SoundService soundService) : PropertyChangedBase
     {
         private readonly ThrottlingSemaphore throttlingSemaphore = ThrottlingSemaphore.Instance;
+        private readonly SettingsService settingsService = settingsService;
         private CancellationTokenSource? cancellationTokenSource;
+        private DownloaderCoreClient downloaderCoreClient = default!;
         protected IDownloadParamBase DownloadParam = default!;
         protected DownloadProgress? downloadProgress;
+
 
         public MyLog Log { get; } = new();
         public Uri RequestUrl { get; set; } = default!;
@@ -38,8 +44,6 @@ namespace M3u8Downloader_H.ViewModels
 
         public string? FailReason { get; private set; } = string.Empty;
 
-        protected abstract Task StartDownload(CancellationToken cancellationToken);
-
         public bool CanOnStart => !IsActive;
 
         public void OnStart()
@@ -57,7 +61,8 @@ namespace M3u8Downloader_H.ViewModels
                     cancellationTokenSource = new CancellationTokenSource();
                     using var semaphore = await throttlingSemaphore.AcquireAsync(cancellationTokenSource.Token);
 
-                    await StartDownload(cancellationTokenSource.Token);
+                    downloadProgress ??= new(this);
+                    await downloaderCoreClient.Downloader.StartDownload(s => Status = (DownloadStatus)s, downloadProgress, cancellationTokenSource.Token);
                     soundService.PlaySuccess(settingsService.IsPlaySound);
                     Status = DownloadStatus.Completed;
                 }
@@ -183,6 +188,45 @@ namespace M3u8Downloader_H.ViewModels
         }
     }
 
-   
+    public partial class DownloadViewModel
+    {
+        public static DownloadViewModel CreateDownloadViewModel(
+            IM3u8DownloadParam m3U8DownloadParam,
+            Type? pluginType)
+        {
+            DownloadViewModel viewModel = IoC.Get<DownloadViewModel>();
+            viewModel.DownloadParam = m3U8DownloadParam;
+            viewModel.RequestUrl = m3U8DownloadParam.RequestUrl;
+            viewModel.VideoName = m3U8DownloadParam.VideoName;
+
+            viewModel.downloaderCoreClient = new(Http.Client, m3U8DownloadParam, viewModel.settingsService, viewModel.Log, pluginType); 
+            return viewModel;
+        }
+
+        public static DownloadViewModel CreateDownloadViewModel(
+            IM3uFileInfo m3UFileInfo,
+            IDownloadParamBase m3U8DownloadParam,
+            Type? pluginType)
+        {
+            DownloadViewModel viewModel = IoC.Get<DownloadViewModel>();
+            viewModel.DownloadParam = m3U8DownloadParam;
+            viewModel.VideoName = m3U8DownloadParam.VideoName;
+
+            viewModel.downloaderCoreClient = new(Http.Client, m3U8DownloadParam, viewModel.settingsService, viewModel.Log, pluginType, m3UFileInfo);
+            return viewModel;
+        }
+
+        public static DownloadViewModel CreateDownloadViewModel(
+             IMediaDownloadParam m3U8DownloadParam)
+        {
+            DownloadViewModel viewModel = IoC.Get<DownloadViewModel>();
+            viewModel.DownloadParam = m3U8DownloadParam;
+            viewModel.RequestUrl = m3U8DownloadParam.Medias[0].Url;
+            viewModel.VideoName = m3U8DownloadParam.VideoName;
+
+            viewModel.downloaderCoreClient = new DownloaderCoreClient(Http.Client, m3U8DownloadParam, viewModel.settingsService, viewModel.Log);
+            return viewModel;
+        }
+    }
 
 }

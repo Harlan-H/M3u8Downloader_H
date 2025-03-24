@@ -1,6 +1,5 @@
 ﻿using System.Net;
-using System.Net.Http;
-using M3u8Downloader_H.Abstractions.Common;
+using M3u8Downloader_H.Abstractions.M3u8;
 using M3u8Downloader_H.Common.M3u8Infos;
 using M3u8Downloader_H.Downloader.Extensions;
 
@@ -14,9 +13,9 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
         private static readonly Random _rand = Random.Shared;
         private long _index;
 
-        public Func<CancellationToken, Task<M3UFileInfo>> GetLiveFileInfoFunc { get; set; } = default!;
+        public Func<CancellationToken, Task<IM3uFileInfo>> GetLiveFileInfoFunc { get; set; } = default!;
 
-        private void AddMedias(M3UFileInfo m3UFileinfo)
+        private void AddMedias(IM3uFileInfo m3UFileinfo)
         {
             if (ReferenceEquals(m3UFileinfo, _m3uFileInfo))
                 return;
@@ -27,16 +26,19 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
             }
         }
 
-        public IList<M3UMediaInfo> RenameTitle(IEnumerable<M3UMediaInfo> m3UMediaInfos)
+        public IList<IM3uMediaInfo> RenameTitle(IEnumerable<IM3uMediaInfo> m3UMediaInfos)
         {
-            foreach (var item in m3UMediaInfos)
+            if (m3UMediaInfos is not IEnumerable<M3UMediaInfo> m3UMediaInfo)
+                return null!;
+
+            foreach (var item in m3UMediaInfo)
             {
                 item.Title = $"{++_index}.tmp";
             }
             return m3UMediaInfos.ToList();
         }
 
-        private async ValueTask<M3UFileInfo> GetM3U8FileInfoAsync(CancellationToken cancellationToken = default)
+        private async ValueTask<IM3uFileInfo> GetM3U8FileInfoAsync(CancellationToken cancellationToken = default)
         {
             if (_firstTimeToRun)
             {
@@ -51,15 +53,16 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
             return m3uFileInfo;
         }
 
-        public override async Task DownloadAsync(M3UFileInfo m3UFileInfo,  CancellationToken cancellationToken = default)
+        public override async Task DownloadAsync(IM3uFileInfo m3UFileInfo,  CancellationToken cancellationToken = default)
         {
             await base.DownloadAsync(m3UFileInfo,  cancellationToken);
             DialogProgress.SetDownloadStatus(true);
-            _m3uFileInfo ??= m3UFileInfo;
+            
+            _m3uFileInfo ??= m3UFileInfo as M3UFileInfo;
 
 
             Log?.Info("直播录制开始");
-            M3UFileInfo previousMediaInfo = await GetM3U8FileInfoAsync(cancellationToken);
+            IM3uFileInfo previousMediaInfo = await GetM3U8FileInfoAsync(cancellationToken);
             while (true)
             {
                 var duration = await Start(previousMediaInfo, _headers, cancellationToken);
@@ -84,7 +87,7 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
             }
         }
 
-        public async Task<double> Start(M3UFileInfo m3UFileInfo, IEnumerable<KeyValuePair<string, string>>? Headers, CancellationToken cancellationToken = default)
+        public async Task<double> Start(IM3uFileInfo m3UFileInfo, IEnumerable<KeyValuePair<string, string>>? Headers, CancellationToken cancellationToken = default)
         {
             foreach (var mediaFile in m3UFileInfo.MediaFiles)
             {
@@ -105,7 +108,8 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
             {
                 try
                 {
-                    return await GetLiveFileInfoFunc(cancellationToken);
+                    IM3uFileInfo m3UFileInfo = await GetLiveFileInfoFunc(cancellationToken);
+                    return (M3UFileInfo)m3UFileInfo;
                 }
                 catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.NotFound && i < 3)
                 {
@@ -127,7 +131,7 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
         /// <param name="cancellationToken">token</param>
         /// <returns>新得m3u8数据</returns>
         /// <exception cref="HttpRequestException">当5次数据都是重复，则判定直播结束</exception>
-        public async Task<M3UFileInfo> GetM3u8FileInfos(M3UFileInfo oldM3u8FileInfo, CancellationToken cancellationToken = default)
+        public async Task<IM3uFileInfo> GetM3u8FileInfos(IM3uFileInfo oldM3u8FileInfo, CancellationToken cancellationToken = default)
         {
             bool IsEnded = true;
             M3UFileInfo m3ufileinfo = default!;
@@ -136,7 +140,7 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
             {
                 m3ufileinfo = await GetLiveFileInfos(cancellationToken);
                 //判断新的内容里 上次最后一条数据所在的位置，同时跳过那条数据 取出剩下所有内容
-                IEnumerable<M3UMediaInfo> newMediaInfos = m3ufileinfo.MediaFiles.Skip(m => m == oldMediafile);
+                IEnumerable<IM3uMediaInfo> newMediaInfos = m3ufileinfo.MediaFiles.Skip(m => m == oldMediafile);
                 if (!newMediaInfos.Any())
                 {
                     //当newMediaInfos数量为0 说明新的数据 跟旧的数据完全一致  则随机延迟上次某项数据的Duration

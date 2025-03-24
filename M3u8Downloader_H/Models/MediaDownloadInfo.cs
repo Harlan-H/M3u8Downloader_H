@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Input;
 using Caliburn.Micro;
+using M3u8Downloader_H.Common.DownloadPrams;
 using M3u8Downloader_H.Services;
 
 namespace M3u8Downloader_H.Models
@@ -43,8 +39,9 @@ namespace M3u8Downloader_H.Models
             if(uri.IsFile)
                 throw new InvalidOperationException("请确认是否输入正确的网络地址");
 
-
-            MediaDownloadParams mediaDownloadParams = new(settingsService, VideoUrl, AudioUrl, SubtitleUrl, VideoName)
+            Uri? AudioUri = AudioUrl is not null ? new Uri(AudioUrl) : null;
+            Uri? SubtitleUri = SubtitleUrl is not null ? new Uri(SubtitleUrl) : null;
+            MediaDownloadParams mediaDownloadParams = new(settingsService.SavePath,new Uri(VideoUrl), AudioUri, SubtitleUri, VideoName, settingsService.Headers)
             {
                 IsVideoStream = StreamIndex == 0
             };

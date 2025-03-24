@@ -5,13 +5,15 @@ using M3u8Downloader_H.Downloader.Utils;
 using M3u8Downloader_H.Abstractions.M3uDownloaders;
 using M3u8Downloader_H.Abstractions.Common;
 using M3u8Downloader_H.Abstractions.Extensions;
+using M3u8Downloader_H.Abstractions.M3u8;
 
 
 namespace M3u8Downloader_H.Downloader.M3uDownloaders
 {
-    public abstract class DownloaderBase(HttpClient httpClient)
+    public abstract class DownloaderBase
     {
         private bool _firstTimeToRun = true;
+        private readonly HttpClient httpClient = default!;
 
         internal IDownloadParamBase DownloadParam { get; set; } = default!;
         internal IDownloaderSetting DownloaderSetting { get; set; } = default!;
@@ -21,7 +23,17 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
         protected IEnumerable<KeyValuePair<string, string>>? _headers => DownloadParam.Headers ?? DownloaderSetting.Headers;
         protected string _cachePath => DownloadParam.GetCachePath();
 
-        public async ValueTask DownloadMapInfoAsync(M3UMediaInfo? m3UMapInfo, CancellationToken cancellationToken = default)
+        public DownloaderBase()
+        {
+            
+        }
+
+        public DownloaderBase(HttpClient httpClient)
+        {
+            this.httpClient = httpClient;
+        }
+
+        public async ValueTask DownloadMapInfoAsync(IM3uMediaInfo? m3UMapInfo, CancellationToken cancellationToken = default)
         {
             if (m3UMapInfo is null)
                 return;
@@ -38,7 +50,7 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
         }
 
 
-        public virtual Task DownloadAsync(M3UFileInfo m3UFileInfo, CancellationToken cancellationToken = default)
+        public virtual Task DownloadAsync(IM3uFileInfo m3UFileInfo, CancellationToken cancellationToken = default)
         {
             if (_firstTimeToRun)
             {
@@ -50,7 +62,7 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
         }
 
 
-        protected async Task<bool> DownloadAsynInternal(M3UMediaInfo m3UMediaInfo, IEnumerable<KeyValuePair<string,string>>? headers, string mediaPath, bool skipRequestError, CancellationToken token)
+        protected async Task<bool> DownloadAsynInternal(IM3uMediaInfo m3UMediaInfo, IEnumerable<KeyValuePair<string,string>>? headers, string mediaPath, bool skipRequestError, CancellationToken token)
         {
             bool IsSuccessful = false;
             for (int i = 0; i < DownloaderSetting.RetryCount; i++)

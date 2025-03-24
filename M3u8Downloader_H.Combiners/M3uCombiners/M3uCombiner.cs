@@ -1,7 +1,7 @@
 ﻿using M3u8Downloader_H.Abstractions.Common;
-using M3u8Downloader_H.Abstractions.Meger;
-using M3u8Downloader_H.Common.M3u8Infos;
 using M3u8Downloader_H.Abstractions.Extensions;
+using M3u8Downloader_H.Abstractions.Settings;
+using M3u8Downloader_H.Abstractions.M3u8;
 
 namespace M3u8Downloader_H.Combiners.M3uCombiners
 {
@@ -12,9 +12,9 @@ namespace M3u8Downloader_H.Combiners.M3uCombiners
         public IDialogProgress DialogProgress { get; set; } = default!;
         public IMergeSetting Settings { get; set; } = default!;
 
-        public void Initialize(M3UFileInfo m3UFileInfo) => _isFile = m3UFileInfo.IsFile;
+        public void Initialize(IM3uFileInfo m3UFileInfo) => _isFile = m3UFileInfo.IsFile;
 
-        public async ValueTask MegerVideoHeader(M3UMediaInfo? m3UMapInfo, CancellationToken cancellationToken = default)
+        public async ValueTask MegerVideoHeader(IM3uMediaInfo? m3UMapInfo, CancellationToken cancellationToken = default)
         {
             if (m3UMapInfo is null)
                 return;
@@ -23,7 +23,7 @@ namespace M3u8Downloader_H.Combiners.M3uCombiners
             await MegerVideoInternalAsync(m3UMapInfo, cancellationToken);
         }
 
-        public async ValueTask StartMerging(M3UFileInfo m3UFileInfo, CancellationToken cancellationToken = default)
+        public async ValueTask StartMerging(IM3uFileInfo m3UFileInfo, CancellationToken cancellationToken = default)
         {
             Log.Info("开始合并fmp4,数量:{0}", m3UFileInfo.MediaFiles.Count);
             for (int i = 0; i < m3UFileInfo.MediaFiles.Count; i++)
@@ -42,7 +42,7 @@ namespace M3u8Downloader_H.Combiners.M3uCombiners
             Log.Info("fmp4合并完成");
         }
 
-        protected virtual async ValueTask MegerVideoInternalAsync(M3UMediaInfo m3UMediaInfo,CancellationToken cancellationToken)
+        protected virtual async ValueTask MegerVideoInternalAsync(IM3uMediaInfo m3UMediaInfo,CancellationToken cancellationToken)
         {
             string tsFileName = _isFile ? m3UMediaInfo.Uri.OriginalString : Path.Combine(DownloadParams.GetCachePath(), m3UMediaInfo.Title);
             using Stream tsStream = File.OpenRead(tsFileName);

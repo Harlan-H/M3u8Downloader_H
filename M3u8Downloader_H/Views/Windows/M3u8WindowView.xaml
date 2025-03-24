@@ -22,7 +22,7 @@
                         materialDesign:TextFieldAssist.HasClearButton="True"
                         materialDesign:HintAssist.Hint="下载地址,m3u8,txt,json文件(文件可以直接拖拽到此)"  FontSize="18"  VerticalAlignment="Center" >
                 <i:Interaction.Behaviors>
-                    <behavior:DragAndDropBehaviour FilterString=".m3u8|.txt|.json" />
+                    <behavior:DragAndDropBehaviour IsFile="True" FilterString=".m3u8|.txt|.json" />
                 </i:Interaction.Behaviors>
             </TextBox>
             <TextBox Text="{Binding VideoName,Delay=150}" Margin="8" 

@@ -7,11 +7,12 @@ using M3u8Downloader_H.Common.M3u8Infos;
 using M3u8Downloader_H.M3U8.M3UFileReaders;
 using M3u8Downloader_H.M3U8.Extensions;
 using M3u8Downloader_H.Abstractions.Common;
+using M3u8Downloader_H.Abstractions.M3u8;
 
 namespace M3u8Downloader_H.RestServer
 {
     using DownloadByUrlActionType = Action<IM3u8DownloadParam, string?>;
-    using DownloadByM3uFileInfoActionType = Action<IM3u8FileInfoDownloadParam, string?>;
+    using DownloadByM3uFileInfoActionType = Action<IDownloadParamBase,IM3uFileInfo, string?>;
 
     public class HttpListenService
     {
@@ -21,8 +22,8 @@ namespace M3u8Downloader_H.RestServer
 
         private readonly JsonSerializerOptions jsonSerializerOptions;
         private readonly static HttpListenService instance = new();
+        
         public static HttpListenService Instance => instance;
-
         private HttpListenService()
         {
             jsonSerializerOptions = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
@@ -40,9 +41,21 @@ namespace M3u8Downloader_H.RestServer
             DownloadByM3uFileInfoAction = downloadByM3uFileInfo;
         }
 
-        public void Run(string port)
+        public void Run(Action<int> SetPortAction)
         {
-            httpListen.Run(port);
+            for (int i = 65432; i > 65400; i--)
+            {
+                try
+                {
+                    httpListen.Run($"http://+:{i}/");
+                    SetPortAction(i);
+                    break;
+                }
+                catch (HttpListenerException)
+                {
+                    continue;
+                }
+            }
         }
 
         private void DownloadByUrl(HttpListenerRequest request, HttpListenerResponse response)
@@ -59,7 +72,7 @@ namespace M3u8Downloader_H.RestServer
                 requestWithURI.Validate();
                 if (!string.IsNullOrWhiteSpace(requestWithURI.SavePath))
                     requestWithURI.SavePath = requestWithURI.SavePath.Replace('/', Path.DirectorySeparatorChar);
-                DownloadByUrlAction(requestWithURI,requestWithURI.PluginKey);
+                DownloadByUrlAction(requestWithURI.ToM3u8DownloadParams(),requestWithURI.PluginKey);
 
                 response.Json(Response.Success());
             }
@@ -80,7 +93,7 @@ namespace M3u8Downloader_H.RestServer
                     return;
                 }
 
-                M3UFileInfo? m3UFileInfo = new M3UFileReaderWithStream().GetM3u8FileInfo(requestWithContent.Url!, requestWithContent.Content);
+                IM3uFileInfo? m3UFileInfo = new M3UFileReaderWithStream().GetM3u8FileInfo(requestWithContent.Url!, requestWithContent.Content);
                 if (m3UFileInfo is null)
                 {
                     response.Json(Response.Error("m3u8内容读取失败,请检查传入的参数是否有误"));
@@ -101,7 +114,7 @@ namespace M3u8Downloader_H.RestServer
                     SavePath = !string.IsNullOrWhiteSpace(requestWithContent.SavePath)? requestWithContent.SavePath.Replace('/', Path.DirectorySeparatorChar) : requestWithContent.SavePath,
                     Headers = requestWithContent.Headers,
                 };
-                DownloadByM3uFileInfoAction(requestWithM3U8FileInfo, requestWithContent.PluginKey);
+                DownloadByM3uFileInfoAction(requestWithM3U8FileInfo.ToDownloadParam(), requestWithM3U8FileInfo.M3UFileInfos, requestWithContent.PluginKey);
 
                 response.Json(Response.Success());
             }
@@ -128,7 +141,7 @@ namespace M3u8Downloader_H.RestServer
                 requestWithM3U8FileInfo.M3UFileInfos.PlaylistType = "VOD";
                 if (!string.IsNullOrWhiteSpace(requestWithM3U8FileInfo.SavePath))
                     requestWithM3U8FileInfo.SavePath = requestWithM3U8FileInfo.SavePath.Replace('/', Path.DirectorySeparatorChar);
-                DownloadByM3uFileInfoAction(requestWithM3U8FileInfo, requestWithM3U8FileInfo.PluginKey);
+                DownloadByM3uFileInfoAction(requestWithM3U8FileInfo.ToDownloadParam(), requestWithM3U8FileInfo.M3UFileInfos, requestWithM3U8FileInfo.PluginKey);
 
                 response.Json(Response.Success());
             }
@@ -151,10 +164,10 @@ namespace M3u8Downloader_H.RestServer
                 }
 
                 requestWIthGetM3U8FileInfo.Validate();
-                M3UFileInfo m3UFileInfo = new M3UFileReaderWithStream().GetM3u8FileInfo(requestWIthGetM3U8FileInfo.Url!, requestWIthGetM3U8FileInfo.Content);
-                Response<M3UFileInfo> r = m3UFileInfo.MediaFiles != null && m3UFileInfo.MediaFiles.Any()
-                                        ? new Response<M3UFileInfo>(0, "解析成功", m3UFileInfo)
-                                        : new Response<M3UFileInfo>(1, "没有包含任何数据", null);
+                IM3uFileInfo m3UFileInfo = new M3UFileReaderWithStream().GetM3u8FileInfo(requestWIthGetM3U8FileInfo.Url!, requestWIthGetM3U8FileInfo.Content);
+                Response<IM3uFileInfo> r = m3UFileInfo.MediaFiles != null && m3UFileInfo.MediaFiles.Any()
+                                        ? new Response<IM3uFileInfo>(0, "解析成功", m3UFileInfo)
+                                        : new Response<IM3uFileInfo>(1, "没有包含任何数据", null);
                 response.Json(r);
             }
             catch (Exception ex)

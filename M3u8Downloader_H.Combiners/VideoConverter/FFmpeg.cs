@@ -3,9 +3,9 @@ using System.Text;
 using M3u8Downloader_H.Common.Extensions;
 using CliWrap.Builders;
 using M3u8Downloader_H.Abstractions.Common;
-using M3u8Downloader_H.Abstractions.Meger;
-using M3u8Downloader_H.Common.M3u8Infos;
 using M3u8Downloader_H.Abstractions.Extensions;
+using M3u8Downloader_H.Abstractions.Settings;
+using M3u8Downloader_H.Abstractions.M3u8;
 
 namespace M3u8Downloader_H.Combiners.VideoConverter
 {
@@ -46,7 +46,7 @@ namespace M3u8Downloader_H.Combiners.VideoConverter
             await ConvertToMp4(arguments, cancellationToken);
         }
 
-        public async ValueTask ConvertToMp4(M3UFileInfo m3UFileInfo,CancellationToken cancellationToken = default)
+        public async ValueTask ConvertToMp4(IM3uFileInfo m3UFileInfo,CancellationToken cancellationToken = default)
         {
             if (!m3UFileInfo.MediaFiles.Any())
                 throw new ArgumentException("m3u8文件内的文件不能为空");
