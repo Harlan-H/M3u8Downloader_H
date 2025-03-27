@@ -88,7 +88,7 @@ namespace M3u8Downloader_H.Core.Converters
             IMergeSetting mergeSetting,
             ILog log)
         {
-            M3u8Converter m3U8Converter = new M3u8Converter(m3UFileInfo, log, downloadParamBase, mergeSetting)
+            M3u8Converter m3U8Converter = new(m3UFileInfo, log, downloadParamBase, mergeSetting)
             {
                 m3UDownloaderClient = new(log, downloadParamBase),
                 m3UCombinerClient = new(log, downloadParamBase, mergeSetting)

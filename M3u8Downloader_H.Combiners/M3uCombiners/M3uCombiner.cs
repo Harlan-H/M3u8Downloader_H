@@ -1,6 +1,7 @@
 ﻿using M3u8Downloader_H.Abstractions.Common;
 using M3u8Downloader_H.Abstractions.Settings;
 using M3u8Downloader_H.Abstractions.M3u8;
+using System.Diagnostics;
 
 namespace M3u8Downloader_H.Combiners.M3uCombiners
 {
@@ -33,7 +34,7 @@ namespace M3u8Downloader_H.Combiners.M3uCombiners
                 {
                     cancellationToken.ThrowIfCancellationRequested();
                     await MegerVideoInternalAsync(videoFileStream, m3UFileInfo.MediaFiles[i], cancellationToken);
-                    DialogProgress.Report(i / (double)m3UFileInfo.MediaFiles.Count);
+                    DialogProgress.Report((double)i / m3UFileInfo.MediaFiles.Count);
                 }
                 catch (Exception) when (Settings.ForcedMerger)
                 {

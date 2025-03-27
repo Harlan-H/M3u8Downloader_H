@@ -8,10 +8,15 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
 {
     internal class CryptM3uDownloader(HttpClient httpClient, IM3uFileInfo m3UFileInfo) : M3u8Downloader(httpClient)
     {
+        private bool initialized = false;
         private readonly HttpClient httpClient = httpClient;
+
 
         public override async ValueTask Initialization(CancellationToken cancellationToken)
         {
+            if (initialized)
+                return;
+
             if (m3UFileInfo.Key is null)
                 throw new InvalidDataException("没有可用的密钥信息");
 
@@ -41,6 +46,7 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
                     ? m3uFileinfoTmp.Key = M3uKeyInfoHelper.GetKeyInfoInstance(m3UFileInfo.Key)
                     : throw new InvalidDataException("密钥为空");
             }
+            initialized = true;
         }
 
         protected override Stream DownloadAfter(Stream stream, string contentType, CancellationToken cancellationToken)

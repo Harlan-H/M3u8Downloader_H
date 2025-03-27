@@ -9,13 +9,14 @@
              xmlns:local="clr-namespace:M3u8Downloader_H.ViewModels.Windows"
              xmlns:cal="http://caliburnmicro.com"
              xmlns:model="clr-namespace:M3u8Downloader_H.Models" 
+             xmlns:converters="clr-namespace:M3u8Downloader_H.Converters"
              d:DataContext="{d:DesignInstance Type=local:DirConverterViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <StackPanel Margin="8">
 
         <DockPanel Style="{StaticResource DockPannelStyle}">
-            <TextBlock Text="文件夹地址: "  Style="{StaticResource TextBlockStyle}" />
+            <TextBlock Text="地址: "  Style="{StaticResource TextBlockStyle}" />
             <Button DockPanel.Dock="Right" Style="{DynamicResource MaterialDesignFlatButton}"  Margin="2">
                 <materialDesign:PackIcon Kind="FolderOpenOutline"/>
                 <i:Interaction.Behaviors>
@@ -26,7 +27,7 @@
             </Button>
             <TextBox x:Name="dirPathTextBox" Text="{Binding M3u8DirUrl}" Style="{StaticResource TextBoxStyle}" 
                  IsReadOnly="True"
-                 materialDesign:HintAssist.Hint="ts的文件夹地址(文件夹可以直接拖拽到此)" 
+                 materialDesign:HintAssist.Hint="ts的文件夹地址(文件夹直接拖拽到此,不支持手动输入地址)" 
                   >
                 <i:Interaction.Behaviors>
                     <behavior:DragAndDropBehaviour IsFile="False" />
@@ -52,7 +53,7 @@
             <TextBox  Style="{StaticResource TextBoxStyle}" 
                    Text="{Binding Key}"
                   materialDesign:TextFieldAssist.HasClearButton="True"
-                 materialDesign:HintAssist.Hint="字符串或者base64(给定文件地址后会自动读入)" 
+                 materialDesign:HintAssist.Hint="字符串或者base64" 
                   />
         </DockPanel>
 
@@ -64,39 +65,71 @@
                   />
         </DockPanel>
 
-        <ListBox ItemsSource="{Binding MediaItems}" Height="230" 
-                 ToolTip="该列表展示的顺序就是合并的顺序,如果顺序不正确可以通过拖动来修改顺序"
-                 VerticalContentAlignment="Center"
-                 HorizontalContentAlignment="Stretch" >
-            <ListBox.ItemContainerStyle>
-                <Style  BasedOn="{StaticResource {x:Type ListBoxItem}}" TargetType="{x:Type ListBoxItem}">
-                    <Setter Property="VerticalAlignment" Value="Center" />
-                    <Setter Property="Height" Value="30" />
-                    <Setter Property="FontWeight" Value="DemiBold" />
-                    <Setter Property="Margin" Value="8,0,0,0" />
-                </Style>
-            </ListBox.ItemContainerStyle>
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="3*"/>
-                            <ColumnDefinition Width="30" />
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Text="{Binding Title}" ></TextBlock>
-                        <Button  VerticalAlignment="Center" HorizontalAlignment="Right"  ToolTip="删除此行" 
-                                            Style="{DynamicResource  MaterialDesignFlatButton}"
-                                cal:Message.Attach="OnDelete($DataContext)"
-                                            >
-                            <materialDesign:PackIcon Width="18" Height="18" Kind="CloseBoxOutline" />
-                        </Button>
-                        <i:Interaction.Behaviors>
-                            <behavior:ListItemDragAndDropBehavihor ItemSource="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}},Path=DataContext.MediaItems}"/>
-                        </i:Interaction.Behaviors>
-                    </Grid>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
+        <Grid>
+            <TextBlock 
+                  HorizontalAlignment="Center"
+                  VerticalAlignment="Center"
+                  FontSize="18"
+                  FontWeight="Light"
+                  TextAlignment="Center"
+                  TextWrapping="Wrap"
+                  Visibility="{Binding MediaItems.Count, Converter={x:Static converters:IntToInverseBoolVisibilityConverter.Instance}}" >
+                
+                <Run Text="此区域为文件夹中所有的ts文件的展示区" />
+                <LineBreak />
+                <Run Text="展示出来的顺序就是要合并的顺序" />
+                <LineBreak />
+                <Run Text="你可以通过拖拽来改变文件的顺序,但是如果文件过多还是建议用其他方式" />
+                <LineBreak/>
+                <Run Text="你也可以删除某些不想要合并进最终视频文件中的某个ts文件" />
+                <LineBreak />
+                <Run Text="此合并方法支持m3u8的ts,fmp4两种方式" />
+                <LineBreak />
+                <Run Text="如果是ts无需任何操作直接拖拽文件夹到地址处即可" />
+                <LineBreak/>
+                <Run Text="如果是fmp4,你需要将EXT-X-MAP标签中的视频文件命名为header.mp4" />
+                <LineBreak />
+                <Run Text="软件会自动加载此文件,但是不会显示在展示区" />
+                <LineBreak />
+                <Run Text="如果是fmp4且没有header.mp4文件,合并会报错" />
+            </TextBlock>
+
+
+            <ListBox ItemsSource="{Binding MediaItems}" Height="230" 
+         ToolTip="该列表展示的顺序就是合并的顺序,如果顺序不正确可以通过拖动来修改顺序"
+         VerticalContentAlignment="Center"
+         HorizontalContentAlignment="Stretch" >
+                <ListBox.ItemContainerStyle>
+                    <Style  BasedOn="{StaticResource {x:Type ListBoxItem}}" TargetType="{x:Type ListBoxItem}">
+                        <Setter Property="VerticalAlignment" Value="Center" />
+                        <Setter Property="Height" Value="30" />
+                        <Setter Property="FontWeight" Value="DemiBold" />
+                        <Setter Property="Margin" Value="8,0,0,0" />
+                    </Style>
+                </ListBox.ItemContainerStyle>
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="3*"/>
+                                <ColumnDefinition Width="30" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="{Binding Title}" ></TextBlock>
+                            <Button  VerticalAlignment="Center" HorizontalAlignment="Right"  ToolTip="删除此行" 
+                                    Style="{DynamicResource  MaterialDesignFlatButton}"
+                        cal:Message.Attach="OnDelete($DataContext)"
+                                    >
+                                <materialDesign:PackIcon Width="18" Height="18" Kind="CloseBoxOutline" />
+                            </Button>
+                            <i:Interaction.Behaviors>
+                                <behavior:ListItemDragAndDropBehavihor ItemSource="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}},Path=DataContext.MediaItems}"/>
+                            </i:Interaction.Behaviors>
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Grid>
+        
 
         <Grid Margin="8,0,8,0">
             <ProgressBar Margin="5"
@@ -109,6 +142,7 @@
                     FontSize="16"
                     Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" />
         </Grid>
+
 
         <Border BorderThickness="1" 
              Margin="8"

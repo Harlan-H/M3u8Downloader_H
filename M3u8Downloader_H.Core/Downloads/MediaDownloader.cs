@@ -47,13 +47,12 @@ namespace M3u8Downloader_H.Core.Downloads
                 DirectoryEx.DeleteCache(mediaDownloadParam.CachePath);
         }
 
-        private async Task DownloadAsync(IDialogProgress downloadProgress, CancellationToken cancellationToken)
+        private async ValueTask DownloadAsync(IDialogProgress downloadProgress, CancellationToken cancellationToken)
         {
             if (_isDownloaded)
                 return;
 
             m3UDownloaderClient.DialogProgress = downloadProgress;
-
             foreach (var media in mediaDownloadParam.Medias)
             {
                 await m3UDownloaderClient.MediaDownloader.DownloadAsync(media, cancellationToken);
@@ -61,7 +60,7 @@ namespace M3u8Downloader_H.Core.Downloads
             _isDownloaded = true;
         }
 
-        private async Task MergeAsync(IDialogProgress downloadProgress, CancellationToken cancellationToken)
+        private async ValueTask MergeAsync(IDialogProgress downloadProgress, CancellationToken cancellationToken)
         {
             m3UCombinerClient.DialogProgress = downloadProgress;
 

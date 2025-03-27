@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,6 +19,7 @@ namespace M3u8Downloader_H.Models
 
         public void Report(double value)
         {
+            Debug.Print("Report double value :{0}", value);
             action.Invoke(value);
         }
 

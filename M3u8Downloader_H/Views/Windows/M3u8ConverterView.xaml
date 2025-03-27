@@ -15,7 +15,7 @@
     <StackPanel Margin="8">
         
         <DockPanel Style="{StaticResource DockPannelStyle}">
-            <TextBlock Text="文件地址: "  Style="{StaticResource TextBlockStyle}" />
+            <TextBlock Text="地址: "  Style="{StaticResource TextBlockStyle}" />
             <Button DockPanel.Dock="Right" Style="{DynamicResource MaterialDesignFlatButton}"  Margin="2">
                 <materialDesign:PackIcon Kind="FilePlusOutline"/>
                 <i:Interaction.Behaviors>
@@ -28,7 +28,7 @@
             <TextBox x:Name="m3u8PathTextBox" Text="{Binding M3u8FileUrl}" Style="{StaticResource TextBoxStyle}" 
                     IsReadOnly="True"
                      materialDesign:TextFieldAssist.HasClearButton="True"
-                    materialDesign:HintAssist.Hint="m3u8,json文件地址(文件可以直接拖拽到此)" 
+                    materialDesign:HintAssist.Hint="m3u8,json文件地址(文件直接拖拽到此,不支持手动输入地址)" 
                      >
                 <i:Interaction.Behaviors>
                     <behavior:DragAndDropBehaviour FilterString=".m3u8|.json" />
@@ -54,7 +54,7 @@
             <TextBox  Style="{StaticResource TextBoxStyle}" 
                       Text="{Binding Key}"
                      materialDesign:TextFieldAssist.HasClearButton="True"
-                    materialDesign:HintAssist.Hint="字符串或者base64(给定文件地址后会自动读入)" 
+                    materialDesign:HintAssist.Hint="字符串或者base64" 
                      />
         </DockPanel>
 

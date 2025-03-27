@@ -22,7 +22,7 @@ namespace M3u8Downloader_H.M3U8.M3UFileReaderManangers
         internal IM3u8DownloadParam DownloadParam { get; set; } = default!;
         internal IDownloaderSetting DownloaderSetting { get; set; } = default!;
         internal ILog? Log { get; set; } = default!;
-        internal TimeSpan TimeOuts { get; } = TimeSpan.FromSeconds(15);
+        internal TimeSpan TimeOuts { get; set; } = TimeSpan.FromSeconds(15);
 
         public M3UFileReaderManager()
         {
@@ -36,10 +36,10 @@ namespace M3u8Downloader_H.M3U8.M3UFileReaderManangers
 
         public async Task<IM3uFileInfo> GetM3u8FileInfo(CancellationToken cancellationToken = default)
         {
-            using CancellationTokenSource cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-            cancellationTokenSource.CancelAfter(TimeOuts);
             for (int i = 0; i < 5; i++)
             {
+                using CancellationTokenSource cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+                cancellationTokenSource.CancelAfter(TimeOuts);
                 try
                 {
                     var m3u8FileInfo = await GetM3u8FileInfoInternal(DownloadParam.RequestUrl, DownloadParam.Headers ?? DownloaderSetting.Headers, cancellationTokenSource.Token);
@@ -64,7 +64,7 @@ namespace M3u8Downloader_H.M3U8.M3UFileReaderManangers
                 "json" => new M3UFileReaderWithJson().GetM3u8FileInfo(uri),
                 "" => new M3UFileReaderWithDirectory().GetM3u8FileInfo(uri,(Stream)null!),
                 "m3u8" => M3u8FileReader.GetM3u8FileInfo(uri),
-                _ => throw new InvalidOperationException("请确认是否为.m3u8或.json或.xml或文件夹"),
+                _ => throw new InvalidOperationException("请确认是否为.m3u8或.json或文件夹"),
             };
             return checkM3u8FileInfo(m3UFileInfo, uri);
         }

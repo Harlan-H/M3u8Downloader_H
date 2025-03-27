@@ -119,7 +119,7 @@ namespace M3u8Downloader_H.ViewModels.Windows
 
                     DownloaderCoreClient downloaderCoreClient = new(m3UFileInfo, _downloadParams, settingsService, Log);
                     await downloaderCoreClient.Converter.StartMerge(_dialogProgress, cancellationTokenSource.Token);
-                    _dialogProgress.Report(1);
+                    _dialogProgress.Report(1.0);
                 }
                 catch (OperationCanceledException) when (cancellationTokenSource!.IsCancellationRequested)
                 {

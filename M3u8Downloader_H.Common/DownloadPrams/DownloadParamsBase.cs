@@ -5,7 +5,7 @@ namespace M3u8Downloader_H.Common.DownloadPrams
 {
     public class DownloadParamsBase : IDownloadParamBase
     {
-        private static readonly string _cachePath =
+        private static readonly string _defaultCachePath =
 #if DEBUG
            "E:\\desktop\\download\\Caches";
 #else
@@ -51,7 +51,7 @@ namespace M3u8Downloader_H.Common.DownloadPrams
             if (!string.IsNullOrWhiteSpace(cachePath))
                 CachePath = cachePath;
             else
-                CachePath = Path.Combine(_cachePath, _cacheName);
+                CachePath = Path.Combine(_defaultCachePath, _cacheName);
 
             VideoName = videoName!;
             SelectFormats = selectFormat;

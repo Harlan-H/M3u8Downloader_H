@@ -82,7 +82,7 @@ namespace M3u8Downloader_H.ViewModels.Windows
             }
         }
 
-
+        //处理软件界面来的请求
         public void ProcessM3u8Download(IM3u8DownloadParam m3U8DownloadParam, string? pluginKey = default!)
         {
             FileEx.EnsureFileNotExist(m3U8DownloadParam.CachePath);
@@ -98,6 +98,7 @@ namespace M3u8Downloader_H.ViewModels.Windows
             EnqueueDownloadAction(download);
         }
 
+        //处理接口过来的请求
         public void ProcessM3u8Download(IDownloadParamBase m3U8DownloadParam,IM3uFileInfo m3UFileInfo,  string? pluginKey = default!)
         {
             FileEx.EnsureFileNotExist(m3U8DownloadParam.CachePath);
