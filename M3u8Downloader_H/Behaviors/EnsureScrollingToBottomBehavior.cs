@@ -59,8 +59,11 @@ namespace M3u8Downloader_H.Behaviors
             if(_scrollViewer is null)
             {
                 _scrollViewer ??= FindVisualChild<ScrollViewer>(AssociatedObject);
-                _scrollViewer.PreviewMouseDown += ScrollViewer_PreviewMouseDown;
-                _scrollViewer.PreviewMouseUp += ScrollViewer_PreviewMouseUp;
+                if(_scrollViewer is not null)
+                {
+                    _scrollViewer.PreviewMouseDown += ScrollViewer_PreviewMouseDown;
+                    _scrollViewer.PreviewMouseUp += ScrollViewer_PreviewMouseUp;
+                }
             }
             _scrollViewer?.ScrollToEnd();
         }

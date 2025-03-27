@@ -12,7 +12,7 @@ namespace M3u8Downloader_H.ViewModels.Menus
 {
     public class SettingsViewModel(SettingsService settingService) : Screen
     {
-        public ISnackbarMessageQueue MyMessageQueue { get; } = new SnackbarMessageQueue(TimeSpan.FromSeconds(5));
+        public ISnackbarMessageQueue MyMessageQueue { get; } = new SnackbarMessageQueue(TimeSpan.FromSeconds(2));
         public bool IsActived { get; private set; }
 
         public SettingsService SettingsServiceClone { get;private set; } = default!;
@@ -23,7 +23,7 @@ namespace M3u8Downloader_H.ViewModels.Menus
 
         protected override Task OnActivateAsync(CancellationToken cancellationToken)
         {
-            OnResetSettingInfo();
+            SettingsServiceClone = (SettingsService)settingService.Clone();
             return base.OnActivateAsync(cancellationToken);
         }
 
@@ -34,7 +34,9 @@ namespace M3u8Downloader_H.ViewModels.Menus
                 obj.Validate();
                 settingService.CopyFrom(obj);
                 settingService.UpdateConcurrentDownloadCount();
-            }catch(Exception e)
+                MyMessageQueue.Enqueue("设置已经保存！！！");
+            }
+            catch(Exception e)
             {
                 MyMessageQueue.Enqueue($"提交失败,错误信息:{e.Message}");
             }
@@ -43,6 +45,7 @@ namespace M3u8Downloader_H.ViewModels.Menus
         public void OnResetSettingInfo()
         {
             SettingsServiceClone = (SettingsService)settingService.Clone();
+            MyMessageQueue.Enqueue("设置已经重置！");
         }
 
         public bool CanTryConnectProxy => !IsActived;

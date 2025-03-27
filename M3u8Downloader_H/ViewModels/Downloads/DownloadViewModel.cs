@@ -8,11 +8,9 @@ using M3u8Downloader_H.Utils;
 using M3u8Downloader_H.Models;
 using System.Timers;
 using M3u8Downloader_H.Abstractions.Common;
-using M3u8Downloader_H.Abstractions.Extensions;
 using Caliburn.Micro;
 using M3u8Downloader_H.Common.Models;
 using M3u8Downloader_H.Abstractions.M3u8;
-using M3u8Downloader_H.Common.DownloadPrams;
 using M3u8Downloader_H.Core;
 
 namespace M3u8Downloader_H.ViewModels
@@ -96,7 +94,7 @@ namespace M3u8Downloader_H.ViewModels
 
             try
             {
-                Process.Start("explorer", $"/select, \"{DownloadParam.GetVideoFullPath()}\"");
+                Process.Start("explorer", $"/select, \"{DownloadParam.VideoFullName}\"");
             }
             catch (Exception)
             {
@@ -122,7 +120,7 @@ namespace M3u8Downloader_H.ViewModels
             if (!isDelete)
                 return;
 
-            DirectoryInfo directory = new(DownloadParam.GetCachePath());
+            DirectoryInfo directory = new(DownloadParam.CachePath);
             if (!directory.Exists) return ;
                 
             directory.Delete(true);
@@ -138,7 +136,7 @@ namespace M3u8Downloader_H.ViewModels
         
         public bool Equals(DownloadViewModel? other) => GetHashCode() == other?.GetHashCode();
         public override bool Equals(object? obj) =>  obj is DownloadViewModel  downloadviewmodel && Equals(downloadviewmodel);
-        public override int GetHashCode() => StringComparer.Ordinal.GetHashCode(DownloadParam.GetCachePath());
+        public override int GetHashCode() => StringComparer.Ordinal.GetHashCode(DownloadParam.CachePath);
         public static bool operator ==(DownloadViewModel downloadviewmode, DownloadViewModel downloadviewmode1) => downloadviewmode.Equals(downloadviewmode1);
         public static bool operator !=(DownloadViewModel downloadviewmode, DownloadViewModel downloadviewmode1) => !(downloadviewmode == downloadviewmode1);
     }

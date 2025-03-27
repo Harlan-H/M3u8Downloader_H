@@ -47,6 +47,7 @@ namespace M3u8Downloader_H.Core.Downloads
 
             StateAction.Invoke((int)DownloadStatus.Enqueued);
             using var acquire = dialogProgress.Acquire();
+
             await DownloadAsync(dialogProgress, cancellationToken);
 
             await MergeAsync(dialogProgress, cancellationToken);
@@ -67,8 +68,6 @@ namespace M3u8Downloader_H.Core.Downloads
                 _isParsed = true;
                 return;
             }
-
-            m3U8FileInfoClient.DownloaderSetting = downloaderSetting;
 
             IM3u8DownloadParam m3u8DownloadParam = (IM3u8DownloadParam)downloadParam;
             if (m3u8DownloadParam.RequestUrl.IsFile)
@@ -97,28 +96,20 @@ namespace M3u8Downloader_H.Core.Downloads
             if (_isDownloaded)
                 return;
 
-            m3UDownloaderClient.DownloaderSetting = downloaderSetting;
             m3UDownloaderClient.M3UFileInfo = M3U8FileInfo;
             m3UDownloaderClient.DialogProgress = downloadProgress;
 
-            //当使用m3u8数据接口传入时 m3U8FileInfoClient是不创建的 所以需要加判断
-            if (m3U8FileInfoClient is not null)
-                m3UDownloaderClient.GetLiveFileInfoFunc = m3U8FileInfoClient.M3UFileReadManager.GetM3u8FileInfo;
-
-            await m3UDownloaderClient.M3u8Downloader.DownloadMapInfoAsync(M3U8FileInfo.Map, cancellationToken);
             await m3UDownloaderClient.M3u8Downloader.DownloadAsync(M3U8FileInfo, cancellationToken);
             _isDownloaded = true;
         }
 
         private async Task MergeAsync(IDialogProgress progress, CancellationToken cancellationToken)
         {
-            m3UCombinerClient.Settings = (IMergeSetting)downloaderSetting;
             m3UCombinerClient.DialogProgress = progress;
 
             if (M3U8FileInfo.Map is not null)
             {
                 m3UCombinerClient.M3u8FileMerger.Initialize(M3U8FileInfo);
-                await m3UCombinerClient.M3u8FileMerger.MegerVideoHeader(M3U8FileInfo.Map, cancellationToken);
                 await m3UCombinerClient.M3u8FileMerger.StartMerging(M3U8FileInfo, cancellationToken);
             }
             else
@@ -139,9 +130,13 @@ namespace M3u8Downloader_H.Core.Downloads
         {
             M3u8Downloader m3U8Downloader = new(m3U8DownloadParam, downloaderSetting, logger);
             PluginManger? pluginManger = PluginManger.CreatePluginMangaer(pluginType, httpClient, logger);
-            m3U8Downloader.m3U8FileInfoClient = new M3u8FileInfoClient(httpClient, pluginManger, logger, m3U8DownloadParam);
-            m3U8Downloader.m3UDownloaderClient = new DownloaderClient(httpClient, pluginManger, logger, m3U8DownloadParam);
-            m3U8Downloader.m3UCombinerClient = new M3uCombinerClient(logger, m3U8DownloadParam);
+            m3U8Downloader.m3U8FileInfoClient = new M3u8FileInfoClient(httpClient, pluginManger, logger, m3U8DownloadParam, downloaderSetting);
+            m3U8Downloader.m3UDownloaderClient = new DownloaderClient(httpClient, pluginManger, logger, m3U8DownloadParam, downloaderSetting)
+            {
+                GetLiveFileInfoFunc = m3U8Downloader.m3U8FileInfoClient.M3UFileReadManager.GetM3u8FileInfo
+            };
+
+            m3U8Downloader.m3UCombinerClient = new M3uCombinerClient(logger, m3U8DownloadParam, (IMergeSetting)downloaderSetting);
 
             m3U8Downloader.M3UKeyInfo = m3U8DownloadParam.M3UKeyInfo;
 
@@ -159,8 +154,8 @@ namespace M3u8Downloader_H.Core.Downloads
         {
             M3u8Downloader m3U8Downloader = new(m3U8DownloadParam, downloaderSetting, logger);
             PluginManger? pluginManger = PluginManger.CreatePluginMangaer(pluginType, httpClient, logger);
-            m3U8Downloader.m3UDownloaderClient = new DownloaderClient(httpClient, pluginManger, logger, m3U8DownloadParam);
-            m3U8Downloader.m3UCombinerClient = new M3uCombinerClient(logger, m3U8DownloadParam);
+            m3U8Downloader.m3UDownloaderClient = new DownloaderClient(httpClient, pluginManger, logger, m3U8DownloadParam,downloaderSetting);
+            m3U8Downloader.m3UCombinerClient = new M3uCombinerClient(logger, m3U8DownloadParam, (IMergeSetting)downloaderSetting);
 
             m3U8Downloader.M3U8FileInfo = m3UFileInfo;
             return m3U8Downloader;

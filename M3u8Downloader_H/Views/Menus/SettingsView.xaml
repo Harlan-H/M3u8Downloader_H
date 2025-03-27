@@ -224,6 +224,8 @@
             </StackPanel>
         </ScrollViewer>
         
+        <materialDesign:Snackbar  MessageQueue="{Binding MyMessageQueue}" />
+        
         <StackPanel Orientation="Horizontal" Grid.Row="1"  HorizontalAlignment="Center" Margin="20">
             <Button cal:Message.Attach="OnSubmitSettingInfo(SettingGrid)"
                     Content="保存" 
@@ -232,6 +234,6 @@
             <Button  cal:Message.Attach="OnResetSettingInfo"
                      Content="重置"  Width="100" Margin="10 0 0 0" />
         </StackPanel>
-        <materialDesign:Snackbar Grid.Row="1"  MessageQueue="{Binding MyMessageQueue}" />
+
     </Grid>
 </UserControl>

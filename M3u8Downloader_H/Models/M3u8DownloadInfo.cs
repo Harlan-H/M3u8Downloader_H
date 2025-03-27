@@ -1,13 +1,8 @@
 ﻿using System;
-using System.Collections;
 using System.IO;
 using System.Linq;
-using System.Security.Policy;
 using Caliburn.Micro;
-using M3u8Downloader_H.Abstractions.Common;
-using M3u8Downloader_H.Attributes;
 using M3u8Downloader_H.Common.DownloadPrams;
-using M3u8Downloader_H.Common.Utils;
 using M3u8Downloader_H.Services;
 
 
@@ -46,7 +41,7 @@ namespace M3u8Downloader_H.Models
             Uri uri = new(RequestUrl!, UriKind.Absolute);
             if (!uri.IsFile)
             {
-                M3u8DownloadParams m3U8DownloadParams = new(new Uri(RequestUrl), VideoName, settingsService.SavePath, settingsService.SelectedFormat, settingsService.Headers, Method, Key, Iv);
+                M3u8DownloadParams m3U8DownloadParams = new(new Uri(RequestUrl), VideoName,null, settingsService.SavePath, settingsService.SelectedFormat, settingsService.Headers, Method, Key, Iv);
                 NormalProcessDownloadAction(m3U8DownloadParams, null);
                 return;
             }
@@ -61,7 +56,7 @@ namespace M3u8Downloader_H.Models
             }
             else
             {
-                M3u8DownloadParams m3U8DownloadParams = new(new Uri(RequestUrl), VideoName, settingsService.SavePath, settingsService.SelectedFormat, settingsService.Headers, Method, Key, Iv);
+                M3u8DownloadParams m3U8DownloadParams = new(new Uri(RequestUrl), VideoName,null, settingsService.SavePath, settingsService.SelectedFormat, settingsService.Headers, Method, Key, Iv);
                 NormalProcessDownloadAction(m3U8DownloadParams, null);
                 return;
             }

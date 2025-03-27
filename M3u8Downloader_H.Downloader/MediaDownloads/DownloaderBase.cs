@@ -1,6 +1,5 @@
 ﻿using M3u8Downloader_H.Abstractions.Common;
 using M3u8Downloader_H.Abstractions.M3uDownloaders;
-using M3u8Downloader_H.Abstractions.Extensions;
 using M3u8Downloader_H.Downloader.Extensions;
 using System.Buffers;
 using System.Net.Http.Headers;
@@ -18,7 +17,7 @@ namespace M3u8Downloader_H.Downloader.MediaDownloads
 
         protected IEnumerable<KeyValuePair<string, string>>? _headers => DownloadParam.Headers ?? DownloaderSetting.Headers;
 
-        protected string _cachePath => DownloadParam.GetCachePath();
+        protected string _cachePath => DownloadParam.CachePath;
 
         public virtual Task DownloadAsync(IStreamInfo streamInfo,CancellationToken cancellationToken = default)
         {

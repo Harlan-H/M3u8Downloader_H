@@ -41,7 +41,7 @@ namespace M3u8Downloader_H.Models
 
             Uri? AudioUri = AudioUrl is not null ? new Uri(AudioUrl) : null;
             Uri? SubtitleUri = SubtitleUrl is not null ? new Uri(SubtitleUrl) : null;
-            MediaDownloadParams mediaDownloadParams = new(settingsService.SavePath,new Uri(VideoUrl), AudioUri, SubtitleUri, VideoName, settingsService.Headers)
+            MediaDownloadParams mediaDownloadParams = new(null,settingsService.SavePath,new Uri(VideoUrl), AudioUri, SubtitleUri, VideoName, settingsService.Headers)
             {
                 IsVideoStream = StreamIndex == 0
             };

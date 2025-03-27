@@ -18,7 +18,7 @@ namespace M3u8Downloader_H.RestServer.Models
             if (!M3UFileInfos.MediaFiles.Any())
                 throw new ArgumentException("m3u8的数据不能为空");
 
-            return new DownloadParamsBase(M3UFileInfos.MediaFiles[0].Uri, VideoName, SavePath, "mp4", Headers);
+            return new DownloadParamsBase(M3UFileInfos.MediaFiles[0].Uri, VideoName,null, SavePath, "mp4", Headers);
         }
    
     }

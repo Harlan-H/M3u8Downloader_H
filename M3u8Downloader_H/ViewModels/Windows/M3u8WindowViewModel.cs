@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Linq;
 using Caliburn.Micro;
 using M3u8Downloader_H.Abstractions.Common;
 using M3u8Downloader_H.Extensions;
 using M3u8Downloader_H.Models;
 using M3u8Downloader_H.Services;
 using M3u8Downloader_H.Utils;
-using M3u8Downloader_H.Abstractions.Extensions;
 using MaterialDesignThemes.Wpf;
 using M3u8Downloader_H.Exceptions;
 using System.IO;
@@ -68,7 +66,7 @@ namespace M3u8Downloader_H.ViewModels.Windows
                 string[] result = item.Trim().Split(settingsService.Separator, 2);
                 try
                 {
-                    M3u8DownloadParams m3U8DownloadParams = new(new Uri(result[0], UriKind.Absolute), result.Length > 1 ? result[1] : null, settingsService.SavePath, settingsService.SelectedFormat, settingsService.Headers);
+                    M3u8DownloadParams m3U8DownloadParams = new(new Uri(result[0], UriKind.Absolute), result.Length > 1 ? result[1] : null,null, settingsService.SavePath, settingsService.SelectedFormat, settingsService.Headers);
                     ProcessM3u8Download(m3U8DownloadParams);
                 }
                 catch (UriFormatException)
@@ -87,7 +85,7 @@ namespace M3u8Downloader_H.ViewModels.Windows
 
         public void ProcessM3u8Download(IM3u8DownloadParam m3U8DownloadParam, string? pluginKey = default!)
         {
-            FileEx.EnsureFileNotExist(m3U8DownloadParam.GetCachePath());
+            FileEx.EnsureFileNotExist(m3U8DownloadParam.CachePath);
 
             string tmpPluginKey = pluginKey is not null
                                 ? pluginKey
@@ -102,7 +100,7 @@ namespace M3u8Downloader_H.ViewModels.Windows
 
         public void ProcessM3u8Download(IDownloadParamBase m3U8DownloadParam,IM3uFileInfo m3UFileInfo,  string? pluginKey = default!)
         {
-            FileEx.EnsureFileNotExist(m3U8DownloadParam.GetCachePath());
+            FileEx.EnsureFileNotExist(m3U8DownloadParam.CachePath);
 
             //这里因为不可能有url所以直接通过设置来判别使用某个插件
             DownloadViewModel download = DownloadViewModel.CreateDownloadViewModel(m3UFileInfo, m3U8DownloadParam, pluginService[pluginKey ?? settingsService.PluginKey]);

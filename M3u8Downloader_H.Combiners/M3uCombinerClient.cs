@@ -5,10 +5,10 @@ using M3u8Downloader_H.Combiners.VideoConverter;
 
 namespace M3u8Downloader_H.Combiners
 {
-    public class M3uCombinerClient(ILog Log, IDownloadParamBase DownloadParams)
+    public class M3uCombinerClient(ILog Log, IDownloadParamBase DownloadParams, IMergeSetting Settings)
     {
+        private readonly IMergeSetting Settings = Settings;
         public IDialogProgress DialogProgress { get; set; } = default!;
-        public IMergeSetting Settings { get; set; } = default!;
 
         public M3uCombiner M3u8FileMerger
         {

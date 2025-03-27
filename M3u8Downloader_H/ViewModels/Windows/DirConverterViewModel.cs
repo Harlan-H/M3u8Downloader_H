@@ -73,7 +73,7 @@ namespace M3u8Downloader_H.ViewModels.Windows
                 MediaItems.AddRange(_m3u8FileInfo.MediaFiles);
                 Log.Info("读取到{0}个文件数据", _m3u8FileInfo.MediaFiles.Count);
 
-                _downloadParams = new M3u8DownloadParams(m3u8Uri, VideoName, settingsService.SavePath,"mp4",null);
+                _downloadParams = new M3u8DownloadParams(m3u8Uri, VideoName, directoryInfo.FullName, settingsService.SavePath,"mp4",null);
                 VideoName = _downloadParams.VideoName;
                 Log.Info("生成视频名称:{0}", VideoName);
 
@@ -108,7 +108,7 @@ namespace M3u8Downloader_H.ViewModels.Windows
                 try
                 {
                     _downloadParams.VideoName = VideoName;
-                    if (Key is not null)
+                    if (!string.IsNullOrEmpty(Key))
                         _downloadParams.UpdateKeyInfo(Method, Key, Iv);
 
                     M3UFileInfo m3UFileInfo = (M3UFileInfo)_m3u8FileInfo;
@@ -117,9 +117,9 @@ namespace M3u8Downloader_H.ViewModels.Windows
                     cancellationTokenSource = new();
                     cancellationTokenSource.CancelAfter(TimeSpan.FromSeconds(20));
 
-                    DownloaderCoreClient downloaderCoreClient = new(_m3u8FileInfo, _downloadParams, settingsService, Log);
+                    DownloaderCoreClient downloaderCoreClient = new(m3UFileInfo, _downloadParams, settingsService, Log);
                     await downloaderCoreClient.Converter.StartMerge(_dialogProgress, cancellationTokenSource.Token);
-
+                    _dialogProgress.Report(1);
                 }
                 catch (OperationCanceledException) when (cancellationTokenSource!.IsCancellationRequested)
                 {
@@ -143,6 +143,11 @@ namespace M3u8Downloader_H.ViewModels.Windows
             cancellationTokenSource?.Cancel();
         }
 
+
+        public void OnDelete(IM3uMediaInfo m3UMediaInfo)
+        {
+            MediaItems.Remove(m3UMediaInfo);
+        }
 
         private void Reset()
         {

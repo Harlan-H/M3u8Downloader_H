@@ -52,7 +52,6 @@ namespace M3u8Downloader_H.Core.Downloads
             if (_isDownloaded)
                 return;
 
-            m3UDownloaderClient.DownloaderSetting = downloaderSetting;
             m3UDownloaderClient.DialogProgress = downloadProgress;
 
             foreach (var media in mediaDownloadParam.Medias)
@@ -81,8 +80,8 @@ namespace M3u8Downloader_H.Core.Downloads
         {
             MediaDownloader mediaDownloader = new(m3U8DownloadParam, downloaderSetting, logger)
             {
-                m3UDownloaderClient = new DownloaderClient(httpClient, null, logger, m3U8DownloadParam),
-                m3UCombinerClient = new M3uCombinerClient(logger, m3U8DownloadParam)
+                m3UDownloaderClient = new DownloaderClient(httpClient, null, logger, m3U8DownloadParam, downloaderSetting),
+                m3UCombinerClient = new M3uCombinerClient(logger, m3U8DownloadParam, (IMergeSetting)downloaderSetting)
             };
             return mediaDownloader;
         }

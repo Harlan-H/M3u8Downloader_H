@@ -1,11 +1,10 @@
 ﻿using System.Security.Cryptography;
-using M3u8Downloader_H.Common.M3u8Infos;
 using M3u8Downloader_H.Downloader.Extensions;
 using M3u8Downloader_H.Downloader.Utils;
 using M3u8Downloader_H.Abstractions.M3uDownloaders;
 using M3u8Downloader_H.Abstractions.Common;
-using M3u8Downloader_H.Abstractions.Extensions;
 using M3u8Downloader_H.Abstractions.M3u8;
+using M3u8Downloader_H.Common.M3u8Infos;
 
 
 namespace M3u8Downloader_H.Downloader.M3uDownloaders
@@ -20,8 +19,11 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
         internal ILog Log { get; set; } = default!;
         internal IDialogProgress DialogProgress {  get; set; } = default!;       
 
+
         protected IEnumerable<KeyValuePair<string, string>>? _headers => DownloadParam.Headers ?? DownloaderSetting.Headers;
-        protected string _cachePath => DownloadParam.GetCachePath();
+        protected string _cachePath => DownloadParam.CachePath;
+
+        protected bool _isFmp4 = false;
 
         public DownloaderBase()
         {
@@ -43,6 +45,7 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
             if (fileInfo.Exists && fileInfo.Length > 0)
                 return;
 
+            _isFmp4 = true;
             bool isSuccessful = await DownloadAsynInternal(m3UMapInfo, _headers, mediaPath, DownloaderSetting.SkipRequestError, cancellationToken);
             if (isSuccessful == false)
                 throw new InvalidOperationException($"获取map失败,地址为:{m3UMapInfo.Uri.OriginalString}");
@@ -57,7 +60,7 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
                 CreateDirectory(_cachePath);
                 _firstTimeToRun = false;
             }
-
+            
             return Task.CompletedTask;
         }
 
@@ -94,9 +97,9 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
                     await Task.Delay(2000, token);
                     continue;
                 }
-                catch (IOException)
+                catch (IOException ioex)
                 {
-                    Log?.Warn("{0} 遇到io异常，重试第{1}次", m3UMediaInfo.Uri.OriginalString, i + 1);
+                    Log?.Warn("{0} 遇到io异常{1}，重试第{2}次", m3UMediaInfo.Uri.OriginalString, ioex.Message, i + 1);
                     await Task.Delay(2000, token);
                     continue;
                 }
@@ -115,8 +118,11 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
         protected virtual Stream DownloadAfter(Stream stream, string contentType, CancellationToken cancellationToken = default)
         {
             HandleStreamInternal handleImageStream = (HandleStreamInternal)stream;
-            Task t = handleImageStream.InitializePositionAsync(2000, cancellationToken);
-            t.Wait(cancellationToken);
+            if(_isFmp4 is false)
+            {
+                Task t = handleImageStream.InitializePositionAsync(2000, cancellationToken);
+                t.Wait(cancellationToken);
+            }
             return handleImageStream;
         }
 

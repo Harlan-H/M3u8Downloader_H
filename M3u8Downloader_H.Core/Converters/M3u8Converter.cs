@@ -66,20 +66,17 @@ namespace M3u8Downloader_H.Core.Converters
 
         private async ValueTask M3u8Merge(IDialogProgress progress, CancellationToken cancellationToken)
         {
-            m3UCombinerClient.Settings = mergeSetting;
             m3UCombinerClient.DialogProgress = progress;
 
             if (m3UFileInfo.Map is not null)
             {
                 m3UCombinerClient.M3u8FileMerger.Initialize(m3UFileInfo);
-                await m3UCombinerClient.M3u8FileMerger.MegerVideoHeader(m3UFileInfo.Map, cancellationToken);
                 await m3UCombinerClient.M3u8FileMerger.StartMerging(m3UFileInfo, cancellationToken);
             }
             else
             {
                 await m3UCombinerClient.FFmpeg.ConvertToMp4(m3UFileInfo, cancellationToken);
             }
-          
         }
     }
 
@@ -94,7 +91,7 @@ namespace M3u8Downloader_H.Core.Converters
             M3u8Converter m3U8Converter = new M3u8Converter(m3UFileInfo, log, downloadParamBase, mergeSetting)
             {
                 m3UDownloaderClient = new(log, downloadParamBase),
-                m3UCombinerClient = new(log, downloadParamBase)
+                m3UCombinerClient = new(log, downloadParamBase, mergeSetting)
             };
 
             return m3U8Converter;

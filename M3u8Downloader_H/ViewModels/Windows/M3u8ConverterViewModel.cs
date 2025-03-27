@@ -1,21 +1,15 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using Caliburn.Micro;
-using M3u8Downloader_H.Common.M3u8Infos;
 using M3u8Downloader_H.M3U8;
 using PropertyChanged;
-using M3u8Downloader_H.Downloader;
 using M3u8Downloader_H.Models;
 using System.Threading;
 using System.Threading.Tasks;
 using M3u8Downloader_H.Services;
-using M3u8Downloader_H.Abstractions.Extensions;
 using M3u8Downloader_H.Common.DownloadPrams;
-using M3u8Downloader_H.Combiners;
 using M3u8Downloader_H.Abstractions.M3u8;
 using M3u8Downloader_H.Core;
-using System.Security.Policy;
 
 namespace M3u8Downloader_H.ViewModels.Windows
 {
@@ -74,7 +68,7 @@ namespace M3u8Downloader_H.ViewModels.Windows
                 _fileInfo = m3U8FileInfoClient.DefaultM3uFileReadManager.GetM3u8FileInfo(ext, m3u8Uri);
                 Log.Info("读取到{0}个文件数据", _fileInfo.MediaFiles.Count);
 
-                _downloadParams = new M3u8DownloadParams(m3u8Uri, VideoName, settingsService.SavePath, "mp4", null);
+                _downloadParams = new M3u8DownloadParams(m3u8Uri, VideoName, fileInfo.DirectoryName, settingsService.SavePath, "mp4", null);
                 VideoName = _downloadParams.VideoName;
                 Log.Info("生成视频名称:{0}", VideoName);
 
@@ -110,7 +104,7 @@ namespace M3u8Downloader_H.ViewModels.Windows
                 {
 
                     _downloadParams.VideoName = VideoName;
-                    if (Key is not null)
+                    if (!string.IsNullOrEmpty(Key))
                         _downloadParams.UpdateKeyInfo(Method, Key, Iv);
 
                     cancellationTokenSource = new();
@@ -124,6 +118,10 @@ namespace M3u8Downloader_H.ViewModels.Windows
                 {
                     Log.Info("已经停止转码");
                 }
+                catch (Exception ex)
+                {
+                    Log.Error(ex);
+                }
                 finally
                 {
                     IsStart = false;
@@ -134,7 +132,7 @@ namespace M3u8Downloader_H.ViewModels.Windows
         }
 
         public bool CanOnCancel => IsStart;
-        public void OnCancel()
+        public void OnCancel() 
         {
             if (!CanOnCancel)
                 return;

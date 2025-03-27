@@ -1,16 +1,11 @@
 ﻿using MaterialDesignThemes.Wpf;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using System.Windows;
-using M3u8Downloader_H.Exceptions;
-using M3u8Downloader_H.Abstractions.Extensions;
 using M3u8Downloader_H.Models;
 using M3u8Downloader_H.Services;
-using M3u8Downloader_H.Utils;
 using M3u8Downloader_H.ViewModels.FrameWork;
 using M3u8Downloader_H.Extensions;
 using M3u8Downloader_H.RestServer;
@@ -18,7 +13,6 @@ using Caliburn.Micro;
 using System.Threading;
 using PropertyChanged;
 using System.Security.Principal;
-using M3u8Downloader_H.Abstractions.Common;
 using M3u8Downloader_H.ViewModels.Windows;
 using M3u8Downloader_H.Common.Models;
 

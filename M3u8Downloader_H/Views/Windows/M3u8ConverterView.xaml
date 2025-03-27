@@ -27,6 +27,7 @@
             </Button>
             <TextBox x:Name="m3u8PathTextBox" Text="{Binding M3u8FileUrl}" Style="{StaticResource TextBoxStyle}" 
                     IsReadOnly="True"
+                     materialDesign:TextFieldAssist.HasClearButton="True"
                     materialDesign:HintAssist.Hint="m3u8,json文件地址(文件可以直接拖拽到此)" 
                      >
                 <i:Interaction.Behaviors>
@@ -68,6 +69,8 @@
         <Grid Margin="8,0,8,0">
             <ProgressBar Margin="5"
                     Height="20"
+                    Minimum="0"
+                    Maximum="1"
                     Value="{Binding Progress}"
                     />
             <TextBlock Text="{Binding Progress,StringFormat=当前进度: {0:P1}}"  

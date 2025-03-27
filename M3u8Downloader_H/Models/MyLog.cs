@@ -23,7 +23,7 @@ namespace M3u8Downloader_H.Models
 
         public virtual void Error(Exception exception)
         {
-            Logs.Add(new LogParams(LogType.Error, exception.Message));
+            Logs.Add(new LogParams(LogType.Error, exception.ToString()));
         }
 
         public virtual string CopyLog()

@@ -3,7 +3,6 @@ using System.Text;
 using M3u8Downloader_H.Common.Extensions;
 using CliWrap.Builders;
 using M3u8Downloader_H.Abstractions.Common;
-using M3u8Downloader_H.Abstractions.Extensions;
 using M3u8Downloader_H.Abstractions.Settings;
 using M3u8Downloader_H.Abstractions.M3u8;
 
@@ -42,7 +41,8 @@ namespace M3u8Downloader_H.Combiners.VideoConverter
             var arguments = new ArgumentsBuilder();
             arguments.Add("-f").Add("concat")
                     .Add("-safe").Add(0)
-                    .Add("-i").Add(m3u8ConcatTxt);
+                    .Add("-i").Add(m3u8ConcatTxt)
+                    .Add("-bsf:a").Add("aac_adtstoasc");
             await ConvertToMp4(arguments, cancellationToken);
         }
 
@@ -61,7 +61,8 @@ namespace M3u8Downloader_H.Combiners.VideoConverter
             }
 
             var arguments = new ArgumentsBuilder();
-            arguments.Add("-i").Add(stringBuilder.ToString());
+            arguments.Add("-i").Add(stringBuilder.ToString())
+                     .Add("-bsf:a").Add("aac_adtstoasc");
             await ConvertToMp4(arguments, cancellationToken);
         }
 
@@ -71,15 +72,12 @@ namespace M3u8Downloader_H.Combiners.VideoConverter
                      .Add("-allowed_extensions").Add("ALL")
                      .Add("-f").Add(Settings.SelectedFormat)
                      .Add("-c:a").Add("copy")
-                     .Add("-c:v").Add("copy")
-                     .Add("-bsf:a").Add("aac_adtstoasc");
+                     .Add("-c:v").Add("copy");
 
-
-            var tmpOutputFile = Path.ChangeExtension(DownloadParams.VideoName, Settings.SelectedFormat);
-            Log?.Info("开始转码:{0}", tmpOutputFile);
+            Log?.Info("开始转码:{0}", DownloadParams.VideoName + '.' + Settings.SelectedFormat);
             argumentsBuilder
                 .Add("-nostdin")
-                .Add("-y").Add(Path.Combine(DownloadParams.SavePath, tmpOutputFile));
+                .Add("-y").Add(DownloadParams.VideoFullName);
 
             await ExecuteAsync(argumentsBuilder.Build(), DialogProgress, cancellationToken);
         }
@@ -98,7 +96,7 @@ namespace M3u8Downloader_H.Combiners.VideoConverter
 
             var result = await Cli.Wrap(_filePath)
                 .WithArguments(arguments)
-                .WithWorkingDirectory(DownloadParams.GetCachePath())
+                .WithWorkingDirectory(DownloadParams.CachePath)
                 .WithStandardErrorPipe(stdErrPipe)
                 .WithValidation(CommandResultValidation.None)
                 .ExecuteAsync(cancellationToken);

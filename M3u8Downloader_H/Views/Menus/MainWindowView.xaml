@@ -133,7 +133,7 @@
                             <behavior:ListBoxMultiSelectionBehavior SelectedItems="{Binding SelectedDownloads,Mode=TwoWay}" />
                         </i:Interaction.Behaviors>
                         <ListBox.Resources>
-                            <ContextMenu cal:Action.TargetWithoutContext="{Binding DataContext,RelativeSource={RelativeSource AncestorType=Window}}"  x:Key="ItemContextMenu">
+                            <ContextMenu cal:Action.TargetWithoutContext="{Binding DataContext,RelativeSource={RelativeSource AncestorType=UserControl}}"  x:Key="ItemContextMenu">
                                 <MenuItem Header="复制地址" cal:Message.Attach="CopyUrl($DataContext)" >
                                     <MenuItem.Icon>
                                         <materialDesign:PackIcon Width="16" Height="16" Kind="ContentCopy" />

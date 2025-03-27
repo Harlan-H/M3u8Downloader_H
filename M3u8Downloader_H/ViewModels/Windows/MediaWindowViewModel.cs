@@ -2,11 +2,8 @@
 using Caliburn.Micro;
 using M3u8Downloader_H.Models;
 using M3u8Downloader_H.Services;
-using M3u8Downloader_H.Abstractions.Extensions;
 using M3u8Downloader_H.Utils;
 using MaterialDesignThemes.Wpf;
-using System.Threading.Tasks;
-using System.Threading;
 using M3u8Downloader_H.Common.DownloadPrams;
 
 namespace M3u8Downloader_H.ViewModels.Windows
@@ -50,7 +47,7 @@ namespace M3u8Downloader_H.ViewModels.Windows
 
         public void ProcessMediaDownload(MediaDownloadParams mediaDownloadParams)
         {
-            FileEx.EnsureFileNotExist(mediaDownloadParams.GetCachePath());
+            FileEx.EnsureFileNotExist(mediaDownloadParams.CachePath);
 
             DownloadViewModel download = DownloadViewModel.CreateDownloadViewModel(mediaDownloadParams);
             if (download is null) return;

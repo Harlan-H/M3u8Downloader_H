@@ -4,8 +4,6 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Xml.Linq;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace M3u8Downloader_H.Behaviors
 {
@@ -88,7 +86,7 @@ namespace M3u8Downloader_H.Behaviors
 
             FileAttributes fileAttributes = File.GetAttributes(text[0]);
             var ext = Path.GetExtension(text[0]);
-            if( IsFile && (fileAttributes & FileAttributes.Normal) > 0 && _filterStringArr.Contains(ext)
+            if( IsFile && (fileAttributes & FileAttributes.Archive) > 0 && _filterStringArr.Contains(ext)
                 || !IsFile && (fileAttributes & FileAttributes.Directory) > 0)
             {
                 _filePath = text[0];

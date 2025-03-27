@@ -20,6 +20,7 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
             DialogProgress.SetDownloadStatus(false);
 
             await Initialization(cancellationToken);
+            await DownloadMapInfoAsync(m3UFileInfo.Map, cancellationToken);
 
             Task[] Tasks = new Task[DownloaderSetting.MaxThreadCount];
             try

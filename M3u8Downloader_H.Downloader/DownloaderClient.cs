@@ -15,8 +15,8 @@ namespace M3u8Downloader_H.Downloader
         private readonly IPluginManager? pluginManager;
         private readonly ILog log;
         private readonly IDownloadParamBase downloadParam;
+        private readonly IDownloaderSetting downloaderSetting = default!;
 
-        public IDownloaderSetting DownloaderSetting { get; set; } = default!;
         public IDialogProgress DialogProgress { get; set; } = default!;
         public IM3uFileInfo M3UFileInfo { get; set; } = default!;
         public Func<CancellationToken, Task<IM3uFileInfo>> GetLiveFileInfoFunc { get; set; } = default!;
@@ -43,7 +43,7 @@ namespace M3u8Downloader_H.Downloader
 
                 _m3u8downloader.DownloadParam = downloadParam;
                 _m3u8downloader.Log = log;
-                _m3u8downloader.DownloaderSetting = DownloaderSetting;
+                _m3u8downloader.DownloaderSetting = downloaderSetting;
                 _m3u8downloader.DialogProgress = DialogProgress;
                 return _m3u8downloader;
             }
@@ -62,7 +62,7 @@ namespace M3u8Downloader_H.Downloader
 
                 mediaDownloader.DownloadParam = mediaDownloadParam;
                 mediaDownloader.Log = log;
-                mediaDownloader.DownloaderSetting = DownloaderSetting;
+                mediaDownloader.DownloaderSetting = downloaderSetting;
                 mediaDownloader.DialogProgress = DialogProgress;
                 return mediaDownloader;
             }
@@ -83,12 +83,13 @@ namespace M3u8Downloader_H.Downloader
         }
 
 
-        public DownloaderClient(HttpClient httpClient, IPluginManager? PluginManager, ILog log, IDownloadParamBase DownloadParam)
+        public DownloaderClient(HttpClient httpClient, IPluginManager? PluginManager, ILog log, IDownloadParamBase downloadParam, IDownloaderSetting downloaderSetting)
         {
             this.httpClient = httpClient;
             pluginManager = PluginManager;
             this.log = log;
-            downloadParam = DownloadParam;
+            this.downloadParam = downloadParam;
+            this.downloaderSetting = downloaderSetting;
         }
 
         public DownloaderClient(ILog log, IDownloadParamBase DownloadParam)

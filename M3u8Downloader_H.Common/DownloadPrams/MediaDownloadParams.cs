@@ -12,15 +12,14 @@ namespace M3u8Downloader_H.Common.DownloadPrams
         public bool IsVideoStream { get; set; }
 
 
-        public MediaDownloadParams(string savePath, Uri videoUrl, Uri? audioUrl, Uri? subtitle, string? videoName, IDictionary<string, string>? headers)
-            : base(videoUrl, videoName,savePath,"mp4", headers)
+        public MediaDownloadParams(string? cachePath, string savePath, Uri videoUrl, Uri? audioUrl, Uri? subtitle, string? videoName, IDictionary<string, string>? headers)
+            : base(videoUrl, videoName, cachePath,savePath, "mp4", headers)
         {
             Medias.Add(new StreamInfo(videoUrl));
             if (audioUrl is not null)
                 Medias.Add(new StreamInfo(videoUrl, "audio"));
             if (subtitle is not null)
                 Subtitle = subtitle;
-            VideoName = PathEx.GenerateFileNameWithoutExtension(videoUrl);
         }
     }
 }

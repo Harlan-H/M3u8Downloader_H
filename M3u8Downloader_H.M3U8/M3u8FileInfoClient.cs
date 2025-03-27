@@ -13,9 +13,7 @@ namespace M3u8Downloader_H.M3U8
         private readonly IPluginManager? pluginManager;
         private readonly ILog log;
         private readonly IM3u8DownloadParam downloadParam = default!;
-
-        public IDownloaderSetting DownloaderSetting { get; set; } = default!;
-
+        public readonly IDownloaderSetting downloaderSetting = default!;
         public M3UFileReaderManager M3UFileReadManager
         {
             get
@@ -28,7 +26,7 @@ namespace M3u8Downloader_H.M3U8
 
                 m3UFileReaderManager.M3u8FileReader = M3u8FileReader;
                 m3UFileReaderManager.DownloadParam = downloadParam;
-                m3UFileReaderManager.DownloaderSetting  = DownloaderSetting;
+                m3UFileReaderManager.DownloaderSetting  = downloaderSetting;
                 m3UFileReaderManager.Log = log;
                 return m3UFileReaderManager;
             }
@@ -62,12 +60,13 @@ namespace M3u8Downloader_H.M3U8
             }
         }
 
-        public M3u8FileInfoClient(HttpClient httpClient, IPluginManager? PluginManager, ILog log, IM3u8DownloadParam DownloadParam)
+        public M3u8FileInfoClient(HttpClient httpClient, IPluginManager? PluginManager, ILog log, IM3u8DownloadParam DownloadParam, IDownloaderSetting DownloaderSetting)
         {
             this.httpClient = httpClient;
             pluginManager = PluginManager;
             this.log = log;
             downloadParam = DownloadParam;
+            downloaderSetting = DownloaderSetting;
         }
 
         public M3u8FileInfoClient(ILog log)

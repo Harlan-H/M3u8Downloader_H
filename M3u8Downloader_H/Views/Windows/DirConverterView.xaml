@@ -64,12 +64,16 @@
                   />
         </DockPanel>
 
-        <ListBox ItemsSource="{Binding MediaItems}" Height="300" 
+        <ListBox ItemsSource="{Binding MediaItems}" Height="230" 
                  ToolTip="该列表展示的顺序就是合并的顺序,如果顺序不正确可以通过拖动来修改顺序"
+                 VerticalContentAlignment="Center"
                  HorizontalContentAlignment="Stretch" >
             <ListBox.ItemContainerStyle>
-                <Style>
-
+                <Style  BasedOn="{StaticResource {x:Type ListBoxItem}}" TargetType="{x:Type ListBoxItem}">
+                    <Setter Property="VerticalAlignment" Value="Center" />
+                    <Setter Property="Height" Value="30" />
+                    <Setter Property="FontWeight" Value="DemiBold" />
+                    <Setter Property="Margin" Value="8,0,0,0" />
                 </Style>
             </ListBox.ItemContainerStyle>
             <ListBox.ItemTemplate>
@@ -84,7 +88,7 @@
                                             Style="{DynamicResource  MaterialDesignFlatButton}"
                                 cal:Message.Attach="OnDelete($DataContext)"
                                             >
-                            <materialDesign:PackIcon Width="20" Height="20" Kind="CloseBoxOutline" />
+                            <materialDesign:PackIcon Width="18" Height="18" Kind="CloseBoxOutline" />
                         </Button>
                         <i:Interaction.Behaviors>
                             <behavior:ListItemDragAndDropBehavihor ItemSource="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}},Path=DataContext.MediaItems}"/>
@@ -97,6 +101,8 @@
         <Grid Margin="8,0,8,0">
             <ProgressBar Margin="5"
                  Height="20"
+                 Minimum="0"
+                 Maximum="1"
                  Value="{Binding Progress}"
                  />
             <TextBlock Text="{Binding Progress,StringFormat=当前进度: {0:P1}}"  

@@ -37,7 +37,7 @@ namespace M3u8Downloader_H.Downloader.Utils
             base.Dispose(disposing);
         }
 
-        public async Task InitializePositionAsync(int capacity,CancellationToken cancellationToken = default)
+        public async Task InitializePositionAsync(int capacity, CancellationToken cancellationToken = default)
         {
             //循环读取的目的是 他可能一次性没有办法读到我需要的数据    
             _memoryOwner = MemoryPool<byte>.Shared.Rent(capacity);

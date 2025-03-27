@@ -1,9 +1,6 @@
-﻿using System.Buffers;
-using System.IO.Pipelines;
-using System.Net.Http.Headers;
+﻿using System.Net.Http.Headers;
 using M3u8Downloader_H.Abstractions.Common;
 using M3u8Downloader_H.Common.Extensions;
-using M3u8Downloader_H.Downloader.Extensions;
 
 namespace M3u8Downloader_H.Downloader.MediaDownloads
 {

@@ -5,15 +5,21 @@ namespace M3u8Downloader_H.Common.DownloadPrams
 {
     public class DownloadParamsBase : IDownloadParamBase
     {
-        private readonly string _cachePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "caches");
+        private static readonly string _cachePath =
+#if DEBUG
+           "E:\\desktop\\download\\Caches";
+#else
+            Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Caches");
+#endif
+
         private readonly string _cacheName;
         private string _videoName = string.Empty;
 
-        public string CachePath => Path.Combine(_cachePath, _cacheName);
+        public string CachePath { get;private set; }
 
         public string SelectFormats { get;  set; } = "mp4";
 
-        public string VideoFullName => VideoName + "." + SelectFormats;
+        public string VideoFullName => Path.Combine(SavePath,  VideoName + "." + SelectFormats);
 
         public string SavePath { get;  set; } = default!;
 
@@ -24,7 +30,13 @@ namespace M3u8Downloader_H.Common.DownloadPrams
             get => _videoName;
             set
             {
-                if (string.IsNullOrEmpty(_videoName) || _videoName != value)
+                if (string.IsNullOrEmpty(value))
+                {
+                    _videoName = _cacheName;
+                    return;
+                }
+
+                if ( string.IsNullOrEmpty(_videoName) || _videoName != value)
                 {
                     _videoName = PathEx.EscapeFileName(value);
                     return;
@@ -32,10 +44,16 @@ namespace M3u8Downloader_H.Common.DownloadPrams
             }
         }
 
-        public DownloadParamsBase(Uri uri, string? videoName, string savePath, string selectFormat, IDictionary<string, string>? headers)
+        public DownloadParamsBase(Uri uri, string? videoName, string? cachePath, string savePath, string selectFormat, IDictionary<string, string>? headers)
         {
             _cacheName = PathEx.GenerateFileNameWithoutExtension(uri);
-            VideoName = videoName ?? _cacheName;
+
+            if (!string.IsNullOrWhiteSpace(cachePath))
+                CachePath = cachePath;
+            else
+                CachePath = Path.Combine(_cachePath, _cacheName);
+
+            VideoName = videoName!;
             SelectFormats = selectFormat;
             SavePath = savePath;
             Headers = headers;

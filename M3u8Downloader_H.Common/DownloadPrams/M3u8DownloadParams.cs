@@ -10,14 +10,14 @@ namespace M3u8Downloader_H.Common.DownloadPrams
         public Uri RequestUrl { get; } = default!;
         public IM3uKeyInfo? M3UKeyInfo { get; private set;}
 
-        public M3u8DownloadParams(Uri url, string? videoname, string savePath, string selectFormat, IDictionary<string, string>? headers)
-            : base(url, videoname,savePath,selectFormat, headers)
+        public M3u8DownloadParams(Uri url, string? videoname,string? cachePath, string savePath, string selectFormat, IDictionary<string, string>? headers)
+            : base(url, videoname, cachePath,savePath, selectFormat, headers)
         {
             RequestUrl = url;
         }
 
-        public M3u8DownloadParams(Uri url, string? videoname, string savePath, string selectFormat, IDictionary<string, string>? headers, string method, string? key, string? iv)
-            : base(url, videoname, savePath, selectFormat, headers)
+        public M3u8DownloadParams(Uri url, string? videoname, string? cachePath, string savePath, string selectFormat, IDictionary<string, string>? headers, string method, string? key, string? iv)
+            : base(url, videoname, cachePath, savePath, selectFormat, headers)
         {
             RequestUrl = url;
             if (key != null)
