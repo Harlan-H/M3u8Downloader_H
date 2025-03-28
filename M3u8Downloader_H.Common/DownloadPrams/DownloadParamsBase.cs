@@ -15,7 +15,7 @@ namespace M3u8Downloader_H.Common.DownloadPrams
         private readonly string _cacheName;
         private string _videoName = string.Empty;
 
-        public string CachePath { get;private set; }
+        public string CachePath =>  Path.Combine(_defaultCachePath, _cacheName);
 
         public string SelectFormats { get;  set; } = "mp4";
 
@@ -44,15 +44,9 @@ namespace M3u8Downloader_H.Common.DownloadPrams
             }
         }
 
-        public DownloadParamsBase(Uri uri, string? videoName, string? cachePath, string savePath, string selectFormat, IDictionary<string, string>? headers)
+        public DownloadParamsBase(Uri uri, string? videoName, string savePath, string selectFormat, IDictionary<string, string>? headers)
         {
             _cacheName = PathEx.GenerateFileNameWithoutExtension(uri);
-
-            if (!string.IsNullOrWhiteSpace(cachePath))
-                CachePath = cachePath;
-            else
-                CachePath = Path.Combine(_defaultCachePath, _cacheName);
-
             VideoName = videoName!;
             SelectFormats = selectFormat;
             SavePath = savePath;

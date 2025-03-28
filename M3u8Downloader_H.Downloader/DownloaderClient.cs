@@ -17,6 +17,10 @@ namespace M3u8Downloader_H.Downloader
         private readonly IDownloadParamBase downloadParam;
         private readonly IDownloaderSetting downloaderSetting = default!;
 
+        private OnlyDecryptDownloader? _onlyDecryptDownloader;
+        private M3uDownloaders.DownloaderBase? _m3u8downloader;
+        private MediaDownloads.DownloaderBase? _mediaDownloader;
+
         public IDialogProgress DialogProgress { get; set; } = default!;
         public IM3uFileInfo M3UFileInfo { get; set; } = default!;
         public Func<CancellationToken, Task<IM3uFileInfo>> GetLiveFileInfoFunc { get; set; } = default!;
@@ -25,21 +29,23 @@ namespace M3u8Downloader_H.Downloader
         {
             get
             {
-                M3uDownloaders.DownloaderBase _m3u8downloader;
-                if (!M3UFileInfo.IsVod())
+                if(_m3u8downloader is null)
                 {
-                    LiveM3uDownloader liveM3UDownloader = new(httpClient)
+                    if (!M3UFileInfo.IsVod())
                     {
-                        GetLiveFileInfoFunc = GetLiveFileInfoFunc
-                    };
-                    _m3u8downloader = liveM3UDownloader;
+                        LiveM3uDownloader liveM3UDownloader = new(httpClient)
+                        {
+                            GetLiveFileInfoFunc = GetLiveFileInfoFunc
+                        };
+                        _m3u8downloader = liveM3UDownloader;
+                    }
+                    else if (M3UFileInfo.Key is not null)
+                        _m3u8downloader = new CryptM3uDownloader(httpClient, M3UFileInfo);
+                    else if (pluginManager?.PluginService is not null)
+                        _m3u8downloader = new PluginM3u8Downloader(pluginManager?.PluginService!, httpClient, M3UFileInfo);
+                    else
+                        _m3u8downloader = new M3u8Downloader(httpClient);
                 }
-                else if (M3UFileInfo.Key is not null)
-                    _m3u8downloader = new CryptM3uDownloader(httpClient, M3UFileInfo);
-                else if (pluginManager?.PluginService is not null)
-                    _m3u8downloader = new PluginM3u8Downloader(pluginManager?.PluginService!,httpClient, M3UFileInfo);
-                else
-                    _m3u8downloader = new M3u8Downloader(httpClient);
 
                 _m3u8downloader.DownloadParam = downloadParam;
                 _m3u8downloader.Log = log;
@@ -54,17 +60,19 @@ namespace M3u8Downloader_H.Downloader
             get
             {
                 IMediaDownloadParam mediaDownloadParam = (IMediaDownloadParam)downloadParam;
-                MediaDownloads.DownloaderBase mediaDownloader;
-                if (mediaDownloadParam.IsVideoStream)
-                    mediaDownloader = new MediaDownloader(httpClient);
-                else
-                    mediaDownloader = new LiveVideoDownloader(httpClient);
+                if(_mediaDownloader is null)
+                {
+                    if (mediaDownloadParam.IsVideoStream)
+                        _mediaDownloader = new MediaDownloader(httpClient);
+                    else
+                        _mediaDownloader = new LiveVideoDownloader(httpClient);
+                }
 
-                mediaDownloader.DownloadParam = mediaDownloadParam;
-                mediaDownloader.Log = log;
-                mediaDownloader.DownloaderSetting = downloaderSetting;
-                mediaDownloader.DialogProgress = DialogProgress;
-                return mediaDownloader;
+                _mediaDownloader.DownloadParam = mediaDownloadParam;
+                _mediaDownloader.Log = log;
+                _mediaDownloader.DownloaderSetting = downloaderSetting;
+                _mediaDownloader.DialogProgress = DialogProgress;
+                return _mediaDownloader;
             }
         }
 
@@ -72,13 +80,13 @@ namespace M3u8Downloader_H.Downloader
         {
             get
             {
-                OnlyDecryptDownloader _m3u8downloader = new()
+                _onlyDecryptDownloader ??= new()
                 {
                     DownloadParam = downloadParam,
                     Log = log,
                     DialogProgress = DialogProgress
                 };
-                return _m3u8downloader;
+                return _onlyDecryptDownloader;
             }
         }
 

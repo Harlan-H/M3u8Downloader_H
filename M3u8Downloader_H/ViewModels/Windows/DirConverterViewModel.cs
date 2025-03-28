@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Security.Policy;
 using System.Threading;
 using System.Threading.Tasks;
 using Caliburn.Micro;
@@ -65,7 +66,7 @@ namespace M3u8Downloader_H.ViewModels.Windows
             Uri m3u8Uri;
             try
             {
-                Reset();
+                ResetInternal();
 
                 m3u8Uri = new(newValue);
                 var ext = Path.GetExtension(newValue).Trim('.');
@@ -73,7 +74,7 @@ namespace M3u8Downloader_H.ViewModels.Windows
                 MediaItems.AddRange(_m3u8FileInfo.MediaFiles);
                 Log.Info("读取到{0}个文件数据", _m3u8FileInfo.MediaFiles.Count);
 
-                _downloadParams = new M3u8DownloadParams(m3u8Uri, VideoName, directoryInfo.FullName, settingsService.SavePath,"mp4",null);
+                _downloadParams = new M3u8DownloadParams(m3u8Uri, VideoName,  settingsService.SavePath,"mp4",null);
                 VideoName = _downloadParams.VideoName;
                 Log.Info("生成视频名称:{0}", VideoName);
 
@@ -149,7 +150,14 @@ namespace M3u8Downloader_H.ViewModels.Windows
             MediaItems.Remove(m3UMediaInfo);
         }
 
-        private void Reset()
+        public bool CanOnReset => !IsStart;
+        public void OnReset()
+        {
+            M3u8DirUrl = string.Empty;
+            ResetInternal();
+        }
+
+        public void ResetInternal()
         {
             VideoName = string.Empty;
             Method = "AES-128";

@@ -61,7 +61,7 @@
             <TextBlock Text="IV:"  Style="{StaticResource TextBlockStyle}"/>
             <TextBox Text="{Binding Iv}" Style="{StaticResource TextBoxStyle}" 
                   materialDesign:TextFieldAssist.HasClearButton="True"
-                 materialDesign:HintAssist.Hint="AES-CBC使用,例如(0x11223344556677888877665544332211)" 
+                 materialDesign:HintAssist.Hint="AES-CBC使用,例如(0x11223344556677888877665544332211)可以不写0x" 
                   />
         </DockPanel>
 
@@ -212,6 +212,10 @@
             <Button cal:Message.Attach="OnCancel"
                  Content="停止转码"
                  Width="100"  Margin="10 0 0 0" />
+
+            <Button cal:Message.Attach="OnReset"
+                Content="重置数据"
+                Width="100" Margin="10 0 0 0" />
 
         </StackPanel>
     </StackPanel>

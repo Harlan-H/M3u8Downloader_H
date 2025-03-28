@@ -66,7 +66,7 @@ namespace M3u8Downloader_H.ViewModels.Windows
                 string[] result = item.Trim().Split(settingsService.Separator, 2);
                 try
                 {
-                    M3u8DownloadParams m3U8DownloadParams = new(new Uri(result[0], UriKind.Absolute), result.Length > 1 ? result[1] : null,null, settingsService.SavePath, settingsService.SelectedFormat, settingsService.Headers);
+                    M3u8DownloadParams m3U8DownloadParams = new(new Uri(result[0], UriKind.Absolute), result.Length > 1 ? result[1] : null, settingsService.SavePath, settingsService.SelectedFormat, settingsService.Headers);
                     ProcessM3u8Download(m3U8DownloadParams);
                 }
                 catch (UriFormatException)

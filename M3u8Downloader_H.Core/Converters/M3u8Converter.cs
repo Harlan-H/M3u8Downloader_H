@@ -75,6 +75,9 @@ namespace M3u8Downloader_H.Core.Converters
             }
             else
             {
+                if(downloadParamBase.M3UKeyInfo is null)
+                    m3UCombinerClient.FFmpeg.CachePath = Path.GetDirectoryName(m3UFileInfo.MediaFiles[0].Uri.OriginalString) ?? throw new ArgumentException("获取缓存路径失败");
+                
                 await m3UCombinerClient.FFmpeg.ConvertToMp4(m3UFileInfo, cancellationToken);
             }
         }

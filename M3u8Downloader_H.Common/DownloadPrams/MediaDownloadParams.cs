@@ -13,7 +13,7 @@ namespace M3u8Downloader_H.Common.DownloadPrams
 
 
         public MediaDownloadParams(string? cachePath, string savePath, Uri videoUrl, Uri? audioUrl, Uri? subtitle, string? videoName, IDictionary<string, string>? headers)
-            : base(videoUrl, videoName, cachePath,savePath, "mp4", headers)
+            : base(videoUrl, videoName, savePath, "mp4", headers)
         {
             Medias.Add(new StreamInfo(videoUrl));
             if (audioUrl is not null)

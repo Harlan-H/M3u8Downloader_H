@@ -17,6 +17,6 @@ namespace M3u8Downloader_H.RestServer.Models
         public string? Iv { get; set; }
 
         public IM3u8DownloadParam ToM3u8DownloadParams()
-            => new M3u8DownloadParams(RequestUrl, VideoName,null, SavePath, "mp4", Headers, Method, Key, Iv);
+            => new M3u8DownloadParams(RequestUrl, VideoName, SavePath, "mp4", Headers, Method, Key, Iv);
     }
 }

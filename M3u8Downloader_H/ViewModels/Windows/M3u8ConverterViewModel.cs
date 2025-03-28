@@ -61,14 +61,14 @@ namespace M3u8Downloader_H.ViewModels.Windows
             Uri m3u8Uri;
             try
             {
-                Reset();
+                ResetInternal();
                 Log.Info("开始解析m3u8文件");
                 m3u8Uri = new(newValue);
                 var ext = Path.GetExtension(newValue).Trim('.');
                 _fileInfo = m3U8FileInfoClient.DefaultM3uFileReadManager.GetM3u8FileInfo(ext, m3u8Uri);
                 Log.Info("读取到{0}个文件数据", _fileInfo.MediaFiles.Count);
 
-                _downloadParams = new M3u8DownloadParams(m3u8Uri, VideoName, fileInfo.DirectoryName, settingsService.SavePath, "mp4", null);
+                _downloadParams = new M3u8DownloadParams(m3u8Uri, VideoName, settingsService.SavePath, "mp4", null);
                 VideoName = _downloadParams.VideoName;
                 Log.Info("生成视频名称:{0}", VideoName);
 
@@ -140,8 +140,14 @@ namespace M3u8Downloader_H.ViewModels.Windows
             cancellationTokenSource?.Cancel();
         }
 
+        public bool CanOnReset => !IsStart;
+        public void OnReset()
+        {
+            M3u8FileUrl = string.Empty;
+            ResetInternal();
+        }
 
-        private void Reset()
+        public void ResetInternal()
         {
             VideoName = string.Empty;
             Method = "AES-128";

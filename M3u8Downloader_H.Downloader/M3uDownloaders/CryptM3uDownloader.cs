@@ -29,7 +29,7 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
                         ? await File.ReadAllBytesAsync(m3UFileInfo.Key.Uri.OriginalString, cancellationToken)
                         : await httpClient.GetByteArrayAsync(m3UFileInfo.Key.Uri, _headers, cancellationToken);
 
-                    Log?.Info("获取到密钥:{0}", Encoding.UTF8.GetString(data));
+                    Log?.Info("获取转为base64的密钥 : {0}", Convert.ToBase64String(data));
                     m3uFileinfoTmp.Key = M3uKeyInfoHelper.GetKeyInfoInstance(m3UFileInfo.Key.Method, data, m3UFileInfo.Key.IV);
                 }
                 catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)

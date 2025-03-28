@@ -13,6 +13,8 @@ namespace M3u8Downloader_H.Combiners.VideoConverter
         public IDialogProgress DialogProgress { get; set; } = default!;
         public IMergeSetting Settings { get; set; } = default!;
 
+        public string CachePath { get; set; } = DownloadParams.CachePath;
+
         private readonly string _filePath
 #if DEBUG
     = new(@"F:\源代码\库\ffmpeg\bin\ffmpeg.exe");
@@ -96,7 +98,7 @@ namespace M3u8Downloader_H.Combiners.VideoConverter
 
             var result = await Cli.Wrap(_filePath)
                 .WithArguments(arguments)
-                .WithWorkingDirectory(DownloadParams.CachePath)
+                .WithWorkingDirectory(CachePath)
                 .WithStandardErrorPipe(stdErrPipe)
                 .WithValidation(CommandResultValidation.None)
                 .ExecuteAsync(cancellationToken);
