@@ -34,6 +34,15 @@ namespace M3u8Downloader_H.M3U8.M3UFileReaderManangers
             this.httpClient = httpClient;
         }
 
+        public async Task<IM3uFileInfo> GetM3u8FileInfo(TimeSpan timeouts, CancellationToken cancellationToken = default)
+        {
+            using CancellationTokenSource cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            cancellationTokenSource.CancelAfter(timeouts);
+
+            var m3u8FileInfo = await GetM3u8FileInfoInternal(DownloadParam.RequestUrl, DownloadParam.Headers ?? DownloaderSetting.Headers, cancellationTokenSource.Token);
+            return checkM3u8FileInfo(m3u8FileInfo, DownloadParam.RequestUrl);
+        }
+
         public async Task<IM3uFileInfo> GetM3u8FileInfo(CancellationToken cancellationToken = default)
         {
             for (int i = 0; i < 5; i++)

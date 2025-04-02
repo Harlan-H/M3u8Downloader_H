@@ -9,26 +9,32 @@ namespace M3u8Downloader_H.M3U8
 {
     public class M3u8FileInfoClient
     {
+        private M3UFileReaderManager? _m3UFileReaderManager;
+
         private readonly HttpClient httpClient = default!;
         private readonly IPluginManager? pluginManager;
         private readonly ILog log;
         private readonly IM3u8DownloadParam downloadParam = default!;
         public readonly IDownloaderSetting downloaderSetting = default!;
+
         public M3UFileReaderManager M3UFileReadManager
         {
             get
             {
-                M3UFileReaderManager m3UFileReaderManager;
-                if (pluginManager?.M3U8FileInfoStreamService is not null)
-                    m3UFileReaderManager = new PluginM3UFileReaderManager(pluginManager?.M3U8FileInfoStreamService!, httpClient);
-                else
-                    m3UFileReaderManager = new M3UFileReaderManager(httpClient);
+                if(_m3UFileReaderManager == null)
+                {
+                    if (pluginManager?.M3U8FileInfoStreamService is not null)
+                        _m3UFileReaderManager = new PluginM3UFileReaderManager(pluginManager?.M3U8FileInfoStreamService!, httpClient);
+                    else
+                        _m3UFileReaderManager = new M3UFileReaderManager(httpClient);
 
-                m3UFileReaderManager.M3u8FileReader = M3u8FileReader;
-                m3UFileReaderManager.DownloadParam = downloadParam;
-                m3UFileReaderManager.DownloaderSetting  = downloaderSetting;
-                m3UFileReaderManager.Log = log;
-                return m3UFileReaderManager;
+                    _m3UFileReaderManager.M3u8FileReader = M3u8FileReader;
+                    _m3UFileReaderManager.DownloadParam = downloadParam;
+                    _m3UFileReaderManager.DownloaderSetting  = downloaderSetting;
+                    _m3UFileReaderManager.Log = log;
+                }
+
+                return _m3UFileReaderManager;
             }
         }
 
@@ -37,12 +43,12 @@ namespace M3u8Downloader_H.M3U8
         {
             get
             {
-                M3UFileReaderManager m3UFileReaderManager = new()
+                _m3UFileReaderManager ??= new()
                 {
                     M3u8FileReader = new M3UFileReaderWithStream(),
                     Log = log
                 };
-                return m3UFileReaderManager;
+                return _m3UFileReaderManager;
             }
         }
 

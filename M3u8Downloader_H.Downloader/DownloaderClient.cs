@@ -23,7 +23,7 @@ namespace M3u8Downloader_H.Downloader
 
         public IDialogProgress DialogProgress { get; set; } = default!;
         public IM3uFileInfo M3UFileInfo { get; set; } = default!;
-        public Func<CancellationToken, Task<IM3uFileInfo>> GetLiveFileInfoFunc { get; set; } = default!;
+        public Func<TimeSpan,CancellationToken, Task<IM3uFileInfo>> GetLiveFileInfoFunc { get; set; } = default!;
 
         public M3uDownloaders.DownloaderBase M3u8Downloader
         {
@@ -45,11 +45,12 @@ namespace M3u8Downloader_H.Downloader
                         _m3u8downloader = new PluginM3u8Downloader(pluginManager?.PluginService!, httpClient, M3UFileInfo);
                     else
                         _m3u8downloader = new M3u8Downloader(httpClient);
+
+                    _m3u8downloader.DownloadParam = downloadParam;
+                    _m3u8downloader.Log = log;
+                    _m3u8downloader.DownloaderSetting = downloaderSetting;
                 }
 
-                _m3u8downloader.DownloadParam = downloadParam;
-                _m3u8downloader.Log = log;
-                _m3u8downloader.DownloaderSetting = downloaderSetting;
                 _m3u8downloader.DialogProgress = DialogProgress;
                 return _m3u8downloader;
             }
@@ -66,11 +67,12 @@ namespace M3u8Downloader_H.Downloader
                         _mediaDownloader = new MediaDownloader(httpClient);
                     else
                         _mediaDownloader = new LiveVideoDownloader(httpClient);
+
+                    _mediaDownloader.DownloadParam = mediaDownloadParam;
+                    _mediaDownloader.Log = log;
+                    _mediaDownloader.DownloaderSetting = downloaderSetting;
                 }
 
-                _mediaDownloader.DownloadParam = mediaDownloadParam;
-                _mediaDownloader.Log = log;
-                _mediaDownloader.DownloaderSetting = downloaderSetting;
                 _mediaDownloader.DialogProgress = DialogProgress;
                 return _mediaDownloader;
             }
@@ -84,8 +86,8 @@ namespace M3u8Downloader_H.Downloader
                 {
                     DownloadParam = downloadParam,
                     Log = log,
-                    DialogProgress = DialogProgress
                 };
+                _onlyDecryptDownloader.DialogProgress = DialogProgress;
                 return _onlyDecryptDownloader;
             }
         }

@@ -40,12 +40,12 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
             if (m3UMapInfo is null)
                 return;
 
+            _isFmp4 = true;
             string mediaPath = Path.Combine(_cachePath, m3UMapInfo.Title);
             FileInfo fileInfo = new(mediaPath);
             if (fileInfo.Exists && fileInfo.Length > 0)
                 return;
 
-            _isFmp4 = true;
             bool isSuccessful = await DownloadAsynInternal(m3UMapInfo, _headers, mediaPath, DownloaderSetting.SkipRequestError, cancellationToken);
             if (isSuccessful == false)
                 throw new InvalidOperationException($"获取map失败,地址为:{m3UMapInfo.Uri.OriginalString}");

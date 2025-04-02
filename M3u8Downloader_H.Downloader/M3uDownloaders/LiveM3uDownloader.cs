@@ -7,13 +7,14 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
 {
     internal class LiveM3uDownloader(HttpClient httpClient): DownloaderBase(httpClient)
     {
-        private bool _firstTimeToRun = true;
-        private M3UFileInfo? _m3uFileInfo;
-        private float recordDuration;
         private static readonly Random _rand = Random.Shared;
+        private static readonly TimeSpan _timeoutTimeSpan = TimeSpan.FromSeconds(3);
+        private bool _firstTimeToRun = true;
+        private IM3uFileInfo? _m3uFileInfo;
+        private float recordDuration;
         private long _index;
 
-        public Func<CancellationToken, Task<IM3uFileInfo>> GetLiveFileInfoFunc { get; set; } = default!;
+        public Func<TimeSpan,CancellationToken, Task<IM3uFileInfo>> GetLiveFileInfoFunc { get; set; } = default!;
 
         private void AddMedias(IM3uFileInfo m3UFileinfo)
         {
@@ -26,30 +27,30 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
             }
         }
 
-        public IList<IM3uMediaInfo> RenameTitle(IEnumerable<IM3uMediaInfo> m3UMediaInfos)
+        public List<IM3uMediaInfo> RenameTitle(IEnumerable<M3UMediaInfo> m3UMediaInfos)
         {
-            if (m3UMediaInfos is not IEnumerable<M3UMediaInfo> m3UMediaInfo)
-                return null!;
+            if (m3UMediaInfos is null)
+                throw new InvalidDataException("无效的直播数据流");
 
-            foreach (var item in m3UMediaInfo)
+            foreach (var item in m3UMediaInfos)
             {
                 item.Title = $"{++_index}.tmp";
             }
-            return m3UMediaInfos.ToList();
+            return m3UMediaInfos.Cast<IM3uMediaInfo>().ToList();
         }
 
         private async ValueTask<IM3uFileInfo> GetM3U8FileInfoAsync(CancellationToken cancellationToken = default)
         {
             if (_firstTimeToRun)
             {
-                RenameTitle(_m3uFileInfo!.MediaFiles);
+                RenameTitle(_m3uFileInfo!.MediaFiles.Cast<M3UMediaInfo>());
                 _firstTimeToRun = false;
                 return _m3uFileInfo!;
             }
 
 
             var m3uFileInfo = await GetLiveFileInfos(cancellationToken);
-            RenameTitle(m3uFileInfo.MediaFiles);
+            RenameTitle(m3uFileInfo.MediaFiles.Cast<M3UMediaInfo>());
             return m3uFileInfo;
         }
 
@@ -57,11 +58,12 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
         {
             await base.DownloadAsync(m3UFileInfo,  cancellationToken);
             DialogProgress.SetDownloadStatus(true);
-            
-            _m3uFileInfo ??= m3UFileInfo as M3UFileInfo;
-
 
             Log?.Info("直播录制开始");
+            _m3uFileInfo ??= m3UFileInfo;
+
+            await DownloadMapInfoAsync(m3UFileInfo.Map, cancellationToken);
+
             IM3uFileInfo previousMediaInfo = await GetM3U8FileInfoAsync(cancellationToken);
             while (true)
             {
@@ -104,14 +106,14 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
 
         private async Task<M3UFileInfo> GetLiveFileInfos(CancellationToken cancellationToken = default)
         {
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < 5; i++)
             {
                 try
                 {
-                    IM3uFileInfo m3UFileInfo = await GetLiveFileInfoFunc(cancellationToken);
+                    IM3uFileInfo m3UFileInfo = await GetLiveFileInfoFunc(_timeoutTimeSpan, cancellationToken);
                     return (M3UFileInfo)m3UFileInfo;
                 }
-                catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.NotFound && i < 3)
+                catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.NotFound && i < 4)
                 {
                     Log?.Warn("获取直播数据失败,网页返回代码:{0},返回内容:{1},正在进行第{2}次重试", e.StatusCode, e.Message, i + 1);
                     await Task.Delay(2000, cancellationToken);
@@ -135,12 +137,12 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
         {
             bool IsEnded = true;
             M3UFileInfo m3ufileinfo = default!;
-            var oldMediafile = oldM3u8FileInfo.MediaFiles.Last();
+            var oldMediafile = oldM3u8FileInfo.MediaFiles.Cast<M3UMediaInfo>().Last();
             for (int i = 0; i < 5; i++)
             {
                 m3ufileinfo = await GetLiveFileInfos(cancellationToken);
                 //判断新的内容里 上次最后一条数据所在的位置，同时跳过那条数据 取出剩下所有内容
-                IEnumerable<IM3uMediaInfo> newMediaInfos = m3ufileinfo.MediaFiles.Skip(m => m == oldMediafile);
+                IEnumerable<M3UMediaInfo> newMediaInfos = m3ufileinfo.MediaFiles.Cast<M3UMediaInfo>().Skip(m => m == oldMediafile);
                 if (!newMediaInfos.Any())
                 {
                     //当newMediaInfos数量为0 说明新的数据 跟旧的数据完全一致  则随机延迟上次某项数据的Duration
