@@ -150,6 +150,7 @@ namespace M3u8Downloader_H.ViewModels
             private long _lastBytes;
             private long _countBytes;
             private double _currentProgress;
+            private bool _isIncProgressNum = false;
 
             public void Clear()
             {
@@ -164,7 +165,11 @@ namespace M3u8Downloader_H.ViewModels
                 long tmpBytes = _countBytes;
                 downloadViewModel.DownloadRateBytes = tmpBytes - _lastBytes;
                 _lastBytes = tmpBytes;
-                downloadViewModel.ProgressNum = _currentProgress;
+
+                if (_isIncProgressNum)
+                    downloadViewModel.ProgressNum = _currentProgress++;
+                else
+                    downloadViewModel.ProgressNum = _currentProgress;
             }
 
             public IDisposable Acquire() => timerContainer.AddTimerCallback(OnTimedEvent);
@@ -182,6 +187,12 @@ namespace M3u8Downloader_H.ViewModels
             public void SetDownloadStatus(bool IsLiveDownloading)
             {
                 downloadViewModel.Status = IsLiveDownloading ? DownloadStatus.StartedLive : DownloadStatus.StartedVod;
+            }
+
+            public void IncProgressNum(bool isInc)
+            {
+                _isIncProgressNum = true;
+                _currentProgress = 0;
             }
         }
     }

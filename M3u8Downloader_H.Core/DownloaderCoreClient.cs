@@ -45,13 +45,22 @@ namespace M3u8Downloader_H.Core
         }
 
         public DownloaderCoreClient(
-             IM3uFileInfo m3UFileInfo,
-             IM3u8DownloadParam m3U8DownloadParam,
-              IMergeSetting mergeSetting,
-              ILog logger
+            IM3uFileInfo m3UFileInfo,
+            IM3u8DownloadParam m3U8DownloadParam,
+            IMergeSetting mergeSetting,
+            ILog logger
             )
         {
             Converter = M3u8Converter.CreateM3u8Converter(m3UFileInfo, m3U8DownloadParam, mergeSetting, logger);
+        }
+
+        public DownloaderCoreClient(
+            IMediaDownloadParam mediaDownloadParam,
+            IMergeSetting mergeSetting,
+            ILog logger
+            )
+        {
+            Converter = MediaConverter.CreateMediaConverter(mediaDownloadParam, mergeSetting, logger);
         }
     }
 }

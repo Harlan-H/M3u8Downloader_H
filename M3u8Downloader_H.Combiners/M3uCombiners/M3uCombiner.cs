@@ -5,12 +5,9 @@ using System.Diagnostics;
 
 namespace M3u8Downloader_H.Combiners.M3uCombiners
 {
-    public class M3uCombiner(ILog Log, IDownloadParamBase DownloadParams)
+    public class M3uCombiner(ILog Log, IDownloadParamBase DownloadParams, IMergeSetting Settings)
     {
         private bool _isFile = false;
-        public IDialogProgress DialogProgress { get; set; } = default!;
-        public IMergeSetting Settings { get; set; } = default!;
-
         public void Initialize(IM3uFileInfo m3UFileInfo) => _isFile = m3UFileInfo.IsFile;
 
         private async ValueTask MegerVideoHeader(Stream stream, IM3uMediaInfo? m3UMapInfo, CancellationToken cancellationToken = default)
@@ -22,7 +19,7 @@ namespace M3u8Downloader_H.Combiners.M3uCombiners
             await MegerVideoInternalAsync(stream, m3UMapInfo, cancellationToken);
         }
 
-        public async ValueTask StartMerging(IM3uFileInfo m3UFileInfo, CancellationToken cancellationToken = default)
+        public async ValueTask StartMerging(IM3uFileInfo m3UFileInfo, IDialogProgress DialogProgress, CancellationToken cancellationToken = default)
         {
             using FileStream videoFileStream = File.Create(DownloadParams.VideoFullName);
             await MegerVideoHeader(videoFileStream, m3UFileInfo.Map, cancellationToken);

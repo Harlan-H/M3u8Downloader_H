@@ -9,19 +9,13 @@ namespace M3u8Downloader_H.Combiners
     {
         private M3uCombiner? m3UCombiner;
         private FFmpeg? ffmpeg;
-        private readonly IMergeSetting Settings = Settings;
         public IDialogProgress DialogProgress { get; set; } = default!;
-
 
         public M3uCombiner M3u8FileMerger
         {
             get
             {
-                m3UCombiner ??= new(Log, DownloadParams)
-                {
-                    Settings = Settings,
-                    DialogProgress = DialogProgress
-                };
+                m3UCombiner ??= new(Log, DownloadParams, Settings);
                 return m3UCombiner;
             }
         }
@@ -31,11 +25,7 @@ namespace M3u8Downloader_H.Combiners
         {
             get
             {
-                ffmpeg ??= new(Log, DownloadParams)
-                {
-                    DialogProgress = DialogProgress,
-                    Settings = Settings
-                };
+                ffmpeg ??= new(Log, DownloadParams, Settings);
                 return ffmpeg;
             }
         }

@@ -12,7 +12,7 @@ namespace M3u8Downloader_H.ViewModels.Menus
             [
                 new M3u8ConverterViewModel(settingsService) { DisplayName = "M3U8" },
                 new DirConverterViewModel(settingsService) { DisplayName = "文件夹" },
-                new MediaConverterViewModel() { DisplayName = "音视频" }
+                new MediaConverterViewModel(settingsService) { DisplayName = "长视频" }
             ];
 
         }

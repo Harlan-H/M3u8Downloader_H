@@ -94,7 +94,7 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
             foreach (var mediaFile in m3UFileInfo.MediaFiles)
             {
                 string mediaPath = Path.Combine(_cachePath, mediaFile.Title);
-                bool isSuccessful = await DownloadAsynInternal(mediaFile, Headers,  mediaPath, DownloaderSetting.SkipRequestError, cancellationToken);
+                bool isSuccessful = await DownloadAsynInternal(mediaFile, Headers,  mediaPath,  cancellationToken);
                 if(isSuccessful)
                 {
                     recordDuration += mediaFile.Duration;

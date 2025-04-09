@@ -31,18 +31,17 @@ namespace M3u8Downloader_H.Downloader.MediaDownloads
         }
 
 
-        protected async Task DownloadAsynInternal(IStreamInfo streamInfo, IEnumerable<KeyValuePair<string, string>>? headers, RangeHeaderValue? rangeHeaderValue, string mediaPath, CancellationToken token)
+        protected async Task DownloadAsynInternal(IStreamInfo streamInfo, IEnumerable<KeyValuePair<string, string>>? headers, RangeHeaderValue? rangeHeaderValue,Func<FileStream> mediaFile, CancellationToken token)
         {
             for (int i = 0; i < DownloaderSetting.RetryCount; i++)
             {
                 try
                 {
                     using CancellationTokenSource cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(token);
-                    cancellationTokenSource.CancelAfter(TimeSpan.FromSeconds(DownloaderSetting.Timeouts));
-                    
-                    using Stream stream = await httpClient.GetResponseContentAsync(streamInfo.Url, headers, rangeHeaderValue, token);
-                    using FileStream fileobject = File.Open(mediaPath, FileMode.Append);
-                    await WriteToFileAsync(streamInfo, fileobject, stream, token);
+                    cancellationTokenSource.CancelAfter(TimeSpan.FromSeconds(DownloaderSetting.Timeouts));                   
+                    using Stream stream = await httpClient.GetResponseContentAsync(streamInfo.Url, headers, rangeHeaderValue, cancellationTokenSource.Token);
+                    using FileStream fileobject = mediaFile();
+                    await WriteToFileAsync(streamInfo, fileobject, stream, cancellationTokenSource.Token);
                     break;
                 }
                 catch (OperationCanceledException) when (!token.IsCancellationRequested)

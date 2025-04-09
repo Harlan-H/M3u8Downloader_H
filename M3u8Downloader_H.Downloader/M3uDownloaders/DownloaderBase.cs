@@ -19,7 +19,6 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
         internal ILog Log { get; set; } = default!;
         internal IDialogProgress DialogProgress {  get; set; } = default!;       
 
-
         protected IEnumerable<KeyValuePair<string, string>>? _headers => DownloadParam.Headers ?? DownloaderSetting.Headers;
         protected string _cachePath => DownloadParam.CachePath;
 
@@ -46,7 +45,7 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
             if (fileInfo.Exists && fileInfo.Length > 0)
                 return;
 
-            bool isSuccessful = await DownloadAsynInternal(m3UMapInfo, _headers, mediaPath, DownloaderSetting.SkipRequestError, cancellationToken);
+            bool isSuccessful = await DownloadAsynInternal(m3UMapInfo, _headers, mediaPath, cancellationToken);
             if (isSuccessful == false)
                 throw new InvalidOperationException($"获取map失败,地址为:{m3UMapInfo.Uri.OriginalString}");
             Log?.Info("fmp4格式视频,获取map信息完成");
@@ -65,7 +64,7 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
         }
 
 
-        protected async Task<bool> DownloadAsynInternal(IM3uMediaInfo m3UMediaInfo, IEnumerable<KeyValuePair<string,string>>? headers, string mediaPath, bool skipRequestError, CancellationToken token)
+        protected async Task<bool> DownloadAsynInternal(IM3uMediaInfo m3UMediaInfo, IEnumerable<KeyValuePair<string,string>>? headers, string mediaPath, CancellationToken token)
         {
             bool IsSuccessful = false;
             for (int i = 0; i < DownloaderSetting.RetryCount; i++)
@@ -74,10 +73,11 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
                 {
                     using CancellationTokenSource cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(token);
                     cancellationTokenSource.CancelAfter(TimeSpan.FromSeconds(DownloaderSetting.Timeouts));
-                    Stream tmpstream = await httpClient.GetResponseContentAsync(m3UMediaInfo.Uri, headers, m3UMediaInfo.RangeValue, token);
-                    using Stream stream = DownloadAfter(new HandleStreamInternal(tmpstream, DialogProgress), string.Empty, token);
 
-                    await WriteToFileAsync(mediaPath, stream, token);
+                    Stream tmpstream = await httpClient.GetResponseContentAsync(m3UMediaInfo.Uri, headers, m3UMediaInfo.RangeValue, cancellationTokenSource.Token);
+                    using Stream stream = DownloadAfter(new HandleStreamInternal(tmpstream, DialogProgress), string.Empty, cancellationTokenSource.Token);
+
+                    await WriteToFileAsync(mediaPath, stream, cancellationTokenSource.Token);
                     IsSuccessful = true;
                     break;
                 }
@@ -103,7 +103,7 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
                     await Task.Delay(2000, token);
                     continue;
                 }
-                catch (HttpRequestException) when (skipRequestError)
+                catch (HttpRequestException) when (DownloaderSetting.SkipRequestError)
                 {
                     Log?.Warn("{0} 请求失败,以跳过错误，重试第{1}次", m3UMediaInfo.Uri.OriginalString, i + 1);
                     await Task.Delay(2000, token);

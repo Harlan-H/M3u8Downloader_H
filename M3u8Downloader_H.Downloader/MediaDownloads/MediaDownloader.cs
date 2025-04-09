@@ -24,7 +24,7 @@ namespace M3u8Downloader_H.Downloader.MediaDownloads
 
             await SetVideoSize(streamInfo, cancellationToken);
 
-            string mediaPath = Path.Combine(_cachePath, $"{DownloadParam.VideoName}.{streamInfo.MediaType}.tmp");
+            string mediaPath = Path.Combine(_cachePath, $"{DownloadParam.VideoName}.{streamInfo.MediaType}");
 
             RangeHeaderValue rangeHeaderValue;
             FileInfo fileInfo = new(mediaPath);
@@ -33,7 +33,7 @@ namespace M3u8Downloader_H.Downloader.MediaDownloads
             else
                 rangeHeaderValue = new RangeHeaderValue(0, streamInfo.FileSize);
 
-            await DownloadAsynInternal(streamInfo, _headers, rangeHeaderValue, mediaPath, cancellationToken);
+            await DownloadAsynInternal(streamInfo, _headers, rangeHeaderValue, () => fileInfo.Open(FileMode.Append), cancellationToken);
         }
 
         protected override void UpdateProgress(long total, long? filesize)

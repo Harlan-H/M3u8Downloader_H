@@ -10,7 +10,6 @@ namespace M3u8Downloader_H.Models
         public string VideoUrl { get; set; } = default!;
         public string? AudioUrl { get; set; } = default!;
 
-        public string? SubtitleUrl { get; set; } = default!;
         public string? VideoName { get; set; } = default!;
 
         public int StreamIndex { get; set; } = default!;
@@ -22,7 +21,6 @@ namespace M3u8Downloader_H.Models
             {
                 VideoUrl = string.Empty;
                 AudioUrl = string.Empty;
-                SubtitleUrl = null;
             }
             if (resetName) 
                 VideoName = string.Empty;
@@ -40,8 +38,7 @@ namespace M3u8Downloader_H.Models
                 throw new InvalidOperationException("请确认是否输入正确的网络地址");
 
             Uri? AudioUri = AudioUrl is not null ? new Uri(AudioUrl) : null;
-            Uri? SubtitleUri = SubtitleUrl is not null ? new Uri(SubtitleUrl) : null;
-            MediaDownloadParams mediaDownloadParams = new(null,settingsService.SavePath,new Uri(VideoUrl), AudioUri, SubtitleUri, VideoName, settingsService.Headers)
+            MediaDownloadParams mediaDownloadParams = new(settingsService.SavePath,new Uri(VideoUrl), AudioUri,  VideoName, settingsService.Headers)
             {
                 IsVideoStream = StreamIndex == 0
             };

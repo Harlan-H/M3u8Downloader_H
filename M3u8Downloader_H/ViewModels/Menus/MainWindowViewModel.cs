@@ -40,7 +40,7 @@ namespace M3u8Downloader_H.ViewModels.Menus
             this.pluginService = pluginService;
             m3U8WindowViewModel = new M3u8WindowViewModel(settingsService, pluginService, Notifications) { DisplayName = "M3U8", EnqueueDownloadAction = EnqueueDownload };
             SubWindows.Add(m3U8WindowViewModel);
-            SubWindows.Add(new MediaWindowViewModel(settingsService, Notifications) {DisplayName="视频音频" ,EnqueueDownloadAction = EnqueueDownload });
+            SubWindows.Add(new MediaWindowViewModel(settingsService, Notifications) {DisplayName="长视频" ,EnqueueDownloadAction = EnqueueDownload });
         }
 
         protected override Task OnInitializeAsync(CancellationToken cancellationToken)

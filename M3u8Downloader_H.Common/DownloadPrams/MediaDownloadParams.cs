@@ -7,19 +7,19 @@ namespace M3u8Downloader_H.Common.DownloadPrams
     {
         public IList<IStreamInfo> Medias { get; } = [];
 
-        public Uri Subtitle { get; } = default!;
-
         public bool IsVideoStream { get; set; }
 
 
-        public MediaDownloadParams(string? cachePath, string savePath, Uri videoUrl, Uri? audioUrl, Uri? subtitle, string? videoName, IDictionary<string, string>? headers)
+        public MediaDownloadParams(string savePath, Uri videoUrl, Uri? audioUrl,  string? videoName, IDictionary<string, string>? headers)
             : base(videoUrl, videoName, savePath, "mp4", headers)
         {
-            Medias.Add(new StreamInfo(videoUrl));
+            var videoTitle = videoUrl.IsFile ? videoUrl.Segments.Last() : VideoName + ".video";
+            Medias.Add(new StreamInfo(videoUrl, videoTitle,"video"));
             if (audioUrl is not null)
-                Medias.Add(new StreamInfo(videoUrl, "audio"));
-            if (subtitle is not null)
-                Subtitle = subtitle;
+            {
+                var audioTitle = audioUrl.IsFile ? audioUrl.Segments.Last() : VideoName + ".audio";
+                Medias.Add(new StreamInfo(audioUrl, audioTitle, "audio"));
+            }
         }
     }
 }

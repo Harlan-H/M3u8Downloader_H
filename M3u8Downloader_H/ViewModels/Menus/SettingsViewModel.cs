@@ -17,7 +17,7 @@ namespace M3u8Downloader_H.ViewModels.Menus
 
         public SettingsService SettingsServiceClone { get;private set; } = default!;
 
-        public string[] Formats { get; } = { "默认", "mp4" };
+        public string[] Formats { get; } = { "mp4" };
 
         public BindableCollection<string> PluginKeys { get; } = [];
 

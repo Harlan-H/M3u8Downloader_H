@@ -27,7 +27,7 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
             {
                 for (int i = 0; i < DownloaderSetting.MaxThreadCount; i++)
                 {
-                    Tasks[i] = DownloadCallBack(m3UFileInfo, _cachePath, _headers, DownloaderSetting.SkipRequestError, cancellationToken);
+                    Tasks[i] = DownloadCallBack(m3UFileInfo, _cachePath, _headers,  cancellationToken);
                 }
 
                 Log?.Info("{0}条线程已开启", DownloaderSetting.MaxThreadCount);
@@ -48,7 +48,7 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
                 throw new DataMisalignedException($"下载数量不完整,完成数{downloadedCount}/{m3UFileInfo.MediaFiles.Count}");
         }
 
-        private async Task DownloadCallBack(IM3uFileInfo m3UFileInfo, string savepath, IEnumerable<KeyValuePair<string, string>>? headers, bool skipRequestError, CancellationToken token)
+        private async Task DownloadCallBack(IM3uFileInfo m3UFileInfo, string savepath, IEnumerable<KeyValuePair<string, string>>? headers, CancellationToken token)
         {
             int localIndex;
             while (true)
@@ -73,7 +73,7 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
                 }
 
 
-                bool isSuccessful = await DownloadAsynInternal(mediaInfo, headers, mediaPath, skipRequestError, token);
+                bool isSuccessful = await DownloadAsynInternal(mediaInfo, headers, mediaPath, token);
                 if (isSuccessful)
                 {
                     lock (countLock)

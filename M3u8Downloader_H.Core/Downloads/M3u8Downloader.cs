@@ -96,15 +96,13 @@ namespace M3u8Downloader_H.Core.Downloads
 
         private async ValueTask MergeAsync(IDialogProgress progress, CancellationToken cancellationToken)
         {
-            m3UCombinerClient.DialogProgress = progress;
-
             if (M3U8FileInfo.Map is not null)
             {
                 m3UCombinerClient.M3u8FileMerger.Initialize(M3U8FileInfo);
-                await m3UCombinerClient.M3u8FileMerger.StartMerging(M3U8FileInfo, cancellationToken);
+                await m3UCombinerClient.M3u8FileMerger.StartMerging(M3U8FileInfo, progress, cancellationToken);
             }
             else
-                await m3UCombinerClient.FFmpeg.ConvertToMp4(M3U8FileInfo, cancellationToken);
+                await m3UCombinerClient.FFmpeg.ConvertToMp4(M3U8FileInfo, progress, cancellationToken);
         }
     }
 
@@ -136,12 +134,12 @@ namespace M3u8Downloader_H.Core.Downloads
 
         //通过接口创建
         public static M3u8Downloader CreateM3u8Downloader(
-                HttpClient httpClient,
-                IDownloadParamBase m3U8DownloadParam,
-                IDownloaderSetting downloaderSetting,
-                ILog logger,
-                Type? pluginType,
-                IM3uFileInfo m3UFileInfo
+            HttpClient httpClient,
+            IDownloadParamBase m3U8DownloadParam,
+            IDownloaderSetting downloaderSetting,
+            ILog logger,
+            Type? pluginType,
+            IM3uFileInfo m3UFileInfo
             )
         {
             M3u8Downloader m3U8Downloader = new(m3U8DownloadParam, downloaderSetting, logger);

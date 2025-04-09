@@ -62,9 +62,7 @@ namespace M3u8Downloader_H.Core.Downloads
 
         private async ValueTask MergeAsync(IDialogProgress downloadProgress, CancellationToken cancellationToken)
         {
-            m3UCombinerClient.DialogProgress = downloadProgress;
-
-            await m3UCombinerClient.FFmpeg.ConvertToMp4(mediaDownloadParam, cancellationToken);
+            await m3UCombinerClient.FFmpeg.ConvertToMp4(mediaDownloadParam.Medias, downloadProgress, cancellationToken);
         }
 
     }

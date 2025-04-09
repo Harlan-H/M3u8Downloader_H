@@ -28,7 +28,7 @@ namespace M3u8Downloader_H.Converters
         {
             if (string.IsNullOrWhiteSpace(value)) return null!;
 
-            Dictionary<string,string> tmpHeader = value.Split(Environment.NewLine)
+            Dictionary<string,string> tmpHeader = value.TrimEnd().Split(Environment.NewLine)
                     .Select(h => h.Split(":", 2, StringSplitOptions.TrimEntries))
                     .ToDictionary(r => r[0], r => r[1]);
 

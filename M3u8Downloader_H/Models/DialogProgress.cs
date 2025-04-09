@@ -17,6 +17,11 @@ namespace M3u8Downloader_H.Models
             throw new NotImplementedException();
         }
 
+        public void IncProgressNum(bool isInc)
+        {
+            throw new NotImplementedException();
+        }
+
         public void Report(double value)
         {
             Debug.Print("Report double value :{0}", value);

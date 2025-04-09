@@ -1,38 +1,30 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using M3u8Downloader_H.Abstractions.Common;
 using M3u8Downloader_H.Abstractions.Converter;
 using M3u8Downloader_H.Abstractions.M3u8;
-using M3u8Downloader_H.Abstractions.M3uDownloaders;
 using M3u8Downloader_H.Abstractions.Settings;
 using M3u8Downloader_H.Combiners;
-using M3u8Downloader_H.Common.M3u8Infos;
-using M3u8Downloader_H.Core.Downloads;
 using M3u8Downloader_H.Downloader;
-using M3u8Downloader_H.M3U8;
 
 namespace M3u8Downloader_H.Core.Converters
 {
     public partial class M3u8Converter : IConverter
     {
+        private DownloaderClient m3UDownloaderClient = default!;
+        private M3uCombinerClient m3UCombinerClient = default!;
         private readonly IM3uFileInfo m3UFileInfo;
         private readonly ILog log;
         private readonly IM3u8DownloadParam downloadParamBase;
-        private readonly IMergeSetting mergeSetting;
-        private DownloaderClient m3UDownloaderClient = default!;
-        private M3uCombinerClient m3UCombinerClient = default!;
 
-        public M3u8Converter(IM3uFileInfo m3UFileInfo, ILog log, IM3u8DownloadParam downloadParamBase,IMergeSetting mergeSetting)
+        public M3u8Converter(IM3uFileInfo m3UFileInfo, ILog log, IM3u8DownloadParam downloadParamBase)
         {
             this.m3UFileInfo = m3UFileInfo;
             this.log = log;
             this.downloadParamBase = downloadParamBase;
-            this.mergeSetting = mergeSetting;
         }
 
         public async ValueTask StartMerge(IDialogProgress progress, CancellationToken cancellationToken)
@@ -66,19 +58,17 @@ namespace M3u8Downloader_H.Core.Converters
 
         private async ValueTask M3u8Merge(IDialogProgress progress, CancellationToken cancellationToken)
         {
-            m3UCombinerClient.DialogProgress = progress;
-
             if (m3UFileInfo.Map is not null)
             {
                 m3UCombinerClient.M3u8FileMerger.Initialize(m3UFileInfo);
-                await m3UCombinerClient.M3u8FileMerger.StartMerging(m3UFileInfo, cancellationToken);
+                await m3UCombinerClient.M3u8FileMerger.StartMerging(m3UFileInfo, progress, cancellationToken);
             }
             else
             {
                 if(downloadParamBase.M3UKeyInfo is null)
                     m3UCombinerClient.FFmpeg.CachePath = Path.GetDirectoryName(m3UFileInfo.MediaFiles[0].Uri.OriginalString) ?? throw new ArgumentException("获取缓存路径失败");
                 
-                await m3UCombinerClient.FFmpeg.ConvertToMp4(m3UFileInfo, cancellationToken);
+                await m3UCombinerClient.FFmpeg.ConvertToMp4(m3UFileInfo, progress,cancellationToken);
             }
         }
     }
@@ -91,7 +81,7 @@ namespace M3u8Downloader_H.Core.Converters
             IMergeSetting mergeSetting,
             ILog log)
         {
-            M3u8Converter m3U8Converter = new(m3UFileInfo, log, downloadParamBase, mergeSetting)
+            M3u8Converter m3U8Converter = new(m3UFileInfo, log, downloadParamBase)
             {
                 m3UDownloaderClient = new(log, downloadParamBase),
                 m3UCombinerClient = new(log, downloadParamBase, mergeSetting)

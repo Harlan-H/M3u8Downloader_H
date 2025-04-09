@@ -10,10 +10,9 @@ namespace M3u8Downloader_H.Abstractions.Common
     {
         Uri Url { get; }
         string MediaType { get; }
-        string? Codec { get; }
         long? FileSize { get; }
 
+        string Title { get; }
         void SetFileSize(long? fileSize);
-        void SetMediaType(string mediaType);
     }
 }

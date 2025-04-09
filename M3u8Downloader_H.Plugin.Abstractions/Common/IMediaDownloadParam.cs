@@ -10,6 +10,5 @@ namespace M3u8Downloader_H.Abstractions.Common
     {
         bool IsVideoStream { get; }
         IList<IStreamInfo> Medias { get; }
-        Uri Subtitle { get; }
     }
 }

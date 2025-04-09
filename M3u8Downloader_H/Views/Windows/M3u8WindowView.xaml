@@ -12,7 +12,7 @@
              d:DataContext="{d:DesignInstance Type=local:M3u8WindowViewModel}"
              d:DesignHeight="450" d:DesignWidth="800">
     
-    <Grid Name="videoDownloadInfoGrid" DataContext="{Binding VideoDownloadInfo}">
+    <Grid Height="190" Name="videoDownloadInfoGrid" DataContext="{Binding VideoDownloadInfo}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition  />
             <ColumnDefinition Width="auto" />

@@ -103,7 +103,17 @@ namespace M3u8Downloader_H.ViewModels.Windows
                 try
                 {
 
-                    _downloadParams.VideoName = VideoName;
+                    if (_downloadParams is not null)
+                    {
+                        FileInfo fileInfo = new(_downloadParams.VideoFullName);
+                        if (fileInfo.Exists)
+                        {
+                            Log.Info("{0}文件已经存在", _downloadParams.VideoFullName);
+                            return;
+                        }
+                    }
+
+                    _downloadParams!.VideoName = VideoName;
                     if (!string.IsNullOrEmpty(Key))
                         _downloadParams.UpdateKeyInfo(Method, Key, Iv);
 

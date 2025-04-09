@@ -38,7 +38,7 @@ namespace M3u8Downloader_H.Services
         public string SavePath { get; set; } = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "download");
 #endif
         public string PluginKey { get; set; } = default!;
-        public string SelectedFormat { get; set; } = "默认";
+        public string SelectedFormat { get; set; } = "mp4";
 
         [JsonIgnore]
         public bool SkipDirectoryExist { get; set; } = true;
