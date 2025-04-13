@@ -24,6 +24,7 @@ namespace M3u8Downloader_H.ViewModels.Menus
         private readonly SettingsService settingsService;
         private readonly PluginService pluginService;
         private readonly M3u8WindowViewModel m3U8WindowViewModel;
+        private readonly MediaWindowViewModel mediaWindowViewModel;
 
         public ISnackbarMessageQueue Notifications { get; } = new SnackbarMessageQueue(TimeSpan.FromSeconds(5));
         public BindableCollection<DownloadViewModel> Downloads { get; } = [];
@@ -40,7 +41,8 @@ namespace M3u8Downloader_H.ViewModels.Menus
             this.pluginService = pluginService;
             m3U8WindowViewModel = new M3u8WindowViewModel(settingsService, pluginService, Notifications) { DisplayName = "M3U8", EnqueueDownloadAction = EnqueueDownload };
             SubWindows.Add(m3U8WindowViewModel);
-            SubWindows.Add(new MediaWindowViewModel(settingsService, Notifications) {DisplayName="长视频" ,EnqueueDownloadAction = EnqueueDownload });
+            mediaWindowViewModel = new MediaWindowViewModel(settingsService, Notifications) { DisplayName = "长视频", EnqueueDownloadAction = EnqueueDownload };
+            SubWindows.Add(mediaWindowViewModel);
         }
 
         protected override Task OnInitializeAsync(CancellationToken cancellationToken)
@@ -56,7 +58,7 @@ namespace M3u8Downloader_H.ViewModels.Menus
                 if(windowsPrincipal.IsInRole(WindowsBuiltInRole.Administrator))
                 {
                     httpListenService.Run(i => HttpServicePort = i);
-                    httpListenService.Initialization(m3U8WindowViewModel.ProcessM3u8Download, m3U8WindowViewModel.ProcessM3u8Download);
+                    httpListenService.Initialization(m3U8WindowViewModel.ProcessM3u8Download, m3U8WindowViewModel.ProcessM3u8Download, mediaWindowViewModel.ProcessMediaDownload);
                 }
             }, cancellationToken);
 

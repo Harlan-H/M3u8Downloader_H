@@ -73,8 +73,8 @@
                             <Run FontWeight="SemiBold" Text="下载地址" />
                             <Run Text="处" />
                             <LineBreak />
-                            <Run FontWeight="SemiBold" Text="视频音频" />
-                            <Run Text="选项卡是专门下载mp4,flv,mp3等长视频的" />
+                            <Run FontWeight="SemiBold" Text="长视频" />
+                            <Run Text="选项卡是专门下载mp4,flv等长视频的" />
                             <LineBreak />
                             <Run Text="视频有声音的只用复制" />
                             <Run FontWeight="SemiBold" Text="mp4,flv等地址" />
@@ -93,17 +93,9 @@
                             <Run FontWeight="SemiBold" Text="Shift + 鼠标左键" />
                             <Run Text="连选" />
                             <LineBreak/>
-                            <Run Text="设置在" />
-                            <Run FontWeight="SemiBold" Text="三个点" />
-                            <Run Text="那里，可以设置线程数,任务数,超时,请求头等等" />
-                            <LineBreak />
                             <Run  Text="下载时出现"/>
                             <Run FontWeight="SemiBold" Text="⚠ 错误" />
-                            <Run Text="将鼠标指针放到" />
-                            <Run FontWeight="SemiBold" Text="⚠ 错误" />
-                            <Run Text="上等待2秒获取详细信息" />
-                            <LineBreak />
-                            <Run Text="也可以通过点击下载栏中最右侧按钮显示详细日志" />
+                            <Run Text="可以通过点击下载栏中最右侧按钮显示详细日志" />
                             <LineBreak />
                             <Run Text="或者右键" />
                             <Run FontWeight="SemiBold" Text="复制错误信息" />

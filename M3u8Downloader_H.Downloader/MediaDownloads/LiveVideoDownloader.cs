@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Net;
+using System.Threading;
 using M3u8Downloader_H.Abstractions.Common;
 using Newtonsoft.Json.Linq;
 
@@ -12,6 +13,7 @@ namespace M3u8Downloader_H.Downloader.MediaDownloads
             DialogProgress.SetDownloadStatus(true);
             DialogProgress.IncProgressNum(true);
 
+            Log?.Info("直播录制开始");
             string mediaPath = Path.Combine(_cachePath, $"{DownloadParam.VideoName}.{streamInfo.MediaType}");
 
             using CancellationTokenSource cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
@@ -22,6 +24,10 @@ namespace M3u8Downloader_H.Downloader.MediaDownloads
             }catch(OperationCanceledException) when(cancellationTokenSource.IsCancellationRequested && !cancellationToken.IsCancellationRequested)
             {
                 Log?.Info("已录制{0},录制结束", TimeSpan.FromSeconds(DownloaderSetting.RecordDuration).ToString());
+            }
+            catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.NotFound)
+            {
+                Log?.Info("地址返回404,直播可能已经结束");
             }
         }
 

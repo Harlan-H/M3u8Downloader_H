@@ -9,18 +9,14 @@ namespace M3u8Downloader_H.Utils
 {
     internal static class FileEx
     {
-        private static readonly string[] formats = { "ts", "m4s", "mp4" };
-        public static void EnsureFileNotExist(string filename)
+        public static void EnsureFileNotExist(string filefullpath)
         {
-            foreach (string item in formats)
+            FileInfo fileInfo = new(filefullpath);
+            if (fileInfo.Exists && fileInfo.Length > 0)
             {
-                string filePath = filename + '.' + item;
-                FileInfo fileInfo = new(filePath);
-                if (fileInfo.Exists && fileInfo.Length > 0)
-                {
-                    throw new FileExistsException($"【{filename}】文件已经存在，请修改名称后再次尝试");
-                }
+                throw new FileExistsException($"【{filefullpath}】文件已经存在，请修改名称后再次尝试");
             }
+            
         }
     }
 }

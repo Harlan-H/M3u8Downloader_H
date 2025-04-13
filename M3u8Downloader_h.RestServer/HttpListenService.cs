@@ -3,7 +3,6 @@ using M3u8Downloader_H.RestServer.Extensions;
 using M3u8Downloader_H.RestServer.Utils;
 using System.Net;
 using System.Text.Json;
-using M3u8Downloader_H.Common.M3u8Infos;
 using M3u8Downloader_H.M3U8.M3UFileReaders;
 using M3u8Downloader_H.M3U8.Extensions;
 using M3u8Downloader_H.Abstractions.Common;
@@ -12,13 +11,15 @@ using M3u8Downloader_H.Abstractions.M3u8;
 namespace M3u8Downloader_H.RestServer
 {
     using DownloadByUrlActionType = Action<IM3u8DownloadParam, string?>;
-    using DownloadByM3uFileInfoActionType = Action<IDownloadParamBase,IM3uFileInfo, string?>;
+    using DownloadByM3uFileInfoActionType = Action<IDownloadParamBase, IM3uFileInfo, string?>;
+    using DownloadMediaActionType = Action<IMediaDownloadParam>;
 
     public class HttpListenService
     {
         private readonly HttpListen httpListen = new();
         private DownloadByUrlActionType DownloadByUrlAction = default!;        
         private DownloadByM3uFileInfoActionType DownloadByM3uFileInfoAction = default!;
+        private DownloadMediaActionType DownloadMediaAction = default!;
 
         private readonly JsonSerializerOptions jsonSerializerOptions;
         private readonly static HttpListenService instance = new();
@@ -27,6 +28,7 @@ namespace M3u8Downloader_H.RestServer
         private HttpListenService()
         {
             jsonSerializerOptions = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
+            httpListen.RegisterService("downloadmedias", DownloadMedias);
             httpListen.RegisterService("downloadbyurl", DownloadByUrl);
             httpListen.RegisterService("downloadbycontent", DownloadByContent);
             httpListen.RegisterService("downloadbyjsoncontent", DownloadByJsonContent);
@@ -35,10 +37,12 @@ namespace M3u8Downloader_H.RestServer
 
         public void Initialization(
             DownloadByUrlActionType downloadByUrl,
-            DownloadByM3uFileInfoActionType downloadByM3uFileInfo)
+            DownloadByM3uFileInfoActionType downloadByM3uFileInfo,
+            DownloadMediaActionType downloadMedia)
         {
             DownloadByUrlAction = downloadByUrl;
             DownloadByM3uFileInfoAction = downloadByM3uFileInfo;
+            DownloadMediaAction = downloadMedia;
         }
 
         public void Run(Action<int> SetPortAction)
@@ -55,6 +59,30 @@ namespace M3u8Downloader_H.RestServer
                 {
                     continue;
                 }
+            }
+        }
+
+        private void DownloadMedias(HttpListenerRequest request, HttpListenerResponse response)
+        {
+            try
+            {
+                RequestWithMediaUri? requestWithMediaUri = JsonSerializer.Deserialize<RequestWithMediaUri>(request.InputStream, jsonSerializerOptions);
+                if (requestWithMediaUri is null)
+                {
+                    response.Json(Response.Error("序列化失败"));
+                    return;
+                }
+
+                requestWithMediaUri.Validate();
+                if (!string.IsNullOrWhiteSpace(requestWithMediaUri.SavePath))
+                    requestWithMediaUri.SavePath = requestWithMediaUri.SavePath.Replace('/', Path.DirectorySeparatorChar);
+                DownloadMediaAction(requestWithMediaUri.ToMediaDownloadParams());
+
+                response.Json(Response.Success());
+            }
+            catch (Exception e)
+            {
+                response.Json(Response.Error($"请求失败,{e.Message}"));
             }
         }
 

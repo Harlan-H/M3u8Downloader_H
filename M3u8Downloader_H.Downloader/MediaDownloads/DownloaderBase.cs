@@ -32,37 +32,10 @@ namespace M3u8Downloader_H.Downloader.MediaDownloads
 
 
         protected async Task DownloadAsynInternal(IStreamInfo streamInfo, IEnumerable<KeyValuePair<string, string>>? headers, RangeHeaderValue? rangeHeaderValue,Func<FileStream> mediaFile, CancellationToken token)
-        {
-            for (int i = 0; i < DownloaderSetting.RetryCount; i++)
-            {
-                try
-                {
-                    using CancellationTokenSource cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(token);
-                    cancellationTokenSource.CancelAfter(TimeSpan.FromSeconds(DownloaderSetting.Timeouts));                   
-                    using Stream stream = await httpClient.GetResponseContentAsync(streamInfo.Url, headers, rangeHeaderValue, cancellationTokenSource.Token);
-                    using FileStream fileobject = mediaFile();
-                    await WriteToFileAsync(streamInfo, fileobject, stream, cancellationTokenSource.Token);
-                    break;
-                }
-                catch (OperationCanceledException) when (!token.IsCancellationRequested)
-                {
-                    Log?.Warn("{0} 请求超时，重试第{1}次", streamInfo.Url.OriginalString, i + 1);
-                    await Task.Delay(2000, token);
-                    continue;
-                }
-                catch (IOException)
-                {
-                    Log?.Warn("{0} 遇到io异常，重试第{1}次", streamInfo.Url.OriginalString, i + 1);
-                    await Task.Delay(2000, token);
-                    continue;
-                }
-                catch (HttpRequestException)
-                {
-                    Log?.Warn("{0} 请求失败,以跳过错误，重试第{1}次", streamInfo.Url.OriginalString, i + 1);
-                    await Task.Delay(2000, token);
-                    continue;
-                }
-            }
+        {  
+            using Stream stream = await httpClient.GetResponseContentAsync(streamInfo.Url, headers, rangeHeaderValue, token);
+            using FileStream fileobject = mediaFile();
+            await WriteToFileAsync(streamInfo, fileobject, stream, token); 
         }
 
 

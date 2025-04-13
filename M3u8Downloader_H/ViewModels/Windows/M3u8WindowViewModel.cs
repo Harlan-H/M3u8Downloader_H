@@ -85,7 +85,7 @@ namespace M3u8Downloader_H.ViewModels.Windows
         //处理软件界面来的请求
         public void ProcessM3u8Download(IM3u8DownloadParam m3U8DownloadParam, string? pluginKey = default!)
         {
-            FileEx.EnsureFileNotExist(m3U8DownloadParam.CachePath);
+            FileEx.EnsureFileNotExist(m3U8DownloadParam.VideoFullName);
 
             string tmpPluginKey = pluginKey is not null
                                 ? pluginKey
@@ -101,7 +101,7 @@ namespace M3u8Downloader_H.ViewModels.Windows
         //处理接口过来的请求
         public void ProcessM3u8Download(IDownloadParamBase m3U8DownloadParam,IM3uFileInfo m3UFileInfo,  string? pluginKey = default!)
         {
-            FileEx.EnsureFileNotExist(m3U8DownloadParam.CachePath);
+            FileEx.EnsureFileNotExist(m3U8DownloadParam.VideoFullName);
 
             //这里因为不可能有url所以直接通过设置来判别使用某个插件
             DownloadViewModel download = DownloadViewModel.CreateDownloadViewModel(m3UFileInfo, m3U8DownloadParam, pluginService[pluginKey ?? settingsService.PluginKey]);

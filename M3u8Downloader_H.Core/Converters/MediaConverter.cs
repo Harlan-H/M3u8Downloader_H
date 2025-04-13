@@ -6,6 +6,7 @@ using M3u8Downloader_H.Abstractions.Common;
 using M3u8Downloader_H.Abstractions.Converter;
 using M3u8Downloader_H.Abstractions.Settings;
 using M3u8Downloader_H.Combiners;
+using M3u8Downloader_H.Common.DownloadPrams;
 
 namespace M3u8Downloader_H.Core.Converters
 {
@@ -31,7 +32,7 @@ namespace M3u8Downloader_H.Core.Converters
 
             log.Info("开始转码");
             await M3u8Merge(progress, cancellationToken);
-            log.Info("转码完成");
+            log.Info("转码完成,文件路径是:{0}", Path.Combine(mediaDownloadParam.SavePath, mediaDownloadParam.VideoFullName));
         }
 
         private async ValueTask M3u8Merge(IDialogProgress progress, CancellationToken cancellationToken)

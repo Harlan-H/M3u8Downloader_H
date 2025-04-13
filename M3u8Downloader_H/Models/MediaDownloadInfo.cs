@@ -37,7 +37,7 @@ namespace M3u8Downloader_H.Models
             if(uri.IsFile)
                 throw new InvalidOperationException("请确认是否输入正确的网络地址");
 
-            Uri? AudioUri = AudioUrl is not null ? new Uri(AudioUrl) : null;
+            Uri? AudioUri = !string.IsNullOrWhiteSpace( AudioUrl) ? new Uri(AudioUrl) : null;
             MediaDownloadParams mediaDownloadParams = new(settingsService.SavePath,new Uri(VideoUrl), AudioUri,  VideoName, settingsService.Headers)
             {
                 IsVideoStream = StreamIndex == 0

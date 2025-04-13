@@ -4,7 +4,7 @@ using M3u8Downloader_H.Models;
 using M3u8Downloader_H.Services;
 using M3u8Downloader_H.Utils;
 using MaterialDesignThemes.Wpf;
-using M3u8Downloader_H.Common.DownloadPrams;
+using M3u8Downloader_H.Abstractions.Common;
 
 namespace M3u8Downloader_H.ViewModels.Windows
 {
@@ -45,9 +45,9 @@ namespace M3u8Downloader_H.ViewModels.Windows
             }
         }
 
-        public void ProcessMediaDownload(MediaDownloadParams mediaDownloadParams)
+        public void ProcessMediaDownload(IMediaDownloadParam mediaDownloadParams)
         {
-            FileEx.EnsureFileNotExist(mediaDownloadParams.CachePath);
+            FileEx.EnsureFileNotExist(mediaDownloadParams.VideoFullName);
 
             DownloadViewModel download = DownloadViewModel.CreateDownloadViewModel(mediaDownloadParams);
             if (download is null) return;

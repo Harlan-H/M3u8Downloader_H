@@ -5,15 +5,15 @@ namespace M3u8Downloader_H.Common.DownloadPrams
 {
     public class DownloadParamsBase : IDownloadParamBase
     {
-        private static readonly string _defaultCachePath =
+        protected static readonly string _defaultCachePath =
 #if DEBUG
            "E:\\desktop\\download\\Caches";
 #else
             Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Caches");
 #endif
 
-        private readonly string _cacheName;
-        private string _videoName = string.Empty;
+        protected readonly string _cacheName;
+        protected string _videoName = string.Empty;
 
         public string CachePath =>  Path.Combine(_defaultCachePath, _cacheName);
 
