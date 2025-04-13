@@ -31,7 +31,7 @@ namespace M3u8Downloader_H.Core.Converters
         {
             if (!m3UFileInfo.MediaFiles.Any(m => m.Uri.IsFile))
             {
-                log.Warn("ts文件不是本地路径");
+                log.Warn("ts文件地址必须是本地相对路径");
                 return;
             }
 

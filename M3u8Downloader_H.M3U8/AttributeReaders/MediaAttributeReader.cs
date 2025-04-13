@@ -58,6 +58,7 @@ namespace M3u8Downloader_H.M3U8.AttributeReaders
                 throw new InvalidDataException("Invalid M3U file. Include a invalid media URI.",
                     new UriFormatException(CurrentValue));
 
+            //只有http地址才会是绝对地址
             if (relativeUri.IsAbsoluteUri)
             {
                 m3UmediaInfo.Uri = relativeUri;
@@ -69,7 +70,7 @@ namespace M3u8Downloader_H.M3U8.AttributeReaders
                     throw new InvalidDataException("baseuri为空");
 
                 m3UmediaInfo.Uri = new Uri(baseUri, relativeUri);
-                m3UmediaInfo.Title = CurrentIndex;
+                m3UmediaInfo.Title = baseUri.IsFile? relativeUri.OriginalString : CurrentIndex;
             }
 
             fileInfo.MediaFiles.Add(m3UmediaInfo);

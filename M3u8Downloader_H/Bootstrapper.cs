@@ -28,7 +28,6 @@ namespace M3u8Downloader_H
 
             simpleContainer
                 .Singleton<SettingsService>()
-                // .Singleton<DownloadService>()
                 .Singleton<SoundService>()
                 .Singleton<PluginService>()
                 .Singleton<DashboardViewModel>()

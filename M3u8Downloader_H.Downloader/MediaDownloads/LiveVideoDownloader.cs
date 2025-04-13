@@ -14,7 +14,7 @@ namespace M3u8Downloader_H.Downloader.MediaDownloads
             DialogProgress.IncProgressNum(true);
 
             Log?.Info("直播录制开始");
-            string mediaPath = Path.Combine(_cachePath, $"{DownloadParam.VideoName}.{streamInfo.MediaType}");
+            string mediaPath = Path.Combine(_cachePath, streamInfo.Title);
 
             using CancellationTokenSource cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
             cancellationTokenSource.CancelAfter(TimeSpan.FromSeconds(DownloaderSetting.RecordDuration));

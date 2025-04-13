@@ -23,48 +23,13 @@
             <!-- 基础配置区 -->
             <StackPanel Margin="5" Name="SettingGrid" DataContext="{Binding SettingsServiceClone}">
                 <TextBlock Text="基础配置"  Margin="10" HorizontalAlignment="Center"  FontSize="20" FontWeight="Bold" />
-                <DockPanel Margin="8 0 8 0">
-                    <DockPanel.ToolTip>
-                        <TextBlock>
-                            <Run Text="在下载一个m3u8文件时,内部启动的线程数量" />
-                            <LineBreak />
-                            <Run FontWeight="SemiBold" Text="注意:" />
-                            <Run Text="线程数是下载栏中一行任务的线程数量" />
-                            <LineBreak />
-                            <Run Text="比如：" />
-                            <LineBreak/>
-                            <Run Text="    当前选中10线程数，下载栏中有2行任务，那么总线程数就是20" />
-                            <LineBreak/>
-                            <Run Text="    当前选中10线程数,下载栏中有3行任务，总线程数就是30，以此类推" />
-                            <LineBreak />
-                            <Run Text="线程数量不是越多越好，取决于你当前下载的带宽" />
-                            <LineBreak />
-                            <Run Text="如果10条线程就能达到满带宽,那就不建议开更高的线程" />
-                        </TextBlock>
-                    </DockPanel.ToolTip>
-                    <TextBlock  Style="{StaticResource TextBlockStyle}"  Text="线程数量: " />
-                    <Slider  Height="20" Minimum="1" Maximum="200" TickFrequency="1" Value="{Binding MaxThreadCount}" Style="{StaticResource MaterialDesignDiscreteSlider}"  />
-                </DockPanel>
 
                 <DockPanel Margin="8 0 8 0" ToolTip="同时下载视频的数量" >
                     <TextBlock Text="任务数量: " Style="{StaticResource TextBlockStyle}" />
                     <Slider Height="20" Minimum="1" Maximum="30" TickFrequency="1" Value="{Binding MaxConcurrentDownloadCount}" Style="{StaticResource MaterialDesignDiscreteSlider}" />
                 </DockPanel>
 
-                <DockPanel Margin="8 0 8 0">
-                    <DockPanel.ToolTip>
-                        <TextBlock>
-                            <Run Text="当下载的视频数时,会出现网络错误,及一些其他得问题" />
-                            <LineBreak/>
-                            <Run Text="设置好重试次数,就可以正常下载完成" />
-                            <LineBreak />
-                            <Run Text="重试次数只影响下载ts流" />
-                        </TextBlock>
-                    </DockPanel.ToolTip>
-                    <TextBlock Text="重试次数: " Style="{StaticResource TextBlockStyle}" />
-                    <Slider Height="20" Minimum="1" Maximum="20" TickFrequency="1" Value="{Binding RetryCount}" Style="{StaticResource MaterialDesignDiscreteSlider}" />
-                </DockPanel>
-
+               
                 <DockPanel Margin="8 0 8 0">
                     <DockPanel.ToolTip>
                         <TextBlock>
@@ -124,7 +89,60 @@
                         <TextBlock Style="{StaticResource TextBlockStyle}" Text="重置名称" />
                         <ToggleButton   HorizontalAlignment="Left"  Margin="10 0 0 0" Style="{StaticResource MaterialDesignSwitchToggleButton}" ToolTip="{Binding IsResetName,Converter={x:Static converters:BoolToStringConverters.Instance}}"  IsChecked="{Binding IsResetName}" />
                     </DockPanel>
-                    
+
+
+                    <DockPanel  Margin="8 0 8 0" ToolTip="视频合并之后会执行清理，如果需要开启">
+                        <TextBlock Style="{StaticResource TextBlockStyle}" Text="清理缓存" />
+                        <ToggleButton   HorizontalAlignment="Left"  Margin="10 0 0 0" Style="{StaticResource MaterialDesignSwitchToggleButton}" ToolTip="{Binding IsCleanUp,Converter={x:Static converters:BoolToStringConverters.Instance}}"  IsChecked="{Binding IsCleanUp}" />
+                    </DockPanel>
+
+                    <DockPanel  Margin="8 0 8 0" ToolTip="当程序成功或者失败之后是否播放提示音">
+                        <TextBlock Style="{StaticResource TextBlockStyle}" Text="播提示音" />
+                        <ToggleButton   HorizontalAlignment="Left"  Margin="10 0 0 0" Style="{StaticResource MaterialDesignSwitchToggleButton}" ToolTip="{Binding IsPlaySound,Converter={x:Static converters:BoolToStringConverters.Instance}}"  IsChecked="{Binding IsPlaySound}" />
+                    </DockPanel>
+                </WrapPanel>
+
+                <!-- m3u8下载配置区 -->
+                <TextBlock Text="m3u8下载专用"  Margin="10" HorizontalAlignment="Center"  FontSize="20" FontWeight="Bold" />
+                <DockPanel Margin="8 0 8 0">
+                    <DockPanel.ToolTip>
+                        <TextBlock>
+                         <Run Text="在下载一个m3u8文件时,内部启动的线程数量" />
+                         <LineBreak />
+                         <Run FontWeight="SemiBold" Text="注意:" />
+                         <Run Text="线程数是下载栏中一行任务的线程数量" />
+                         <LineBreak />
+                         <Run Text="比如：" />
+                         <LineBreak/>
+                         <Run Text="    当前选中10线程数，下载栏中有2行任务，那么总线程数就是20" />
+                         <LineBreak/>
+                         <Run Text="    当前选中10线程数,下载栏中有3行任务，总线程数就是30，以此类推" />
+                         <LineBreak />
+                         <Run Text="线程数量不是越多越好，取决于你当前下载的带宽" />
+                         <LineBreak />
+                         <Run Text="如果10条线程就能达到满带宽,那就不建议开更高的线程" />  
+                        </TextBlock>
+                    </DockPanel.ToolTip>
+                    <TextBlock  Style="{StaticResource TextBlockStyle}"  Text="线程数量: " />
+                    <Slider  Height="20" Minimum="1" Maximum="200" TickFrequency="1" Value="{Binding MaxThreadCount}" Style="{StaticResource MaterialDesignDiscreteSlider}"  />
+                </DockPanel>
+
+                <DockPanel Margin="8 0 8 0">
+                    <DockPanel.ToolTip>
+                        <TextBlock>
+                         <Run Text="当下载的视频数时,会出现网络错误,及一些其他得问题" />
+                         <LineBreak/>
+                         <Run Text="设置好重试次数,就可以正常下载完成" />
+                         <LineBreak />
+                         <Run Text="重试次数只影响下载ts流" />
+                        </TextBlock>
+                    </DockPanel.ToolTip>
+                    <TextBlock Text="重试次数: " Style="{StaticResource TextBlockStyle}" />
+                    <Slider Height="20" Minimum="1" Maximum="20" TickFrequency="1" Value="{Binding RetryCount}" Style="{StaticResource MaterialDesignDiscreteSlider}" />
+                </DockPanel>
+
+
+                <WrapPanel>
                     <DockPanel Margin="8 0 8 0" >
                         <DockPanel.ToolTip>
                             <TextBlock>
@@ -150,18 +168,8 @@
                         <TextBlock  Style="{StaticResource TextBlockStyle}"  Text="强制合并"/>
                         <ToggleButton Name="forceMergerButton"  HorizontalAlignment="Left"  Margin="10 0 0 0" Style="{StaticResource MaterialDesignSwitchToggleButton}"  ToolTip="{Binding ForcedMerger,Converter={x:Static converters:BoolToStringConverters.Instance}}" IsChecked="{Binding ForcedMerger}" />
                     </DockPanel>
-
-                    <DockPanel  Margin="8 0 8 0" ToolTip="视频合并之后会执行清理，如果需要开启">
-                        <TextBlock Style="{StaticResource TextBlockStyle}" Text="清理缓存" />
-                        <ToggleButton   HorizontalAlignment="Left"  Margin="10 0 0 0" Style="{StaticResource MaterialDesignSwitchToggleButton}" ToolTip="{Binding IsCleanUp,Converter={x:Static converters:BoolToStringConverters.Instance}}"  IsChecked="{Binding IsCleanUp}" />
-                    </DockPanel>
-
-                    <DockPanel  Margin="8 0 8 0" ToolTip="当程序成功或者失败之后是否播放提示音">
-                        <TextBlock Style="{StaticResource TextBlockStyle}" Text="播提示音" />
-                        <ToggleButton   HorizontalAlignment="Left"  Margin="10 0 0 0" Style="{StaticResource MaterialDesignSwitchToggleButton}" ToolTip="{Binding IsPlaySound,Converter={x:Static converters:BoolToStringConverters.Instance}}"  IsChecked="{Binding IsPlaySound}" />
-                    </DockPanel>
                 </WrapPanel>
-                
+
                 <!-- 直播配置区 -->
                 <TextBlock Text="直播配置" Margin="10" HorizontalAlignment="Center" FontSize="20" FontWeight="Bold" />
                 <DockPanel Margin="8 0 8 0">

@@ -64,7 +64,7 @@ namespace M3u8Downloader_H.Services
         public double RecordDuration { get; set; } = 60 * 60 * 12;
 #endif
         [Range(1, 300)]
-        public int Timeouts { get; set; } = 10;
+        public int Timeouts { get; set; } = 30;
 
         public SettingsService()
         {

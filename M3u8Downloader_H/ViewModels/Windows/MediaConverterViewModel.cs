@@ -53,16 +53,18 @@ namespace M3u8Downloader_H.ViewModels.Windows
                 throw new FileNotFoundException("{0}文件不存在", fileInfo.Name);
             }
 
-            if(string.IsNullOrEmpty(AudioFileUrl))
+            Uri? audioUri = null;
+            if(!string.IsNullOrEmpty(AudioFileUrl))
             {
                 FileInfo audiofileInfo = new(AudioFileUrl);
                 if (!audiofileInfo.Exists)
                 {
                     throw new FileNotFoundException("{0}文件不存在", audiofileInfo.Name);
                 }
+                audioUri = new Uri(AudioFileUrl);
             }
 
-            _downloadParams = new(settingsService.SavePath, new Uri(VideoFileUrl), new Uri(AudioFileUrl), VideoName, null);
+            _downloadParams = new(settingsService.SavePath, new Uri(VideoFileUrl), audioUri, VideoName, null);
             VideoName = _downloadParams.VideoName;
             return _downloadParams;
         }
