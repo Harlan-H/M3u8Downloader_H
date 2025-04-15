@@ -6,7 +6,6 @@ namespace M3u8Downloader_H.Common.Extensions
 {
     public static class CryptExtensions
     {
-        //private static readonly Dictionary<string, (int, int)> KeyGroup = new() { { "AES-128", (16, 24) }, { "AES-192", (24, 32) }, { "AES-256", (32, 44) } };
 
         public static byte[] HmacSha256(this Stream memory, byte[] key)
         {
@@ -69,20 +68,5 @@ namespace M3u8Downloader_H.Common.Extensions
             return new CryptoStream(memory, decryptor, CryptoStreamMode.Read);
         }
 
-       /* public static byte[] TryParseKey(this byte[] data, string method)
-        {
-            string tmpMethod = string.IsNullOrWhiteSpace(method) ? "AES-128" : method.ToUpper(CultureInfo.CurrentCulture).Trim();
-            if (KeyGroup.TryGetValue(tmpMethod, out (int, int) tmpKey))
-            {
-                if (data.Length == tmpKey.Item1)
-                    return data;
-                else if (data.Length == tmpKey.Item2)
-                {
-                    var stringdata = Encoding.UTF8.GetString(data);
-                    return Convert.FromBase64String(stringdata);
-                }
-            }
-            throw new InvalidCastException("无法解析的密钥,请确定是否为AES-128,AES-192,AES-256");
-        }*/
     }
 }

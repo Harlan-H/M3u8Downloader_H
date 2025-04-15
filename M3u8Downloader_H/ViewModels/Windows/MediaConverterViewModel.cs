@@ -1,18 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Input;
 using Caliburn.Micro;
-using M3u8Downloader_H.Abstractions.Common;
 using M3u8Downloader_H.Common.DownloadPrams;
 using M3u8Downloader_H.Core;
 using M3u8Downloader_H.Models;
 using M3u8Downloader_H.Services;
-using PropertyChanged;
 
 namespace M3u8Downloader_H.ViewModels.Windows
 {
