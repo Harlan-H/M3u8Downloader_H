@@ -1,15 +1,10 @@
 ﻿using CliWrap;
-using System;
 using System.Globalization;
-using System.IO;
-using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading;
-using System.Threading.Tasks;
 using M3u8Downloader_H.Common.Extensions;
 
-namespace M3u8Downloader_H.Core.VideoConverter
+namespace M3u8Downloader_H.Combiners.VideoConverter
 {
     internal partial class FFmpegProgressRouter(IProgress<double> output) : PipeTarget
     {
@@ -59,9 +54,9 @@ namespace M3u8Downloader_H.Core.VideoConverter
 
         public override async Task CopyFromAsync(Stream source, CancellationToken cancellationToken = default)
         {
-            using var reader = new StreamReader(source, Console.OutputEncoding, false, 1024, true);
+            using var reader = new StreamReader(source, Console.OutputEncoding, false, 10240, true);
 
-            var buffer = new char[1024];
+            var buffer = new char[10240];
             int charsRead;
 
             while ((charsRead = await reader.ReadAsync(buffer, 0, buffer.Length).ConfigureAwait(false)) > 0)

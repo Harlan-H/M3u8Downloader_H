@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Net;
 using System.Windows;
 using System.Collections.Generic;
 using Caliburn.Micro;
 using M3u8Downloader_H.Services;
 using M3u8Downloader_H.ViewModels;
+using M3u8Downloader_H.ViewModels.Menus;
 #if !DEBUG
 using System.Windows.Threading;
 #endif
@@ -14,9 +14,11 @@ namespace M3u8Downloader_H
     public class Bootstrapper : BootstrapperBase
     {
         private readonly SimpleContainer simpleContainer = new();
+      //  private readonly Func<Type, DependencyObject, object, Type> defaultLocator = ViewLocator.LocateTypeForModelType;
         public Bootstrapper()
         {
             Initialize();
+           // ViewLocator.LocateTypeForModelType = MyLocateTypeForModelType;
         }
 
         protected override void Configure()
@@ -26,10 +28,14 @@ namespace M3u8Downloader_H
 
             simpleContainer
                 .Singleton<SettingsService>()
-                .Singleton<DownloadService>()
                 .Singleton<SoundService>()
                 .Singleton<PluginService>()
-                .PerRequest<MainWindowViewModel>()
+                .Singleton<DashboardViewModel>()
+                .Singleton<SponsorViewModel>()
+                .Singleton<AboutViewModel>()
+                .Singleton<SettingsViewModel>()
+                .Singleton<MainWindowViewModel>()
+                .Singleton<ConverterViewModel>()
                 .PerRequest<DownloadViewModel>();
         }
 
@@ -50,8 +56,19 @@ namespace M3u8Downloader_H
 
         protected override async void OnStartup(object sender, StartupEventArgs e)
         {
-            await DisplayRootViewForAsync<MainWindowViewModel>();
+            await DisplayRootViewForAsync<DashboardViewModel>();
         }
+
+        /*private Type MyLocateTypeForModelType(Type modelType,DependencyObject displayLocation,object context)
+        {
+            var viewType = defaultLocator(modelType, displayLocation, context);
+            if (viewType == null && modelType != typeof(object))
+            {
+                modelType = modelType!.BaseType!;
+                viewType = defaultLocator(modelType, displayLocation, context);
+            }
+            return viewType!;
+        }*/
 
 
 #if !DEBUG

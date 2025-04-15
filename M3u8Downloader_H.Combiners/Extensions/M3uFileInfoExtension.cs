@@ -1,20 +1,17 @@
-﻿using M3u8Downloader_H.Common.M3u8Infos;
-using System.IO;
+﻿using M3u8Downloader_H.Abstractions.M3u8;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace M3u8Downloader_H.Combiners.Extensions
 {
     internal static class M3uFileInfoExtension
     {
-        public static async ValueTask WriteToAsync(this M3UFileInfo m3UFileInfo,string filePath,CancellationToken cancellationToken)
+        public static async ValueTask WriteToAsync(this IM3uFileInfo m3UFileInfo,string filePath,CancellationToken cancellationToken)
         {
             using var writer = File.CreateText(filePath);
             await m3UFileInfo.WriteToAsync(writer, cancellationToken);
         }
 
-        public static async ValueTask WriteToAsync(this M3UFileInfo m3UFileInfo, TextWriter textWriter,CancellationToken cancellationToken)
+        public static async ValueTask WriteToAsync(this IM3uFileInfo m3UFileInfo, TextWriter textWriter,CancellationToken cancellationToken)
         {
             var buffer = new StringBuilder();
             buffer.AppendLine("#EXTM3U");

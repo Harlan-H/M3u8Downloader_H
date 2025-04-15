@@ -1,9 +1,9 @@
-﻿using M3u8Downloader_H.Common.Extensions;
-using M3u8Downloader_H.Common.Interfaces;
-using M3u8Downloader_H.Common.M3u8Infos;
+﻿using M3u8Downloader_H.Abstractions.Common;
+using M3u8Downloader_H.Abstractions.M3u8;
+using M3u8Downloader_H.Abstractions.M3uDownloaders;
+using M3u8Downloader_H.Common.Extensions;
 using M3u8Downloader_H.M3U8.Extensions;
 using M3u8Downloader_H.M3U8.M3UFileReaders;
-using M3u8Downloader_H.Plugin;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -14,24 +14,45 @@ using System.Threading.Tasks;
 
 namespace M3u8Downloader_H.M3U8.M3UFileReaderManangers
 {
-    public class M3UFileReaderManager(IM3uFileReader? M3UFileReader, HttpClient httpClient, IDictionary<string, IAttributeReader>? attributeReaders = default!) : IM3UFileInfoMananger
+    public class M3UFileReaderManager
     {
-        private readonly HttpClient _httpClient = httpClient;
-        private readonly M3UFileReaderWithStream _m3UFileReaderWithStream = M3UFileReaderFactory.CreateM3UFileReader(M3UFileReader, attributeReaders);
+        private readonly HttpClient httpClient = default!;
 
-        public TimeSpan TimeOuts { get; set; } = TimeSpan.FromSeconds(10);
-        public ILog? Log { get; set; }
+        internal M3UFileReaderWithStream M3u8FileReader { get; set; } = default!;
+        internal IM3u8DownloadParam DownloadParam { get; set; } = default!;
+        internal IDownloaderSetting DownloaderSetting { get; set; } = default!;
+        internal ILog? Log { get; set; } = default!;
+        internal TimeSpan TimeOuts { get; set; } = TimeSpan.FromSeconds(15);
 
-        public async Task<M3UFileInfo> GetM3u8FileInfo(Uri uri, IEnumerable<KeyValuePair<string, string>>? headers, CancellationToken cancellationToken = default)
+        public M3UFileReaderManager()
+        {
+            
+        }
+
+        public M3UFileReaderManager(HttpClient httpClient)
+        {
+            this.httpClient = httpClient;
+        }
+
+        public async Task<IM3uFileInfo> GetM3u8FileInfo(TimeSpan timeouts, CancellationToken cancellationToken = default)
         {
             using CancellationTokenSource cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-            cancellationTokenSource.CancelAfter(TimeOuts);
+            cancellationTokenSource.CancelAfter(timeouts);
+
+            var m3u8FileInfo = await GetM3u8FileInfoInternal(DownloadParam.RequestUrl, DownloadParam.Headers ?? DownloaderSetting.Headers, cancellationTokenSource.Token);
+            return checkM3u8FileInfo(m3u8FileInfo, DownloadParam.RequestUrl);
+        }
+
+        public async Task<IM3uFileInfo> GetM3u8FileInfo(CancellationToken cancellationToken = default)
+        {
             for (int i = 0; i < 5; i++)
             {
+                using CancellationTokenSource cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+                cancellationTokenSource.CancelAfter(TimeOuts);
                 try
                 {
-                    var m3u8FileInfo = await GetM3u8FileInfoInternal(uri, headers, cancellationTokenSource.Token);
-                    return checkM3u8FileInfo(m3u8FileInfo, uri);
+                    var m3u8FileInfo = await GetM3u8FileInfoInternal(DownloadParam.RequestUrl, DownloadParam.Headers ?? DownloaderSetting.Headers, cancellationTokenSource.Token);
+                    return checkM3u8FileInfo(m3u8FileInfo, DownloadParam.RequestUrl);
                 }
                 catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
                 {
@@ -41,24 +62,23 @@ namespace M3u8Downloader_H.M3U8.M3UFileReaderManangers
                 }
             }
 
-            throw new InvalidOperationException($"'{uri.OriginalString}' 请求失败，请检查网络是否可以访问");
+            throw new InvalidOperationException($"'{DownloadParam.RequestUrl.OriginalString}' 请求失败，请检查网络是否可以访问");
         }
 
 
-        public M3UFileInfo GetM3u8FileInfo(string ext, Uri uri)
+        public IM3uFileInfo GetM3u8FileInfo(string ext, Uri uri)
         {
-            M3UFileInfo m3UFileInfo = ext switch
+            IM3uFileInfo m3UFileInfo = ext switch
             {
-                "xml" => new M3UFileReaderWithXml().GetM3u8FileInfo(uri),
                 "json" => new M3UFileReaderWithJson().GetM3u8FileInfo(uri),
                 "" => new M3UFileReaderWithDirectory().GetM3u8FileInfo(uri,(Stream)null!),
-                "m3u8" => _m3UFileReaderWithStream.GetM3u8FileInfo(uri),
-                _ => throw new InvalidOperationException("请确认是否为.m3u8或.json或.xml或文件夹"),
+                "m3u8" => M3u8FileReader.GetM3u8FileInfo(uri),
+                _ => throw new InvalidOperationException("请确认是否为.m3u8或.json或文件夹"),
             };
             return checkM3u8FileInfo(m3UFileInfo, uri);
         }
 
-        private M3UFileInfo checkM3u8FileInfo(M3UFileInfo m3u8FileInfo,Uri uri)
+        private static IM3uFileInfo checkM3u8FileInfo(IM3uFileInfo m3u8FileInfo,Uri uri)
         {
             if (m3u8FileInfo.MediaFiles != null && m3u8FileInfo.MediaFiles.Any())
                 return m3u8FileInfo;
@@ -66,19 +86,19 @@ namespace M3u8Downloader_H.M3U8.M3UFileReaderManangers
                 throw new InvalidDataException($"'{uri.OriginalString}' 没有包含任何数据"); 
         }
 
-        protected virtual Task<(Uri?,Stream)> GetM3u8FileStreamAsync(Uri uri, IEnumerable<KeyValuePair<string, string>>? headers, CancellationToken cancellationToken = default)
+        protected virtual Task<Stream> GetM3u8FileStreamAsync(Uri uri, IEnumerable<KeyValuePair<string, string>>? headers, CancellationToken cancellationToken = default)
         {
-            return _httpClient.GetStreamAndUriAsync(uri, headers, cancellationToken);
+            return httpClient.GetStreamAsync(uri, headers, cancellationToken);
         }
 
 
-        protected async Task<M3UFileInfo> GetM3u8FileInfoInternal(Uri uri, IEnumerable<KeyValuePair<string, string>>? headers, CancellationToken cancellationToken = default)
+        protected async Task<IM3uFileInfo> GetM3u8FileInfoInternal(Uri uri, IEnumerable<KeyValuePair<string, string>>? headers, CancellationToken cancellationToken = default)
         {
-            (Uri? requestUrl, Stream stream) = await _httpClient.GetStreamAndUriAsync(uri, headers, cancellationToken);
-            M3UFileInfo m3uFileInfo = _m3UFileReaderWithStream.GetM3u8FileInfo(requestUrl ?? uri, stream);
+            Stream stream = await httpClient.GetStreamAsync(uri, headers, cancellationToken);
+            IM3uFileInfo m3uFileInfo = M3u8FileReader.GetM3u8FileInfo( uri, stream);
             if (m3uFileInfo.Streams != null && m3uFileInfo.Streams.Any())
             {
-                M3UStreamInfo m3UStreamInfo = m3uFileInfo.Streams.Count > 1 ? m3uFileInfo.Streams.OrderByDescending(s => s.Bandwidth).First() : m3uFileInfo.Streams.First();
+                IM3uStreamInfo m3UStreamInfo = m3uFileInfo.Streams.Count > 1 ? m3uFileInfo.Streams.OrderByDescending(s => s.Bandwidth).First() : m3uFileInfo.Streams.First();
                 return await GetM3u8FileInfoInternal(m3UStreamInfo.Uri, headers, cancellationToken);
             }
             return m3uFileInfo;

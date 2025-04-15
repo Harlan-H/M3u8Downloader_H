@@ -13,16 +13,10 @@ namespace M3u8Downloader_H.Models
         Error
     }
 
-    public class LogParams
+    public class LogParams(LogType logType, string message)
     {
-        public LogType Type {get;}
-        public DateTime Time { get;  }
-        public string Message { get; } = default!;
-        public LogParams(LogType logType,string message)
-        {
-            Type = logType;
-            Time = DateTime.Now;
-            Message = message;
-        }
+        public LogType Type { get; } = logType;
+        public DateTime Time { get; } = DateTime.Now;
+        public string Message { get; } = message;
     }
 }

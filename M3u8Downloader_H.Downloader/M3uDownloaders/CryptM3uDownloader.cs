@@ -1,32 +1,37 @@
 ﻿using M3u8Downloader_H.Common.M3u8Infos;
 using M3u8Downloader_H.Common.Extensions;
 using System.Text;
+using M3u8Downloader_H.Common.M3u8;
+using M3u8Downloader_H.Abstractions.M3u8;
 
 namespace M3u8Downloader_H.Downloader.M3uDownloaders
 {
-    internal class CryptM3uDownloader : M3u8Downloader
+    internal class CryptM3uDownloader(HttpClient httpClient, IM3uFileInfo m3UFileInfo) : M3u8Downloader(httpClient)
     {
-        private readonly M3UFileInfo m3UFileInfo;
-        public CryptM3uDownloader(M3UFileInfo m3UFileInfo) : base()
-        {
-            this.m3UFileInfo = m3UFileInfo;
-        }
+        private bool initialized = false;
+        private readonly HttpClient httpClient = httpClient;
+
 
         public override async ValueTask Initialization(CancellationToken cancellationToken)
         {
+            await base.Initialization(cancellationToken);
+            if (initialized)
+                return;
+
             if (m3UFileInfo.Key is null)
                 throw new InvalidDataException("没有可用的密钥信息");
 
-            if(m3UFileInfo.Key.Uri != null && m3UFileInfo.Key.BKey == null)
+            M3UFileInfo m3uFileinfoTmp = (M3UFileInfo)m3UFileInfo;
+            if (m3UFileInfo.Key.Uri != null && m3UFileInfo.Key.BKey == null)
             {
                 try
                 {              
                     byte[] data = m3UFileInfo.Key.Uri.IsFile
                         ? await File.ReadAllBytesAsync(m3UFileInfo.Key.Uri.OriginalString, cancellationToken)
-                        : await HttpClient.GetByteArrayAsync(m3UFileInfo.Key.Uri, Headers, cancellationToken);
+                        : await httpClient.GetByteArrayAsync(m3UFileInfo.Key.Uri, _headers, cancellationToken);
 
-                    Log?.Info("获取到密钥:{0}", Encoding.UTF8.GetString(data));
-                    m3UFileInfo.Key.BKey = data.TryParseKey(m3UFileInfo.Key.Method);
+                    Log?.Info("获取转为base64的密钥 : {0}", Convert.ToBase64String(data));
+                    m3uFileinfoTmp.Key = M3uKeyInfoHelper.GetKeyInfoInstance(m3UFileInfo.Key.Method, data, m3UFileInfo.Key.IV);
                 }
                 catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
                 {
@@ -38,10 +43,11 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
                 }
             }else
             {
-                m3UFileInfo.Key.BKey = m3UFileInfo.Key.BKey != null
-                    ? m3UFileInfo.Key.BKey.TryParseKey(m3UFileInfo.Key.Method)
+                m3uFileinfoTmp.Key = m3UFileInfo.Key.BKey != null
+                    ? m3uFileinfoTmp.Key = M3uKeyInfoHelper.GetKeyInfoInstance(m3UFileInfo.Key)
                     : throw new InvalidDataException("密钥为空");
             }
+            initialized = true;
         }
 
         protected override Stream DownloadAfter(Stream stream, string contentType, CancellationToken cancellationToken)

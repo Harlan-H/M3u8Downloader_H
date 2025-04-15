@@ -1,73 +1,53 @@
-﻿using System;
-using System.IO;
-using System.Security.Cryptography;
-using System.Threading;
-using System.Threading.Tasks;
-using M3u8Downloader_H.Common.M3u8Infos;
+﻿using M3u8Downloader_H.Abstractions.Common;
+using M3u8Downloader_H.Abstractions.Settings;
+using M3u8Downloader_H.Abstractions.M3u8;
+using System.Diagnostics;
 
 namespace M3u8Downloader_H.Combiners.M3uCombiners
 {
-    internal class M3uCombiner(string dirPath) : IM3uCombiner
+    public class M3uCombiner(ILog Log, IDownloadParamBase DownloadParams, IMergeSetting Settings)
     {
-        protected readonly string cacheFullPath = dirPath;
-        protected FileStream videoFileStream = default!;
+        private bool _isFile = false;
+        public void Initialize(IM3uFileInfo m3UFileInfo) => _isFile = m3UFileInfo.IsFile;
 
-        public IProgress<double> Progress { get; set; } = default!;
-
-        protected virtual Stream HandleData(string path) => File.OpenRead(path);
-
-        protected string GetTsPath(M3UMediaInfo m3UMediaInfo)
-        {
-            return m3UMediaInfo.Uri.IsFile ? m3UMediaInfo.Uri.OriginalString : Path.Combine(cacheFullPath, m3UMediaInfo.Title);
-        }
-
-        public virtual void Initialization(string videoName) 
-        {
-            if(videoName is not null)
-                videoFileStream = File.Create(videoName);
-        }
-
-        public async ValueTask MegerVideoHeader(M3UMediaInfo? m3UMapInfo, CancellationToken cancellationToken)
+        private async ValueTask MegerVideoHeader(Stream stream, IM3uMediaInfo? m3UMapInfo, CancellationToken cancellationToken = default)
         {
             if (m3UMapInfo is null)
                 return;
 
-            await MegerVideoInternalAsync(m3UMapInfo, cancellationToken);
+            Log.Info("开始合并fmp4头");
+            await MegerVideoInternalAsync(stream, m3UMapInfo, cancellationToken);
         }
 
-        public async ValueTask Start(M3UFileInfo m3UFileInfo, bool forceMerge, CancellationToken cancellationToken)
+        public async ValueTask StartMerging(IM3uFileInfo m3UFileInfo, IDialogProgress DialogProgress, CancellationToken cancellationToken = default)
         {
+            using FileStream videoFileStream = File.Create(DownloadParams.VideoFullName);
+            await MegerVideoHeader(videoFileStream, m3UFileInfo.Map, cancellationToken);
 
+            Log.Info("开始合并fmp4,数量:{0}", m3UFileInfo.MediaFiles.Count);
             for (int i = 0; i < m3UFileInfo.MediaFiles.Count; i++)
             {
                 try
                 {
                     cancellationToken.ThrowIfCancellationRequested();
-                    await MegerVideoInternalAsync(m3UFileInfo.MediaFiles[i], cancellationToken);
-                    Progress.Report(i / (double)m3UFileInfo.MediaFiles.Count);
+                    await MegerVideoInternalAsync(videoFileStream, m3UFileInfo.MediaFiles[i], cancellationToken);
+                    DialogProgress.Report((double)i / m3UFileInfo.MediaFiles.Count);
                 }
-                catch(CryptographicException)
-                {
-                    throw new CryptographicException("解密失败,请确认key,iv是否正确");
-                }
-                catch (Exception) when (forceMerge)
+                catch (Exception) when (Settings.ForcedMerger)
                 {
                     continue;
                 }
             }
-       }
-
-        protected virtual async ValueTask MegerVideoInternalAsync(M3UMediaInfo m3UMediaInfo,CancellationToken cancellationToken)
-        {
-            string tsFileName = GetTsPath(m3UMediaInfo);
-            using Stream tsStream = HandleData(tsFileName);
-            await tsStream.CopyToAsync(videoFileStream, cancellationToken);
+            Log.Info("fmp4合并完成");
         }
 
-        public void Dispose()
+        protected virtual async ValueTask MegerVideoInternalAsync(Stream stream, IM3uMediaInfo m3UMediaInfo, CancellationToken cancellationToken)
         {
-            videoFileStream?.Dispose();
-            GC.SuppressFinalize(this);
+            string tsFileName = _isFile ? m3UMediaInfo.Uri.OriginalString : Path.Combine(DownloadParams.CachePath, m3UMediaInfo.Title);
+            using Stream tsStream = File.OpenRead(tsFileName);
+            await tsStream.CopyToAsync(stream, cancellationToken);
         }
+
     }
 }
+

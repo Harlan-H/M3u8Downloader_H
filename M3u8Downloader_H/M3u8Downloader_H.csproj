@@ -5,8 +5,8 @@
     <TargetFramework>net9.0-windows7.0</TargetFramework>
     <RootNamespace>M3u8Downloader_H</RootNamespace>
     <Platforms>AnyCPU;x64</Platforms>
-    <AssemblyVersion>3.14.7.0</AssemblyVersion>
-    <Version>3.14.7.0</Version>
+    <AssemblyVersion>4.0.0.0</AssemblyVersion>
+    <Version>4.0.0.0</Version>
     <PackageId>m3u8视频下载器</PackageId>
     <Product>m3u8视频下载器</Product>
     <ApplicationIcon>icon.ico</ApplicationIcon>
@@ -31,6 +31,11 @@
 		<Delete Files="$(PublishDir)$(ProjectName).deps.json" />
 	</Target>
 
+	<ItemGroup>
+	  <Compile Remove="ViewModels\Downloads\M3u8DownloadViewModel.cs" />
+	  <Compile Remove="ViewModels\Downloads\MediaDownloadViewModel.cs" />
+	</ItemGroup>
+
 	
     <ItemGroup>
         <None Remove="Assets\weixin.png" />
@@ -40,15 +45,18 @@
 	
   <ItemGroup>
     <PackageReference Include="Caliburn.Micro" Version="4.0.230" />
-    <PackageReference Include="MaterialDesignThemes" Version="4.9.0" />
+    <PackageReference Include="MaterialDesignThemes" Version="5.2.1" />
     <PackageReference Include="PropertyChanged.Fody" Version="4.1.0" PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\M3u8Downloader_H.Combiners\M3u8Downloader_H.Combiners.csproj" />
     <ProjectReference Include="..\M3u8Downloader_H.Common\M3u8Downloader_H.Common.csproj" />
+    <ProjectReference Include="..\M3u8Downloader_H.Core\M3u8Downloader_H.Core.csproj" />
+    <ProjectReference Include="..\M3u8Downloader_H.Downloader\M3u8Downloader_H.Downloader.csproj" />
+    <ProjectReference Include="..\M3u8Downloader_H.Plugin\M3u8Downloader_H.Plugin.csproj" />
     <ProjectReference Include="..\M3u8Downloader_h.RestServer\M3u8Downloader_H.RestServer.csproj" />
     <ProjectReference Include="..\SettingsManager\M3u8Downloader_H.Settings.csproj" />
-    <ProjectReference Include="..\M3u8Downloader_H.Core\M3u8Downloader_H.Core.csproj" />
     <ProjectReference Include="..\M3u8Downloader_H.M3U8\M3u8Downloader_H.M3U8.csproj" />
   </ItemGroup>
 
@@ -67,17 +75,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Plugins\请勿删除此目录.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Update="Sounds\error.wav">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Sounds\success.wav">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Plugins\" />
   </ItemGroup></Project>

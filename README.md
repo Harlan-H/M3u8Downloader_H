@@ -31,10 +31,10 @@
  - wiki  : https://github.com/Harlan-H/M3u8Downloader_H/wiki/
 
 ## 截图
-![QQ截图20221120192851](https://user-images.githubusercontent.com/39378318/202899529-a6d8ae44-f578-4312-b6b7-77d354c874b4.png)
-![setting1](https://user-images.githubusercontent.com/39378318/202899568-874bbf90-1198-42eb-b42a-d8e3df27ba5c.png)
-![QQ截图20221120192700](https://user-images.githubusercontent.com/39378318/202899573-ee513782-f792-464b-b7ee-eb8b48f02ce6.png)
-
+![QQ20250415-213221](https://github.com/user-attachments/assets/0ca9a064-18dd-45fe-a96e-e11d08787f4f)
+![QQ20250415-213225](https://github.com/user-attachments/assets/01bf9794-e500-4c29-a18e-814afcfe5e41)
+![QQ20250415-213238](https://github.com/user-attachments/assets/842ab4c2-143f-43ce-bce1-195f4e032feb)
+![QQ20250415-213242](https://github.com/user-attachments/assets/c0cac922-f133-44a5-ad8b-1fe5653ab578)
 
 ## 支持作者
 |微信|支付宝|

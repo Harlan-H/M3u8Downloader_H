@@ -105,5 +105,31 @@ namespace M3u8Downloader_H.Common.Extensions
 
             return await response.Content.ReadAsStringAsync(cancellationToken);
         }
+
+        public static async ValueTask<HttpResponseMessage> HeadAsync(this HttpClient httpClient, string requestUri, IEnumerable<KeyValuePair<string, string>>? headers = default, CancellationToken cancellationToken = default)
+        {
+            using var request = new HttpRequestMessage(HttpMethod.Head, requestUri);
+            request.AddHeaders(headers);
+
+            return await httpClient.SendAsync(request, cancellationToken);
+        }
+
+        public static async ValueTask<long?> TryGetContentLengthAsync(this HttpClient httpClient, string requestUri, IEnumerable<KeyValuePair<string, string>>? headers = default, CancellationToken cancellationToken = default)
+        {
+            using var response = await httpClient.HeadAsync(requestUri, headers, cancellationToken);
+            response.EnsureSuccessStatusCode();
+
+            return response.Content.Headers.ContentLength;
+        }
+
+        public static async ValueTask<(long?,string?)> GetMediaLengthAndTypeAsync(this HttpClient httpClient, string requestUri, IEnumerable<KeyValuePair<string, string>>? headers = default, CancellationToken cancellationToken = default)
+        {
+            using var response = await httpClient.HeadAsync(requestUri, headers, cancellationToken);
+            response.EnsureSuccessStatusCode();
+
+            long? length = response.Content.Headers.ContentLength;
+            string? mediaType = response.Content.Headers.ContentType?.MediaType;
+            return (length,mediaType);
+        }
     }
 }

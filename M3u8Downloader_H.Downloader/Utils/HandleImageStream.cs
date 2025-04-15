@@ -6,10 +6,8 @@ using System.Threading.Tasks;
 
 namespace M3u8Downloader_H.Downloader.Utils
 {
-    internal class HandleImageStream : Stream
+    internal class HandleStreamInternal(Stream stream, IProgress<long> downloadrate) : Stream
     {
-        private readonly Stream stream;
-        private readonly IProgress<long> _downloadrate = default!;
         private IMemoryOwner<byte>? _memoryOwner;
         private Memory<byte> _tsMemory = Memory<byte>.Empty;
         private int _position;
@@ -28,20 +26,18 @@ namespace M3u8Downloader_H.Downloader.Utils
             set => _position = (int)value;
         }
 
-        public HandleImageStream(Stream stream,IProgress<long> downloadrate)
-        {
-            this.stream = stream;
-            _downloadrate = downloadrate;
-        }
-
         protected override void Dispose(bool disposing)
         {
-            stream?.Dispose();
-            _memoryOwner?.Dispose();
+            if (disposing)
+            {
+                stream?.Dispose();
+                _memoryOwner?.Dispose();
+            }
+
             base.Dispose(disposing);
         }
 
-        public async Task InitializePositionAsync(int capacity,CancellationToken cancellationToken = default)
+        public async Task InitializePositionAsync(int capacity, CancellationToken cancellationToken = default)
         {
             //循环读取的目的是 他可能一次性没有办法读到我需要的数据    
             _memoryOwner = MemoryPool<byte>.Shared.Rent(capacity);
@@ -81,7 +77,7 @@ namespace M3u8Downloader_H.Downloader.Utils
                 bytesRead = await stream.ReadAsync(buffer, cancellationToken);
                 _position += bytesRead;
             }
-            _downloadrate?.Report(bytesRead);
+            downloadrate?.Report(bytesRead);
             return bytesRead;
         }
 
@@ -116,7 +112,7 @@ namespace M3u8Downloader_H.Downloader.Utils
         {
             int bytesRead = stream.Read(buffer, offset, count);
             _position += bytesRead;
-            _downloadrate?.Report(bytesRead);
+            downloadrate?.Report(bytesRead);
             return bytesRead;
         }
     }

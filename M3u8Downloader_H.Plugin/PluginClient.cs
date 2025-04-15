@@ -1,14 +1,13 @@
-﻿using M3u8Downloader_H.Plugin.Extensions;
+﻿using M3u8Downloader_H.Abstractions.Plugins;
 using System.Reflection;
+using System.Text.RegularExpressions;
 
 namespace M3u8Downloader_H.Plugin.PluginClients
 {
     public partial class PluginClient
     {
         private static readonly string _filterStr = "M3u8Downloader_H.*.plugin.dll";
-        private static readonly string _pluginKeyRegex = @"M3u8Downloader_H\.(.*?)\.plugin";
         private readonly Dictionary<string, Type> _pluginDict = [];
-        private readonly FileSystemWatcher watcher = new();
         public IEnumerable<string> Keys => _pluginDict.Keys;
 
         public string PluginPath { get; set; } = default!;
@@ -16,33 +15,6 @@ namespace M3u8Downloader_H.Plugin.PluginClients
         private PluginClient()
         {
 
-        }
-
-        public void Init()
-        {
-            watcher.Path = PluginPath;
-            watcher.Filter = _filterStr;
-            watcher.NotifyFilter = NotifyFilters.FileName;
-            watcher.Created += OnCreated;
-            watcher.Deleted += OnDeleted;
-        }
-
-        private void OnDeleted(object sender, FileSystemEventArgs e)
-        {
-            if (string.IsNullOrEmpty(e.Name)) return;
-
-            string key = e.Name!.Normalize(_pluginKeyRegex);
-            if (_pluginDict.ContainsKey(key))
-            {
-                _pluginDict.Remove(key);
-            }
-        }
-
-        private void OnCreated(object sender, FileSystemEventArgs e)
-        {
-            if (string.IsNullOrEmpty(e.Name)) return;
-
-            LoadFile(e.FullPath, e.Name!);
         }
 
         public void Load()
@@ -54,7 +26,6 @@ namespace M3u8Downloader_H.Plugin.PluginClients
                 {
                     LoadFile(item.FullName, item.Name);
                 }
-                watcher.EnableRaisingEvents = true;
             }
             catch (DirectoryNotFoundException)
             {
@@ -65,7 +36,7 @@ namespace M3u8Downloader_H.Plugin.PluginClients
         private void LoadFile(string fullPath,string fileName)
         {
             Type? type = LoadLibrary(fullPath);
-            string key = fileName.Normalize(_pluginKeyRegex);
+            string key = _pluginKeyRegex().Match(fileName).Groups[1].Value;
             if (type is not null && !string.IsNullOrWhiteSpace(key))
                 _pluginDict.Add(key, type);
         }
@@ -92,6 +63,9 @@ namespace M3u8Downloader_H.Plugin.PluginClients
                 return type;
             return null;
         }
+
+        [GeneratedRegex(@"M3u8Downloader_H\.(.*?)\.plugin", RegexOptions.Compiled)]
+        private static partial Regex _pluginKeyRegex();
     }
 
 

@@ -1,0 +1,222 @@
+﻿<UserControl x:Class="M3u8Downloader_H.Views.Windows.DirConverterView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:behavior="clr-namespace:M3u8Downloader_H.Behaviors"
+             xmlns:local="clr-namespace:M3u8Downloader_H.ViewModels.Windows"
+             xmlns:cal="http://caliburnmicro.com"
+             xmlns:model="clr-namespace:M3u8Downloader_H.Models" 
+             xmlns:converters="clr-namespace:M3u8Downloader_H.Converters"
+             d:DataContext="{d:DesignInstance Type=local:DirConverterViewModel}"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <StackPanel Margin="8">
+
+        <DockPanel Style="{StaticResource DockPannelStyle}">
+            <TextBlock Text="地址: "  Style="{StaticResource TextBlockStyle}" />
+            <Button DockPanel.Dock="Right" Style="{DynamicResource MaterialDesignFlatButton}"  Margin="2">
+                <materialDesign:PackIcon Kind="FolderOpenOutline"/>
+                <i:Interaction.Behaviors>
+                    <behavior:OpenFileDialogBehaviour IsFile="False" 
+                                                   AttachedTextBox="{Binding ElementName=dirPathTextBox}" 
+                                                   />
+                </i:Interaction.Behaviors>
+            </Button>
+            <TextBox x:Name="dirPathTextBox" Text="{Binding M3u8DirUrl}" Style="{StaticResource TextBoxStyle}" 
+                 IsReadOnly="True"
+                 materialDesign:HintAssist.Hint="ts的文件夹地址(文件夹直接拖拽到此,不支持手动输入地址)" 
+                  >
+                <i:Interaction.Behaviors>
+                    <behavior:DragAndDropBehaviour IsFile="False" />
+                </i:Interaction.Behaviors>
+            </TextBox>
+        </DockPanel>
+
+        <DockPanel Style="{StaticResource DockPannelStyle}">
+            <TextBlock Text="视频名称: "  Style="{StaticResource TextBlockStyle}"/>
+            <TextBox Text="{Binding VideoName}" Style="{StaticResource TextBoxStyle}" 
+                  materialDesign:TextFieldAssist.HasClearButton="True"
+                 materialDesign:HintAssist.Hint="视频名称不写默认生成" 
+                  />
+        </DockPanel>
+
+        <DockPanel Style="{StaticResource DockPannelStyle}">
+            <TextBlock Text="密钥:"  Style="{StaticResource TextBlockStyle}"/>
+            <ComboBox DockPanel.Dock="Left" SelectedValue="{Binding Method,Mode=OneWayToSource}" Margin="5" FontSize="18" Width="100">
+                <ComboBoxItem Content="AES-128" IsSelected="True"/>
+                <ComboBoxItem Content="AES-192" />
+                <ComboBoxItem Content="AES-256" />
+            </ComboBox>
+            <TextBox  Style="{StaticResource TextBoxStyle}" 
+                   Text="{Binding Key}"
+                  materialDesign:TextFieldAssist.HasClearButton="True"
+                 materialDesign:HintAssist.Hint="字符串或者base64" 
+                  />
+        </DockPanel>
+
+        <DockPanel Style="{StaticResource DockPannelStyle}">
+            <TextBlock Text="IV:"  Style="{StaticResource TextBlockStyle}"/>
+            <TextBox Text="{Binding Iv}" Style="{StaticResource TextBoxStyle}" 
+                  materialDesign:TextFieldAssist.HasClearButton="True"
+                 materialDesign:HintAssist.Hint="AES-CBC使用,例如(0x11223344556677888877665544332211)可以不写0x" 
+                  />
+        </DockPanel>
+
+        <Grid>
+            <TextBlock 
+                  HorizontalAlignment="Center"
+                  VerticalAlignment="Center"
+                  FontSize="18"
+                  FontWeight="Light"
+                  TextAlignment="Center"
+                  TextWrapping="Wrap"
+                  Visibility="{Binding MediaItems.Count, Converter={x:Static converters:IntToInverseBoolVisibilityConverter.Instance}}" >
+                
+                <Run Text="此区域为文件夹中所有的ts文件的展示区" />
+                <LineBreak />
+                <Run Text="展示出来的顺序就是要合并的顺序" />
+                <LineBreak />
+                <Run Text="你可以通过拖拽来改变文件的顺序,但是如果文件过多还是建议用其他方式" />
+                <LineBreak/>
+                <Run Text="你也可以删除某些不想要合并进最终视频文件中的某个ts文件" />
+                <LineBreak />
+                <Run Text="此合并方法支持m3u8的ts,fmp4两种方式" />
+                <LineBreak />
+                <Run Text="如果是ts无需任何操作直接拖拽文件夹到地址处即可" />
+                <LineBreak/>
+                <Run Text="如果是fmp4,你需要将EXT-X-MAP标签中的视频文件命名为header.mp4" />
+                <LineBreak />
+                <Run Text="软件会自动加载此文件,但是不会显示在展示区" />
+                <LineBreak />
+                <Run Text="如果是fmp4且没有header.mp4文件,合并会报错" />
+            </TextBlock>
+
+
+            <ListBox ItemsSource="{Binding MediaItems}" Height="230" 
+         ToolTip="该列表展示的顺序就是合并的顺序,如果顺序不正确可以通过拖动来修改顺序"
+         VerticalContentAlignment="Center"
+         HorizontalContentAlignment="Stretch" >
+                <ListBox.ItemContainerStyle>
+                    <Style  BasedOn="{StaticResource {x:Type ListBoxItem}}" TargetType="{x:Type ListBoxItem}">
+                        <Setter Property="VerticalAlignment" Value="Center" />
+                        <Setter Property="Height" Value="30" />
+                        <Setter Property="FontWeight" Value="DemiBold" />
+                        <Setter Property="Margin" Value="8,0,0,0" />
+                    </Style>
+                </ListBox.ItemContainerStyle>
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="3*"/>
+                                <ColumnDefinition Width="30" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="{Binding Title}" ></TextBlock>
+                            <Button  VerticalAlignment="Center" HorizontalAlignment="Right"  ToolTip="删除此行" 
+                                    Style="{DynamicResource  MaterialDesignFlatButton}"
+                        cal:Message.Attach="OnDelete($DataContext)"
+                                    >
+                                <materialDesign:PackIcon Width="18" Height="18" Kind="CloseBoxOutline" />
+                            </Button>
+                            <i:Interaction.Behaviors>
+                                <behavior:ListItemDragAndDropBehavihor ItemSource="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}},Path=DataContext.MediaItems}"/>
+                            </i:Interaction.Behaviors>
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Grid>
+        
+
+        <Grid Margin="8,0,8,0">
+            <ProgressBar Margin="5"
+                 Height="20"
+                 Minimum="0"
+                 Maximum="1"
+                 Value="{Binding Progress}"
+                 />
+            <TextBlock Text="{Binding Progress,StringFormat=当前进度: {0:P1}}"  
+                    FontSize="16"
+                    Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" />
+        </Grid>
+
+
+        <Border BorderThickness="1" 
+             Margin="8"
+             BorderBrush="{StaticResource MaterialDesign.Brush.Primary}"
+             CornerRadius="20"
+             Padding="10"
+             >
+            <ItemsControl Grid.Row="1" Height="100" ItemsSource="{Binding Log.Logs}"
+         ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+         ScrollViewer.VerticalScrollBarVisibility="Auto">
+                <ItemsControl.Resources>
+                    <ContextMenu cal:Action.TargetWithoutContext="{Binding DataContext,RelativeSource={RelativeSource AncestorType=UserControl}}"  x:Key="ItemsControlContextMenu">
+                        <MenuItem Header="复制日志" cal:Message.Attach="CopyLogs" />
+                    </ContextMenu>
+                </ItemsControl.Resources>
+              <!--  <ItemsControl.ItemContainerStyle>
+                    <Style BasedOn="{StaticResource {x:Type ItemsControl}}" TargetType="{x:Type ItemsControl}">
+                        <Setter Property="ContextMenu" Value="{StaticResource ItemsControlContextMenu}" />
+                    </Style>
+                </ItemsControl.ItemContainerStyle>-->
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <VirtualizingStackPanel/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.Template>
+                    <ControlTemplate TargetType="ItemsControl">
+                        <ScrollViewer VerticalScrollBarVisibility="Visible">
+                            <ItemsPresenter />
+                        </ScrollViewer>
+                    </ControlTemplate>
+                </ItemsControl.Template>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock FontSize="13">
+                         <Run Text="{Binding Time,StringFormat='yyyy-MM-dd HH:mm:ss',Mode=OneWay}"  />
+                         <Run Text="{Binding Message,Mode=OneWay}" >
+                             <Run.Style>
+                                     <Style TargetType="Run">
+                                         <Style.Triggers>
+                                             <DataTrigger Binding="{Binding Type}" Value="{x:Static model:LogType.Warning}">
+                                                 <Setter Property="Foreground" Value="Orange" />
+                                             </DataTrigger>
+
+                                             <DataTrigger Binding="{Binding Type}" Value="{x:Static model:LogType.Error}">
+                                                 <Setter Property="Foreground" Value="Red" />
+                                             </DataTrigger>
+                                         </Style.Triggers>
+                                     </Style>
+                                 </Run.Style>
+                             </Run>
+                        </TextBlock>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+                <i:Interaction.Behaviors>
+                    <behavior:EnsureScrollingToBottomBehavior />
+                </i:Interaction.Behaviors>
+            </ItemsControl>
+        </Border>
+
+
+        <StackPanel Orientation="Horizontal"  HorizontalAlignment="Center" Margin="20" Height="40">
+            <Button cal:Message.Attach="OnProcess"
+                 Content="开始转码" 
+                 Width="100" />
+
+            <Button cal:Message.Attach="OnCancel"
+                 Content="停止转码"
+                 Width="100"  Margin="10 0 0 0" />
+
+            <Button cal:Message.Attach="OnReset"
+                Content="重置数据"
+                Width="100" Margin="10 0 0 0" />
+
+        </StackPanel>
+    </StackPanel>
+</UserControl>

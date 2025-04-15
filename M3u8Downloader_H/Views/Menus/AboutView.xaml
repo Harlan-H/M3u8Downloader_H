@@ -1,0 +1,42 @@
+﻿<UserControl x:Class="M3u8Downloader_H.Views.Menus.AboutView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:M3u8Downloader_H.ViewModels.Menus"
+             xmlns:cal="http://www.caliburnproject.org"
+             d:DataContext="{d:DesignInstance Type=local:AboutViewModel}"
+             mc:Ignorable="d" 
+            
+             >
+    <Grid VerticalAlignment="Center">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50" />
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto" />
+        </Grid.RowDefinitions>
+        <TextBlock   Text="本软件完全免费，且开源" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Center" />
+
+        <StackPanel Grid.Row="1"  >
+            <TextBlock  Text="本软件开源地址:" FontSize="18" HorizontalAlignment="Center"/>
+            <Button Style="{StaticResource MaterialDesignFlatLightButton}"
+                    cal:Message.Attach="OnExplore('https://github.com/Harlan-H/M3u8Downloader_H')" >
+                <Hyperlink>https://github.com/Harlan-H/M3u8Downloader_H</Hyperlink>
+            </Button>
+            <TextBlock Text="帮助文档:" FontSize="16"  HorizontalAlignment="Center"  />
+            <Button  Style="{StaticResource MaterialDesignFlatButton}" 
+            cal:Message.Attach="OnExplore('https://github.com/Harlan-H/M3u8Downloader_H/wiki/')">
+                <Hyperlink >https://github.com/Harlan-H/M3u8Downloader_H/wiki/</Hyperlink>
+            </Button>
+            <Button  Style="{StaticResource MaterialDesignFlatButton}" 
+            cal:Message.Attach="OnExplore('http://note.youdao.com/noteshare?id=c6ba2fb478ad300b7095c7c951556fc6')">
+                <Hyperlink >http://note.youdao.com/noteshare?id=c6ba2fb478ad300b7095c7c951556fc6</Hyperlink>
+            </Button>
+        </StackPanel>
+        <Grid Grid.Row="2">
+        <TextBlock  FontSize="18" HorizontalAlignment="Left" VerticalAlignment="Center" Text="Copyright (c) 2025 Harlan" Margin="32 0 0 0" />
+
+        </Grid>
+    </Grid>
+
+</UserControl>

@@ -1,0 +1,23 @@
+﻿<UserControl x:Class="M3u8Downloader_H.Views.Menus.SponsorView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:M3u8Downloader_H.ViewModels.Menus"
+             mc:Ignorable="d" 
+             d:DataContext="{d:DesignInstance Type=local:SponsorViewModel}">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions >
+            <RowDefinition Height="auto"  />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <TextBlock Grid.Row="0" VerticalAlignment="Bottom" Text="微信" FontWeight="SemiBold" FontSize="20" HorizontalAlignment="Center" Margin="5"  />
+        <TextBlock Grid.Row="0" Grid.Column="1"  FontWeight="SemiBold" FontSize="20" Text="支付宝"  HorizontalAlignment="Center" Margin="5"  />
+        <Image Grid.Row="1" Grid.Column="0" Source="pack://application:,,,/Assets/weixin.png" />
+        <Image Grid.Row="1" Grid.Column="1" Source="pack://application:,,,/Assets/zhifubao.png" />
+    </Grid>
+</UserControl>

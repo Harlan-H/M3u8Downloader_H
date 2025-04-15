@@ -1,9 +1,11 @@
 ﻿using Newtonsoft.Json;
 using M3u8Downloader_H.Attributes;
 using M3u8Downloader_H.Settings.Services;
-using M3u8Downloader_H.Settings.Models;
 using System.Collections.Generic;
 using System;
+using M3u8Downloader_H.Utils;
+using M3u8Downloader_H.Abstractions.M3uDownloaders;
+using M3u8Downloader_H.Abstractions.Settings;
 
 
 
@@ -13,7 +15,7 @@ using System.IO;
 
 namespace M3u8Downloader_H.Services
 {
-    public class SettingsService : SettingsManager, ICloneable, ISettings
+    public class SettingsService : SettingsManager,  IDownloaderSetting,IMergeSetting
     {
         /// <summary>
         /// 线程数量
@@ -32,10 +34,11 @@ namespace M3u8Downloader_H.Services
 #if DEBUG
         public string SavePath { get; set; } = @"E:\desktop\download";
 #else
-        public string SavePath { get; set; } = Path.Combine(System.Environment.CurrentDirectory, "download");
+       
+        public string SavePath { get; set; } = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "download");
 #endif
         public string PluginKey { get; set; } = default!;
-        public string SelectedFormat { get; set; } = "默认";
+        public string SelectedFormat { get; set; } = "mp4";
 
         [JsonIgnore]
         public bool SkipDirectoryExist { get; set; } = true;
@@ -60,8 +63,8 @@ namespace M3u8Downloader_H.Services
 #else
         public double RecordDuration { get; set; } = 60 * 60 * 12;
 #endif
-        [Range(1,300)]
-        public int Timeouts { get; set; } = 10;
+        [Range(1, 300)]
+        public int Timeouts { get; set; } = 30;
 
         public SettingsService()
         {
@@ -71,7 +74,7 @@ namespace M3u8Downloader_H.Services
         }
 
 
-        public object Clone()
+        public SettingsService Clone()
         {
             return new SettingsService()
             {
@@ -110,6 +113,11 @@ namespace M3u8Downloader_H.Services
             Headers = other.Headers;
             RecordDuration = other.RecordDuration;
             Timeouts = other.Timeouts;
+        }
+
+        public void UpdateConcurrentDownloadCount()
+        {
+            ThrottlingSemaphore.Instance.MaxCount = MaxConcurrentDownloadCount;
         }
 
     }

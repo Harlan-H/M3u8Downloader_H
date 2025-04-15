@@ -11,18 +11,16 @@ namespace M3u8Downloader_H.Downloader.Extensions
 {
     internal static class HttpClientExtension
     {
-        public static async Task<(Stream, string)> GetResponseContentAsync(this HttpClient httpClient, HttpRequestMessage httpRequestMessage, CancellationToken cancellationToken = default )
+        public static async Task<Stream> GetResponseContentAsync(this HttpClient httpClient, HttpRequestMessage httpRequestMessage, CancellationToken cancellationToken = default )
         { 
             HttpResponseMessage response = await httpClient.SendAsync(httpRequestMessage, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
 
             response.EnsureSuccessStatusCode();
 
-            var contentType = response.Content.Headers.ContentType?.MediaType ?? string.Empty;
-            var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
-            return (stream, contentType);
+            return await response.Content.ReadAsStreamAsync(cancellationToken);
         }
 
-        public static async Task<(Stream, string)> GetResponseContentAsync(this HttpClient httpClient, Uri uri, IEnumerable<KeyValuePair<string, string>>? headers, RangeHeaderValue? rangeHeaderValue, CancellationToken cancellationToken = default)
+        public static async Task<Stream> GetResponseContentAsync(this HttpClient httpClient, Uri uri, IEnumerable<KeyValuePair<string, string>>? headers, RangeHeaderValue? rangeHeaderValue, CancellationToken cancellationToken = default)
         {
             using HttpRequestMessage httpRequest = new(HttpMethod.Get, uri);
             httpRequest.AddHeaders(headers);

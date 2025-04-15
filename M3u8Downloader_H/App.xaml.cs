@@ -7,6 +7,8 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media;
+using MaterialDesignColors;
 
 namespace M3u8Downloader_H
 {
@@ -20,5 +22,6 @@ namespace M3u8Downloader_H
         public static Version Version { get; } = Assembly.GetName().Version!;
         public static string VersionString { get; } = Version.ToString(3);
 
+        public static Color DeepPurpleColor { get; } = SwatchHelper.Lookup[(MaterialDesignColor)PrimaryColor.DeepPurple];
     }
 }

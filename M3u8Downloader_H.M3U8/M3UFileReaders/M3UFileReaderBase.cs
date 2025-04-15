@@ -1,4 +1,5 @@
-﻿using M3u8Downloader_H.Common.Extensions;
+﻿using M3u8Downloader_H.Abstractions.M3u8;
+using M3u8Downloader_H.Common.Extensions;
 using M3u8Downloader_H.Common.M3u8Infos;
 using M3u8Downloader_H.M3U8.Extensions;
 using System;
@@ -24,7 +25,15 @@ namespace M3u8Downloader_H.M3U8.M3UFileReaders
             return this;
         }
 
-        protected M3UKeyInfo? GetM3UKeyInfo(string? method, string? uri, string? key, string? iv)
+        /// <summary>
+        /// 获取m3u8的key结构体,此方法一般只有在文件夹合并方案中才会使用到
+        /// </summary>
+        /// <param name="method">方法例如aes-128</param>
+        /// <param name="uri">aes的请求地址</param>
+        /// <param name="key">aes实际内容</param>
+        /// <param name="iv">iv</param>
+        /// <returns>IM3uKeyInfo的结构体</returns>
+        protected IM3uKeyInfo? GetM3UKeyInfo(string? method, string? uri, string? key, string? iv)
         {
             if (uri == null && key == null && iv == null)
                 return null;
@@ -39,8 +48,13 @@ namespace M3u8Downloader_H.M3U8.M3UFileReaders
             return m3UKeyInfo;
         }
 
-
-        protected M3UMediaInfo GetM3UMediaInfo(string uri, string? title)
+        /// <summary>
+        /// 获取ts流行信息,需要下载的ts无需传入title参数,需要合并的必须传入
+        /// </summary>
+        /// <param name="uri">ts的地址</param>
+        /// <param name="title">ts的名字</param>
+        /// <returns>IM3uMediaInfo结构体</returns>
+        protected IM3uMediaInfo GetM3UMediaInfo(string uri, string? title)
         {
             M3UMediaInfo m3UMediaInfo = new()
             {
@@ -50,6 +64,6 @@ namespace M3u8Downloader_H.M3U8.M3UFileReaders
             return m3UMediaInfo;
         }
 
-        public abstract M3UFileInfo Read(Stream stream);
+        public abstract IM3uFileInfo Read(Stream stream);
     }
 }

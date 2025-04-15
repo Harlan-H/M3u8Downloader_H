@@ -1,0 +1,143 @@
+﻿<UserControl x:Class="M3u8Downloader_H.Views.Windows.MediaConverterView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:behavior="clr-namespace:M3u8Downloader_H.Behaviors"
+             xmlns:local="clr-namespace:M3u8Downloader_H.ViewModels.Windows"
+             xmlns:cal="http://caliburnmicro.com"
+             xmlns:model="clr-namespace:M3u8Downloader_H.Models" 
+             mc:Ignorable="d" 
+             d:DataContext="{d:DesignInstance Type=local:MediaConverterViewModel}"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <StackPanel Margin="8">
+
+        <DockPanel Style="{StaticResource DockPannelStyle}">
+            <TextBlock Text="视频地址: "  Style="{StaticResource TextBlockStyle}" />
+            <Button DockPanel.Dock="Right" Style="{DynamicResource MaterialDesignFlatButton}"  Margin="2">
+                <materialDesign:PackIcon Kind="FilePlusOutline"/>
+                <i:Interaction.Behaviors>
+                    <behavior:OpenFileDialogBehaviour IsFile="True" 
+                                                  AttachedTextBox="{Binding ElementName=videoPathTextBox}" 
+                                                  FilterString="视频文件|*.mp4;*.flv;*.avi;*.mov;*.video|所有文件|*.*"
+                                                  />
+                </i:Interaction.Behaviors>
+            </Button>
+            <TextBox x:Name="videoPathTextBox" Text="{Binding VideoFileUrl}" Style="{StaticResource TextBoxStyle}" 
+                 materialDesign:TextFieldAssist.HasClearButton="True"
+                 materialDesign:HintAssist.Hint="视频文件地址">
+            </TextBox>
+        </DockPanel>
+
+        <DockPanel Style="{StaticResource DockPannelStyle}">
+            <TextBlock Text="音频地址: "  Style="{StaticResource TextBlockStyle}" />
+            <Button DockPanel.Dock="Right" Style="{DynamicResource MaterialDesignFlatButton}"  Margin="2">
+                <materialDesign:PackIcon Kind="FilePlusOutline"/>
+                <i:Interaction.Behaviors>
+                    <behavior:OpenFileDialogBehaviour IsFile="True" 
+                                                  AttachedTextBox="{Binding ElementName=audioPathTextBox}" 
+                                                  FilterString="音频文件|*.mp4;*.mp3;*.aac;*.wav;*.audio|所有文件|*.*"
+                                                  />
+                </i:Interaction.Behaviors>
+            </Button>
+            <TextBox x:Name="audioPathTextBox" Text="{Binding AudioFileUrl}" Style="{StaticResource TextBoxStyle}" 
+                 materialDesign:TextFieldAssist.HasClearButton="True"
+                materialDesign:HintAssist.Hint="音频文件地址(不是音视频分离的可以不填)" 
+                 >
+            </TextBox>
+        </DockPanel>
+
+        <DockPanel Style="{StaticResource DockPannelStyle}">
+            <TextBlock Text="视频名称: "  Style="{StaticResource TextBlockStyle}" />
+            <TextBox Text="{Binding VideoName}" Style="{StaticResource TextBoxStyle}" 
+                 materialDesign:TextFieldAssist.HasClearButton="True"
+                 materialDesign:HintAssist.Hint="不写默认随机生成" >  
+            </TextBox>
+        </DockPanel>
+
+
+        <Grid Margin="8,0,8,0">
+            <ProgressBar Margin="5"
+                Height="20"
+                Minimum="0"
+                Maximum="1"
+                Value="{Binding Progress}"
+                />
+            <TextBlock Text="{Binding Progress,StringFormat=当前进度: {0:P1}}"  
+                   FontSize="16"
+                   Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" />
+        </Grid>
+
+        <Border BorderThickness="1" 
+            Margin="8"
+            BorderBrush="{StaticResource MaterialDesign.Brush.Primary}"
+            CornerRadius="20"
+            Padding="10"
+            >
+            <ItemsControl Grid.Row="1" Height="200" ItemsSource="{Binding Log.Logs}"
+        ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+        ScrollViewer.VerticalScrollBarVisibility="Auto">
+                <ItemsControl.Resources>
+                    <ContextMenu cal:Action.TargetWithoutContext="{Binding DataContext,RelativeSource={RelativeSource AncestorType=UserControl}}"  x:Key="ItemsControlContextMenu">
+                        <MenuItem Header="复制日志" cal:Message.Attach="CopyLogs" />
+                    </ContextMenu>
+                </ItemsControl.Resources>
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <VirtualizingStackPanel/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.Template>
+                    <ControlTemplate TargetType="ItemsControl">
+                        <ScrollViewer VerticalScrollBarVisibility="Visible">
+                            <ItemsPresenter />
+                        </ScrollViewer>
+                    </ControlTemplate>
+                </ItemsControl.Template>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock FontSize="13">
+                        <Run Text="{Binding Time,StringFormat='yyyy-MM-dd HH:mm:ss',Mode=OneWay}"  />
+                        <Run Text="{Binding Message,Mode=OneWay}" >
+                            <Run.Style>
+                                    <Style TargetType="Run">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Type}" Value="{x:Static model:LogType.Warning}">
+                                                <Setter Property="Foreground" Value="Orange" />
+                                            </DataTrigger>
+
+                                            <DataTrigger Binding="{Binding Type}" Value="{x:Static model:LogType.Error}">
+                                                <Setter Property="Foreground" Value="Red" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Run.Style>
+                            </Run>
+                        </TextBlock>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+                <i:Interaction.Behaviors>
+                    <behavior:EnsureScrollingToBottomBehavior />
+                </i:Interaction.Behaviors>
+            </ItemsControl>
+        </Border>
+
+
+        <StackPanel Orientation="Horizontal"  HorizontalAlignment="Center" Margin="20" Height="40">
+            <Button cal:Message.Attach="OnProcess"
+                Content="开始转码" 
+                Width="100" />
+
+            <Button cal:Message.Attach="OnCancel"
+                Content="停止转码"
+                Width="100"  Margin="10 0 0 0" />
+
+            <Button cal:Message.Attach="OnReset"
+            Content="重置数据"
+            Width="100" Margin="10 0 0 0" />
+
+        </StackPanel>
+    </StackPanel>
+</UserControl>

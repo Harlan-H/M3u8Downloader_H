@@ -1,17 +1,85 @@
 ﻿using CliWrap;
-using System;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using M3u8Downloader_H.Common.Extensions;
+using CliWrap.Builders;
+using M3u8Downloader_H.Abstractions.Common;
+using M3u8Downloader_H.Abstractions.Settings;
+using M3u8Downloader_H.Abstractions.M3u8;
 
-namespace M3u8Downloader_H.Core.VideoConverter
+namespace M3u8Downloader_H.Combiners.VideoConverter
 {
-    internal class FFmpeg(string filePath)
+    public class FFmpeg(ILog Log, IDownloadParamBase DownloadParams, IMergeSetting Settings)
     {
-        private readonly string _filePath = filePath;
+        public string CachePath { get; set; } = DownloadParams.CachePath;
 
-        public async ValueTask ExecuteAsync(
+        private readonly string _filePath
+#if DEBUG
+    = new(@"F:\源代码\库\ffmpeg\bin\ffmpeg.exe");
+#else
+            = new("./ffmpeg.exe");
+#endif
+
+        public async ValueTask ConvertToMp4(IList<IStreamInfo> medias, IDialogProgress dialogProgress,CancellationToken cancellationToken = default)
+        {
+            var arguments = new ArgumentsBuilder();
+            foreach (var item in medias)
+            {
+                arguments.Add("-i").Add(item.Title);
+            }
+
+            await ConvertToMp4(arguments, dialogProgress, cancellationToken);
+        }
+
+        public async ValueTask ConvertToMp4(string m3u8ConcatTxt, IDialogProgress dialogProgress, CancellationToken cancellationToken = default)
+        {
+            if (!File.Exists(m3u8ConcatTxt))
+                throw new ArgumentException($"{m3u8ConcatTxt} 文件不存在");
+            
+            var arguments = new ArgumentsBuilder();
+            arguments.Add("-f").Add("concat")
+                    .Add("-safe").Add(0)
+                    .Add("-i").Add(m3u8ConcatTxt)
+                    .Add("-bsf:a").Add("aac_adtstoasc");
+            await ConvertToMp4(arguments, dialogProgress, cancellationToken);
+        }
+
+        public async ValueTask ConvertToMp4(IM3uFileInfo m3UFileInfo, IDialogProgress dialogProgress, CancellationToken cancellationToken = default)
+        {
+            if (!m3UFileInfo.MediaFiles.Any())
+                throw new ArgumentException("m3u8文件内的文件不能为空");
+
+            StringBuilder stringBuilder = new();
+            stringBuilder.Append("concat:");
+            stringBuilder.Append(m3UFileInfo.MediaFiles[0].Title);
+            for (int i = 1;i < m3UFileInfo.MediaFiles.Count;i++) 
+            {
+                stringBuilder.Append('|');
+                stringBuilder.Append(m3UFileInfo.MediaFiles[i].Title);
+            }
+
+            var arguments = new ArgumentsBuilder();
+            arguments.Add("-i").Add(stringBuilder.ToString())
+                     .Add("-bsf:a").Add("aac_adtstoasc");
+            await ConvertToMp4(arguments, dialogProgress, cancellationToken);
+        }
+
+        private async ValueTask ConvertToMp4(ArgumentsBuilder argumentsBuilder, IDialogProgress dialogProgress, CancellationToken cancellationToken = default)
+        {
+            argumentsBuilder
+                     .Add("-allowed_extensions").Add("ALL")
+                     .Add("-f").Add(Settings.SelectedFormat)
+                     .Add("-c:a").Add("copy")
+                     .Add("-c:v").Add("copy");
+
+            Log?.Info("开始转码:{0}", DownloadParams.VideoName + '.' + Settings.SelectedFormat);
+            argumentsBuilder
+                .Add("-nostdin")
+                .Add("-y").Add(DownloadParams.VideoFullName);
+
+            await ExecuteAsync(argumentsBuilder.Build(), dialogProgress, cancellationToken);
+        }
+
+        private async ValueTask ExecuteAsync(
              string arguments,
              IProgress<double> progress,
              CancellationToken cancellationToken = default)
@@ -25,6 +93,7 @@ namespace M3u8Downloader_H.Core.VideoConverter
 
             var result = await Cli.Wrap(_filePath)
                 .WithArguments(arguments)
+                .WithWorkingDirectory(CachePath)
                 .WithStandardErrorPipe(stdErrPipe)
                 .WithValidation(CommandResultValidation.None)
                 .ExecuteAsync(cancellationToken);
