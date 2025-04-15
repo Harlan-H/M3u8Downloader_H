@@ -45,7 +45,7 @@ namespace M3u8Downloader_H.Downloader.MediaDownloads
         {
             using var buffer = MemoryPool<byte>.Shared.Rent(0x10000);
             Memory<byte> memory = buffer.Memory;
-            long totalBytes = 0L;
+            long totalBytes = fileStream.Length;
             int bytesCopied = 0;
             do
             {

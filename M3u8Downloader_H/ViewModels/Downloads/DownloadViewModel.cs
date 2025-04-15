@@ -208,7 +208,7 @@ namespace M3u8Downloader_H.ViewModels
             viewModel.RequestUrl = m3U8DownloadParam.RequestUrl;
             viewModel.VideoName = m3U8DownloadParam.VideoName;
 
-            viewModel.downloaderCoreClient = new(Http.Client, m3U8DownloadParam, viewModel.settingsService, viewModel.Log, pluginType); 
+            viewModel.downloaderCoreClient = new(Http.Client, m3U8DownloadParam, viewModel.settingsService.Clone(), viewModel.Log, pluginType); 
             return viewModel;
         }
 
@@ -221,7 +221,7 @@ namespace M3u8Downloader_H.ViewModels
             viewModel.DownloadParam = m3U8DownloadParam;
             viewModel.VideoName = m3U8DownloadParam.VideoName;
 
-            viewModel.downloaderCoreClient = new(Http.Client, m3U8DownloadParam, viewModel.settingsService, viewModel.Log, pluginType, m3UFileInfo);
+            viewModel.downloaderCoreClient = new(Http.Client, m3U8DownloadParam, viewModel.settingsService.Clone(), viewModel.Log, pluginType, m3UFileInfo);
             return viewModel;
         }
 
@@ -233,7 +233,7 @@ namespace M3u8Downloader_H.ViewModels
             viewModel.RequestUrl = m3U8DownloadParam.Medias[0].Url;
             viewModel.VideoName = m3U8DownloadParam.VideoName;
 
-            viewModel.downloaderCoreClient = new DownloaderCoreClient(Http.Client, m3U8DownloadParam, viewModel.settingsService, viewModel.Log);
+            viewModel.downloaderCoreClient = new DownloaderCoreClient(Http.Client, m3U8DownloadParam, viewModel.settingsService.Clone(), viewModel.Log);
             return viewModel;
         }
     }

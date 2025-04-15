@@ -14,6 +14,7 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
 
         public override async ValueTask Initialization(CancellationToken cancellationToken)
         {
+            await base.Initialization(cancellationToken);
             if (initialized)
                 return;
 

@@ -15,7 +15,7 @@ using System.IO;
 
 namespace M3u8Downloader_H.Services
 {
-    public class SettingsService : SettingsManager, ICloneable, IDownloaderSetting,IMergeSetting
+    public class SettingsService : SettingsManager,  IDownloaderSetting,IMergeSetting
     {
         /// <summary>
         /// 线程数量
@@ -74,7 +74,7 @@ namespace M3u8Downloader_H.Services
         }
 
 
-        public object Clone()
+        public SettingsService Clone()
         {
             return new SettingsService()
             {

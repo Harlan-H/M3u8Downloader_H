@@ -4,7 +4,6 @@ using M3u8Downloader_H.Downloader.Utils;
 using M3u8Downloader_H.Abstractions.M3uDownloaders;
 using M3u8Downloader_H.Abstractions.Common;
 using M3u8Downloader_H.Abstractions.M3u8;
-using M3u8Downloader_H.Common.M3u8Infos;
 
 
 namespace M3u8Downloader_H.Downloader.M3uDownloaders

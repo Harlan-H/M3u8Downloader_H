@@ -23,7 +23,7 @@ namespace M3u8Downloader_H.ViewModels.Menus
 
         protected override Task OnActivateAsync(CancellationToken cancellationToken)
         {
-            SettingsServiceClone = (SettingsService)settingService.Clone();
+            SettingsServiceClone = settingService.Clone();
             return base.OnActivateAsync(cancellationToken);
         }
 

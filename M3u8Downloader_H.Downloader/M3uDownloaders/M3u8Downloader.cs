@@ -1,6 +1,4 @@
-﻿using M3u8Downloader_H.Abstractions.Common;
-using M3u8Downloader_H.Abstractions.M3u8;
-using M3u8Downloader_H.Common.M3u8Infos;
+﻿using M3u8Downloader_H.Abstractions.M3u8;
 
 namespace M3u8Downloader_H.Downloader.M3uDownloaders
 {
@@ -11,7 +9,12 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
         private int downloadedCount;
         private int CurIndex = -1;
 
-        public virtual ValueTask Initialization(CancellationToken cancellationToken = default) => ValueTask.CompletedTask;
+        public virtual ValueTask Initialization(CancellationToken cancellationToken = default)
+        {
+            downloadedCount = 0;
+            CurIndex = -1;
+            return ValueTask.CompletedTask;
+        }
 
 
         public override async Task DownloadAsync(IM3uFileInfo m3UFileInfo,  CancellationToken cancellationToken = default)
