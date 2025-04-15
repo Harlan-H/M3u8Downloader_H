@@ -13,7 +13,6 @@
     <Authors>Harlan</Authors>
     <Nullable>enable</Nullable>
     <UseWPF>True</UseWPF>
-    <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)'=='Release'">
