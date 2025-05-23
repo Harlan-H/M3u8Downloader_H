@@ -2,6 +2,7 @@
 using M3u8Downloader_H.Abstractions.Settings;
 using M3u8Downloader_H.Abstractions.M3u8;
 using System.Diagnostics;
+using M3u8Downloader_H.Combiners.Utils;
 
 namespace M3u8Downloader_H.Combiners.M3uCombiners
 {
@@ -21,6 +22,8 @@ namespace M3u8Downloader_H.Combiners.M3uCombiners
 
         public async ValueTask StartMerging(IM3uFileInfo m3UFileInfo, IDialogProgress DialogProgress, CancellationToken cancellationToken = default)
         {
+            DirEx.CreateDirecotry(DownloadParams.SavePath);
+
             using FileStream videoFileStream = File.Create(DownloadParams.VideoFullName);
             await MegerVideoHeader(videoFileStream, m3UFileInfo.Map, cancellationToken);
 

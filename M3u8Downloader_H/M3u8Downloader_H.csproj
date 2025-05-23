@@ -5,8 +5,8 @@
     <TargetFramework>net9.0-windows7.0</TargetFramework>
     <RootNamespace>M3u8Downloader_H</RootNamespace>
     <Platforms>AnyCPU;x64</Platforms>
-    <AssemblyVersion>4.0.0.0</AssemblyVersion>
-    <Version>4.0.0.0</Version>
+    <AssemblyVersion>4.0.1.0</AssemblyVersion>
+    <Version>4.0.1.0</Version>
     <PackageId>m3u8视频下载器</PackageId>
     <Product>m3u8视频下载器</Product>
     <ApplicationIcon>icon.ico</ApplicationIcon>
