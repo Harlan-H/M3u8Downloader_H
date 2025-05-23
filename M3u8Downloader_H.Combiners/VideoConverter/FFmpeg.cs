@@ -5,6 +5,7 @@ using CliWrap.Builders;
 using M3u8Downloader_H.Abstractions.Common;
 using M3u8Downloader_H.Abstractions.Settings;
 using M3u8Downloader_H.Abstractions.M3u8;
+using M3u8Downloader_H.Combiners.Utils;
 
 namespace M3u8Downloader_H.Combiners.VideoConverter
 {
@@ -75,6 +76,8 @@ namespace M3u8Downloader_H.Combiners.VideoConverter
             argumentsBuilder
                 .Add("-nostdin")
                 .Add("-y").Add(DownloadParams.VideoFullName);
+
+            DirEx.CreateDirecotry(DownloadParams.SavePath);
 
             await ExecuteAsync(argumentsBuilder.Build(), dialogProgress, cancellationToken);
         }

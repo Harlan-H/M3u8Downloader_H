@@ -3,7 +3,6 @@ using System.Net.Http.Headers;
 using M3u8Downloader_H.Abstractions.Common;
 using M3u8Downloader_H.Common.Extensions;
 using M3u8Downloader_H.Downloader.Utils;
-using Newtonsoft.Json.Linq;
 
 namespace M3u8Downloader_H.Downloader.MediaDownloads
 {
