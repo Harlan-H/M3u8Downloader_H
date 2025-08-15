@@ -66,6 +66,8 @@ namespace M3u8Downloader_H.Services
         [Range(1, 300)]
         public int Timeouts { get; set; } = 30;
 
+        public bool ConcatMerger { get; set; } = true;
+
         public SettingsService()
         {
 #if DEBUG
@@ -93,6 +95,8 @@ namespace M3u8Downloader_H.Services
                 Headers = Headers,
                 RecordDuration = RecordDuration,
                 Timeouts = Timeouts,
+                IsResetName = IsResetName,
+                ConcatMerger = ConcatMerger,
             };
         }
 
@@ -113,6 +117,8 @@ namespace M3u8Downloader_H.Services
             Headers = other.Headers;
             RecordDuration = other.RecordDuration;
             Timeouts = other.Timeouts;
+            IsResetName = other.IsResetName;
+            ConcatMerger = other.ConcatMerger;
         }
 
         public void UpdateConcurrentDownloadCount()
