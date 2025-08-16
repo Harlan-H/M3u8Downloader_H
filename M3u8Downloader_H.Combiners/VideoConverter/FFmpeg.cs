@@ -53,7 +53,7 @@ namespace M3u8Downloader_H.Combiners.VideoConverter
 
             if (Settings.ConcatMerger)
             {
-                Log?.Info("列表合并方式已开启");
+                Log?.Info("使用列表合并方式");
 
                 foreach (var info in m3UFileInfo.MediaFiles)
                 {
@@ -67,7 +67,6 @@ namespace M3u8Downloader_H.Combiners.VideoConverter
             }
             else
             {
-                Log?.Info("列表合并方式已关闭");
 
                 stringBuilder.Append("concat:");
                 stringBuilder.Append(m3UFileInfo.MediaFiles[0].Title);
