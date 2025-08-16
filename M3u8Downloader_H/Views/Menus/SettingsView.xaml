@@ -168,6 +168,20 @@
                         <TextBlock  Style="{StaticResource TextBlockStyle}"  Text="强制合并"/>
                         <ToggleButton Name="forceMergerButton"  HorizontalAlignment="Left"  Margin="10 0 0 0" Style="{StaticResource MaterialDesignSwitchToggleButton}"  ToolTip="{Binding ForcedMerger,Converter={x:Static converters:BoolToStringConverters.Instance}}" IsChecked="{Binding ForcedMerger}" />
                     </DockPanel>
+
+                    <DockPanel Margin="8 0" >
+                      <DockPanel.ToolTip>
+                          <TextBlock>
+                              <Run Text="当视频超长，M3U列表片段太多，合并时报打开文件过多的错误时开启"/>
+                              <LineBreak/>
+                              <Run Text="开启后，合并视频时将传入concat列表文件，而不是一次性打开所有片段文件" />
+                              <LineBreak/>
+                              <Run Text="这种方式合并视频稍慢一点，但可避免出错" />
+                          </TextBlock>
+                      </DockPanel.ToolTip>
+                      <TextBlock  Style="{StaticResource TextBlockStyle}" Text="列表合并"/>
+                      <ToggleButton HorizontalAlignment="Left"  Margin="10 0 0 0" Style="{StaticResource MaterialDesignSwitchToggleButton}"  ToolTip="{Binding ConcatMerger,Converter={x:Static converters:BoolToStringConverters.Instance}}" IsChecked="{Binding ConcatMerger}" />
+                  </DockPanel>
                 </WrapPanel>
 
                 <!-- 直播配置区 -->

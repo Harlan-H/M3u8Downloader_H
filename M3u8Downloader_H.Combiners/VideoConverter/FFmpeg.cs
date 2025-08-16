@@ -50,18 +50,39 @@ namespace M3u8Downloader_H.Combiners.VideoConverter
                 throw new ArgumentException("m3u8文件内的文件不能为空");
 
             StringBuilder stringBuilder = new();
-            stringBuilder.Append("concat:");
-            stringBuilder.Append(m3UFileInfo.MediaFiles[0].Title);
-            for (int i = 1;i < m3UFileInfo.MediaFiles.Count;i++) 
+
+            if (Settings.ConcatMerger)
             {
-                stringBuilder.Append('|');
-                stringBuilder.Append(m3UFileInfo.MediaFiles[i].Title);
+                Log?.Info("列表合并方式已开启");
+
+                foreach (var info in m3UFileInfo.MediaFiles)
+                {
+                    stringBuilder.AppendLine($"file '{info.Title}'");
+                }
+
+                var m3u8ConcatTxt = Path.Combine(DownloadParams.CachePath, "file_list.txt");
+                File.WriteAllText(m3u8ConcatTxt, stringBuilder.ToString());
+                await ConvertToMp4(m3u8ConcatTxt, dialogProgress, cancellationToken);
+                File.Delete(m3u8ConcatTxt);
+            }
+            else
+            {
+                Log?.Info("列表合并方式已关闭");
+
+                stringBuilder.Append("concat:");
+                stringBuilder.Append(m3UFileInfo.MediaFiles[0].Title);
+                for (int i = 1; i < m3UFileInfo.MediaFiles.Count; i++)
+                {
+                    stringBuilder.Append('|');
+                    stringBuilder.Append(m3UFileInfo.MediaFiles[i].Title);
+                }
+
+                var arguments = new ArgumentsBuilder();
+                arguments.Add("-i").Add(stringBuilder.ToString())
+                         .Add("-bsf:a").Add("aac_adtstoasc");
+                await ConvertToMp4(arguments, dialogProgress, cancellationToken);
             }
 
-            var arguments = new ArgumentsBuilder();
-            arguments.Add("-i").Add(stringBuilder.ToString())
-                     .Add("-bsf:a").Add("aac_adtstoasc");
-            await ConvertToMp4(arguments, dialogProgress, cancellationToken);
         }
 
         private async ValueTask ConvertToMp4(ArgumentsBuilder argumentsBuilder, IDialogProgress dialogProgress, CancellationToken cancellationToken = default)
