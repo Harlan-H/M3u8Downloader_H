@@ -66,7 +66,7 @@ namespace M3u8Downloader_H.Services
         [Range(1, 300)]
         public int Timeouts { get; set; } = 30;
 
-        public bool ConcatMerger { get; set; } = true;
+        public bool ConcatMerger { get; set; } = false;
 
         public SettingsService()
         {

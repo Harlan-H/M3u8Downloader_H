@@ -172,7 +172,7 @@
                     <DockPanel Margin="8 0" >
                       <DockPanel.ToolTip>
                           <TextBlock>
-                              <Run Text="当视频超长，M3U列表片段太多，合并时报打开文件过多的错误时开启"/>
+                              <Run Text="当合并报错误当合并时报错误 too many open files 时开启"/>
                               <LineBreak/>
                               <Run Text="开启后，合并视频时将传入concat列表文件，而不是一次性打开所有片段文件" />
                               <LineBreak/>
