@@ -13,7 +13,9 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <Folder Include="Media\" />
+	  <Compile Remove="Media\**" />
+	  <EmbeddedResource Remove="Media\**" />
+	  <None Remove="Media\**" />
 	</ItemGroup>
 
 </Project>

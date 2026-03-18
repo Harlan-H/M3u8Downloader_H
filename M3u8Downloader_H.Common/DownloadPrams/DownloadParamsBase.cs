@@ -7,7 +7,7 @@ namespace M3u8Downloader_H.Common.DownloadPrams
     {
         protected static readonly string _defaultCachePath =
 #if DEBUG
-           "E:\\desktop\\download\\Caches";
+           @"C:\Users\admin\Desktop\666\Caches";
 #else
             Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Caches");
 #endif

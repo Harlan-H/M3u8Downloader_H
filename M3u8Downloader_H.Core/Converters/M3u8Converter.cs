@@ -8,6 +8,7 @@ using M3u8Downloader_H.Abstractions.Converter;
 using M3u8Downloader_H.Abstractions.M3u8;
 using M3u8Downloader_H.Abstractions.Settings;
 using M3u8Downloader_H.Combiners;
+using M3u8Downloader_H.Combiners.Extensions;
 using M3u8Downloader_H.Downloader;
 
 namespace M3u8Downloader_H.Core.Converters
@@ -65,10 +66,10 @@ namespace M3u8Downloader_H.Core.Converters
             }
             else
             {
-                if(downloadParamBase.M3UKeyInfo is null)
+                if (downloadParamBase.M3UKeyInfo is null)
                     m3UCombinerClient.FFmpeg.CachePath = Path.GetDirectoryName(m3UFileInfo.MediaFiles[0].Uri.OriginalString) ?? throw new ArgumentException("获取缓存路径失败");
-                
-                await m3UCombinerClient.FFmpeg.ConvertToMp4(m3UFileInfo, progress,cancellationToken);
+
+                await m3UCombinerClient.FFmpeg.ConvertToMp4(m3UFileInfo, progress, cancellationToken);
             }
         }
     }

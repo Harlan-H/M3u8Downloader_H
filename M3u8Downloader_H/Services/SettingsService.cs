@@ -32,7 +32,7 @@ namespace M3u8Downloader_H.Services
         [Range(1, 20)]
         public int RetryCount { get; set; } = 5;
 #if DEBUG
-        public string SavePath { get; set; } = @"E:\desktop\download";
+        public string SavePath { get; set; } = @"C:\Users\admin\Desktop\666\download";
 #else
        
         public string SavePath { get; set; } = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "download");
@@ -66,12 +66,10 @@ namespace M3u8Downloader_H.Services
         [Range(1, 300)]
         public int Timeouts { get; set; } = 30;
 
-        public bool ConcatMerger { get; set; } = false;
-
         public SettingsService()
         {
 #if DEBUG
-            Configuration.DirectoryName = @"e:\desktop\";
+            Configuration.DirectoryName = @"C:\Users\admin\Desktop\666";
 #endif
         }
 
@@ -96,7 +94,6 @@ namespace M3u8Downloader_H.Services
                 RecordDuration = RecordDuration,
                 Timeouts = Timeouts,
                 IsResetName = IsResetName,
-                ConcatMerger = ConcatMerger,
             };
         }
 
@@ -118,7 +115,6 @@ namespace M3u8Downloader_H.Services
             RecordDuration = other.RecordDuration;
             Timeouts = other.Timeouts;
             IsResetName = other.IsResetName;
-            ConcatMerger = other.ConcatMerger;
         }
 
         public void UpdateConcurrentDownloadCount()
