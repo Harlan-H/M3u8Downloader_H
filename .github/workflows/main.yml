@@ -31,11 +31,6 @@ jobs:
           dotnet publish M3u8Downloader_H/ -o M3u8Downloader_H/bin/Publish --configuration Release -p:EnableWindowsTargeting=true
           dotnet publish M3u8Downloader_H/ -o M3u8Downloader_H/bin/PublishSingleFile -c Release --self-contained true -r win-x64  -p:PublishSingleFile=true -p:EnableWindowsTargeting=true
 
-      - name: Download .NET 9 SDK And Copy .NET 9 SDK
-        run: |
-          Invoke-WebRequest -Uri 'https://download.visualstudio.microsoft.com/download/pr/99bd07c2-c95c-44dc-9d47-36d3b18df240/bdf26c62f69c1b783687c1dce83ccf7a/dotnet-runtime-9.0.0-win-x64.exe' -OutFile 'dotnet-9.0-runtime-x64.exe'
-          Copy-Item dotnet-9.0-runtime-x64.exe M3u8Downloader_H/bin/Publish -Recurse
-
       - name: Upload artifacts normal
         uses: actions/upload-artifact@v4
         with:
