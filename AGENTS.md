@@ -16,10 +16,11 @@ M3u8Downloader_H 是一个功能强大的 M3U8 视频流下载器，采用 C# WP
 - **HTTP API**：提供 RESTful API 接口，支持第三方调用
 - **长视频支持**：支持 MP4、FLV 等长视频格式下载
 - **文件夹快速合并**：支持拖拽文件夹实现快速视频合并
+- **高性能合并**：使用 pipe 方式与 FFmpeg 交互，避免文件 I/O，提高性能
 
 ### 项目信息
 
-- **当前版本**：4.0.1.0
+- **当前版本**：4.0.2.0
 - **目标框架**：.NET 9.0 Windows
 - **开发工具**：Visual Studio 2022
 - **许可证**：参见 LICENSE.txt
@@ -39,9 +40,19 @@ M3u8Downloader_H 是一个功能强大的 M3U8 视频流下载器，采用 C# WP
 
 ### NuGet 包
 
+**主项目**：
 - Caliburn.Micro (4.0.230)
 - MaterialDesignThemes (5.2.1)
 - PropertyChanged.Fody (4.1.0)
+
+**Combiners 项目**：
+- CliWrap (3.6.6) - 用于进程管理和 FFmpeg 交互
+
+**测试项目**：
+- FluentAssertions (8.0.1) - 断言库
+- xUnit (2.9.3) - 测试框架
+- Microsoft.NET.Test.Sdk (17.12.0) - 测试 SDK
+- coverlet.collector (3.1.2) - 代码覆盖率
 
 ## 项目架构
 
@@ -71,6 +82,9 @@ M3u8Downloader_H 是一个功能强大的 M3U8 视频流下载器，采用 C# WP
    - M3U8 文件合并
    - FFmpeg 视频转码
    - 支持多种视频格式
+   - **M3U8FileGenerator**：生成标准 M3U8 播放列表文件（支持 TS 和 FMP4）
+   - **Stream 交互**：使用 pipe 方式与 FFmpeg 交互，避免文件 I/O
+   - **高性能合并**：直接通过内存流传递 M3U8 内容
 
 5. **M3u8Downloader_H.M3U8**（M3U8 解析）
    - M3U8 文件解析
@@ -110,6 +124,8 @@ M3u8Downloader_H 是一个功能强大的 M3U8 视频流下载器，采用 C# WP
 12. **M3u8Downloader_H.Test**（测试项目）
     - 单元测试
     - 集成测试
+    - **FFmpegConverterTests**：FFmpeg 转换器测试
+    - **M3U8FileGenerator 测试**：M3U8 文件生成器测试
 
 ### 架构模式
 
@@ -148,6 +164,12 @@ dotnet build --configuration Release
 
 # 运行
 dotnet run --project M3u8Downloader_H\M3u8Downloader_H.csproj
+
+# 运行测试
+dotnet test --configuration Debug
+
+# 运行特定测试
+dotnet test --filter "FFmpegConverterTests"
 ```
 
 ### 发布应用
@@ -175,6 +197,7 @@ dotnet publish M3u8Downloader_H/ -o PublishSingleFile -c Release --self-containe
 
 - 使用 **C# 10.0+** 语法特性
 - 启用 **可空引用类型**（Nullable Reference Types）
+- 启用 **ImplicitUsings**（隐式 using）
 - 遵循 **.NET 命名约定**：
   - 类名使用 PascalCase
   - 方法名使用 PascalCase
@@ -182,6 +205,8 @@ dotnet publish M3u8Downloader_H/ -o PublishSingleFile -c Release --self-containe
   - 属性使用 PascalCase
 - 使用 **异步编程**（async/await）处理 I/O 操作
 - 适当使用 **异常处理**和日志记录
+- **Stream 操作**：使用 `using var` 确保 Stream 正确释放
+- **性能优化**：优先使用 Stream 方式而非字符串转换
 
 ### MVVM 架构约定
 
@@ -226,7 +251,10 @@ dotnet publish M3u8Downloader_H/ -o PublishSingleFile -c Release --self-containe
    - 直播流：`LiveM3uDownloader`
    - 插件支持：`PluginM3u8Downloader`
    - 长视频：`MediaDownloader` 或 `LiveVideoDownloader`
-4. **合并和转码**：使用 `M3uCombinerClient` 合并文件并转码为 MP4
+4. **合并和转码**：
+   - 使用 `M3U8FileGenerator` 生成 M3U8 播放列表（支持 Stream 方式）
+   - 使用 `M3uCombinerClient` 通过 pipe 方式与 FFmpeg 交互
+   - 直接在内存中完成转码，无需临时文件
 
 ### API 接口
 
@@ -254,6 +282,43 @@ REST API 服务器监听端口范围：65400-65432
    - 方法：POST
    - 参数：URL 和内容
    - 返回：解析后的 M3U8 文件信息
+
+### M3U8FileGenerator 使用
+
+**M3U8FileGenerator** 是一个高性能的 M3U8 播放列表生成器，支持：
+
+- **生成字符串**：`GenerateM3U8Content()` - 返回 M3U8 内容字符串
+- **生成文件**：`GenerateM3U8File(filePath)` - 保存到指定文件
+- **生成 Stream**：`GenerateM3U8Stream()` - 返回 MemoryStream（推荐用于 pipe 方式）
+
+**Stream 方式的优势**：
+- 避免字符串到字节数组的重复转换
+- 减少内存分配
+- 直接传递给 FFmpeg 的 stdin
+- 自动资源管理（using var）
+
+**使用示例**：
+```csharp
+// 生成 Stream 并传递给 FFmpeg
+using var m3u8Stream = m3uFileInfo.GenerateM3U8Stream();
+await ffmpeg.ConvertToMp4WithPipe(m3u8Stream, progress, cancellationToken);
+```
+
+### 高性能合并方案
+
+项目采用 pipe 方式与 FFmpeg 交互，实现高性能视频合并：
+
+**优势**：
+1. **无文件 I/O**：不需要创建临时 M3U8 文件
+2. **内存操作**：所有操作在内存中完成
+3. **自动清理**：无需手动删除临时文件
+4. **更好的性能**：减少磁盘读写操作
+
+**实现方式**：
+- 使用 `CliWrap` 库进行进程管理
+- 通过 `PipeSource.FromStream()` 将 M3U8 Stream 传递给 FFmpeg
+- FFmpeg 使用 `-i pipe:0` 从标准输入读取 M3U8 内容
+- 支持 TS 和 FMP4 格式
 
 ### 设置说明
 
@@ -285,7 +350,13 @@ M3u8Downloader_H/
 │   └── MediaDownloads/               # 媒体下载器
 ├── M3u8Downloader_H.Combiners/       # 合并器
 │   ├── M3uCombiners/                 # M3U8 合并器
-│   └── VideoConverter/               # 视频转换器
+│   ├── VideoConverter/               # 视频转换器
+│   ├── Utils/                        # 工具类
+│   │   ├── M3U8FileGenerator.cs      # M3U8 文件生成器
+│   │   └── DirEx.cs                  # 目录工具
+│   └── Extensions/                   # 扩展方法
+│       ├── IM3uFileInfoExtensions.cs # M3U8 扩展方法
+│       └── M3uFileInfoExtension.cs   # M3U8 信息扩展
 ├── M3u8Downloader_H.M3U8/            # M3U8 解析
 │   ├── M3UFileReaders/               # 文件读取器
 │   ├── AttributeReaders/             # 属性读取器
@@ -382,6 +453,15 @@ A: 检查：
 详细的版本更新记录请参见 [Changelog.md](Changelog.md)。
 
 ### 最近更新
+
+**4.0.2.0 (2026/03/18)**
+- 优化 M3U8 合并方案，使用 pipe 方式与 FFmpeg 交互
+- 新增 M3U8FileGenerator 类，支持直接生成 Stream
+- 添加 IM3uFileInfoExtensions 扩展方法
+- 修改 FFmpeg 类，支持 Stream 输入
+- 添加 FFmpegConverterTests 测试类
+- 性能优化：避免文件 I/O，减少内存分配
+- 添加 CliWrap 依赖用于进程管理
 
 **4.0.1 (2025/05/23)**
 - 修复上次更新后导致合并出现报错的问题
