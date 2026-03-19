@@ -11,6 +11,7 @@
     <Product>m3u8视频下载器</Product>
     <ApplicationIcon>icon.ico</ApplicationIcon>
     <Authors>Harlan</Authors>
+	<EnableWindowsTargeting>true</EnableWindowsTargeting>
     <Nullable>enable</Nullable>
     <UseWPF>True</UseWPF>
   </PropertyGroup>
