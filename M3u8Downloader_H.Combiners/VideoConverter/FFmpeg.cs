@@ -6,6 +6,9 @@ using M3u8Downloader_H.Abstractions.Common;
 using M3u8Downloader_H.Abstractions.Settings;
 using M3u8Downloader_H.Abstractions.M3u8;
 using M3u8Downloader_H.Combiners.Utils;
+using System.Diagnostics;
+using M3u8Downloader_H.Combiners.Extensions;
+using CliWrap.EventStream;
 
 namespace M3u8Downloader_H.Combiners.VideoConverter
 {
@@ -13,11 +16,12 @@ namespace M3u8Downloader_H.Combiners.VideoConverter
     {
         public string CachePath { get; set; } = DownloadParams.CachePath;
 
-        private readonly string _filePath
+
+        private static readonly string _filePath
 #if DEBUG
-    = new(@"F:\源代码\库\ffmpeg\bin\ffmpeg.exe");
+            = new(@"C:\Users\admin\Desktop\ffmpeg\ffmpeg.exe");
 #else
-            = new("./ffmpeg.exe");
+            = new(Path.Combine(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ffmpeg.exe")));
 #endif
 
         public async ValueTask ConvertToMp4(IList<IStreamInfo> medias, IDialogProgress dialogProgress,CancellationToken cancellationToken = default)
@@ -27,21 +31,9 @@ namespace M3u8Downloader_H.Combiners.VideoConverter
             {
                 arguments.Add("-i").Add(item.Title);
             }
+            arguments.Add("-allowed_extensions").Add("tmp");
 
-            await ConvertToMp4(arguments, dialogProgress, cancellationToken);
-        }
-
-        public async ValueTask ConvertToMp4(string m3u8ConcatTxt, IDialogProgress dialogProgress, CancellationToken cancellationToken = default)
-        {
-            if (!File.Exists(m3u8ConcatTxt))
-                throw new ArgumentException($"{m3u8ConcatTxt} 文件不存在");
-            
-            var arguments = new ArgumentsBuilder();
-            arguments.Add("-f").Add("concat")
-                    .Add("-safe").Add(0)
-                    .Add("-i").Add(m3u8ConcatTxt)
-                    .Add("-bsf:a").Add("aac_adtstoasc");
-            await ConvertToMp4(arguments, dialogProgress, cancellationToken);
+            await ConvertToMp4(arguments, dialogProgress,null, cancellationToken);
         }
 
         public async ValueTask ConvertToMp4(IM3uFileInfo m3UFileInfo, IDialogProgress dialogProgress, CancellationToken cancellationToken = default)
@@ -49,45 +41,33 @@ namespace M3u8Downloader_H.Combiners.VideoConverter
             if (!m3UFileInfo.MediaFiles.Any())
                 throw new ArgumentException("m3u8文件内的文件不能为空");
 
-            StringBuilder stringBuilder = new();
-
-            if (Settings.ConcatMerger)
+            PipeSource pipeSource = default!;
+            var arguments = new ArgumentsBuilder();
+            if (m3UFileInfo.IsFile && m3UFileInfo.MediaFiles.First().Duration == 0)
             {
-                Log?.Info("列表合并方式已开启");
-
-                foreach (var info in m3UFileInfo.MediaFiles)
-                {
-                    stringBuilder.AppendLine($"file '{info.Title}'");
-                }
-
-                var m3u8ConcatTxt = Path.Combine(DownloadParams.CachePath, "file_list.txt");
-                File.WriteAllText(m3u8ConcatTxt, stringBuilder.ToString());
-                await ConvertToMp4(m3u8ConcatTxt, dialogProgress, cancellationToken);
-                File.Delete(m3u8ConcatTxt);
+                arguments.Add("-f").Add("concat")
+                        .Add("-safe").Add(0);
+                pipeSource = PipeSource.Create(m3UFileInfo.GenerateConcatStream(CachePath));
             }
             else
             {
-
-                stringBuilder.Append("concat:");
-                stringBuilder.Append(m3UFileInfo.MediaFiles[0].Title);
-                for (int i = 1; i < m3UFileInfo.MediaFiles.Count; i++)
-                {
-                    stringBuilder.Append('|');
-                    stringBuilder.Append(m3UFileInfo.MediaFiles[i].Title);
-                }
-
-                var arguments = new ArgumentsBuilder();
-                arguments.Add("-i").Add(stringBuilder.ToString())
-                         .Add("-bsf:a").Add("aac_adtstoasc");
-                await ConvertToMp4(arguments, dialogProgress, cancellationToken);
+                arguments.Add("-f").Add("hls")
+                    //allowed_extensions必须在-i pipe:0之前执行否则会报错"If you wish to override this adjust allowed_extensions, you can set it to 'ALL' to allow all"
+                    .Add("-allowed_extensions").Add("tmp");
+                pipeSource = PipeSource.Create(m3UFileInfo.GenerateM3U8Stream(CachePath));
             }
 
+            arguments
+                .Add("-protocol_whitelist").Add("file,pipe")
+                .Add("-i").Add("pipe:0")
+                .Add("-bsf:a").Add("aac_adtstoasc");
+            await ConvertToMp4(arguments, dialogProgress, pipeSource, cancellationToken);
         }
 
-        private async ValueTask ConvertToMp4(ArgumentsBuilder argumentsBuilder, IDialogProgress dialogProgress, CancellationToken cancellationToken = default)
+
+        private async ValueTask ConvertToMp4(ArgumentsBuilder argumentsBuilder, IDialogProgress dialogProgress,PipeSource? pipe, CancellationToken cancellationToken = default)
         {
             argumentsBuilder
-                     .Add("-allowed_extensions").Add("ALL")
                      .Add("-f").Add(Settings.SelectedFormat)
                      .Add("-c:a").Add("copy")
                      .Add("-c:v").Add("copy");
@@ -99,12 +79,13 @@ namespace M3u8Downloader_H.Combiners.VideoConverter
 
             DirEx.CreateDirecotry(DownloadParams.SavePath);
 
-            await ExecuteAsync(argumentsBuilder.Build(), dialogProgress, cancellationToken);
+            await ExecuteAsync(argumentsBuilder.Build(), dialogProgress, pipe, cancellationToken);
         }
 
         private async ValueTask ExecuteAsync(
              string arguments,
              IProgress<double> progress,
+             PipeSource ?pipe,
              CancellationToken cancellationToken = default)
         {
             var stdErrBuffer = new StringBuilder();
@@ -113,13 +94,16 @@ namespace M3u8Downloader_H.Combiners.VideoConverter
                 PipeTarget.ToStringBuilder(stdErrBuffer), // error data collector
                 progress?.Pipe(p => new FFmpegProgressRouter(p)) ?? PipeTarget.Null // progress
             );
-
-            var result = await Cli.Wrap(_filePath)
+            
+            var commad = Cli.Wrap(_filePath)
                 .WithArguments(arguments)
-                .WithWorkingDirectory(CachePath)
                 .WithStandardErrorPipe(stdErrPipe)
-                .WithValidation(CommandResultValidation.None)
-                .ExecuteAsync(cancellationToken);
+                .WithValidation(CommandResultValidation.None);
+
+            if (pipe is not null)
+                commad = commad.WithStandardInputPipe(pipe);
+
+            var result = await commad.ExecuteAsync(cancellationToken);
 
             if (result.ExitCode != 0)
             {
@@ -138,6 +122,7 @@ namespace M3u8Downloader_H.Combiners.VideoConverter
                 );
             }
         }
+      
     }
 }
 

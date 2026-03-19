@@ -5,6 +5,7 @@ using Caliburn.Micro;
 using M3u8Downloader_H.Services;
 using M3u8Downloader_H.ViewModels;
 using M3u8Downloader_H.ViewModels.Menus;
+using System.Text;
 #if !DEBUG
 using System.Windows.Threading;
 #endif
@@ -18,7 +19,8 @@ namespace M3u8Downloader_H
         public Bootstrapper()
         {
             Initialize();
-           // ViewLocator.LocateTypeForModelType = MyLocateTypeForModelType;
+            // ViewLocator.LocateTypeForModelType = MyLocateTypeForModelType;
+           //System.Console.InputEncoding = Encoding.UTF8;
         }
 
         protected override void Configure()
