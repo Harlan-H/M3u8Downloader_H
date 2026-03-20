@@ -29,7 +29,7 @@ namespace M3u8Downloader_H.Combiners.VideoConverter
             var arguments = new ArgumentsBuilder();
             foreach (var item in medias)
             {
-                arguments.Add("-i").Add(item.Title);
+                arguments.Add("-i").Add(Path.Combine(CachePath, item.Title));
             }
             arguments.Add("-allowed_extensions").Add("tmp");
 
