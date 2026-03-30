@@ -1,25 +1,35 @@
-﻿using M3u8Downloader_H.Models;
-using M3u8Downloader_H.ViewModels.FrameWork;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using M3u8Downloader_H.FrameWork;
+using M3u8Downloader_H.Models;
 
-namespace M3u8Downloader_H.ViewModels
+namespace M3u8Downloader_H.ViewModels.Dialogs
 {
-    public partial class DeleteDialogViewModel : DialogScreen<DeleteDialogResult>
+    public partial class DeleteDialogViewModel : DialogViewModelBase<DeleteDialogResult>
     {
-        public string? Title { get; set; }
-        public int Count { get; set; } = 0;
 
-        public string ConfirmBtnText { get; set; } = default!;
-        public string CancelBtnText { get; set; } = default!;
+        [ObservableProperty]
+        public partial int Count { get; set; } = 0;
 
-        public bool IsDeleteCached { get; set; }
+        [ObservableProperty]
+        public partial string ConfirmBtnText { get; set; } = default!;
 
-        public void Confirm()
+        [ObservableProperty]
+        public partial string CancelBtnText { get; set; } = default!;
+
+        [ObservableProperty]
+
+        public partial bool IsDeleteCached { get; set; }
+
+        [RelayCommand]
+        private void Confirm()
         {
             DeleteDialogResult deleteDialogResult = new(true, IsDeleteCached);
             Close(deleteDialogResult);
         }
 
-        public void Cancel()
+        [RelayCommand]
+        private void Cancel()
         {
             DeleteDialogResult deleteDialogResult = new(false, IsDeleteCached);
             Close(deleteDialogResult);

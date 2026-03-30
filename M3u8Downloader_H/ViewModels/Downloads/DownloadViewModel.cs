@@ -1,97 +1,104 @@
-﻿using System;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using M3u8Downloader_H.Abstractions.Common;
+using M3u8Downloader_H.Common.Models;
+using M3u8Downloader_H.Core;
+using M3u8Downloader_H.Models;
+using M3u8Downloader_H.Utils;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using M3u8Downloader_H.Services;
-using M3u8Downloader_H.Utils;
-using M3u8Downloader_H.Models;
 using System.Timers;
-using M3u8Downloader_H.Abstractions.Common;
-using Caliburn.Micro;
-using M3u8Downloader_H.Common.Models;
-using M3u8Downloader_H.Abstractions.M3u8;
-using M3u8Downloader_H.Core;
 
-namespace M3u8Downloader_H.ViewModels
+namespace M3u8Downloader_H.ViewModels.Downloads
 {
-    public  partial class DownloadViewModel(SettingsService settingsService, SoundService soundService) : PropertyChangedBase
+    public partial class DownloadViewModel(IDownloadParamBase DownloadParam) : ViewModelBase
     {
         private readonly ThrottlingSemaphore throttlingSemaphore = ThrottlingSemaphore.Instance;
-        private readonly SettingsService settingsService = settingsService;
         private CancellationTokenSource? cancellationTokenSource;
-        private DownloaderCoreClient downloaderCoreClient = default!;
-        protected IDownloadParamBase DownloadParam = default!;
         protected DownloadProgress? downloadProgress;
 
+        public DownloaderCoreClient downloaderCoreClient = default!;
 
-        public MyLog Log { get; } = new();
-        public Uri RequestUrl { get; set; } = default!;
+        [ObservableProperty]
+        public partial MyLog Log { get; set; } = new();
 
-        public string VideoName { get; set; } = default!;
+        [ObservableProperty]
+        public partial Uri RequestUrl { get; set; } 
+        [ObservableProperty]
+        public partial string VideoName { get; set; }
+        [ObservableProperty]
+        public partial double ProgressNum { get; set; }
+        [ObservableProperty]
+        public partial long DownloadRateBytes { get; set; } = -1;
 
-        public double ProgressNum { get; set; }
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(IsProgressIndeterminate))]
+        [NotifyCanExecuteChangedFor(nameof(CancelCommand), nameof(RestartCommand))]
+        public partial bool IsActive { get; set; }
 
-        public long DownloadRateBytes { get; set; } = -1;
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(IsProgressIndeterminate))]
+        [NotifyCanExecuteChangedFor(nameof(ShowFileCommand), nameof(CancelCommand), nameof(RestartCommand))]
+        public partial DownloadStatus Status { get; set; }
 
-        public bool IsActive { get; private set; }
 
-        public DownloadStatus Status { get; set; }
+        public  bool IsProgressIndeterminate => IsActive && Status < DownloadStatus.StartedVod;
 
-        public bool IsProgressIndeterminate => IsActive && Status < DownloadStatus.StartedVod;
 
-        public string? FailReason { get; private set; } = string.Empty;
-
-        public bool CanOnStart => !IsActive;
-
-        public void OnStart()
+        public async void Start()
         {
-            if (!CanOnStart)
+            if (IsActive)
                 return;
 
             IsActive = true;
 
-            _ = Task.Run(async () =>
+            try
             {
-                try
+                int rand = Random.Shared.Next(100);
+                Status = DownloadStatus.Enqueued;
+                cancellationTokenSource = new CancellationTokenSource();
+                //using var semaphore = await throttlingSemaphore.AcquireAsync(cancellationTokenSource.Token);
+                await Task.Delay(2000, cancellationTokenSource.Token);
+                Status = DownloadStatus.StartedVod;
+                for (var i = 0; i < 100; i++)
                 {
-                    Status = DownloadStatus.Enqueued;
-                    cancellationTokenSource = new CancellationTokenSource();
-                    using var semaphore = await throttlingSemaphore.AcquireAsync(cancellationTokenSource.Token);
-
-                    downloadProgress ??= new(this);
-                    await downloaderCoreClient.Downloader.StartDownload(s => Status = (DownloadStatus)s, downloadProgress, cancellationTokenSource.Token);
-                    soundService.PlaySuccess(settingsService.IsPlaySound);
-                    Status = DownloadStatus.Completed;
-                }
-                catch (OperationCanceledException) when (cancellationTokenSource!.IsCancellationRequested)
-                {
-                    Status = DownloadStatus.Canceled;
-                    Log.Info("已经停止下载");
-                }
-                catch (Exception e)
-                {
-                    soundService.PlayError(settingsService.IsPlaySound);
-                    Status = DownloadStatus.Failed;
-                    FailReason = e.ToString();
-                    Log.Error(e);
-                }
-                finally
-                {
-                    IsActive = false;
-                    downloadProgress?.Clear();
-                    cancellationTokenSource?.Dispose();
+                    ProgressNum += 0.01;
+                    await Task.Delay(1000, cancellationTokenSource.Token);
+                    if (i == rand)
+                        throw new InvalidDataException("随机异常");
                 }
 
-            });
+//                     downloadProgress ??= new(this);
+//                     await downloaderCoreClient.Downloader.StartDownload(s => Status = (DownloadStatus)s, downloadProgress, cancellationTokenSource.Token);
+                Status = DownloadStatus.Completed;
+            }
+            catch (OperationCanceledException) when (cancellationTokenSource!.IsCancellationRequested)
+            {
+                Status = DownloadStatus.Canceled;
+                Log.Info("已经停止下载");
+            }
+            catch (Exception e)
+            {
+                Status = DownloadStatus.Failed;
+                Log.Error(e);
+            }
+            finally
+            {
+                IsActive = false;
+                downloadProgress?.Clear();
+                cancellationTokenSource?.Dispose();
+            }
+
         }
 
-        public bool CanOnShowFile => Status == DownloadStatus.Completed;
-        public virtual void OnShowFile()
-        {
-            if (!CanOnShowFile)
-                return;
+        private bool CanShowFile => Status == DownloadStatus.Completed;
 
+        [RelayCommand(CanExecute = nameof(CanShowFile))]
+        private void ShowFile()
+        {
             try
             {
                 Process.Start("explorer", $"/select, \"{DownloadParam.VideoFullName}\"");
@@ -102,30 +109,31 @@ namespace M3u8Downloader_H.ViewModels
         }
 
 
-        public bool CanOnCancel => IsActive && Status != DownloadStatus.Canceled;
-        public void OnCancel()
-        {
-            if (!CanOnCancel)
-                return;
+        public bool CanCancel => IsActive && Status != DownloadStatus.Canceled;
 
+        [RelayCommand(CanExecute = nameof(CanCancel))]
+        private void Cancel()
+        {
             cancellationTokenSource?.Cancel();
         }
 
-        public bool CanOnRestart => CanOnStart && Status != DownloadStatus.Completed;
+        private bool CanRestart => !IsActive && Status != DownloadStatus.Completed;
 
-        public void OnRestart() => OnStart();
+        [RelayCommand(CanExecute = nameof(CanRestart))]
+        private void Restart() => Start();
 
-        public void DeleteCache(bool isDelete = true,bool isShowLog = false)
+        
+        public void DeleteCache(bool isDelete = true, bool isShowLog = false)
         {
             if (!isDelete)
                 return;
 
             DirectoryInfo directory = new(DownloadParam.CachePath);
-            if (!directory.Exists) return ;
-                
+            if (!directory.Exists) return;
+
             directory.Delete(true);
 
-            if(isShowLog)
+            if (isShowLog)
                 Log.Info("删除{0}目录成功", directory);
         }
 
@@ -133,9 +141,9 @@ namespace M3u8Downloader_H.ViewModels
 
     public partial class DownloadViewModel : IEquatable<DownloadViewModel>
     {
-        
+
         public bool Equals(DownloadViewModel? other) => GetHashCode() == other?.GetHashCode();
-        public override bool Equals(object? obj) =>  obj is DownloadViewModel  downloadviewmodel && Equals(downloadviewmodel);
+        public override bool Equals(object? obj) => obj is DownloadViewModel downloadviewmodel && Equals(downloadviewmodel);
         public override int GetHashCode() => StringComparer.Ordinal.GetHashCode(DownloadParam.CachePath);
         public static bool operator ==(DownloadViewModel downloadviewmode, DownloadViewModel downloadviewmode1) => downloadviewmode.Equals(downloadviewmode1);
         public static bool operator !=(DownloadViewModel downloadviewmode, DownloadViewModel downloadviewmode1) => !(downloadviewmode == downloadviewmode1);
@@ -200,42 +208,43 @@ namespace M3u8Downloader_H.ViewModels
     public partial class DownloadViewModel
     {
         public static DownloadViewModel CreateDownloadViewModel(
-            IM3u8DownloadParam m3U8DownloadParam,
-            Type? pluginType)
+         string requestUrl,
+         string videoName)
         {
-            DownloadViewModel viewModel = IoC.Get<DownloadViewModel>();
-            viewModel.DownloadParam = m3U8DownloadParam;
-            viewModel.RequestUrl = m3U8DownloadParam.RequestUrl;
-            viewModel.VideoName = m3U8DownloadParam.VideoName;
-
-            viewModel.downloaderCoreClient = new(Http.Client, m3U8DownloadParam, viewModel.settingsService.Clone(), viewModel.Log, pluginType); 
-            return viewModel;
+            var downloadViewModel = new DownloadViewModel(default!)
+            {
+                RequestUrl =new Uri(requestUrl),
+                VideoName = videoName
+            };
+            return downloadViewModel;
         }
+    
+        // 
+        //         public static DownloadViewModel CreateDownloadViewModel(
+        //             IM3uFileInfo m3UFileInfo,
+        //             IDownloadParamBase m3U8DownloadParam,
+        //             Type? pluginType)
+        //         {
+        //             DownloadViewModel viewModel = null!;
+        //             viewModel.DownloadParam = m3U8DownloadParam;
+        //             viewModel.VideoName = m3U8DownloadParam.VideoName;
+        // 
+        //             viewModel.downloaderCoreClient = new(Http.Client, m3U8DownloadParam, viewModel.settingsService.Clone(), viewModel.Log, pluginType, m3UFileInfo);
+        //             return viewModel;
+        //         }
+        // 
+        //         public static DownloadViewModel CreateDownloadViewModel(
+        //              IMediaDownloadParam m3U8DownloadParam)
+        //         {
+        //             DownloadViewModel viewModel = null!;
+        //             viewModel.DownloadParam = m3U8DownloadParam;
+        //             viewModel.RequestUrl = m3U8DownloadParam.Medias[0].Url;
+        //             viewModel.VideoName = m3U8DownloadParam.VideoName;
+        // 
+        //             viewModel.downloaderCoreClient = new DownloaderCoreClient(Http.Client, m3U8DownloadParam, viewModel.settingsService.Clone(), viewModel.Log);
+        //             return viewModel;
+        //         }
+             }
 
-        public static DownloadViewModel CreateDownloadViewModel(
-            IM3uFileInfo m3UFileInfo,
-            IDownloadParamBase m3U8DownloadParam,
-            Type? pluginType)
-        {
-            DownloadViewModel viewModel = IoC.Get<DownloadViewModel>();
-            viewModel.DownloadParam = m3U8DownloadParam;
-            viewModel.VideoName = m3U8DownloadParam.VideoName;
-
-            viewModel.downloaderCoreClient = new(Http.Client, m3U8DownloadParam, viewModel.settingsService.Clone(), viewModel.Log, pluginType, m3UFileInfo);
-            return viewModel;
-        }
-
-        public static DownloadViewModel CreateDownloadViewModel(
-             IMediaDownloadParam m3U8DownloadParam)
-        {
-            DownloadViewModel viewModel = IoC.Get<DownloadViewModel>();
-            viewModel.DownloadParam = m3U8DownloadParam;
-            viewModel.RequestUrl = m3U8DownloadParam.Medias[0].Url;
-            viewModel.VideoName = m3U8DownloadParam.VideoName;
-
-            viewModel.downloaderCoreClient = new DownloaderCoreClient(Http.Client, m3U8DownloadParam, viewModel.settingsService.Clone(), viewModel.Log);
-            return viewModel;
-        }
     }
 
-}

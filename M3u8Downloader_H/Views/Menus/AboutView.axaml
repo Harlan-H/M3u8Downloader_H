@@ -1,0 +1,43 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             xmlns:vm="using:M3u8Downloader_H.ViewModels.Menus"
+             x:DataType="vm:AboutViewModel"
+             x:Class="M3u8Downloader_H.Views.Menus.AboutView">
+    <UserControl.Styles>
+		<Style Selector="TextBlock">
+			<Setter Property="FontSize" Value="18" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+        </Style>
+    </UserControl.Styles>
+
+      <Grid VerticalAlignment="Center" RowDefinitions="50,auto,auto">
+        <TextBlock   Text="本软件完全免费，且开源"  VerticalAlignment="Center" />
+
+        <StackPanel Grid.Row="1"   >
+            <TextBlock  Text="本软件开源地址:" />
+            <HyperlinkButton FontSize="18" Theme="{StaticResource MaterialHyperlinkButton}" HorizontalAlignment="Center" Content="https://github.com/Harlan-H/M3u8Downloader_H" 
+                             ToolTip.Tip="https://github.com/Harlan-H/M3u8Downloader_H" 
+                             Command="{Binding ExploreCommand}"
+                             CommandParameter="{Binding $self.Content}"
+                             />
+            <TextBlock Text="帮助文档:"   />
+            <HyperlinkButton FontSize="18" Theme="{StaticResource MaterialHyperlinkButton}" HorizontalAlignment="Center" Content="https://github.com/Harlan-H/M3u8Downloader_H/wiki" 
+                             ToolTip.Tip="https://github.com/Harlan-H/M3u8Downloader_H/wiki" 
+                             Command="{Binding ExploreCommand}"
+                             CommandParameter="{Binding $self.Content}"
+                              />
+            <HyperlinkButton FontSize="18" Theme="{StaticResource MaterialHyperlinkButton}" HorizontalAlignment="Center" Content="http://note.youdao.com/noteshare?id=c6ba2fb478ad300b7095c7c951556fc6" 
+                             ToolTip.Tip="http://note.youdao.com/noteshare?id=c6ba2fb478ad300b7095c7c951556fc6" 
+                             Command="{Binding ExploreCommand}"
+                             CommandParameter="{Binding $self.Content}"
+                     />
+        </StackPanel>
+        <Grid Grid.Row="2">
+        <TextBlock  HorizontalAlignment="Right" VerticalAlignment="Center"  Text="Copyright (c) 2026 Harlan" Margin="0 5 32 0" />
+
+        </Grid>
+    </Grid>
+</UserControl>

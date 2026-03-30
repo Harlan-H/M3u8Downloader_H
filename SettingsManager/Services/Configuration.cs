@@ -6,8 +6,5 @@
         public string DirectoryName { get; set; } = string.Empty;
         public string FileName { get; set; } = "Settings.dat";
 
-        public bool ThrowIfCannotSave { get; set; } = true;
-
-        public bool ThrowIfCannotLoad { get; set; } = true;
     }
 }

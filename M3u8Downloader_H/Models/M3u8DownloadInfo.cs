@@ -1,27 +1,31 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using Caliburn.Micro;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using M3u8Downloader_H.Common.DownloadPrams;
 using M3u8Downloader_H.Services;
+using System;
+using System.IO;
+using System.Linq;
+using static System.Net.Mime.MediaTypeNames;
 
 
 namespace M3u8Downloader_H.Models
 {
-    public class M3u8DownloadInfo : PropertyChangedBase
+    public partial class M3u8DownloadInfo : ObservableObject
     {
         private static readonly string[] extensionArr = ["m3u8", "json", "txt"];
 
-        public string RequestUrl { get; set; } = default!;
-        public string VideoName { get; set; } = default!;
+        [ObservableProperty]
+        public partial string[] MethodArr { get; private set; } = ["AES-128", "AES-196", "AES-256"];
 
-        public string Method { get; set; } = default!;
-        public string? Key { get; set; } = default!;
-        public string? Iv { get; set; } = default!;
-
-        public Action<Uri> HandleTextAction { get; set; } = default!;
-        public Action<M3u8DownloadParams, string?> NormalProcessDownloadAction { get; set; } = default!;
-
+        [ObservableProperty]
+        public partial string RequestUrl { get; set; }
+        [ObservableProperty]
+        public partial string VideoName { get; set; }
+        [ObservableProperty]
+        public partial string Method { get; set; } = "AES-128";
+        [ObservableProperty]
+        public partial string? Key { get; set; } 
+        [ObservableProperty]
+        public partial string? Iv { get; set; }
 
         public void Reset(bool resetUrl,bool resetName)
         {
@@ -32,35 +36,17 @@ namespace M3u8Downloader_H.Models
             Iv = null;
         }
 
-
-        public void DoProcess(SettingsService settingsService)
+        public Uri GetRequestUri()
         {
-            if(string.IsNullOrWhiteSpace(RequestUrl))
-                throw new InvalidOperationException("下载地址不能为空");
-
-            Uri uri = new(RequestUrl!, UriKind.Absolute);
+            Uri uri = new(RequestUrl, UriKind.Absolute);
             if (!uri.IsFile)
-            {
-                M3u8DownloadParams m3U8DownloadParams = new(new Uri(RequestUrl), VideoName, settingsService.SavePath, settingsService.SelectedFormat, settingsService.Headers, Method, Key, Iv);
-                NormalProcessDownloadAction(m3U8DownloadParams, null);
-                return;
-            }
-
+                return uri;
 
             string ext = Path.GetExtension(RequestUrl).Trim('.');
-            string extension = extensionArr.Where(e => e == ext).FirstOrDefault() ?? throw new InvalidOperationException("请确认是否为.m3u8或.txt或.json");
-            if (extension == "txt")
-            {
-                HandleTextAction(uri);
-                return;
-            }
-            else
-            {
-                M3u8DownloadParams m3U8DownloadParams = new(new Uri(RequestUrl), VideoName, settingsService.SavePath, settingsService.SelectedFormat, settingsService.Headers, Method, Key, Iv);
-                NormalProcessDownloadAction(m3U8DownloadParams, null);
-                return;
-            }
+            if(extensionArr.FirstOrDefault(e => e == ext) is null)
+                throw new InvalidOperationException("请确认是否为.m3u8或.json文件");
+            
+            return uri;
         }
-
     }
 }

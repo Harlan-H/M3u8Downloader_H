@@ -1,0 +1,54 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:windows="using:M3u8Downloader_H.ViewModels.Windows"
+             xmlns:behavior="using:M3u8Downloader_H.Behaviors"
+            xmlns:system="clr-namespace:System;assembly=System.Runtime"
+             x:DataType="windows:M3u8WindowViewModel"
+             x:Class="M3u8Downloader_H.Views.Windows.M3u8WindowView">
+    
+
+  <Grid ColumnDefinitions="*,auto" Height="200" Name="videoDownloadInfoGrid" DataContext="{Binding VideoDownloadInfo}">
+        <StackPanel >
+            <TextBox Text="{Binding RequestUrl,Delay=150}" 
+                        Classes="clearButton dense" 
+                        Watermark="下载地址,m3u8,txt,json文件(文件可以直接拖拽到此)"  FontSize="18"  VerticalAlignment="Center" >
+                <Interaction.Behaviors>
+                    <ButtonOpenFilePickerBehavior />
+                    <behavior:DragAndDropBehavior IsFile="True" FilterString=".m3u8|.txt|.json" />
+                </Interaction.Behaviors>
+            </TextBox>
+            <TextBox Text="{Binding VideoName,Delay=150}" 
+                    Classes="clearButton dense" 
+                    Watermark="视频名称(可以不填写,不写默认随机名称)" FontSize="18"  VerticalAlignment="Center">
+            </TextBox>
+
+            <!-- 密钥填写区  -->
+            <Grid ColumnDefinitions="auto,*"   >
+                <ComboBox Grid.Column="0"   SelectedValue="{Binding Method}"  ItemsSource="{Binding MethodArr}"  FontSize="18" >
+                    <ComboBox.Styles>
+						<Style Selector="ComboBox /template/ Panel#PART_RootPanel > Grid">
+							<Setter Property="VerticalAlignment" Value="Bottom" />
+                        </Style>
+                    </ComboBox.Styles>
+                </ComboBox>
+                <TextBox Margin="5,0,0,2" Grid.Column="1" Classes="dense" Text="{Binding Key}" FontSize="18"
+                        Watermark="KEY(字符串或者base64)" />
+            </Grid>
+            <TextBox Text="{Binding Iv}"    FontSize="18"  Classes="dense"
+                        Watermark="IV(例如0x11223344556677888877665544332211)"/>
+        </StackPanel>
+
+        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+            <Button  
+            Command="{Binding $parent[UserControl].((windows:M3u8WindowViewModel)DataContext).ProcessM3u8DownloadCommand}" 
+            CommandParameter="{Binding}" Margin="5" Width="150" >
+                <avalonia:MaterialIcon Kind="Download" Width="18" Height="18" />
+            </Button>
+
+        </StackPanel>
+    </Grid>
+</UserControl>

@@ -1,0 +1,45 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:menu="using:M3u8Downloader_H.ViewModels.Menus"
+        xmlns:viewmodels="using:M3u8Downloader_H.ViewModels"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="M3u8Downloader_H.Views.DashboardWindow"
+        x:DataType="viewmodels:DashboardWindowViewModel"
+        Title="m3u8视频下载器 by:Harlan">
+    <Design.DataContext>
+        <viewmodels:DashboardWindowViewModel/>
+    </Design.DataContext>
+
+    <Window.Resources>
+		<ResourceDictionary>
+			<ResourceDictionary.MergedDictionaries>
+				<ResourceInclude Source="/Assets/icons.axaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+
+        <Interaction.Behaviors>
+        <LoadedTrigger>
+			<InvokeCommandAction Command="{Binding InitializeAsyncCommand}" />
+        </LoadedTrigger>
+        <DialogClosedTrigger>
+			<InvokeCommandAction Command="{Binding ClosedAsyncCommand}" />
+        </DialogClosedTrigger>
+    </Interaction.Behaviors>
+
+    <Grid ColumnDefinitions="200,*">
+        <Grid RowDefinitions="*,30" Background="{StaticResource backGroundBrush}">
+            <StackPanel Grid.Row="0">
+                <RadioButton Content="下载" Command="{Binding NavigateToCommand}" CommandParameter="{x:Type menu:MainWindowViewModel}" Theme="{StaticResource MenuButtonSytle}"  Tag="{StaticResource Download}"  IsChecked="True"   />
+                <RadioButton Content="转码" Command="{Binding NavigateToCommand}" CommandParameter="{x:Type menu:ConverterViewModel}" Theme="{StaticResource MenuButtonSytle}" Tag="{StaticResource Merge}"  />
+                <RadioButton Content="设置" Command="{Binding NavigateToCommand}" CommandParameter="{x:Type menu:SettingsViewModel}" Theme="{StaticResource MenuButtonSytle}" Tag="{StaticResource Settings}"/>
+                <RadioButton Content="赞助" Command="{Binding NavigateToCommand}" CommandParameter="{x:Type menu:SponsorViewModel}" Theme="{StaticResource MenuButtonSytle}" Tag="{StaticResource Sponsor}"/>
+                <RadioButton Content="关于" Command="{Binding NavigateToCommand}" CommandParameter="{x:Type menu:AboutViewModel}" Theme="{StaticResource MenuButtonSytle}" Tag="{StaticResource About}" />
+            </StackPanel>
+            <TextBlock Grid.Row="1" Text="{Binding Version}" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="0,0,15,0" />
+        </Grid> 
+        <ContentControl Grid.Column="1" Padding="5,0,0,0"  Content="{Binding CurrentViewModel}" />
+    </Grid>
+</Window>

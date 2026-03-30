@@ -1,0 +1,149 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+             xmlns:window="using:M3u8Downloader_H.ViewModels.Windows"
+             x:DataType="window:M3u8ConverterViewModel"
+             xmlns:behavior="using:M3u8Downloader_H.Behaviors"
+             xmlns:converters="using:M3u8Downloader_H.Converters"
+             xmlns:models="using:M3u8Downloader_H.Models"
+             x:Class="M3u8Downloader_H.M3u8ConverterView">
+
+
+  <StackPanel Margin="8">
+        <DockPanel >
+            <TextBlock Text="地址: "  Classes="MyTextBlock" />
+            <TextBox x:Name="m3u8PathTextBox" Text="{Binding M3u8FileUrl}" 
+                    IsReadOnly="True" Classes="clearButton dense universal"
+                    Watermark="m3u8,json文件地址(文件直接拖拽到此,不支持手动输入地址)" >
+                <Interaction.Behaviors>
+                    <behavior:DragAndDropBehavior FilterString=".m3u8|.json" />
+                </Interaction.Behaviors>
+                <TextBox.ContextMenu>
+					<ContextMenu>
+						<MenuItem Header="打开文件">
+                             <Interaction.Behaviors>
+                                 <behavior:MenuOpenFileDialogBehavior IsFile="True" FileTypeFilter=".m3u8|.json" AttachedTextBox="{Binding #m3u8PathTextBox}" />
+                              </Interaction.Behaviors>
+                        </MenuItem>
+                        <MenuItem Header="打开文件夹">
+							<Interaction.Behaviors>
+                                 <behavior:MenuOpenFileDialogBehavior IsFile="False" AttachedTextBox="{Binding #m3u8PathTextBox}" />
+                            </Interaction.Behaviors>
+                        </MenuItem>
+                    </ContextMenu>
+                </TextBox.ContextMenu>
+            </TextBox>
+        </DockPanel>
+
+        <DockPanel >
+            <TextBlock Text="视频名称: "  Classes="MyTextBlock"/>
+            <TextBox Text="{Binding VideoName}" 
+                     Classes="clearButton dense universal"
+                    Watermark="视频名称不写默认生成" 
+                     />
+        </DockPanel>
+
+        <DockPanel >
+            <TextBlock Text="密钥:"  Classes="MyTextBlock"/>
+            <ComboBox DockPanel.Dock="Left" SelectedValue="{Binding Method}" Margin="5" FontSize="18" Width="100">
+                <ComboBoxItem Content="AES-128" IsSelected="True"/>
+                <ComboBoxItem Content="AES-192" />
+                <ComboBoxItem Content="AES-256" />
+            </ComboBox>
+            <TextBox  Text="{Binding Key}"
+                     Classes="clearButton dense universal"
+                    Watermark="字符串或者base64" 
+                     />
+        </DockPanel>
+
+        <DockPanel >
+            <TextBlock Text="IV:"  Classes="MyTextBlock"/>
+            <TextBox Text="{Binding Iv}" 
+                     Classes="clearButton dense universal"
+                    Watermark="AES-CBC使用,例如(0x11223344556677888877665544332211)可以不写 " 
+                     />
+        </DockPanel>
+
+        <Grid Margin="8,0,8,0">
+            <ProgressBar Margin="5"
+                    Height="20"
+                    Minimum="0"
+                    Maximum="1"
+                    Value="{Binding Progress}"
+                    />
+            <TextBlock Text="{Binding Progress,StringFormat=当前进度: {0:P1}}"  
+                       FontSize="16"
+                       Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" />
+        </Grid>
+
+        <Border BorderThickness="1" 
+                Margin="8"
+                BorderBrush="{StaticResource MaterialPrimaryMidBrush}"
+                CornerRadius="20"
+                Padding="10"
+                >
+            <ItemsControl Grid.Row="1" Height="200" ItemsSource="{Binding Log.Logs}"
+            ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+            ScrollViewer.VerticalScrollBarVisibility="Auto">
+                <ItemsControl.ContextMenu>
+                   <ContextMenu>
+                        <MenuItem Header="复制日志" Command="{Binding $parent[UserControl].((window:M3u8ConverterViewModel)DataContext).CopyLogsCommand}" />
+                    </ContextMenu>
+                </ItemsControl.ContextMenu>
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <VirtualizingStackPanel/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.Template>
+                    <ControlTemplate TargetType="ItemsControl">
+                        <ScrollViewer VerticalScrollBarVisibility="Visible">
+                            <ItemsPresenter />
+                        </ScrollViewer>
+                    </ControlTemplate>
+                </ItemsControl.Template>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock FontSize="13">
+                            <Run Text="{Binding Time,StringFormat='yyyy-MM-dd HH:mm:ss',Mode=OneWay}"  />
+                            <Run 
+                            Classes.error="{Binding Type,Converter={x:Static converters:EqualityConverter.IsEqual},ConverterParameter={x:Static models:LogType.Error}}"     
+                            Classes.warning="{Binding Type,Converter={x:Static converters:EqualityConverter.IsEqual},ConverterParameter={x:Static models:LogType.Warning}}"
+                            Text="{Binding Message,Mode=OneWay}" >
+                                <Run.Styles>
+								    <Style Selector="Run.error">
+									    <Setter Property="Foreground" Value="Red" />
+                                    </Style>
+                                    <Style Selector="Run.warning">
+									    <Setter Property="Foreground" Value="Orange" />
+                                    </Style>
+                                </Run.Styles>
+                            </Run>
+                        </TextBlock>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+                <Interaction.Behaviors>
+					<AutoScrollToBottomBehavior />
+                </Interaction.Behaviors>
+            </ItemsControl>
+        </Border>
+
+
+        <StackPanel Orientation="Horizontal"  HorizontalAlignment="Center" Margin="20" Height="40">
+            <Button Command="{Binding ProcessCommand}"
+                    Content="开始转码" 
+                    Width="100" />
+
+            <Button Command="{Binding CancelCommand}"
+                    Content="停止转码"
+                    Width="100"  Margin="10 0 0 0" />
+
+            <Button Command="{Binding ResetCommand}"
+                Content="重置数据"
+                Width="100" Margin="10 0 0 0" />
+
+        </StackPanel>
+    </StackPanel>
+</UserControl>

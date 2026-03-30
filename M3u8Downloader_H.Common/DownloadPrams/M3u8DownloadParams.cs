@@ -1,5 +1,4 @@
-﻿using System.Runtime.Intrinsics.Arm;
-using M3u8Downloader_H.Abstractions.Common;
+﻿using M3u8Downloader_H.Abstractions.Common;
 using M3u8Downloader_H.Abstractions.M3u8;
 using M3u8Downloader_H.Common.M3u8;
 
@@ -20,13 +19,13 @@ namespace M3u8Downloader_H.Common.DownloadPrams
             : base(url, videoname,  savePath, selectFormat, headers)
         {
             RequestUrl = url;
-            if (key != null)
+            if (!string.IsNullOrWhiteSpace(key))
                 M3UKeyInfo = M3uKeyInfoHelper.GetKeyInfoInstance(method, key!, iv!);
         }
 
         public void UpdateKeyInfo(string method, string? key, string? iv)
         {
-            if (key != null)
+            if (!string.IsNullOrWhiteSpace(key))
                 M3UKeyInfo = M3uKeyInfoHelper.GetKeyInfoInstance(method, key!, iv!);
         }
     }

@@ -1,0 +1,222 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             xmlns:MaterialStyles="clr-namespace:Material.Styles.Controls;assembly=Material.Styles"
+             xmlns:assists="clr-namespace:Material.Styles.Assists;assembly=Material.Styles"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:vm="using:M3u8Downloader_H.ViewModels.Menus"
+             xmlns:behavior="using:M3u8Downloader_H.Behaviors"
+             xmlns:converters="using:M3u8Downloader_H.Converters"
+             x:DataType="vm:SettingsViewModel"
+             x:Class="M3u8Downloader_H.Views.Menus.SettingsView">
+
+   <Grid RowDefinitions="*,auto">
+        <MaterialStyles:SnackbarHost  HostName="SettingsHost" SnackbarMaxCounts="5">
+        <ScrollViewer>
+            <!-- 基础配置区 -->
+            <StackPanel Margin="5" Name="SettingGrid" DataContext="{Binding SettingsServiceClone}">
+                <TextBlock Text="基础配置"   Margin="10" HorizontalAlignment="Center"  FontSize="20" FontWeight="Bold" />
+
+                <DockPanel Margin="8 0 8 0" ToolTip.Tip="同时下载视频的数量" >
+                    <TextBlock Text="任务数量: " Classes="MyTextBlock" />
+                    <Slider Height="20" IsSnapToTickEnabled="True" Minimum="1" Maximum="30" TickFrequency="1" Value="{Binding MaxConcurrentDownloadCount}"  Classes="Discrete" />
+                </DockPanel>
+
+               
+                <DockPanel Margin="8 0 8 0">
+                    <ToolTip.Tip>
+                        <TextBlock>
+                            <Run Text="超时时间是，每次下载最大可等待时间(秒)" />
+                            <LineBreak/>
+                            <Run Text="比如120秒" />
+                            <LineBreak/>
+                            <Run Text="那么每次下载最大得等待时长都是120秒，但是前提是服务端不超时得情况下" />
+                        </TextBlock>
+                    </ToolTip.Tip>
+                    <TextBlock Text="超时时间: " Classes="MyTextBlock" />
+                    <Slider Height="20" IsSnapToTickEnabled="True" Minimum="1" Maximum="300" TickFrequency="1" Value="{Binding Timeouts}"  Classes="Discrete" />
+                </DockPanel>
+
+                <DockPanel Margin="8 0 8 0" ToolTip.Tip="视频保存路径，默认在当前程序目录下">
+                    <TextBlock Text="保存路径: " Classes="MyTextBlock" />
+                    <Button DockPanel.Dock="Right" Theme="{StaticResource MaterialFlatButton}" Classes="primary"  Margin="2">
+                        <avalonia:MaterialIcon Kind="FolderOpen"/>
+                        <Interaction.Behaviors>
+                             <behavior:OpenFileDialogBehavior IsFile="False" AttachedTextBox="{Binding ElementName=savePathTextbox}" />
+                        </Interaction.Behaviors>
+                    </Button>
+                    <TextBox  Name="savePathTextbox"  Theme="{StaticResource CompactTextBox}"  FontSize="18"  VerticalAlignment="Center" IsReadOnly="True" Text="{Binding SavePath}" />
+                </DockPanel>
+
+                <DockPanel Margin="8 0 8 0">
+                    <TextBlock  Classes="MyTextBlock" Text="转码格式: "  />
+                    <ComboBox FontSize="20" SelectedValue="{Binding SelectedFormat}"
+                    ItemsSource="{Binding $parent[UserControl].((vm:SettingsViewModel)DataContext).Formats}" >
+                        <ComboBox.Styles>
+							<Style Selector="ComboBox:singleitem /template/ Panel#PART_RootPanel" >
+								<Setter Property="Height" Value="32" />
+                            </Style>
+                        </ComboBox.Styles>
+                    </ComboBox>
+                </DockPanel>
+
+                <WrapPanel  Orientation="Horizontal">
+                    <DockPanel  Margin="8 0 8 0" ToolTip.Tip="当点击下载之后请求地址是否清空">
+                        <TextBlock Classes="MyTextBlock" Text="重置地址" />
+                        <ToggleSwitch Classes="LeftHeader"   HorizontalAlignment="Left"  Margin="10 0 0 0" Theme="{StaticResource MaterialDesignSwitchToggleButton}" ToolTip.Tip="{Binding IsResetAddress,Converter={x:Static converters:BoolToStringConverters.Instance}}"  IsChecked="{Binding IsResetAddress}" />
+                    </DockPanel>
+
+                    <DockPanel  Margin="8 0 8 0" ToolTip.Tip="当点击下载之后视频名称是否清空">
+                        <TextBlock Classes="MyTextBlock" Text="重置名称" />
+                        <ToggleSwitch Classes="LeftHeader"   HorizontalAlignment="Left"  Margin="10 0 0 0" Theme="{StaticResource MaterialDesignSwitchToggleButton}" ToolTip.Tip="{Binding IsResetName,Converter={x:Static converters:BoolToStringConverters.Instance}}"  IsChecked="{Binding IsResetName}" />
+                    </DockPanel>
+
+
+                    <DockPanel  Margin="8 0 8 0" ToolTip.Tip="视频合并之后会执行清理，如果需要开启">
+                        <TextBlock Classes="MyTextBlock" Text="清理缓存" />
+                        <ToggleSwitch Classes="LeftHeader"   HorizontalAlignment="Left"  Margin="10 0 0 0" Theme="{StaticResource MaterialDesignSwitchToggleButton}" ToolTip.Tip="{Binding IsCleanUp,Converter={x:Static converters:BoolToStringConverters.Instance}}"  IsChecked="{Binding IsCleanUp}" />
+                    </DockPanel>
+                </WrapPanel>
+
+                <!-- m3u8下载配置区 -->
+                <TextBlock Text="m3u8下载专用"  Margin="10" HorizontalAlignment="Center"  FontSize="20" FontWeight="Bold" />
+                <DockPanel Margin="8 0 8 0">
+                    <ToolTip.Tip>
+                            <TextBlock>
+                             <Run Text="在下载一个m3u8文件时,内部启动的线程数量" />
+                             <LineBreak />
+                             <Run FontWeight="SemiBold" Text="注意:" />
+                             <Run Text="线程数是下载栏中一行任务的线程数量" />
+                             <LineBreak />
+                             <Run Text="比如：" />
+                             <LineBreak/>
+                             <Run Text="    当前选中10线程数，下载栏中有2行任务，那么总线程数就是20" />
+                             <LineBreak/>
+                             <Run Text="    当前选中10线程数,下载栏中有3行任务，总线程数就是30，以此类推" />
+                             <LineBreak />
+                             <Run Text="线程数量不是越多越好，取决于你当前下载的带宽" />
+                             <LineBreak />
+                             <Run Text="如果10条线程就能达到满带宽,那就不建议开更高的线程" />  
+                            </TextBlock>
+                    </ToolTip.Tip>
+                    <TextBlock  Classes="MyTextBlock"  Text="线程数量: " />
+                    <Slider  Height="20" IsSnapToTickEnabled="True" Minimum="1" Maximum="200"  TickFrequency="1" Value="{Binding MaxThreadCount}"  Classes="Discrete" />
+                </DockPanel>
+
+                <DockPanel Margin="8 0 8 0">
+                    <ToolTip.Tip>
+						<TextBlock>
+                            <Run Text="当下载的视频数时,会出现网络错误,及一些其他得问题" />
+                            <LineBreak/>
+                            <Run Text="设置好重试次数,就可以正常下载完成" />
+                            <LineBreak />
+                            <Run Text="重试次数只影响下载ts流" />
+                        </TextBlock>
+                    </ToolTip.Tip>
+                    <TextBlock Text="重试次数: " Classes="MyTextBlock"/>
+                    <Slider Height="20" IsSnapToTickEnabled="True" Minimum="1" Maximum="20" TickFrequency="1" Value="{Binding RetryCount}"  Classes="Discrete" />
+                </DockPanel>
+
+
+                <WrapPanel>
+                    <DockPanel Margin="8 0 8 0" >
+                        <ToolTip.Tip>
+							<TextBlock>
+                                <Run Text="当网络请求失败，无法下载视频时可以开启"/>
+                                <LineBreak/>
+                                <Run Text="建议开次此项时，同时开启强制合并" />
+                            </TextBlock>
+                        </ToolTip.Tip>
+                        <TextBlock Classes="MyTextBlock"  Text="强制下载"/>
+                        <ToggleSwitch Classes="LeftHeader"  HorizontalAlignment="Left"  Margin="10 0 0 0" Theme="{StaticResource MaterialDesignSwitchToggleButton}"  ToolTip.Tip="{Binding SkipRequestError,Converter={x:Static converters:BoolToStringConverters.Instance}}" IsChecked="{Binding SkipRequestError}" >
+                            <!--<i:Interaction.Behaviors>
+                                <behavior:LinkageToggleButtonBehavior Target="{Binding ElementName=forceMergerButton}" />
+                            </i:Interaction.Behaviors>-->
+                        </ToggleSwitch>
+                    </DockPanel>
+
+                    <DockPanel Margin="8 0 8 0">
+                        <ToolTip.Tip>
+							<TextBlock>
+                                <Run Text="ts视频数量跟m3u8文件里的数量不一致时可以开启，不开启会自动报错"/>
+                            </TextBlock>
+                        </ToolTip.Tip>
+                        <TextBlock  Classes="MyTextBlock"  Text="强制合并"/>
+                        <ToggleSwitch Classes="LeftHeader" Name="forceMergerButton"  HorizontalAlignment="Left"  Margin="10 0 0 0" Theme="{StaticResource MaterialDesignSwitchToggleButton}"  ToolTip.Tip="{Binding ForcedMerger,Converter={x:Static converters:BoolToStringConverters.Instance}}" IsChecked="{Binding ForcedMerger}" />
+                    </DockPanel>
+                    
+                </WrapPanel>
+
+                <!-- 直播配置区 -->
+                <TextBlock Text="直播配置" Margin="10" HorizontalAlignment="Center" FontSize="20" FontWeight="Bold" />
+                <DockPanel Margin="8 0 8 0">
+                    <TextBlock Text="录制时长 " Classes="MyTextBlock" />
+                    <TimePicker SelectedTime="{Binding}"  FontSize="15"
+                                     assists:TimePickerAssist.CanSelectSeconds="{x:True}" >
+                        <TimePicker.Styles>
+							<Style Selector="TimePicker /template/ TextBox#PART_DisplayTextBox /template/ Panel#PART_TextFieldPanel">
+								<Setter Property="Height" Value="30" />
+                                <Setter Property="MinHeight" Value="0" />
+                            </Style>
+                            <Style Selector="TimePicker /template/ TextBox#PART_DisplayTextBox /template/ Panel#PART_TextContainer" >
+								<Setter Property="Margin" Value="0,0,4,1"/>
+                                <Setter Property="Height" Value="22" />
+                                <Setter Property="VerticalAlignment" Value="Stretch" />
+                            </Style>
+                        </TimePicker.Styles>
+                    </TimePicker>
+                </DockPanel>
+
+                <!--   网络配置区  -->
+                <TextBlock Text="网络配置"  Margin="10" HorizontalAlignment="Center"  FontSize="20" FontWeight="Bold" />
+
+                <DockPanel Margin="8 0 8 0">
+                    <ToolTip.Tip>
+                        <TextBlock>
+                            <Run Text="必须是http代理 例如：http://127.0.0.1:7890  注意冒号是英文得冒号" />
+                            <LineBreak />
+                            <Run Text="设置代理保存后请重启程序即代理生效" />
+                            <LineBreak />
+                            <Run Text="删除所有内容保存后重启程序即取消代理" />
+                        </TextBlock>
+                    </ToolTip.Tip>
+                    <TextBlock Text="代理地址" Classes="MyTextBlock" />
+                    <Button DockPanel.Dock="Right"
+
+
+                            Content="连接测试"
+                             >
+                    </Button>
+                    <TextBox Name="proxyTextBox" Margin="5" FontSize="18" Theme="{StaticResource CompactTextBox}"  Text="{Binding ProxyAddress}"
+                             
+                             />
+                </DockPanel>
+
+                <DockPanel Margin="8 5 8 0">
+                    <TextBlock Text="请求头部" Classes="MyTextBlock"/>
+                    <TextBox FontSize="18" Text="{Binding Headers,Converter={x:Static converters:DictHeaderToStrHeaderConverter.Instance}}" 
+                            Theme="{StaticResource OutlineTextBox}"
+                         VerticalAlignment="Stretch"
+                         Margin="5"
+                         AcceptsReturn="True"
+                          />
+                </DockPanel>
+            </StackPanel>
+        </ScrollViewer>
+        
+        </MaterialStyles:SnackbarHost>
+ 
+        
+        <StackPanel Orientation="Horizontal" Grid.Row="1"  HorizontalAlignment="Center" Margin="20">
+            <Button Command="{Binding SubmitSettingInfoCommand}" CommandParameter="{Binding #SettingGrid.DataContext}"
+                    Content="保存" 
+                    Width="100" />
+
+            <Button  Command="{Binding ResetSettingInfoCommand}"
+                     Content="重置"  Width="100" Margin="10 0 0 0" />
+        </StackPanel>
+
+    </Grid>
+</UserControl>

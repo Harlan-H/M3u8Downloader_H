@@ -1,0 +1,40 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             xmlns:windows="using:M3u8Downloader_H.ViewModels.Windows"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             x:DataType="windows:MediaWindowViewModel"
+             x:Class="M3u8Downloader_H.Views.Windows.MediaWindowView">
+
+     <Grid ColumnDefinitions="*,auto" Height="200"  Name="mediaDownloadInfoGrid" DataContext="{Binding MediaDownloadInfo}">
+        <Grid RowDefinitions="*,*,*">
+            <Grid ColumnDefinitions="auto,*" Grid.Row="0" >
+                <ComboBox SelectedIndex="{Binding StreamIndex}" FontSize="18" >
+                    <ComboBoxItem Content="视频"  />
+                    <ComboBoxItem Content="直播" />
+                </ComboBox>
+                <TextBox Text="{Binding VideoUrl}" Grid.Column="1"  Margin="5,0,0,3"
+                  Classes="clearButton dense" 
+                  Watermark="视频地址mp4,flv等视频格式地址"  FontSize="18"  VerticalAlignment="Center" >
+                </TextBox>
+            </Grid>
+
+            <TextBox Grid.Row="1" Text="{Binding AudioUrl}"  
+                  Classes="clearButton dense" 
+                  Watermark="音频地址aac等音频格式地址(音视频分离使用,没有可以不填)"  FontSize="18"  VerticalAlignment="Center" >
+            </TextBox>
+            <TextBox  Grid.Row="2" Text="{Binding VideoName}"
+                     Classes="clearButton dense" 
+                    Watermark="视频名称(可以不填写,不写默认随机名称)" FontSize="18"  VerticalAlignment="Center">
+            </TextBox>
+        </Grid>
+
+        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+            <Button Command="{Binding $parent[UserControl].((windows:MediaWindowViewModel)DataContext).ProcessMediaDownloadCommand}" CommandParameter="{Binding}"  Margin="5" Width="150" >
+                <avalonia:MaterialIcon Kind="Download" Width="18" Height="18" />
+            </Button>
+        </StackPanel>
+    </Grid>
+</UserControl>

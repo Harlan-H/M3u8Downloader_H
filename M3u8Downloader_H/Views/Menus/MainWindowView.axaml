@@ -1,0 +1,172 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:menus="using:M3u8Downloader_H.Gui.ViewModels.Menus"
+             xmlns:materialDesign="clr-namespace:DialogHostAvalonia;assembly=DialogHost.Avalonia"
+             xmlns:MaterialStyles="clr-namespace:Material.Styles.Controls;assembly=Material.Styles"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             xmlns:vm="using:M3u8Downloader_H.ViewModels.Menus"
+             x:DataType="vm:MainWindowViewModel"
+             x:Class="M3u8Downloader_H.Views.Menus.MainWindowView">
+
+     <Grid RowDefinitions="*,30">
+        <materialDesign:DialogHost
+            CloseOnClickAway="False">
+            <MaterialStyles:SnackbarHost  HostName="MainWindowHost" SnackbarMaxCounts="5">
+            <Grid RowDefinitions="auto,*">
+                <TabControl ItemsSource="{Binding SubWindows}" Margin="5,0">
+                    <TabControl.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Title}"  />
+                        </DataTemplate>
+                    </TabControl.ItemTemplate>
+                    <TabControl.Styles>
+						<Style Selector="TabItem">
+							<Setter Property="Width" Value="200" />
+                        </Style>
+                    </TabControl.Styles>
+                </TabControl>
+
+
+                <!--  展示区  -->
+                <Panel Grid.Row="1"> 
+                    
+                    <!-- 占位区 -->
+                    <StackPanel
+                        Margin="8,10,8,8"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        IsVisible="{Binding !Downloads.Count}">
+                        <Image Source="/Assets/logo.ico" 
+                                            Width="160"
+                                            Height="105"/>
+                        <TextBlock
+                            HorizontalAlignment="Center"
+                            FontSize="18"
+                            FontWeight="Light"
+                            TextAlignment="Center"
+                            TextWrapping="Wrap">
+                            <Run FontWeight="SemiBold" Text="M3U8" />
+                            <Run Text="选项卡为专门下载m3u8相关视频" />
+                            <LineBreak />
+                            <Run Text="复制" />
+                            <Run FontWeight="SemiBold" Text="m3u8链接地址" />
+                            <Run Text="或者拖拽" />
+                            <Run FontWeight="SemiBold" Text="m3u8,json,txt文件" />
+                            <Run Text="到" />
+                            <Run FontWeight="SemiBold" Text="下载地址" />
+                            <Run Text="处" />
+                            <LineBreak />
+                            <Run FontWeight="SemiBold" Text="长视频" />
+                            <Run Text="选项卡是专门下载mp4,flv等长视频的" />
+                            <LineBreak />
+                            <Run Text="视频有声音的只用复制" />
+                            <Run FontWeight="SemiBold" Text="mp4,flv等地址" />
+                            <Run Text="到" />
+                            <Run FontWeight="SemiBold" Text="视频地址" />
+                            <Run Text="处" />
+                            <LineBreak />
+                            <Run Text="视频和音频是分离的" />
+                            <Run Text="可以将视频,音频地址复制到对应的位置" />
+                            <LineBreak />
+                            <Run Text="批量操作" />
+                            <Run FontWeight="SemiBold" Text="Ctrl + a" />
+                            <Run Text="全选," />
+                            <Run FontWeight="SemiBold" Text="Ctrl + 鼠标左键" />
+                            <Run Text="多选," />
+                            <Run FontWeight="SemiBold" Text="Shift + 鼠标左键" />
+                            <Run Text="连选" />
+                            <LineBreak/>
+                            <Run  Text="下载时出现"/>
+                            <Run FontWeight="SemiBold" Text="⚠ 错误" />
+                            <Run Text="可以通过点击下载栏中最右侧按钮显示详细日志" />
+                            <LineBreak />
+                            <Run Text="或者右键" />
+                            <Run FontWeight="SemiBold" Text="复制错误信息" />
+                            <Run Text="也可以获取详细得错误信息" />
+                            <LineBreak />
+                            <Run Text="出现" />
+                            <Run FontWeight="SemiBold" Text="RestApi初始化失败" />
+                            <Run Text="不影响程序使用,如需此功能请" />
+                            <Run  FontWeight="Bold"  Text="以管理员身份运行" />
+                            <Run Text="本程序" />
+                            <LineBreak />
+                            <Run Text="详细的RestApi使用方法，请看帮助文档" />
+                            <Run FontWeight="SemiBold" Text="Rest Api" />
+                            <LineBreak />
+                            <Run Text="更多用法可以查看在线帮助文档(地址在关于里)" />
+                        </TextBlock>
+                        </StackPanel>
+                    
+                    <!-- listbox  -->
+                    <ListBox  ItemsSource="{Binding Downloads}"
+                              IsVisible="{Binding Downloads.Count}" 
+                              Margin="5,0" >
+                        <ListBox.Resources>
+                            <ContextMenu  x:Key="ItemContextMenu" >
+                                <MenuItem Header="复制地址" Command="{Binding $parent[UserControl].((vm:MainWindowViewModel)DataContext).CopyUrlCommand}" CommandParameter="{Binding}" >
+                                    <MenuItem.Icon>
+                                        <avalonia:MaterialIcon Width="16" Height="16" Kind="ContentCopy" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="复制名称" Command="{Binding $parent[UserControl].((vm:MainWindowViewModel)DataContext).CopyTitleCommand}" CommandParameter="{Binding}" >
+                                    <MenuItem.Icon>
+                                        <avalonia:MaterialIcon Width="16" Height="16" Kind="ContentCopy" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="复制日志" Command="{Binding $parent[UserControl].((vm:MainWindowViewModel)DataContext).CopyLogsCommand}" CommandParameter="{Binding}" />
+                                <Separator />
+                                <MenuItem Header="停止下载所有选择项"  
+                                           Command="{Binding $parent[UserControl].((vm:MainWindowViewModel)DataContext).StopDownloadsCommand}"
+                                          CommandParameter="{Binding $parent[ListBox].SelectedItems}">
+                                    <MenuItem.Icon>
+                                        <avalonia:MaterialIcon Kind="StopCircleOutline" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="重新开始所有选择项" 
+                                          Command="{Binding $parent[UserControl].((vm:MainWindowViewModel)DataContext).RestartDownloadsCommand}"
+                                          CommandParameter="{Binding $parent[ListBox].SelectedItems}">
+                                    <MenuItem.Icon>
+                                        <avalonia:MaterialIcon  Kind="Restart" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <Separator />
+                                <MenuItem Header="删除所有选择项" 
+                                          Command="{Binding $parent[UserControl].((vm:MainWindowViewModel)DataContext).RemoveDownloadsCommand}"
+                                          CommandParameter="{Binding $parent[ListBox].SelectedItems}">
+                                    <MenuItem.Icon>
+                                        <avalonia:MaterialIcon  Kind="Delete" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="删除所有失败的下载" Command="{Binding $parent[UserControl].((vm:MainWindowViewModel)DataContext).RemoveFailedDownloadsCommand}" />
+                                <MenuItem Header="删除所有闲置下载"   Command="{Binding $parent[UserControl].((vm:MainWindowViewModel)DataContext).RemoveInactiveDownloadsCommand}" />
+                                <MenuItem Header="删除所有已完成记录" Command="{Binding $parent[UserControl].((vm:MainWindowViewModel)DataContext).RemoveSuccessDownloadsCommand}" />
+                                <Separator />
+                                <MenuItem Header="重新开始所有失败的下载" Command="{Binding $parent[UserControl].((vm:MainWindowViewModel)DataContext).RestartFailedDownloadsCommand}"/>
+                            </ContextMenu>
+                        </ListBox.Resources>
+                        <ListBox.Styles >
+							<Style Selector="ListBoxItem" >
+								<Setter Property="ContextMenu" Value="{StaticResource ItemContextMenu}"/>
+                                <Setter Property="Padding" Value="4,4,8,4" />
+                            </Style>
+                        </ListBox.Styles>
+                        <ListBox.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <VirtualizingStackPanel/>
+                            </ItemsPanelTemplate>
+                        </ListBox.ItemsPanel>
+                    </ListBox>
+                    
+                </Panel>
+            </Grid>
+            </MaterialStyles:SnackbarHost>
+        </materialDesign:DialogHost>
+        <Grid ColumnDefinitions="*,*,100" Grid.Row="1" VerticalAlignment="Center" >
+            <TextBlock Margin="5 0 0 0" HorizontalAlignment="Center"  Text="{Binding HttpServicePort,TargetNullValue=RestApi初始化失败如需此以管理员权限身份运行此程序}" />
+            <TextBlock Grid.Column="1"  HorizontalAlignment="Center" Text="{Binding HttpServicePort,TargetNullValue=RestApi初始化失败如需请以管理员权限身份运行此程序,StringFormat=http://127.0.0.1:\{0\}}" />
+        </Grid>
+    </Grid>
+</UserControl>

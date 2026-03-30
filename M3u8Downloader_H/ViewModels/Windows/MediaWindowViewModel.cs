@@ -1,43 +1,61 @@
-﻿using System;
-using Caliburn.Micro;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using M3u8Downloader_H.Abstractions.Common;
+using M3u8Downloader_H.Common.DownloadPrams;
+using M3u8Downloader_H.FrameWork;
 using M3u8Downloader_H.Models;
 using M3u8Downloader_H.Services;
 using M3u8Downloader_H.Utils;
-using MaterialDesignThemes.Wpf;
-using M3u8Downloader_H.Abstractions.Common;
+using M3u8Downloader_H.ViewModels.Downloads;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Text;
 
 namespace M3u8Downloader_H.ViewModels.Windows
 {
-    public class MediaWindowViewModel: Screen
+    public partial class MediaWindowViewModel : ViewModelBase
     {
         private readonly SettingsService settingsService;
-        private readonly ISnackbarMessageQueue notifications;
+        private readonly ViewModelManager viewModelManager;
+        private readonly SnackbarManager notification;
 
         public MediaDownloadInfo MediaDownloadInfo { get; } = new MediaDownloadInfo();
-        public bool IsBusy { get; private set; }
         public Action<DownloadViewModel> EnqueueDownloadAction { get; set; } = default!;
 
-        public MediaWindowViewModel(SettingsService settingsService, ISnackbarMessageQueue Notifications)
+        [ObservableProperty]
+        [NotifyCanExecuteChangedFor(nameof(ProcessMediaDownloadCommand))]
+        public partial bool IsBusy { get; private set; }
+
+        public MediaWindowViewModel(SettingsService settingsService, ViewModelManager viewModelManager, SnackbarManager Notifications)
         {
-            MediaDownloadInfo.NormalProcessDownloadAction = ProcessMediaDownload;
             this.settingsService = settingsService;
-            notifications = Notifications;
+            this.viewModelManager = viewModelManager;
+            notification = Notifications;
         }
 
+        private bool CanProcessMediaDownload() => !IsBusy;
 
-        public bool CanProcessMediaDownload => !IsBusy;
-        public void ProcessMediaDownload(MediaDownloadInfo mediaDownloadInfo)
+        [RelayCommand(CanExecute = nameof(CanProcessMediaDownload))]
+        private void ProcessMediaDownload(MediaDownloadInfo mediaDownloadInfo)
         {
             IsBusy = true;
             try
             {
-                mediaDownloadInfo.DoProcess(settingsService);
+                Uri VideoUri = MediaDownloadInfo.GetVideoRequestUri();
+                Uri? AudioUri = MediaDownloadInfo.GetAudioRequestUri();
+                MediaDownloadParams mediaDownloadParams = new(settingsService.SavePath, VideoUri, AudioUri, mediaDownloadInfo.VideoName, settingsService.Headers)
+                {
+                    IsVideoStream = mediaDownloadInfo.StreamIndex == 0
+                };
+                ProcessMediaDownload(mediaDownloadParams);
 
                 mediaDownloadInfo.Reset(settingsService.IsResetAddress, settingsService.IsResetName);
             }
             catch (Exception e)
             {
-                notifications.Enqueue(e.ToString());
+                Debug.WriteLine(e);
+                notification.Notify(e.ToString());
             }
             finally
             {
@@ -49,11 +67,10 @@ namespace M3u8Downloader_H.ViewModels.Windows
         {
             FileEx.EnsureFileNotExist(mediaDownloadParams.VideoFullName);
 
-            DownloadViewModel download = DownloadViewModel.CreateDownloadViewModel(mediaDownloadParams);
+            DownloadViewModel download = viewModelManager.CreateDownloadViewModel(mediaDownloadParams);
             if (download is null) return;
 
             EnqueueDownloadAction(download);
         }
-
     }
 }

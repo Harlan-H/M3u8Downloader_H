@@ -8,12 +8,12 @@ namespace M3u8Downloader_H.Converters
     public class PortToLocalAddress : BaseConverters<int, string>
     {
         public static PortToLocalAddress Instance { get; } = new PortToLocalAddress();
-        public override string Convert(int value, Type targetType, object parameter, CultureInfo culture)
+        public override string Convert(int value, Type targetType, object? parameter, CultureInfo culture)
         {
             return $"http://{GetLocalIp()}:{value}";
         }
 
-        public override int ConvertBack(string value, Type targetType, object parameter, CultureInfo culture)
+        public override int ConvertBack(string value, Type targetType, object? parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
         }

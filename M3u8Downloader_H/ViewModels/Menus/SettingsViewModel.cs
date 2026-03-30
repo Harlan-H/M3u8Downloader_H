@@ -1,60 +1,63 @@
-﻿using System;
+﻿using Avalonia.Platform;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using M3u8Downloader_H.Extensions;
+using M3u8Downloader_H.FrameWork;
+using M3u8Downloader_H.Services;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Caliburn.Micro;
-using M3u8Downloader_H.Extensions;
-using M3u8Downloader_H.Services;
-using MaterialDesignThemes.Wpf;
 
 namespace M3u8Downloader_H.ViewModels.Menus
 {
-    public class SettingsViewModel(SettingsService settingService) : Screen
+    public partial class SettingsViewModel(SettingsService settingService) : ViewModelBase
     {
-        public ISnackbarMessageQueue MyMessageQueue { get; } = new SnackbarMessageQueue(TimeSpan.FromSeconds(2));
-        public bool IsActived { get; private set; }
+        public SnackbarManager Notifications { get; } = new SnackbarManager("SettingsHost", TimeSpan.FromSeconds(5));
 
-        public SettingsService SettingsServiceClone { get;private set; } = default!;
+        [ObservableProperty]
+        public partial bool IsActived { get; private set; }
 
-        public string[] Formats { get; } = { "mp4" };
+        [ObservableProperty]
+        public partial SettingsService SettingsServiceClone { get; private set; } = settingService.Clone<SettingsService>();
 
-        public BindableCollection<string> PluginKeys { get; } = [];
+        [ObservableProperty]
+        public partial string[] Formats { get; private set; } = { "mp4" };
 
-        protected override Task OnActivateAsync(CancellationToken cancellationToken)
-        {
-            SettingsServiceClone = settingService.Clone();
-            return base.OnActivateAsync(cancellationToken);
-        }
 
-        public void OnSubmitSettingInfo(SettingsService obj)
+        [RelayCommand]
+        private void SubmitSettingInfo(SettingsService obj)
         {
             try
             {
-                obj.Validate();
                 settingService.CopyFrom(obj);
-                settingService.UpdateConcurrentDownloadCount();
-                MyMessageQueue.Enqueue("设置已经保存！！！");
+                //settingService.UpdateAll();
+                Notifications.Notify("设置已经保存！！！");
             }
-            catch(Exception e)
+            catch (Exception e)
             {
-                MyMessageQueue.Enqueue($"提交失败,错误信息:{e.Message}");
+                Notifications.Notify($"提交失败,错误信息:{e.Message}");
             }
         }
 
-        public void OnResetSettingInfo()
+        [RelayCommand]
+        private void ResetSettingInfo()
         {
-            SettingsServiceClone = (SettingsService)settingService.Clone();
-            MyMessageQueue.Enqueue("设置已经重置！");
+            SettingsServiceClone = settingService.Clone<SettingsService>();
+            Notifications.Notify("设置已经重置！");
         }
 
         public bool CanTryConnectProxy => !IsActived;
 
         public async void TryConnectProxy(string proxy)
         {
-            if(string.IsNullOrWhiteSpace(proxy))
+            if (string.IsNullOrWhiteSpace(proxy))
             {
-                MyMessageQueue.Enqueue("请输入代理地址后,再次点击");
+                Notifications.Notify("请输入代理地址后,再次点击");
                 return;
             }
 
@@ -71,18 +74,17 @@ namespace M3u8Downloader_H.ViewModels.Menus
                 };
 
                 var statu = await httpclient.GetConnectStatus(new Uri("https://www.google.com"));
-               
-                MyMessageQueue.Enqueue(statu ? "测试成功,代理正常":"测试失败,代理不可用");
+
+                Notifications.Notify(statu ? "测试成功,代理正常" : "测试失败,代理不可用");
             }
             catch (Exception e)
             {
-                MyMessageQueue.Enqueue($"链接失败,{e.Message}");
+                Notifications.Notify($"链接失败,{e.Message}");
             }
             finally
             {
                 IsActived = false;
             }
         }
-
     }
 }
