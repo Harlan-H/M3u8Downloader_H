@@ -1,9 +1,5 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection.Emit;
+﻿using System.IO;
 using M3u8Downloader_H.Exceptions;
-using Newtonsoft.Json.Linq;
 
 namespace M3u8Downloader_H.Utils
 {

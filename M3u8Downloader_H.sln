@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
 VisualStudioVersion = 18.4.11612.150
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "M3u8Downloader_H.Settings", "SettingsManager\M3u8Downloader_H.Settings.csproj", "{CD94D388-9BF6-453E-9AD7-D330072F54AB}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "M3u8Downloader_H.M3U8", "M3u8Downloader_H.M3U8\M3u8Downloader_H.M3U8.csproj", "{1972C6AD-2720-401B-B546-0C752ADBC0E8}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "M3u8Downloader_H.Plugin", "M3u8Downloader_H.Plugin\M3u8Downloader_H.Plugin.csproj", "{73D64921-D4B5-45E9-9D32-D92584C41C45}"
@@ -23,6 +21,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "M3u8Downloader_H.Abstractio
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "M3u8Downloader_H", "M3u8Downloader_H\M3u8Downloader_H.csproj", "{991874BE-E6BB-4C6B-AC24-B80ACC4F131D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "M3u8Downloader_H.Settings", "M3u8Downloader_H.SettingsManager\M3u8Downloader_H.Settings.csproj", "{ACE912B4-F0BA-BE25-484C-46D74968B9B7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,18 +33,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{CD94D388-9BF6-453E-9AD7-D330072F54AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CD94D388-9BF6-453E-9AD7-D330072F54AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CD94D388-9BF6-453E-9AD7-D330072F54AB}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{CD94D388-9BF6-453E-9AD7-D330072F54AB}.Debug|x64.Build.0 = Debug|Any CPU
-		{CD94D388-9BF6-453E-9AD7-D330072F54AB}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{CD94D388-9BF6-453E-9AD7-D330072F54AB}.Debug|x86.Build.0 = Debug|Any CPU
-		{CD94D388-9BF6-453E-9AD7-D330072F54AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CD94D388-9BF6-453E-9AD7-D330072F54AB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CD94D388-9BF6-453E-9AD7-D330072F54AB}.Release|x64.ActiveCfg = Release|Any CPU
-		{CD94D388-9BF6-453E-9AD7-D330072F54AB}.Release|x64.Build.0 = Release|Any CPU
-		{CD94D388-9BF6-453E-9AD7-D330072F54AB}.Release|x86.ActiveCfg = Release|Any CPU
-		{CD94D388-9BF6-453E-9AD7-D330072F54AB}.Release|x86.Build.0 = Release|Any CPU
 		{1972C6AD-2720-401B-B546-0C752ADBC0E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1972C6AD-2720-401B-B546-0C752ADBC0E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1972C6AD-2720-401B-B546-0C752ADBC0E8}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -153,6 +141,18 @@ Global
 		{991874BE-E6BB-4C6B-AC24-B80ACC4F131D}.Release|x64.Build.0 = Release|Any CPU
 		{991874BE-E6BB-4C6B-AC24-B80ACC4F131D}.Release|x86.ActiveCfg = Release|Any CPU
 		{991874BE-E6BB-4C6B-AC24-B80ACC4F131D}.Release|x86.Build.0 = Release|Any CPU
+		{ACE912B4-F0BA-BE25-484C-46D74968B9B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ACE912B4-F0BA-BE25-484C-46D74968B9B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ACE912B4-F0BA-BE25-484C-46D74968B9B7}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{ACE912B4-F0BA-BE25-484C-46D74968B9B7}.Debug|x64.Build.0 = Debug|Any CPU
+		{ACE912B4-F0BA-BE25-484C-46D74968B9B7}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{ACE912B4-F0BA-BE25-484C-46D74968B9B7}.Debug|x86.Build.0 = Debug|Any CPU
+		{ACE912B4-F0BA-BE25-484C-46D74968B9B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ACE912B4-F0BA-BE25-484C-46D74968B9B7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ACE912B4-F0BA-BE25-484C-46D74968B9B7}.Release|x64.ActiveCfg = Release|Any CPU
+		{ACE912B4-F0BA-BE25-484C-46D74968B9B7}.Release|x64.Build.0 = Release|Any CPU
+		{ACE912B4-F0BA-BE25-484C-46D74968B9B7}.Release|x86.ActiveCfg = Release|Any CPU
+		{ACE912B4-F0BA-BE25-484C-46D74968B9B7}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

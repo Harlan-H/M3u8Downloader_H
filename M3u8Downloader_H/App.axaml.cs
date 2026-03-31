@@ -2,6 +2,7 @@ using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
+using M3u8Downloader_H.FrameWork;
 using M3u8Downloader_H.Services;
 using M3u8Downloader_H.ViewModels;
 using M3u8Downloader_H.ViewModels.Menus;
@@ -29,6 +30,8 @@ namespace M3u8Downloader_H
             services.AddSingleton<ConverterViewModel>();
             services.AddSingleton<MainWindowViewModel>();
             services.AddSingleton<ConverterViewModel>();
+            services.AddSingleton<M3u8WindowViewModel>();
+            services.AddSingleton<MediaWindowViewModel>();
             services.AddSingleton<SponsorViewModel>();
             services.AddSingleton<AboutViewModel>();
             services.AddTransient<SettingsViewModel>();
@@ -37,7 +40,6 @@ namespace M3u8Downloader_H
 
             services.AddSingleton<MainWindowView>();
             services.AddSingleton<AboutView>();
-            services.AddSingleton<SettingsView>();
             services.AddSingleton<ConverterView>();
             services.AddSingleton<SponsorView>();
             services.AddSingleton<M3u8WindowView>();

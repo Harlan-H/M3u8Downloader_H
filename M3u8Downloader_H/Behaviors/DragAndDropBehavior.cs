@@ -1,13 +1,9 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Data;
 using Avalonia.Input;
-using Avalonia.Media;
 using Avalonia.Xaml.Interactivity;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace M3u8Downloader_H.Behaviors;
 
@@ -96,14 +92,22 @@ public class DragAndDropBehavior : Behavior<TextBox>
             return;
         
 
-        var filePath = files.Path.AbsolutePath;
+        var filePath = files.Path.LocalPath;
         FileAttributes fileAttributes = File.GetAttributes(filePath);
-        var ext = Path.GetExtension(filePath);
-        if (IsFile && (fileAttributes & FileAttributes.Archive) > 0 && _filterStringArr.Contains(ext))
+        if((fileAttributes & FileAttributes.Directory) > 0)
         {
             _filePath = filePath;
             e.DragEffects = DragDropEffects.Copy;
+            e.Handled = true;
+            return;
         }
-        e.Handled = true;
+
+        var ext = Path.GetExtension(filePath);
+        if ((fileAttributes & FileAttributes.Archive) > 0 && _filterStringArr.Contains(ext))
+        {
+            _filePath = filePath;
+            e.DragEffects = DragDropEffects.Copy;
+            e.Handled = true;
+        } 
     }
 }

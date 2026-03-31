@@ -19,7 +19,7 @@ namespace M3u8Downloader_H.Combiners.VideoConverter
 
         private static readonly string _filePath
 #if DEBUG
-            = new(@"C:\Users\admin\Desktop\ffmpeg\ffmpeg.exe");
+            = new(@"C:\Users\admin\Desktop\666\ffmpeg.exe");
 #else
             = new(Path.Combine(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ffmpeg.exe")));
 #endif

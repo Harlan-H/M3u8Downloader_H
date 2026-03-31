@@ -12,6 +12,11 @@
         <Grid RowDefinitions="*,*,*">
             <Grid ColumnDefinitions="auto,*" Grid.Row="0" >
                 <ComboBox SelectedIndex="{Binding StreamIndex}" FontSize="18" >
+                    <ComboBox.Styles>
+						<Style Selector="ComboBox /template/ Panel#PART_RootPanel > Grid">
+							<Setter Property="VerticalAlignment" Value="Bottom" />
+                        </Style>
+                    </ComboBox.Styles>
                     <ComboBoxItem Content="视频"  />
                     <ComboBoxItem Content="直播" />
                 </ComboBox>

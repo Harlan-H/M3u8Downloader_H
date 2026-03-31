@@ -14,6 +14,13 @@ namespace M3u8Downloader_H.RestServer.Utils
 
         }
 
+        ~HttpListen()
+        {
+            callbackPostDict.Clear();
+            _httpListener.Stop();
+            _httpListener.Close();
+        }
+
         public void RegisterService(string name, Action<HttpListenerRequest, HttpListenerResponse> callback)
         {
             callbackPostDict.Add(name, callback);

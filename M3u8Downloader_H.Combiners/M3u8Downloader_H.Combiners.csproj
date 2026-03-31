@@ -18,7 +18,6 @@
   <ItemGroup>
     <ProjectReference Include="..\M3u8Downloader_H.Abstractions\M3u8Downloader_H.Abstractions.csproj" />
     <ProjectReference Include="..\M3u8Downloader_H.Common\M3u8Downloader_H.Common.csproj" />
-    <ProjectReference Include="..\SettingsManager\M3u8Downloader_H.Settings.csproj" />
   </ItemGroup>
 
 </Project>

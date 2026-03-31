@@ -20,40 +20,44 @@
     </UserControl.Styles>
 
  <Grid RowDefinitions="*,auto" >
-	 <Grid ColumnDefinitions="5*,3*,90,100,58" VerticalAlignment="Center" >
+	 <Grid ColumnDefinitions="5*,3*,90,100,60" VerticalAlignment="Center" >
         <TextBlock Grid.Column="0" TextTrimming="CharacterEllipsis"    Text="{Binding RequestUrl,TargetNullValue=似乎没有请求地址哦}"  />
 
          <!--名称--> 
         <TextBlock Grid.Column="1" TextTrimming="CharacterEllipsis" Margin="15 0 10 0" Text="{Binding VideoName}"   />
 
          <!--下载速率--> 
-        <TextBlock Grid.Column="2"  Margin="5 0 6 0" HorizontalAlignment="Right" Text="{Binding ProgressNum}"  />
+        <TextBlock Grid.Column="2"  Margin="5 0 6 0" HorizontalAlignment="Right" Text="{Binding DownloadRateBytes,Converter={x:Static converters:LongToBitrateConverter.Instance}}"  />
 
         <!-- 状态  -->
         <Grid Grid.Column="3" ColumnDefinitions="auto,auto" Margin="5 0 0 0">
             <ProgressBar 
                 Classes="circular"
+                Classes.parsed="{Binding Status,Converter={x:Static converters:EqualityConverter.IsEqual},ConverterParameter={x:Static commonmodel:DownloadStatus.Parsed}}"
                 Classes.vod="{Binding Status,Converter={x:Static converters:EqualityConverter.IsEqual},ConverterParameter={x:Static commonmodel:DownloadStatus.StartedVod}}"
                 Classes.live="{Binding Status,Converter={x:Static converters:EqualityConverter.IsEqual},ConverterParameter={x:Static commonmodel:DownloadStatus.StartedLive}}" 
-                Classes.parsed="{Binding Status,Converter={x:Static converters:EqualityConverter.IsEqual},ConverterParameter={x:Static commonmodel:DownloadStatus.Parsed}}"
-                Grid.Column="0"
+                    Grid.Column="0"
                          Margin="0,0,6,0"
                          Maximum="1"
                          Minimum="0"
-                         IsVisible="False"
                          >
                 <ProgressBar.Styles>
-                    <Style Selector="ProgressBar.parsed" >
-                        <Setter Property="IsVisible" Value="True" />
-						<Setter Property="IsIndeterminate" Value="True" />
-                    </Style>
-					<Style Selector="ProgressBar.vod" >
-                        <Setter Property="IsVisible" Value="True" />
-						 <Setter Property="Value" Value="{Binding ProgressNum, Mode=OneWay}" />
-                    </Style>
-                    <Style Selector="ProgressBar.live" >
-                        <Setter Property="IsVisible" Value="True" />
-                        <Setter Property="IsIndeterminate" Value="True" />
+                    <Style Selector="ProgressBar">
+                        <Setter Property="IsVisible" Value="False" />
+                        <Setter Property="IsIndeterminate" Value="False" />
+
+                        <Style Selector="^.parsed" >
+                            <Setter Property="IsVisible" Value="True" />
+						    <Setter Property="IsIndeterminate" Value="True" />
+                        </Style>
+					    <Style Selector="^.vod" >
+                            <Setter Property="IsVisible" Value="True" />
+						     <Setter Property="Value" Value="{Binding ProgressNum, Mode=OneWay}" />
+                        </Style>
+                        <Style Selector="^.live" >
+                            <Setter Property="IsVisible" Value="True" />
+                            <Setter Property="IsIndeterminate" Value="True" />
+                        </Style>
                     </Style>
                 </ProgressBar.Styles>
             </ProgressBar>

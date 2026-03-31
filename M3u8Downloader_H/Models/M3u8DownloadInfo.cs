@@ -11,7 +11,7 @@ namespace M3u8Downloader_H.Models
 {
     public partial class M3u8DownloadInfo : ObservableObject
     {
-        private static readonly string[] extensionArr = ["m3u8", "json", "txt"];
+        private static readonly string[] extensionArr = ["m3u8", "json"];
 
         [ObservableProperty]
         public partial string[] MethodArr { get; private set; } = ["AES-128", "AES-196", "AES-256"];
@@ -21,7 +21,7 @@ namespace M3u8Downloader_H.Models
         [ObservableProperty]
         public partial string VideoName { get; set; }
         [ObservableProperty]
-        public partial string Method { get; set; } = "AES-128";
+        public partial string Method { get; set; } = string.Empty;
         [ObservableProperty]
         public partial string? Key { get; set; } 
         [ObservableProperty]
@@ -32,7 +32,7 @@ namespace M3u8Downloader_H.Models
             if(resetUrl) RequestUrl = string.Empty;
             if(resetName) VideoName = string.Empty;
             Key = null;
-            Method = "AES-128";
+            Method = string.Empty;
             Iv = null;
         }
 

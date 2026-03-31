@@ -3,7 +3,6 @@ using CommunityToolkit.Mvvm.Input;
 using M3u8Downloader_H.Abstractions.Common;
 using M3u8Downloader_H.Abstractions.M3u8;
 using M3u8Downloader_H.Common.DownloadPrams;
-using M3u8Downloader_H.Exceptions;
 using M3u8Downloader_H.Extensions;
 using M3u8Downloader_H.FrameWork;
 using M3u8Downloader_H.Models;
@@ -11,20 +10,12 @@ using M3u8Downloader_H.Services;
 using M3u8Downloader_H.Utils;
 using M3u8Downloader_H.ViewModels.Downloads;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using System.Text;
 
 namespace M3u8Downloader_H.ViewModels.Windows
 {
-    public partial class M3u8WindowViewModel : ViewModelBase
+    public partial class M3u8WindowViewModel(SettingsService settingsService, PluginService pluginService, ViewModelManager viewModelManager, SnackbarManager Notification) : ViewModelBase
     {
-        private readonly SettingsService settingsService;
-        private readonly PluginService pluginService;
-        private readonly ViewModelManager viewModelManager;
-        private readonly SnackbarManager notification;
-
         public M3u8DownloadInfo VideoDownloadInfo { get; } = new M3u8DownloadInfo();
 
         [ObservableProperty]
@@ -32,15 +23,6 @@ namespace M3u8Downloader_H.ViewModels.Windows
         public partial bool IsBusy { get; private set; }
 
         public Action<DownloadViewModel> EnqueueDownloadAction { get; set; } = default!;
-
-        public M3u8WindowViewModel(SettingsService settingsService, PluginService pluginService, ViewModelManager viewModelManager, SnackbarManager Notification)
-        {
-            this.settingsService = settingsService;
-            this.pluginService = pluginService;
-            this.viewModelManager = viewModelManager;
-            notification = Notification;
-        }
-
 
         public bool CanProcessM3u8Download => !IsBusy;
 
@@ -60,7 +42,7 @@ namespace M3u8Downloader_H.ViewModels.Windows
             catch (Exception e)
             {
                 Debug.WriteLine(e);
-                notification.Notify(e.ToString());
+                Notification.Notify(e.ToString());
             }
             finally
             {

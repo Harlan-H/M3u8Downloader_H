@@ -12,8 +12,9 @@ using M3u8Downloader_H.Views.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Diagnostics.CodeAnalysis;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
-namespace M3u8Downloader_H
+namespace M3u8Downloader_H.FrameWork
 {
     /// <summary>
     /// Given a view model, returns the corresponding view if possible.
@@ -21,6 +22,17 @@ namespace M3u8Downloader_H
     public class ViewLocator(IServiceProvider serviceProvider) : IDataTemplate
     {
         public Control? Build(object? param)
+        {
+            if (param is not ViewModelBase viewModel)
+                return null;
+
+            var view = CreateView(param);
+            view?.DataContext ??= viewModel;
+
+            return view;
+        }
+
+        private Control? CreateView(object? param)
         {
             return param switch
             {
@@ -33,9 +45,9 @@ namespace M3u8Downloader_H
                 MediaWindowViewModel => serviceProvider.GetRequiredService<MediaWindowView>(),
                 M3u8ConverterViewModel => new M3u8ConverterView(),
                 MediaConverterViewModel => new MediaConverterView(),
-                DownloadViewModel =>  new DownloadView(),
+                DownloadViewModel => new DownloadView(),
                 DeleteDialogViewModel => new DeleteDialogView(),
-                _ => new TextBlock { Text = $"No view for {param?.GetType().Name}" }
+                _ => null
             };
         }
 

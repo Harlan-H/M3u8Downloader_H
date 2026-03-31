@@ -6,6 +6,7 @@
              xmlns:materialDesign="clr-namespace:DialogHostAvalonia;assembly=DialogHost.Avalonia"
              xmlns:MaterialStyles="clr-namespace:Material.Styles.Controls;assembly=Material.Styles"
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:converters="using:M3u8Downloader_H.Converters"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              xmlns:vm="using:M3u8Downloader_H.ViewModels.Menus"
              x:DataType="vm:MainWindowViewModel"
@@ -108,7 +109,7 @@
                             <ContextMenu  x:Key="ItemContextMenu" >
                                 <MenuItem Header="复制地址" Command="{Binding $parent[UserControl].((vm:MainWindowViewModel)DataContext).CopyUrlCommand}" CommandParameter="{Binding}" >
                                     <MenuItem.Icon>
-                                        <avalonia:MaterialIcon Width="16" Height="16" Kind="ContentCopy" />
+                                        <avalonia:MaterialIcon Width="16" Height="16" Kind="Link" />
                                     </MenuItem.Icon>
                                 </MenuItem>
                                 <MenuItem Header="复制名称" Command="{Binding $parent[UserControl].((vm:MainWindowViewModel)DataContext).CopyTitleCommand}" CommandParameter="{Binding}" >
@@ -116,7 +117,11 @@
                                         <avalonia:MaterialIcon Width="16" Height="16" Kind="ContentCopy" />
                                     </MenuItem.Icon>
                                 </MenuItem>
-                                <MenuItem Header="复制日志" Command="{Binding $parent[UserControl].((vm:MainWindowViewModel)DataContext).CopyLogsCommand}" CommandParameter="{Binding}" />
+                                <MenuItem Header="复制日志" Command="{Binding $parent[UserControl].((vm:MainWindowViewModel)DataContext).CopyLogsCommand}" CommandParameter="{Binding}" >
+									<MenuItem.Icon>
+                                        <avalonia:MaterialIcon Width="16" Height="16" Kind="Notebook" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
                                 <Separator />
                                 <MenuItem Header="停止下载所有选择项"  
                                            Command="{Binding $parent[UserControl].((vm:MainWindowViewModel)DataContext).StopDownloadsCommand}"
@@ -132,19 +137,35 @@
                                         <avalonia:MaterialIcon  Kind="Restart" />
                                     </MenuItem.Icon>
                                 </MenuItem>
+                                <MenuItem Header="重新开始所有失败的下载" Command="{Binding $parent[UserControl].((vm:MainWindowViewModel)DataContext).RestartFailedDownloadsCommand}">
+									<MenuItem.Icon>
+                                        <avalonia:MaterialIcon  Kind="RestartAlert" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
                                 <Separator />
                                 <MenuItem Header="删除所有选择项" 
                                           Command="{Binding $parent[UserControl].((vm:MainWindowViewModel)DataContext).RemoveDownloadsCommand}"
                                           CommandParameter="{Binding $parent[ListBox].SelectedItems}">
                                     <MenuItem.Icon>
+                                        <avalonia:MaterialIcon  Kind="DeleteForever" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="删除所有失败的下载" Command="{Binding $parent[UserControl].((vm:MainWindowViewModel)DataContext).RemoveFailedDownloadsCommand}" >
+                                    <MenuItem.Icon>
+                                        <avalonia:MaterialIcon  Kind="DeleteAlert" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="删除所有闲置下载"   Command="{Binding $parent[UserControl].((vm:MainWindowViewModel)DataContext).RemoveInactiveDownloadsCommand}" >
+                                    <MenuItem.Icon>
                                         <avalonia:MaterialIcon  Kind="Delete" />
                                     </MenuItem.Icon>
                                 </MenuItem>
-                                <MenuItem Header="删除所有失败的下载" Command="{Binding $parent[UserControl].((vm:MainWindowViewModel)DataContext).RemoveFailedDownloadsCommand}" />
-                                <MenuItem Header="删除所有闲置下载"   Command="{Binding $parent[UserControl].((vm:MainWindowViewModel)DataContext).RemoveInactiveDownloadsCommand}" />
-                                <MenuItem Header="删除所有已完成记录" Command="{Binding $parent[UserControl].((vm:MainWindowViewModel)DataContext).RemoveSuccessDownloadsCommand}" />
+                                <MenuItem Header="删除所有已完成记录" Command="{Binding $parent[UserControl].((vm:MainWindowViewModel)DataContext).RemoveSuccessDownloadsCommand}" >
+                                    <MenuItem.Icon>
+                                        <avalonia:MaterialIcon  Kind="DeleteCircleOutline" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
                                 <Separator />
-                                <MenuItem Header="重新开始所有失败的下载" Command="{Binding $parent[UserControl].((vm:MainWindowViewModel)DataContext).RestartFailedDownloadsCommand}"/>
                             </ContextMenu>
                         </ListBox.Resources>
                         <ListBox.Styles >
@@ -165,7 +186,7 @@
             </MaterialStyles:SnackbarHost>
         </materialDesign:DialogHost>
         <Grid ColumnDefinitions="*,*,100" Grid.Row="1" VerticalAlignment="Center" >
-            <TextBlock Margin="5 0 0 0" HorizontalAlignment="Center"  Text="{Binding HttpServicePort,TargetNullValue=RestApi初始化失败如需此以管理员权限身份运行此程序}" />
+            <TextBlock Margin="5 0 0 0" HorizontalAlignment="Center"  Text="{Binding HttpServicePort,TargetNullValue=RestApi初始化失败如需此以管理员权限身份运行此程序,Converter={x:Static converters:PortToLocalAddress.Instance}}" />
             <TextBlock Grid.Column="1"  HorizontalAlignment="Center" Text="{Binding HttpServicePort,TargetNullValue=RestApi初始化失败如需请以管理员权限身份运行此程序,StringFormat=http://127.0.0.1:\{0\}}" />
         </Grid>
     </Grid>

@@ -22,11 +22,11 @@
 
         <Interaction.Behaviors>
         <LoadedTrigger>
-			<InvokeCommandAction Command="{Binding InitializeAsyncCommand}" />
+			<InvokeCommandAction Command="{Binding InitializeCommand}" />
         </LoadedTrigger>
-        <DialogClosedTrigger>
-			<InvokeCommandAction Command="{Binding ClosedAsyncCommand}" />
-        </DialogClosedTrigger>
+        <EventTriggerBehavior EventName="Closing">
+			<InvokeCommandAction Command="{Binding ClosedCommand}" />
+        </EventTriggerBehavior>
     </Interaction.Behaviors>
 
     <Grid ColumnDefinitions="200,*">

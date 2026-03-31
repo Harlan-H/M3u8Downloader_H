@@ -153,7 +153,7 @@
                 <TextBlock Text="直播配置" Margin="10" HorizontalAlignment="Center" FontSize="20" FontWeight="Bold" />
                 <DockPanel Margin="8 0 8 0">
                     <TextBlock Text="录制时长 " Classes="MyTextBlock" />
-                    <TimePicker SelectedTime="{Binding}"  FontSize="15"
+                    <TimePicker SelectedTime="{Binding RecordDuration,Converter={x:Static converters:DoubleToTimeStringConverters.Instance}}"  FontSize="15"
                                      assists:TimePickerAssist.CanSelectSeconds="{x:True}" >
                         <TimePicker.Styles>
 							<Style Selector="TimePicker /template/ TextBox#PART_DisplayTextBox /template/ Panel#PART_TextFieldPanel">
@@ -184,8 +184,8 @@
                     </ToolTip.Tip>
                     <TextBlock Text="代理地址" Classes="MyTextBlock" />
                     <Button DockPanel.Dock="Right"
-
-
+                            Command="{Binding $parent[UserControl].((vm:SettingsViewModel)DataContext).TryConnectProxyCommand}"
+                            CommandParameter="{Binding #proxyTextBox.Text}"
                             Content="连接测试"
                              >
                     </Button>

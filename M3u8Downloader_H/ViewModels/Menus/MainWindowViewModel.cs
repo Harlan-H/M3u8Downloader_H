@@ -1,5 +1,4 @@
 ﻿using Avalonia;
-using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -7,6 +6,7 @@ using M3u8Downloader_H.Common.Models;
 using M3u8Downloader_H.Extensions;
 using M3u8Downloader_H.FrameWork;
 using M3u8Downloader_H.Models;
+using M3u8Downloader_H.RestServer;
 using M3u8Downloader_H.Services;
 using M3u8Downloader_H.Utils;
 using M3u8Downloader_H.ViewModels.Dialogs;
@@ -26,6 +26,7 @@ namespace M3u8Downloader_H.ViewModels.Menus
 {
     public partial class MainWindowViewModel : ViewModelBase
     {
+        private readonly HttpListenService httpListenService = HttpListenService.Instance;
         private readonly SettingsService settingsService;
         private readonly PluginService pluginService;
         private readonly ViewModelManager viewModelManager;
@@ -40,7 +41,7 @@ namespace M3u8Downloader_H.ViewModels.Menus
         public ObservableCollection<DownloadViewModel> Downloads { get; } = [];
 
         [ObservableProperty]
-        public partial string HttpServicePort { get; set; } = string.Empty;
+        public partial int? HttpServicePort { get; set; } = default!;
 
         public MainWindowViewModel(SettingsService settingsService, PluginService pluginService)
         {
@@ -71,7 +72,23 @@ namespace M3u8Downloader_H.ViewModels.Menus
 
 
 
- 
+        public Task InitializeAsync()
+        {
+            settingsService.Load();
+            pluginService.Load();
+
+            httpListenService.Run(i => HttpServicePort = i);
+            httpListenService.Initialization(m3U8WindowViewModel.ProcessM3u8Download, m3U8WindowViewModel.ProcessM3u8Download, mediaWindowViewModel.ProcessMediaDownload);
+            
+            return Task.FromResult(0);
+        }
+
+        public void Closed()
+        {
+            settingsService.Save();
+        }
+
+
         private void EnqueueDownload(DownloadViewModel download)
         {
             var existingDownloads = Downloads.FirstOrDefault(d => d == download);

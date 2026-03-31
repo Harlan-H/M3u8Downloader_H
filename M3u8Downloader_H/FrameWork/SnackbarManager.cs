@@ -2,8 +2,6 @@
 using Material.Styles.Controls;
 using Material.Styles.Models;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace M3u8Downloader_H.FrameWork;
 

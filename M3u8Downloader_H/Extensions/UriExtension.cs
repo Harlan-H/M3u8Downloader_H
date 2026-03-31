@@ -14,7 +14,5 @@ namespace M3u8Downloader_H.Extensions
                 return string.Empty;
             return uri.Host.Split('.')[^2];
         }
-
-
     }
 }

@@ -14,7 +14,7 @@ namespace M3u8Downloader_H.Utils
         private readonly Lock _lock = new();
         private readonly Queue<TaskCompletionSource> _waiters = new();
 
-        private int _maxCount = 0;
+        private int _maxCount = 3;
         private int _count;
 
         public int MaxCount 

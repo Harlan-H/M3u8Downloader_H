@@ -2,6 +2,8 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net10.0</TargetFramework>
+	  <AssemblyVersion>5.0.0.0</AssemblyVersion>
+	  <Version>5.0.0.0</Version>
     <Nullable>enable</Nullable>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
@@ -48,7 +50,7 @@
     <ProjectReference Include="..\M3u8Downloader_H.M3U8\M3u8Downloader_H.M3U8.csproj" />
     <ProjectReference Include="..\M3u8Downloader_H.Plugin\M3u8Downloader_H.Plugin.csproj" />
     <ProjectReference Include="..\M3u8Downloader_h.RestServer\M3u8Downloader_H.RestServer.csproj" />
-    <ProjectReference Include="..\SettingsManager\M3u8Downloader_H.Settings.csproj" />
+    <ProjectReference Include="..\M3u8Downloader_H.SettingsManager\M3u8Downloader_H.Settings.csproj" />
   </ItemGroup>
 
   <ItemGroup>

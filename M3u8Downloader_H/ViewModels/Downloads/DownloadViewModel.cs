@@ -4,6 +4,7 @@ using M3u8Downloader_H.Abstractions.Common;
 using M3u8Downloader_H.Common.Models;
 using M3u8Downloader_H.Core;
 using M3u8Downloader_H.Models;
+using M3u8Downloader_H.Services;
 using M3u8Downloader_H.Utils;
 using System;
 using System.Diagnostics;
@@ -57,22 +58,12 @@ namespace M3u8Downloader_H.ViewModels.Downloads
 
             try
             {
-                int rand = Random.Shared.Next(100);
                 Status = DownloadStatus.Enqueued;
                 cancellationTokenSource = new CancellationTokenSource();
-                //using var semaphore = await throttlingSemaphore.AcquireAsync(cancellationTokenSource.Token);
-                await Task.Delay(2000, cancellationTokenSource.Token);
-                Status = DownloadStatus.StartedVod;
-                for (var i = 0; i < 100; i++)
-                {
-                    ProgressNum += 0.01;
-                    await Task.Delay(1000, cancellationTokenSource.Token);
-                    if (i == rand)
-                        throw new InvalidDataException("随机异常");
-                }
+                using var semaphore = await throttlingSemaphore.AcquireAsync(cancellationTokenSource.Token);
 
-//                     downloadProgress ??= new(this);
-//                     await downloaderCoreClient.Downloader.StartDownload(s => Status = (DownloadStatus)s, downloadProgress, cancellationTokenSource.Token);
+                downloadProgress ??= new(this);
+                await downloaderCoreClient.Downloader.StartDownload(s => Status = (DownloadStatus)s, downloadProgress, cancellationTokenSource.Token);
                 Status = DownloadStatus.Completed;
             }
             catch (OperationCanceledException) when (cancellationTokenSource!.IsCancellationRequested)
@@ -207,17 +198,17 @@ namespace M3u8Downloader_H.ViewModels.Downloads
 
     public partial class DownloadViewModel
     {
-        public static DownloadViewModel CreateDownloadViewModel(
-         string requestUrl,
-         string videoName)
-        {
-            var downloadViewModel = new DownloadViewModel(default!)
-            {
-                RequestUrl =new Uri(requestUrl),
-                VideoName = videoName
-            };
-            return downloadViewModel;
-        }
+//         public static DownloadViewModel CreateDownloadViewModel(
+//          string requestUrl,
+//          string videoName)
+//         {
+//             var downloadViewModel = new DownloadViewModel(default!)
+//             {
+//                 RequestUrl =new Uri(requestUrl),
+//                 VideoName = videoName
+//             };
+//             return downloadViewModel;
+//         }
     
         // 
         //         public static DownloadViewModel CreateDownloadViewModel(

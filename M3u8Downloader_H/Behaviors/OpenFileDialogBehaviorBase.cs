@@ -69,7 +69,7 @@ public abstract class OpenFileDialogBehaviorBase<TOwner, TControl> : Behavior<TC
 
         if (files.Count > 0)
         {
-            AttachedTextBox.Text = files[0].Path.AbsolutePath;
+            AttachedTextBox.Text = files[0].Path.LocalPath;
         }
     }
 
@@ -84,7 +84,7 @@ public abstract class OpenFileDialogBehaviorBase<TOwner, TControl> : Behavior<TC
 
         if (folders.Count > 0)
         {
-            AttachedTextBox.Text = folders[0].Path.AbsolutePath;
+            AttachedTextBox.Text = folders[0].Path.LocalPath;
         }
     }
 }

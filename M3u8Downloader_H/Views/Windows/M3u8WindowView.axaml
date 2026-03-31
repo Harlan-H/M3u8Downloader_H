@@ -15,7 +15,7 @@
         <StackPanel >
             <TextBox Text="{Binding RequestUrl,Delay=150}" 
                         Classes="clearButton dense" 
-                        Watermark="下载地址,m3u8,txt,json文件(文件可以直接拖拽到此)"  FontSize="18"  VerticalAlignment="Center" >
+                        Watermark="下载地址,m3u8,txt,json文件(文件可以直接拖拽到此)"  FontSize="18"  VerticalAlignment="Center" >
                 <Interaction.Behaviors>
                     <ButtonOpenFilePickerBehavior />
                     <behavior:DragAndDropBehavior IsFile="True" FilterString=".m3u8|.txt|.json" />
@@ -28,7 +28,7 @@
 
             <!-- 密钥填写区  -->
             <Grid ColumnDefinitions="auto,*"   >
-                <ComboBox Grid.Column="0"   SelectedValue="{Binding Method}"  ItemsSource="{Binding MethodArr}"  FontSize="18" >
+                <ComboBox Grid.Column="0"  Width="125" SelectedValue="{Binding Method}"  ItemsSource="{Binding MethodArr}"  FontSize="18" >
                     <ComboBox.Styles>
 						<Style Selector="ComboBox /template/ Panel#PART_RootPanel > Grid">
 							<Setter Property="VerticalAlignment" Value="Bottom" />

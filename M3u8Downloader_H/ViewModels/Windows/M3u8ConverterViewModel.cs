@@ -10,7 +10,6 @@ using M3u8Downloader_H.Models;
 using M3u8Downloader_H.Services;
 using System;
 using System.IO;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -26,7 +25,7 @@ namespace M3u8Downloader_H.ViewModels.Windows
         private CancellationTokenSource cancellationTokenSource = default!;
 
         [ObservableProperty]
-        public partial string[] MethodArr { get; private set; } = ["未加密","AES-128", "AES-196", "AES-256"];
+        public partial string[] MethodArr { get; private set; } = ["AES-128", "AES-196", "AES-256"];
 
         [ObservableProperty]
         [NotifyCanExecuteChangedFor(nameof(ProcessCommand),nameof(CancelCommand),nameof(ResetCommand))]
@@ -71,10 +70,14 @@ namespace M3u8Downloader_H.ViewModels.Windows
                 return;
             }
 
-            FileInfo fileInfo = new(newValue);
-            if (!fileInfo.Exists)
+            FileAttributes fileAttributes = File.GetAttributes(newValue);
+            if ((fileAttributes & FileAttributes.Directory) > 0 && !Directory.Exists(newValue))
             {
-                Log.Warn("{0}文件不存在", fileInfo.Name);
+                Log.Warn("{0}文件夹不存在", newValue);
+                return;
+            }else if((fileAttributes & FileAttributes.Archive) > 0 && !File.Exists(newValue))
+            {
+                Log.Warn("{0}文件夹不存在", newValue);
                 return;
             }
 
@@ -195,7 +198,7 @@ namespace M3u8Downloader_H.ViewModels.Windows
         public void ResetInternal()
         {
             VideoName = string.Empty;
-            Method = "AES-128";
+            Method = string.Empty;
             Key = string.Empty;
             Iv = string.Empty;
             Progress = 0;

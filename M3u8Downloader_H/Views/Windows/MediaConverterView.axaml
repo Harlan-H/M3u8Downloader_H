@@ -10,10 +10,16 @@
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:models="using:M3u8Downloader_H.Models"
              x:Class="M3u8Downloader_H.MediaConverterView">
+    <UserControl.Styles>
+		<Style Selector="TextBlock.MyTextBlock" >
+			<Setter Property="VerticalAlignment" Value="Bottom" />
+        </Style>
+    </UserControl.Styles>
+    
       <StackPanel Margin="8">
 
-        <DockPanel >
-            <TextBlock Text="视频地址: "  Classes="MyTextBlock" />
+        <DockPanel>
+            <TextBlock Text="视频地址: "  Classes="MyTextBlock" VerticalAlignment="Bottom" />
             <Button DockPanel.Dock="Right" Theme="{StaticResource MaterialFlatButton}" Classes="primary"  Margin="2">
                 <avalonia:MaterialIcon Kind="FilePlusOutline"/>
                 <Interaction.Behaviors>
@@ -23,14 +29,14 @@
                             />
                 </Interaction.Behaviors>
             </Button>
-            <TextBox x:Name="videoPathTextBox" Text="{Binding VideoFileUrl}"  
+            <TextBox x:Name="videoPathTextBox" Text="{Binding VideoFileUrl}"   
                  Classes="clearButton dense universal"
                  Watermark="视频文件地址">
             </TextBox>
         </DockPanel>
 
         <DockPanel >
-            <TextBlock Text="音频地址: "  Classes="MyTextBlock" />
+            <TextBlock Text="音频地址: "  Classes="MyTextBlock"  />
             <Button DockPanel.Dock="Right" Theme="{StaticResource MaterialFlatButton}" Classes="primary"  Margin="2">
                 <avalonia:MaterialIcon Kind="FilePlusOutline"/>
                 <Interaction.Behaviors>

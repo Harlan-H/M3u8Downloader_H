@@ -1,16 +1,11 @@
-﻿using Avalonia.Platform;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using M3u8Downloader_H.Extensions;
 using M3u8Downloader_H.FrameWork;
 using M3u8Downloader_H.Services;
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Net;
 using System.Net.Http;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace M3u8Downloader_H.ViewModels.Menus
@@ -20,7 +15,9 @@ namespace M3u8Downloader_H.ViewModels.Menus
         public SnackbarManager Notifications { get; } = new SnackbarManager("SettingsHost", TimeSpan.FromSeconds(5));
 
         [ObservableProperty]
+        [NotifyCanExecuteChangedFor(nameof(TryConnectProxyCommand))]
         public partial bool IsActived { get; private set; }
+
 
         [ObservableProperty]
         public partial SettingsService SettingsServiceClone { get; private set; } = settingService.Clone<SettingsService>();
@@ -35,7 +32,6 @@ namespace M3u8Downloader_H.ViewModels.Menus
             try
             {
                 settingService.CopyFrom(obj);
-                //settingService.UpdateAll();
                 Notifications.Notify("设置已经保存！！！");
             }
             catch (Exception e)
@@ -51,9 +47,10 @@ namespace M3u8Downloader_H.ViewModels.Menus
             Notifications.Notify("设置已经重置！");
         }
 
-        public bool CanTryConnectProxy => !IsActived;
+        private bool CanTryConnectProxy => !IsActived;
 
-        public async void TryConnectProxy(string proxy)
+        [RelayCommand(CanExecute = nameof(CanTryConnectProxy))]
+        private async Task TryConnectProxy(string proxy)
         {
             if (string.IsNullOrWhiteSpace(proxy))
             {
@@ -79,7 +76,7 @@ namespace M3u8Downloader_H.ViewModels.Menus
             }
             catch (Exception e)
             {
-                Notifications.Notify($"链接失败,{e.Message}");
+                Notifications.Notify($"连接失败,{e.Message}");
             }
             finally
             {

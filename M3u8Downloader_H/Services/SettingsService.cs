@@ -1,13 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using M3u8Downloader_H.Abstractions.M3uDownloaders;
 using M3u8Downloader_H.Abstractions.Settings;
-using M3u8Downloader_H.Attributes;
 using M3u8Downloader_H.Settings.Services;
-using M3u8Downloader_H.Utils;
-using System;
 using System.Collections.Generic;
-using System.Net;
-using System.Net.Http;
 using System.Text.Json.Serialization;
 
 
@@ -23,7 +18,6 @@ namespace M3u8Downloader_H.Services
         /// <summary>
         /// 线程数量
         /// </summary>
-        [Range(1,200)]
         [ObservableProperty]
         public partial int MaxThreadCount { get; set; } = 5;
 
@@ -93,12 +87,6 @@ namespace M3u8Downloader_H.Services
             Configuration.DirectoryName = @"C:\Users\admin\Desktop\666";
 #endif
         }
-
-//         public void UpdateAll()
-//         {
-//             ThrottlingSemaphore.Instance.MaxCount = MaxConcurrentDownloadCount;
-//            
-//         }
 
     }
 
