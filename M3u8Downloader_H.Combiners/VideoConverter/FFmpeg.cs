@@ -31,7 +31,7 @@ namespace M3u8Downloader_H.Combiners.VideoConverter
             {
                 arguments.Add("-i").Add(Path.Combine(CachePath, item.Title));
             }
-            arguments.Add("-allowed_extensions").Add("tmp");
+            arguments.Add("-allowed_extensions").Add("ALL");
 
             await ConvertToMp4(arguments, dialogProgress,null, cancellationToken);
         }
@@ -53,7 +53,7 @@ namespace M3u8Downloader_H.Combiners.VideoConverter
             {
                 arguments.Add("-f").Add("hls")
                     //allowed_extensions必须在-i pipe:0之前执行否则会报错"If you wish to override this adjust allowed_extensions, you can set it to 'ALL' to allow all"
-                    .Add("-allowed_extensions").Add("tmp");
+                    .Add("-allowed_extensions").Add("ALL");
                 pipeSource = PipeSource.Create(m3UFileInfo.GenerateM3U8Stream(CachePath));
             }
 
@@ -91,7 +91,7 @@ namespace M3u8Downloader_H.Combiners.VideoConverter
             var stdErrBuffer = new StringBuilder();
 
             var stdErrPipe = PipeTarget.Merge(
-                PipeTarget.ToStringBuilder(stdErrBuffer), // error data collector
+                PipeTarget.ToStringBuilder(stdErrBuffer,Encoding.UTF8), // error data collector
                 progress?.Pipe(p => new FFmpegProgressRouter(p)) ?? PipeTarget.Null // progress
             );
             

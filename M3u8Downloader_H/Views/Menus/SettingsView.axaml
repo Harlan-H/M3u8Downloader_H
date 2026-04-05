@@ -12,6 +12,12 @@
              x:DataType="vm:SettingsViewModel"
              x:Class="M3u8Downloader_H.Views.Menus.SettingsView">
 
+    <Interaction.Behaviors>
+        <LoadedTrigger>
+			<InvokeCommandAction Command="{Binding InitializeCommand}" />
+        </LoadedTrigger>
+    </Interaction.Behaviors>
+
    <Grid RowDefinitions="*,auto">
         <MaterialStyles:SnackbarHost  HostName="SettingsHost" SnackbarMaxCounts="5">
         <ScrollViewer>
@@ -65,18 +71,18 @@
                 <WrapPanel  Orientation="Horizontal">
                     <DockPanel  Margin="8 0 8 0" ToolTip.Tip="当点击下载之后请求地址是否清空">
                         <TextBlock Classes="MyTextBlock" Text="重置地址" />
-                        <ToggleSwitch Classes="LeftHeader"   HorizontalAlignment="Left"  Margin="10 0 0 0" Theme="{StaticResource MaterialDesignSwitchToggleButton}" ToolTip.Tip="{Binding IsResetAddress,Converter={x:Static converters:BoolToStringConverters.Instance}}"  IsChecked="{Binding IsResetAddress}" />
+                        <ToggleSwitch   HorizontalAlignment="Left"  Margin="10 0 0 0" Theme="{StaticResource MaterialDesignSwitchToggleButton}" ToolTip.Tip="{Binding IsResetAddress,Converter={x:Static converters:BoolToStringConverters.Instance}}"  IsChecked="{Binding IsResetAddress}" />
                     </DockPanel>
 
                     <DockPanel  Margin="8 0 8 0" ToolTip.Tip="当点击下载之后视频名称是否清空">
                         <TextBlock Classes="MyTextBlock" Text="重置名称" />
-                        <ToggleSwitch Classes="LeftHeader"   HorizontalAlignment="Left"  Margin="10 0 0 0" Theme="{StaticResource MaterialDesignSwitchToggleButton}" ToolTip.Tip="{Binding IsResetName,Converter={x:Static converters:BoolToStringConverters.Instance}}"  IsChecked="{Binding IsResetName}" />
+                        <ToggleSwitch   HorizontalAlignment="Left"  Margin="10 0 0 0" Theme="{StaticResource MaterialDesignSwitchToggleButton}" ToolTip.Tip="{Binding IsResetName,Converter={x:Static converters:BoolToStringConverters.Instance}}"  IsChecked="{Binding IsResetName}" />
                     </DockPanel>
 
 
                     <DockPanel  Margin="8 0 8 0" ToolTip.Tip="视频合并之后会执行清理，如果需要开启">
                         <TextBlock Classes="MyTextBlock" Text="清理缓存" />
-                        <ToggleSwitch Classes="LeftHeader"   HorizontalAlignment="Left"  Margin="10 0 0 0" Theme="{StaticResource MaterialDesignSwitchToggleButton}" ToolTip.Tip="{Binding IsCleanUp,Converter={x:Static converters:BoolToStringConverters.Instance}}"  IsChecked="{Binding IsCleanUp}" />
+                        <ToggleSwitch   HorizontalAlignment="Left"  Margin="10 0 0 0" Theme="{StaticResource MaterialDesignSwitchToggleButton}" ToolTip.Tip="{Binding IsCleanUp,Converter={x:Static converters:BoolToStringConverters.Instance}}"  IsChecked="{Binding IsCleanUp}" />
                     </DockPanel>
                 </WrapPanel>
 
@@ -130,10 +136,10 @@
                             </TextBlock>
                         </ToolTip.Tip>
                         <TextBlock Classes="MyTextBlock"  Text="强制下载"/>
-                        <ToggleSwitch Classes="LeftHeader"  HorizontalAlignment="Left"  Margin="10 0 0 0" Theme="{StaticResource MaterialDesignSwitchToggleButton}"  ToolTip.Tip="{Binding SkipRequestError,Converter={x:Static converters:BoolToStringConverters.Instance}}" IsChecked="{Binding SkipRequestError}" >
-                            <!--<i:Interaction.Behaviors>
-                                <behavior:LinkageToggleButtonBehavior Target="{Binding ElementName=forceMergerButton}" />
-                            </i:Interaction.Behaviors>-->
+                        <ToggleSwitch  HorizontalAlignment="Left"  Margin="10 0 0 0" Theme="{StaticResource MaterialDesignSwitchToggleButton}"  ToolTip.Tip="{Binding SkipRequestError,Converter={x:Static converters:BoolToStringConverters.Instance}}" IsChecked="{Binding SkipRequestError}" >
+                            <Interaction.Behaviors>
+                                <behavior:LinkageToggleButtonBehavior Target="{Binding #forceMergerButton}" />
+                            </Interaction.Behaviors>
                         </ToggleSwitch>
                     </DockPanel>
 
@@ -144,7 +150,7 @@
                             </TextBlock>
                         </ToolTip.Tip>
                         <TextBlock  Classes="MyTextBlock"  Text="强制合并"/>
-                        <ToggleSwitch Classes="LeftHeader" Name="forceMergerButton"  HorizontalAlignment="Left"  Margin="10 0 0 0" Theme="{StaticResource MaterialDesignSwitchToggleButton}"  ToolTip.Tip="{Binding ForcedMerger,Converter={x:Static converters:BoolToStringConverters.Instance}}" IsChecked="{Binding ForcedMerger}" />
+                        <ToggleSwitch Name="forceMergerButton"  HorizontalAlignment="Left"  Margin="10 0 0 0" Theme="{StaticResource MaterialDesignSwitchToggleButton}"  ToolTip.Tip="{Binding ForcedMerger,Converter={x:Static converters:BoolToStringConverters.Instance}}" IsChecked="{Binding ForcedMerger}" />
                     </DockPanel>
                     
                 </WrapPanel>
@@ -153,7 +159,7 @@
                 <TextBlock Text="直播配置" Margin="10" HorizontalAlignment="Center" FontSize="20" FontWeight="Bold" />
                 <DockPanel Margin="8 0 8 0">
                     <TextBlock Text="录制时长 " Classes="MyTextBlock" />
-                    <TimePicker SelectedTime="{Binding RecordDuration,Converter={x:Static converters:DoubleToTimeStringConverters.Instance}}"  FontSize="15"
+                    <TimePicker SelectedTime="{Binding RecordDuration}"  FontSize="15"
                                      assists:TimePickerAssist.CanSelectSeconds="{x:True}" >
                         <TimePicker.Styles>
 							<Style Selector="TimePicker /template/ TextBox#PART_DisplayTextBox /template/ Panel#PART_TextFieldPanel">

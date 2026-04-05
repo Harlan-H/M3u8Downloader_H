@@ -2,7 +2,9 @@
 using M3u8Downloader_H.Abstractions.M3uDownloaders;
 using M3u8Downloader_H.Abstractions.Settings;
 using M3u8Downloader_H.Settings.Services;
+using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 
@@ -71,11 +73,12 @@ namespace M3u8Downloader_H.Services
         public partial Dictionary<string,string> Headers { get; set; } = default!;
 
         [ObservableProperty]
-        public partial double RecordDuration { get; set; } 
+        [JsonConverter(typeof(TimeSpanJsonConverter))]
+        public partial TimeSpan RecordDuration { get; set; } 
 #if DEBUG            
-            = 60 * 10;
+            =  new TimeSpan(0,10, 0);
 #else
-            = 60 * 60 * 12;
+            =  new TimeSpan(12,0, 0);
 #endif
 
         [ObservableProperty]
@@ -94,6 +97,25 @@ namespace M3u8Downloader_H.Services
     {
         [JsonSerializable(typeof(SettingsService))]
         private partial class SerializerContext : JsonSerializerContext;
+
+        private class TimeSpanJsonConverter : JsonConverter<TimeSpan>
+        {
+            public override TimeSpan Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                if (reader.TokenType == JsonTokenType.Number)
+                {
+                    if(reader.TryGetDouble(out double sec))
+                        return TimeSpan.FromSeconds(sec);
+                }
+                return TimeSpan.Zero;
+            }
+
+            public override void Write(Utf8JsonWriter writer, TimeSpan value, JsonSerializerOptions options)
+            {
+                writer.WriteNumberValue(value.TotalSeconds);
+            }
+        }
     }
+
 
 }

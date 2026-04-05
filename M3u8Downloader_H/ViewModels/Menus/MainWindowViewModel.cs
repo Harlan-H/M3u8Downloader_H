@@ -32,8 +32,8 @@ namespace M3u8Downloader_H.ViewModels.Menus
         private readonly ViewModelManager viewModelManager;
         private readonly M3u8WindowViewModel m3U8WindowViewModel;
         private readonly MediaWindowViewModel mediaWindowViewModel;
-        private List<IDisposable> _disposables = [];
-        public SnackbarManager Notifications { get; } = new SnackbarManager("MainWindowHost",TimeSpan.FromSeconds(5));
+        private readonly List<IDisposable> _disposables = [];
+        public static SnackbarManager Notifications { get; } = new SnackbarManager("MainWindowHost",TimeSpan.FromSeconds(5));
         
 
         public ObservableCollection<ViewModelBase> SubWindows { get; } = [];

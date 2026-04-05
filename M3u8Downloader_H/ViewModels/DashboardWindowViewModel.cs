@@ -16,7 +16,7 @@ namespace M3u8Downloader_H.ViewModels
         public string Version { get; } = Program.VersionString;
 
         [ObservableProperty]
-        private ViewModelBase _currentViewModel = default!;
+        public partial ViewModelBase CurrentViewModel { get; set; } = default!;
 
         public DashboardWindowViewModel(IServiceProvider serviceProvider)
         {

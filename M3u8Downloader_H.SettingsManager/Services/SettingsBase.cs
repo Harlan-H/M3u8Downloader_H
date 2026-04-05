@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
@@ -49,7 +47,7 @@ public abstract class SettingsBase
         try
         {
             using FileStream utf8Json = File.OpenRead(FullFilePath);
-            using JsonDocument jsonDocument = JsonDocument.Parse((Stream)utf8Json, new JsonDocumentOptions
+            using JsonDocument jsonDocument = JsonDocument.Parse(utf8Json, new JsonDocumentOptions
             {
                 AllowTrailingCommas = true,
                 CommentHandling = JsonCommentHandling.Skip
@@ -99,7 +97,7 @@ public abstract class SettingsBase
         return obj;
     }
 
-    public void CopyFrom<T>(T settings) where T : SettingsBase, new()
+    public void CopyFrom<T>(T settings) where T : SettingsBase
     {
         foreach (var item in _rootTypeInfo.Properties)
         {

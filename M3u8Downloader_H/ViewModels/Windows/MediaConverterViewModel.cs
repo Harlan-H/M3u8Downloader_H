@@ -33,8 +33,7 @@ namespace M3u8Downloader_H.ViewModels.Windows
         [ObservableProperty]
         public partial string VideoName { get; set; } = default!;
 
-        [ObservableProperty]
-        public partial double Progress { get; set; } = default!;
+        public double Progress { get; set; } = default!;
 
         public MyLog Log { get; } = new();
 

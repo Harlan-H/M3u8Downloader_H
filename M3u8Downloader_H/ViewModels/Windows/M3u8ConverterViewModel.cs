@@ -46,8 +46,7 @@ namespace M3u8Downloader_H.ViewModels.Windows
         [ObservableProperty]
         public partial string Iv { get; set; } = default!;
 
-        [ObservableProperty]
-        public partial double Progress { get; set; } = default!;
+        public double Progress { get; set; } = default!;
 
         public  MyLog Log { get; } = new();
 
@@ -160,7 +159,7 @@ namespace M3u8Downloader_H.ViewModels.Windows
             finally
             {
                 IsStart = false;
-                cancellationTokenSource.Dispose();
+                cancellationTokenSource?.Dispose();
             }
         }
 

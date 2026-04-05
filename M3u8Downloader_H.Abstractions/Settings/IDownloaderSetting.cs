@@ -12,7 +12,7 @@ namespace M3u8Downloader_H.Abstractions.M3uDownloaders
         public int RetryCount { get; }
         public bool SkipRequestError { get; }
         public int MaxThreadCount { get; }
-        double RecordDuration { get; }
+        TimeSpan RecordDuration { get; }
         Dictionary<string, string> Headers { get; }
     }
 

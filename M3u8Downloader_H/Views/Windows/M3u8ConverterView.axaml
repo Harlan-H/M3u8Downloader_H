@@ -15,8 +15,8 @@
         </Style>
     </UserControl.Styles>
 
-  <StackPanel Margin="8">
-        <DockPanel >
+  <Grid Margin="8" Grid.RowDefinitions="auto,auto,auto,auto,*,auto">
+        <DockPanel Grid.Row="0" >
             <TextBlock Text="地址: "  Classes="MyTextBlock" />
             <TextBox x:Name="m3u8PathTextBox" Text="{Binding M3u8FileUrl}" 
                     IsReadOnly="True" Classes="clearButton dense universal"
@@ -41,7 +41,7 @@
             </TextBox>
         </DockPanel>
 
-        <DockPanel >
+        <DockPanel Grid.Row="1">
             <TextBlock Text="视频名称: "  Classes="MyTextBlock"/>
             <TextBox Text="{Binding VideoName}" 
                      Classes="clearButton dense universal"
@@ -49,7 +49,7 @@
                      />
         </DockPanel>
 
-        <DockPanel >
+        <DockPanel Grid.Row="2">
             <TextBlock Text="密钥:"  Classes="MyTextBlock" />
             <ComboBox DockPanel.Dock="Left" ItemsSource="{Binding MethodArr}" SelectedValue="{Binding Method}" Margin="5" FontSize="18" Width="125">
                     <ComboBox.Styles>
@@ -64,7 +64,7 @@
                      />
         </DockPanel>
 
-        <DockPanel >
+        <DockPanel Grid.Row="3">
             <TextBlock Text="IV:"  Classes="MyTextBlock" />
             <TextBox Text="{Binding Iv}" 
                      Classes="clearButton dense universal"
@@ -72,25 +72,13 @@
                      />
         </DockPanel>
 
-        <Grid Margin="8,0,8,0">
-            <ProgressBar Margin="5"
-                    Height="20"
-                    Minimum="0"
-                    Maximum="1"
-                    Value="{Binding Progress}"
-                    />
-            <TextBlock Text="{Binding Progress,StringFormat=当前进度: {0:P1}}"  
-                       FontSize="16"
-                       Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" />
-        </Grid>
-
-        <Border BorderThickness="1" 
+        <Border BorderThickness="1"  Grid.Row="4"
                 Margin="8"
                 BorderBrush="{StaticResource MaterialPrimaryMidBrush}"
                 CornerRadius="20"
                 Padding="10"
                 >
-            <ItemsControl Grid.Row="1" Height="200" ItemsSource="{Binding Log.Logs}"
+            <ItemsControl Grid.Row="1" MinHeight="200" ItemsSource="{Binding Log.Logs}"
             ScrollViewer.HorizontalScrollBarVisibility="Disabled"
             ScrollViewer.VerticalScrollBarVisibility="Auto">
                 <ItemsControl.ContextMenu>
@@ -137,7 +125,7 @@
         </Border>
 
 
-        <StackPanel Orientation="Horizontal"  HorizontalAlignment="Center" Margin="20" Height="40">
+        <StackPanel Grid.Row="5" Orientation="Horizontal"  HorizontalAlignment="Center" Margin="20" Height="40">
             <Button Command="{Binding ProcessCommand}"
                     Content="开始转码" 
                     Width="100" />
@@ -151,5 +139,5 @@
                 Width="100" Margin="10 0 0 0" />
 
         </StackPanel>
-    </StackPanel>
+    </Grid>
 </UserControl>

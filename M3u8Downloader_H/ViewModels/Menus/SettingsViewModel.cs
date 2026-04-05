@@ -4,6 +4,7 @@ using M3u8Downloader_H.Extensions;
 using M3u8Downloader_H.FrameWork;
 using M3u8Downloader_H.Services;
 using System;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -12,19 +13,25 @@ namespace M3u8Downloader_H.ViewModels.Menus
 {
     public partial class SettingsViewModel(SettingsService settingService) : ViewModelBase
     {
-        public SnackbarManager Notifications { get; } = new SnackbarManager("SettingsHost", TimeSpan.FromSeconds(5));
+        public static SnackbarManager Notifications { get; } = new SnackbarManager("SettingsHost", TimeSpan.FromSeconds(5));
 
         [ObservableProperty]
         [NotifyCanExecuteChangedFor(nameof(TryConnectProxyCommand))]
         public partial bool IsActived { get; private set; }
 
-
         [ObservableProperty]
-        public partial SettingsService SettingsServiceClone { get; private set; } = settingService.Clone<SettingsService>();
+        public partial SettingsService SettingsServiceClone { get; private set; } 
 
         [ObservableProperty]
         public partial string[] Formats { get; private set; } = { "mp4" };
 
+
+        [RelayCommand]
+        private void Initialize()
+        {
+            Debug.WriteLine("Initialize");
+            SettingsServiceClone = settingService.Clone<SettingsService>();
+        }
 
         [RelayCommand]
         private void SubmitSettingInfo(SettingsService obj)

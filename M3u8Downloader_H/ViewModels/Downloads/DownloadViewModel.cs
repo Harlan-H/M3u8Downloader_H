@@ -4,13 +4,11 @@ using M3u8Downloader_H.Abstractions.Common;
 using M3u8Downloader_H.Common.Models;
 using M3u8Downloader_H.Core;
 using M3u8Downloader_H.Models;
-using M3u8Downloader_H.Services;
 using M3u8Downloader_H.Utils;
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Timers;
 
 namespace M3u8Downloader_H.ViewModels.Downloads
@@ -105,6 +103,9 @@ namespace M3u8Downloader_H.ViewModels.Downloads
         [RelayCommand(CanExecute = nameof(CanCancel))]
         private void Cancel()
         {
+            if (!CanCancel)
+                return;
+
             cancellationTokenSource?.Cancel();
         }
 
@@ -195,47 +196,5 @@ namespace M3u8Downloader_H.ViewModels.Downloads
             }
         }
     }
-
-    public partial class DownloadViewModel
-    {
-//         public static DownloadViewModel CreateDownloadViewModel(
-//          string requestUrl,
-//          string videoName)
-//         {
-//             var downloadViewModel = new DownloadViewModel(default!)
-//             {
-//                 RequestUrl =new Uri(requestUrl),
-//                 VideoName = videoName
-//             };
-//             return downloadViewModel;
-//         }
-    
-        // 
-        //         public static DownloadViewModel CreateDownloadViewModel(
-        //             IM3uFileInfo m3UFileInfo,
-        //             IDownloadParamBase m3U8DownloadParam,
-        //             Type? pluginType)
-        //         {
-        //             DownloadViewModel viewModel = null!;
-        //             viewModel.DownloadParam = m3U8DownloadParam;
-        //             viewModel.VideoName = m3U8DownloadParam.VideoName;
-        // 
-        //             viewModel.downloaderCoreClient = new(Http.Client, m3U8DownloadParam, viewModel.settingsService.Clone(), viewModel.Log, pluginType, m3UFileInfo);
-        //             return viewModel;
-        //         }
-        // 
-        //         public static DownloadViewModel CreateDownloadViewModel(
-        //              IMediaDownloadParam m3U8DownloadParam)
-        //         {
-        //             DownloadViewModel viewModel = null!;
-        //             viewModel.DownloadParam = m3U8DownloadParam;
-        //             viewModel.RequestUrl = m3U8DownloadParam.Medias[0].Url;
-        //             viewModel.VideoName = m3U8DownloadParam.VideoName;
-        // 
-        //             viewModel.downloaderCoreClient = new DownloaderCoreClient(Http.Client, m3U8DownloadParam, viewModel.settingsService.Clone(), viewModel.Log);
-        //             return viewModel;
-        //         }
-             }
-
-    }
+}
 

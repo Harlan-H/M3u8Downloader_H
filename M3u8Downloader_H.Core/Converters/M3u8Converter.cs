@@ -8,7 +8,6 @@ using M3u8Downloader_H.Abstractions.Converter;
 using M3u8Downloader_H.Abstractions.M3u8;
 using M3u8Downloader_H.Abstractions.Settings;
 using M3u8Downloader_H.Combiners;
-using M3u8Downloader_H.Combiners.Extensions;
 using M3u8Downloader_H.Downloader;
 
 namespace M3u8Downloader_H.Core.Converters
