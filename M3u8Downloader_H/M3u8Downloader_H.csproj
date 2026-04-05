@@ -58,4 +58,57 @@
       <SubType>Designer</SubType>
     </AvaloniaResource>
   </ItemGroup>
+
+	
+	<!-- 只在 publish 时自动下载 ffmpeg -->
+	<Target Name="DownloadFFmpeg"
+			BeforeTargets="Publish"
+			Condition="'$(IsPublishing)' == 'true'">
+
+		<PropertyGroup>
+			<!-- 下载脚本 -->
+			<FfmpegDownloadScript>$(MSBuildThisFileDirectory)DownloadFFmpeg.ps1</FfmpegDownloadScript>
+
+			<!-- PowerShell -->
+			<PowerShellCommand Condition="'$(OS)' == 'Windows_NT'">powershell.exe</PowerShellCommand>
+			<PowerShellCommand Condition="'$(OS)' != 'Windows_NT'">pwsh</PowerShellCommand>
+
+			<IsWindows>
+				$([System.String]::StartsWith('$(RuntimeIdentifier)', 'win-'))
+			</IsWindows>
+
+			<!-- ffmpeg 文件名 -->
+			<FfmpegExeName Condition="'$(IsWindows)' == 'True'">ffmpeg.exe</FfmpegExeName>
+			<FfmpegExeName Condition="'$(IsWindows)' != 'True'">ffmpeg</FfmpegExeName>
+
+			<!-- 路径 -->
+			<LocalFfmpegPath>$(MSBuildThisFileDirectory)$(FfmpegExeName)</LocalFfmpegPath>
+			<PublishFfmpegPath>$(PublishDir)$(FfmpegExeName)</PublishFfmpegPath>
+		</PropertyGroup>
+
+		<!-- 如果 publish 目录不存在 ffmpeg 才下载 -->
+		<Exec
+		  Condition="!Exists('$(PublishFfmpegPath)')"
+		  Command="$(PowerShellCommand) -ExecutionPolicy Bypass -File &quot;$(FfmpegDownloadScript)&quot; -r &quot;$(RuntimeIdentifier)&quot;"
+		  ConsoleToMSBuild="true"
+		  IgnoreStandardErrorWarningFormat="true">
+			<Output TaskParameter="ExitCode" PropertyName="DownloadExitCode" />
+		</Exec>
+
+		<Error Text="FFmpeg下载失败，请检查上方错误日志"
+			   Condition="'$(DownloadExitCode)' != '' AND '$(DownloadExitCode)' != '0'" />
+
+		<!-- 创建目录 -->
+		<MakeDir Directories="$(PublishDir)" Condition="!Exists('$(PublishDir)')" />
+
+		<!-- 拷贝 -->
+		<Copy
+		  SourceFiles="$(LocalFfmpegPath)"
+		  DestinationFiles="$(PublishFfmpegPath)"
+		  SkipUnchangedFiles="true">
+			<Output TaskParameter="CopiedFiles" ItemName="CopiedFFmpeg" />
+		</Copy>
+
+		<Message Text="FFmpeg 已准备: @(CopiedFFmpeg)" Importance="high" />
+	</Target>
 </Project>
