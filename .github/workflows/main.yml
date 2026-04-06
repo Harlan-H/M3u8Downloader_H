@@ -7,41 +7,68 @@ on:
       - develop
     tags:
       - "*"
+  workflow_dispatch:
+  
+
+env:
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
 
 jobs:
   package:
-    runs-on: windows-latest
+    strategy:
+      matrix:
+        include:
+        - os: windows-latest
+          rid: win-x64
+        - os: windows-latest
+          rid: win-x86
+        - os: windows-latest
+          rid: win-arm64
 
-    env:
-      DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
-      DOTNET_NOLOGO: true
-      DOTNET_CLI_TELEMETRY_OPTOUT: true
+        - os: ubuntu-latest
+          rid: linux-x64
+       # - os: ubuntu-latest
+       #   rid: linux-arm64
+
+        - os: macos-latest
+          rid: osx-x64
+        - os: macos-latest
+          rid: osx-arm64
+
+      single-file: [true, false]
+      
+
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: read
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Install .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: 9.0.x
+          dotnet-version: 10.0.x
 
       - name: Publish
-        run: |
-          dotnet publish M3u8Downloader_H/ -o M3u8Downloader_H/bin/Publish --configuration Release -p:EnableWindowsTargeting=true
-          dotnet publish M3u8Downloader_H/ -o M3u8Downloader_H/bin/PublishSingleFile -c Release --self-contained true -r win-x64  -p:PublishSingleFile=true -p:EnableWindowsTargeting=true
+        run: >
+          dotnet publish M3u8Downloader_H \
+          -o M3u8Downloader_H/bin/Publish \
+          -c Release \
+          -r ${{ matrix.rid }} \
+          --self-contained true \
+          /p:PublishSingleFile=${{ matrix.single-file }} 
 
-      - name: Upload artifacts normal
-        uses: actions/upload-artifact@v4
+      - name: Upload artifacts 
+        uses: actions/upload-artifact@v6
         with:
-          name: M3u8Downloader_H
+          name: M3u8Downloader_H${{ matrix.single-file && '-singleFile' || '' }}-${{ matrix.os }}
           path: M3u8Downloader_H/bin/Publish
+          if-no-files-found: error
 
-      - name: Upload artifacts single file
-        uses: actions/upload-artifact@v4
-        with:
-          name: M3u8Downloader_H-SingleFile
-          path: M3u8Downloader_H/bin/PublishSingleFile
 
   deploy:
     if: ${{ github.event_name == 'push' && github.ref_type == 'tag' }}

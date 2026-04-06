@@ -116,11 +116,6 @@
 		<Message Text="FFmpeg 已准备: @(CopiedFFmpeg)" Importance="high" />
 	</Target>
 
-	<Target Name="Delete Files" AfterTargets="Publish">
-		<Message Text="Delete $(PublishDir)$(ProjectName).deps.json" Importance="high" />
-		<Delete Files="$(PublishDir)$(ProjectName).deps.json" />
-	</Target>
-
 	<Target Name="Copy Files" AfterTargets="Publish" Condition="'$(RuntimeIdentifier)' != '' AND $(RuntimeIdentifier.StartsWith('win-'))">
 		<Message Text="Copy $(ProjectDir)Add-PortAcl.ps1" Importance="high" />
 		<Copy SourceFiles="$(ProjectDir)Add-PortAcl.ps1" DestinationFiles="$(PublishDir)Add-PortAcl.ps1" />
