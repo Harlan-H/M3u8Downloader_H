@@ -56,11 +56,11 @@ jobs:
 
       - name: Publish
         run: >
-          dotnet publish M3u8Downloader_H \
-          -o M3u8Downloader_H/bin/Publish \
-          -c Release \
-          -r ${{ matrix.rid }} \
-          --self-contained true \
+          dotnet publish M3u8Downloader_H 
+          -o M3u8Downloader_H/bin/Publish 
+          -c Release 
+          -r ${{ matrix.rid }} 
+          --self-contained true 
           /p:PublishSingleFile=${{ matrix.single-file }} 
 
       - name: Upload artifacts 
