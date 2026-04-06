@@ -2,7 +2,7 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net10.0</TargetFramework>
-	  <AssemblyVersion>5.0.0.0</AssemblyVersion>
+	  <AssemblyVersion>5.0</AssemblyVersion>
 	  <Version>5.0.0.0</Version>
     <Nullable>enable</Nullable>
     <ApplicationManifest>app.manifest</ApplicationManifest>
@@ -66,10 +66,10 @@
 			Condition="'$(IsPublishing)' == 'true'">
 
 		<PropertyGroup>
-			<!-- 下载脚本 -->
+			 <!--下载脚本--> 
 			<FfmpegDownloadScript>$(MSBuildThisFileDirectory)DownloadFFmpeg.ps1</FfmpegDownloadScript>
 
-			<!-- PowerShell -->
+			 <!--PowerShell--> 
 			<PowerShellCommand Condition="'$(OS)' == 'Windows_NT'">powershell.exe</PowerShellCommand>
 			<PowerShellCommand Condition="'$(OS)' != 'Windows_NT'">pwsh</PowerShellCommand>
 
@@ -77,16 +77,16 @@
 				$([System.String]::StartsWith('$(RuntimeIdentifier)', 'win-'))
 			</IsWindows>
 
-			<!-- ffmpeg 文件名 -->
+			 <!--ffmpeg 文件名--> 
 			<FfmpegExeName Condition="'$(IsWindows)' == 'True'">ffmpeg.exe</FfmpegExeName>
 			<FfmpegExeName Condition="'$(IsWindows)' != 'True'">ffmpeg</FfmpegExeName>
 
-			<!-- 路径 -->
+			 <!--路径--> 
 			<LocalFfmpegPath>$(MSBuildThisFileDirectory)$(FfmpegExeName)</LocalFfmpegPath>
 			<PublishFfmpegPath>$(PublishDir)$(FfmpegExeName)</PublishFfmpegPath>
 		</PropertyGroup>
 
-		<!-- 如果 publish 目录不存在 ffmpeg 才下载 -->
+		 <!--如果 publish 目录不存在 ffmpeg 才下载--> 
 		<Exec
 		  Condition="!Exists('$(PublishFfmpegPath)')"
 		  Command="$(PowerShellCommand) -ExecutionPolicy Bypass -File &quot;$(FfmpegDownloadScript)&quot; -r &quot;$(RuntimeIdentifier)&quot;"
@@ -98,10 +98,10 @@
 		<Error Text="FFmpeg下载失败，请检查上方错误日志"
 			   Condition="'$(DownloadExitCode)' != '' AND '$(DownloadExitCode)' != '0'" />
 
-		<!-- 创建目录 -->
+		 <!--创建目录--> 
 		<MakeDir Directories="$(PublishDir)" Condition="!Exists('$(PublishDir)')" />
 
-		<!-- 拷贝 -->
+		 <!--拷贝--> 
 		<Copy
 		  SourceFiles="$(LocalFfmpegPath)"
 		  DestinationFiles="$(PublishFfmpegPath)"
@@ -110,5 +110,24 @@
 		</Copy>
 
 		<Message Text="FFmpeg 已准备: @(CopiedFFmpeg)" Importance="high" />
+	</Target>
+
+	<Target Name="PackMacOSApp" AfterTargets="Publish" Condition="'$(RuntimeIdentifier)' != '' AND $(RuntimeIdentifier.StartsWith('osx-'))">
+		
+		<PropertyGroup>
+			<!-- PowerShell -->
+			<PowerShellCommand Condition="'$(OS)' == 'Windows_NT'">powershell.exe</PowerShellCommand>
+			<PowerShellCommand Condition="'$(OS)' != 'Windows_NT'">pwsh</PowerShellCommand>
+			
+			<!-- 打包脚本 -->
+			<MacPackScript>$(MSBuildThisFileDirectory)pack-macos.ps1</MacPackScript>
+
+			<SafePublishDir>$([System.String]::Copy('$(PublishDir)').TrimEnd('\').Replace('\','/'))</SafePublishDir>
+			
+		</PropertyGroup>
+
+		<Message Text="开始 macOS App 打包..." Importance="high" />
+
+		<Exec Command="$(PowerShellCommand) -ExecutionPolicy Bypass -File &quot;$(MacPackScript)&quot; -PublishDir &quot;$(SafePublishDir)&quot; -IconPath &quot;$(ProjectDir)Assets/logo.icns&quot;  -Version &quot;$(Version)&quot; -ShortVersion &quot;$(AssemblyVersion)&quot;" ConsoleToMSBuild="true" IgnoreStandardErrorWarningFormat="true" />
 	</Target>
 </Project>
