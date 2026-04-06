@@ -19,6 +19,9 @@ jobs:
   package:
     strategy:
       matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+        single-file: [true, false]
+
         include:
         - os: windows-latest
           rid: win-x64
@@ -36,9 +39,7 @@ jobs:
           rid: osx-x64
         - os: macos-latest
           rid: osx-arm64
-
-      single-file: [true, false]
-      
+     
 
     runs-on: ${{ matrix.os }}
     permissions:
