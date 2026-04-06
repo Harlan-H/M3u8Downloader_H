@@ -19,26 +19,34 @@ jobs:
   package:
     strategy:
       matrix:
-        os: [windows-latest, ubuntu-latest, macos-latest]
-        single-file: [true, false]
+          rid:
+            - win-x64
+            - win-x86
+            - win-arm64
+            - linux-x64
+           # - linux-arm64
+            - osx-x64
+            - osx-arm64
 
-        include:
-        - os: windows-latest
-          rid: win-x64
-        - os: windows-latest
-          rid: win-x86
-        - os: windows-latest
-          rid: win-arm64
+          single-file: [true, false]
 
-        - os: ubuntu-latest
-          rid: linux-x64
-       # - os: ubuntu-latest
-       #   rid: linux-arm64
+          include:
+            - rid: win-x64
+              os: windows-latest
+            - rid: win-x86
+              os: windows-latest
+            - rid: win-arm64
+              os: windows-latest
 
-        - os: macos-latest
-          rid: osx-x64
-        - os: macos-latest
-          rid: osx-arm64
+            - rid: linux-x64
+              os: ubuntu-latest
+          #  - rid: linux-arm64
+           #   os: ubuntu-latest
+
+            - rid: osx-x64
+              os: macos-latest
+            - rid: osx-arm64
+              os: macos-latest
      
 
     runs-on: ${{ matrix.os }}
@@ -66,7 +74,7 @@ jobs:
       - name: Upload artifacts 
         uses: actions/upload-artifact@v6
         with:
-          name: M3u8Downloader_H${{ matrix.single-file && '-singleFile' || '' }}-${{ matrix.os }}
+          name: M3u8Downloader_H${{ matrix.single-file && '-singleFile' || '' }}-${{ matrix.rid }}
           path: M3u8Downloader_H/bin/Publish
           if-no-files-found: error
 
