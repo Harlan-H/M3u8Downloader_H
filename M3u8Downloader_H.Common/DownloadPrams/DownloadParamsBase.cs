@@ -1,16 +1,12 @@
 ﻿using M3u8Downloader_H.Abstractions.Common;
+using M3u8Downloader_H.Common.Utils;
 using M3u8Downloader_H.Utils;
 
 namespace M3u8Downloader_H.Common.DownloadPrams
 {
     public class DownloadParamsBase : IDownloadParamBase
     {
-        protected static readonly string _defaultCachePath =
-#if DEBUG
-           @"C:\Users\admin\Desktop\666\Caches";
-#else
-            Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Caches");
-#endif
+        protected static readonly string _defaultCachePath = StorageSpaceManager.GetCachesPath();
 
         protected readonly string _cacheName;
         protected string _videoName = string.Empty;

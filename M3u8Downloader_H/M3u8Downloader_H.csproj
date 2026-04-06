@@ -2,13 +2,18 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net10.0</TargetFramework>
-	  <AssemblyVersion>5.0</AssemblyVersion>
-	  <Version>5.0.0.0</Version>
+	<AssemblyVersion>5.0</AssemblyVersion>
+	<Version>5.0.0</Version>
     <Nullable>enable</Nullable>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
     <ApplicationIcon>Assets\logo.ico</ApplicationIcon>
   </PropertyGroup>
+	
+	<PropertyGroup Condition="'$(Configuration)'=='Release'">
+		<DebugSymbols>False</DebugSymbols>
+		<DebugType>None</DebugType>
+	</PropertyGroup>
 
   <ItemGroup>
     <Folder Include="Models\" />
@@ -58,7 +63,6 @@
       <SubType>Designer</SubType>
     </AvaloniaResource>
   </ItemGroup>
-
 	
 	<!-- 只在 publish 时自动下载 ffmpeg -->
 	<Target Name="DownloadFFmpeg"
@@ -110,6 +114,16 @@
 		</Copy>
 
 		<Message Text="FFmpeg 已准备: @(CopiedFFmpeg)" Importance="high" />
+	</Target>
+
+	<Target Name="Delete Files" AfterTargets="Publish">
+		<Message Text="Delete $(PublishDir)$(ProjectName).deps.json" Importance="high" />
+		<Delete Files="$(PublishDir)$(ProjectName).deps.json" />
+	</Target>
+
+	<Target Name="Copy Files" AfterTargets="Publish" Condition="'$(RuntimeIdentifier)' != '' AND $(RuntimeIdentifier.StartsWith('win-'))">
+		<Message Text="Copy $(ProjectDir)Add-PortAcl.ps1" Importance="high" />
+		<Copy SourceFiles="$(ProjectDir)Add-PortAcl.ps1" DestinationFiles="$(PublishDir)Add-PortAcl.ps1" />
 	</Target>
 
 	<Target Name="PackMacOSApp" AfterTargets="Publish" Condition="'$(RuntimeIdentifier)' != '' AND $(RuntimeIdentifier.StartsWith('osx-'))">

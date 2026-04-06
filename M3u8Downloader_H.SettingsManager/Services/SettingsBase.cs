@@ -4,13 +4,14 @@ using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
+using M3u8Downloader_H.Common.Utils;
 
 namespace M3u8Downloader_H.Settings.Services;
 
 public abstract class SettingsBase
 {
     private readonly JsonTypeInfo _rootTypeInfo;
-    private string FullDirectoryPath => string.IsNullOrEmpty(Configuration.DirectoryName) ? Configuration.StorageSpace.GetDirectoryPath() : Configuration.DirectoryName;
+    private static string FullDirectoryPath => StorageSpaceManager.GetConfigPath();
     private string FullFilePath => Path.Combine(FullDirectoryPath, Configuration.FileName);
 
     [JsonIgnore]

@@ -15,6 +15,6 @@
   <ItemGroup>
     <ProjectReference Include="..\M3u8Downloader_H.Abstractions\M3u8Downloader_H.Abstractions.csproj" />
   </ItemGroup>
-
-
+	
+	
 </Project>

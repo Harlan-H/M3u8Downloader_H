@@ -103,7 +103,7 @@ public class DragAndDropBehavior : Behavior<TextBox>
         }
 
         var ext = Path.GetExtension(filePath);
-        if ((fileAttributes & FileAttributes.Archive) > 0 && _filterStringArr.Contains(ext))
+        if (_filterStringArr.Contains(ext))
         {
             _filePath = filePath;
             e.DragEffects = DragDropEffects.Copy;

@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using M3u8Downloader_H.Abstractions.M3uDownloaders;
 using M3u8Downloader_H.Abstractions.Settings;
+using M3u8Downloader_H.Common.Utils;
 using M3u8Downloader_H.Settings.Services;
 using System;
 using System.Collections.Generic;
@@ -33,12 +34,8 @@ namespace M3u8Downloader_H.Services
         public partial int RetryCount { get; set; } = 5;
 
         [ObservableProperty]
-        public partial string SavePath { get; set; } 
-#if DEBUG            
-            = @"C:\Users\admin\Desktop\666\download";
-#else
-            = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "download");
-#endif
+        public partial string SavePath { get; set; } = StorageSpaceManager.GetSavePath();
+
         [ObservableProperty]
         public partial string PluginKey { get; set; } = default!;
 
@@ -86,9 +83,7 @@ namespace M3u8Downloader_H.Services
 
         public SettingsService() : base(SerializerContext.Default)
         {
-#if DEBUG
-            Configuration.DirectoryName = @"C:\Users\admin\Desktop\666";
-#endif
+
         }
 
     }
