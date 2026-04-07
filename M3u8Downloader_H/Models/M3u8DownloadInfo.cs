@@ -1,10 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using M3u8Downloader_H.Common.DownloadPrams;
-using M3u8Downloader_H.Services;
 using System;
 using System.IO;
 using System.Linq;
-using static System.Net.Mime.MediaTypeNames;
 
 
 namespace M3u8Downloader_H.Models

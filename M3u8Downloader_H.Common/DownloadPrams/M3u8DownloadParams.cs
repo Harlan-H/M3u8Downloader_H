@@ -19,13 +19,13 @@ namespace M3u8Downloader_H.Common.DownloadPrams
             : base(url, videoname,  savePath, selectFormat, headers)
         {
             RequestUrl = url;
-            if (!string.IsNullOrWhiteSpace(key))
+            if (!string.IsNullOrWhiteSpace(key) && !string.IsNullOrWhiteSpace(method))
                 M3UKeyInfo = M3uKeyInfoHelper.GetKeyInfoInstance(method, key!, iv!);
         }
 
         public void UpdateKeyInfo(string method, string? key, string? iv)
         {
-            if (!string.IsNullOrWhiteSpace(key))
+            if (!string.IsNullOrWhiteSpace(key) && !string.IsNullOrWhiteSpace(method))
                 M3UKeyInfo = M3uKeyInfoHelper.GetKeyInfoInstance(method, key!, iv!);
         }
     }

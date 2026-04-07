@@ -13,6 +13,9 @@
 
       <!-- Windows 10 -->
       <supportedOS Id="{8e0f7a12-bfb3-4fe8-b9a5-48fd50a15a9a}" />
+
+	  <!-- Windows 11 -->
+	  <supportedOS Id="{4f476546-9373-4b2b-9a6e-3f5f0d4c3b9c}" />
     </application>
   </compatibility>
 </assembly>
