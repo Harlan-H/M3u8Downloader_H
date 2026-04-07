@@ -54,4 +54,16 @@ public class StorageSpaceManager
             return Path.Combine(StorageSpace.Instance.GetDirectoryPath());
 #endif
     }
+
+    public static string GetFFmpegPath()
+    {
+#if DEBUG
+        return @"C:\Users\admin\Desktop\666\ffmpeg.exe";
+#else
+        if(OperatingSystem.IsWindows())
+            return Path.Combine(StorageSpace.Instance.GetDirectoryPath(), "ffmpeg.exe");
+        else 
+            return Path.Combine(StorageSpace.Instance.GetDirectoryPath(), "ffmpeg");
+#endif
+    }
 }

@@ -9,6 +9,7 @@ using M3u8Downloader_H.Combiners.Utils;
 using System.Diagnostics;
 using M3u8Downloader_H.Combiners.Extensions;
 using CliWrap.EventStream;
+using M3u8Downloader_H.Common.Utils;
 
 namespace M3u8Downloader_H.Combiners.VideoConverter
 {
@@ -16,13 +17,7 @@ namespace M3u8Downloader_H.Combiners.VideoConverter
     {
         public string CachePath { get; set; } = DownloadParams.CachePath;
 
-
-        private static readonly string _filePath
-#if DEBUG
-            = new(@"C:\Users\admin\Desktop\666\ffmpeg.exe");
-#else
-            = new(Path.Combine(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ffmpeg.exe")));
-#endif
+        private static readonly string _filePath = StorageSpaceManager.GetFFmpegPath();
 
         public async ValueTask ConvertToMp4(IList<IStreamInfo> medias, IDialogProgress dialogProgress,CancellationToken cancellationToken = default)
         {
