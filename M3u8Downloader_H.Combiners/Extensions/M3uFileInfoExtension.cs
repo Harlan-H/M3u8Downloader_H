@@ -38,7 +38,7 @@ namespace M3u8Downloader_H.Combiners.Extensions
             {
                 return async (stream, token) =>
                 {
-                    using var writer = new StreamWriter(stream);
+                    using var writer = new StreamWriter(stream,new UTF8Encoding(false));
                     // M3U8 文件头
                     await writer.WriteLineAsync("#EXTM3U");
                     await writer.WriteLineAsync("#EXT-X-MEDIA-SEQUENCE:0");
@@ -46,14 +46,32 @@ namespace M3u8Downloader_H.Combiners.Extensions
                     // FMP4 初始化片段（Map）
                     if (m3UFileInfo.Map is not null)
                     {
-                        await writer.WriteLineAsync($"#EXT-X-MAP:URI=\"{Path.Combine(cachePath, m3UFileInfo.Map.Title)}\"");
+                        if (OperatingSystem.IsWindows())
+                        {
+                            await writer.WriteLineAsync($"#EXT-X-MAP:URI=\"{Path.Combine(cachePath, m3UFileInfo.Map.Title)}\"");
+                        }
+                        else
+                        {
+                            var mapPath = Path.Combine(cachePath, m3UFileInfo.Map.Title));
+                            mapPath = mapPath.Replace("\\", "/");
+                            await writer.WriteLineAsync($"#EXT-X-MAP:URI=\"file://{mapPath}\"");
+                        }
                     }
 
                     // 媒体片段
                     foreach (var mediaFile in m3UFileInfo.MediaFiles)
                     {
-                        await writer.WriteLineAsync($"#EXTINF:{mediaFile.Duration:F3},");
-                        await writer.WriteLineAsync(Path.Combine(cachePath, mediaFile.Title));
+                         await writer.WriteLineAsync($"#EXTINF:{mediaFile.Duration:F3},");
+                         if (OperatingSystem.IsWindows())
+                         {
+                            await writer.WriteLineAsync(Path.Combine(cachePath, mediaFile.Title));
+                         }
+                         else
+                         {
+                            var mediaPath = Path.Combine(cachePath, mediaFile.Title));
+                            mediaPath = mediaPath.Replace("\\", "/");
+                            await writer.WriteLineAsync($"file://{mediaPath}");
+                         }
                     }
 
                     await writer.WriteLineAsync("#EXT-X-ENDLIST");
