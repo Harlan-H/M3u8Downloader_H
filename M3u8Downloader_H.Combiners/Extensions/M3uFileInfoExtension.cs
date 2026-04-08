@@ -52,7 +52,7 @@ namespace M3u8Downloader_H.Combiners.Extensions
                         }
                         else
                         {
-                            var mapPath = Path.Combine(cachePath, m3UFileInfo.Map.Title));
+                            var mapPath = Path.Combine(cachePath, m3UFileInfo.Map.Title);
                             mapPath = mapPath.Replace("\\", "/");
                             await writer.WriteLineAsync($"#EXT-X-MAP:URI=\"file://{mapPath}\"");
                         }
@@ -68,7 +68,7 @@ namespace M3u8Downloader_H.Combiners.Extensions
                          }
                          else
                          {
-                            var mediaPath = Path.Combine(cachePath, mediaFile.Title));
+                            var mediaPath = Path.Combine(cachePath, mediaFile.Title);
                             mediaPath = mediaPath.Replace("\\", "/");
                             await writer.WriteLineAsync($"file://{mediaPath}");
                          }
