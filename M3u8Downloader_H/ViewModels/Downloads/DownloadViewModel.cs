@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using M3u8Downloader_H.Abstractions.Common;
 using M3u8Downloader_H.Common.Models;
 using M3u8Downloader_H.Core;
+using M3u8Downloader_H.Extensions;
 using M3u8Downloader_H.Models;
 using M3u8Downloader_H.Utils;
 using System;
@@ -90,7 +91,7 @@ namespace M3u8Downloader_H.ViewModels.Downloads
         {
             try
             {
-                Process.Start("explorer", $"/select, \"{DownloadParam.VideoFullName}\"");
+                Process.ShowFile(DownloadParam.VideoFullName);
             }
             catch (Exception)
             {

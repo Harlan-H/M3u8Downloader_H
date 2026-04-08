@@ -22,7 +22,7 @@
         <MaterialStyles:SnackbarHost  HostName="SettingsHost" SnackbarMaxCounts="5">
         <ScrollViewer>
             <!-- 基础配置区 -->
-            <StackPanel Margin="5" Name="SettingGrid" DataContext="{Binding SettingsServiceClone}">
+            <StackPanel Margin="5,5,20,5" Name="SettingGrid" DataContext="{Binding SettingsServiceClone}">
                 <TextBlock Text="基础配置"   Margin="10" HorizontalAlignment="Center"  FontSize="20" FontWeight="Bold" />
 
                 <DockPanel Margin="8 0 8 0" ToolTip.Tip="同时下载视频的数量" >
