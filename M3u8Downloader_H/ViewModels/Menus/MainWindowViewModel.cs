@@ -1,5 +1,6 @@
 ﻿using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using M3u8Downloader_H.Common.Models;
@@ -78,7 +79,28 @@ namespace M3u8Downloader_H.ViewModels.Menus
             pluginService.Load();
 
             httpListenService.Run(i => HttpServicePort = i);
-            httpListenService.Initialization(m3U8WindowViewModel.ProcessM3u8Download, m3U8WindowViewModel.ProcessM3u8Download, mediaWindowViewModel.ProcessMediaDownload);
+            httpListenService.Initialization(
+                (param, key) =>
+                {
+                    Dispatcher.UIThread.Post(() =>
+                    {
+                        m3U8WindowViewModel.ProcessM3u8Download(param, key);
+                    });
+                },
+                (param,fileinfo,key) =>
+                {
+                    Dispatcher.UIThread.Post(() =>
+                    {
+                        m3U8WindowViewModel.ProcessM3u8Download(param, fileinfo,key);
+                    });
+                },
+                (param) =>
+                {
+                    Dispatcher.UIThread.Post(() =>
+                    {
+                        mediaWindowViewModel.ProcessMediaDownload(param);
+                    });
+                });
             
             return Task.FromResult(0);
         }
