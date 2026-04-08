@@ -55,7 +55,7 @@
                             <Run Text="复制" />
                             <Run FontWeight="SemiBold" Text="m3u8链接地址" />
                             <Run Text="或者拖拽" />
-                            <Run FontWeight="SemiBold" Text="m3u8,json,txt文件" />
+                            <Run FontWeight="SemiBold" Text="m3u8,json文件" />
                             <Run Text="到" />
                             <Run FontWeight="SemiBold" Text="下载地址" />
                             <Run Text="处" />
@@ -90,9 +90,7 @@
                             <LineBreak />
                             <Run Text="出现" />
                             <Run FontWeight="SemiBold" Text="RestApi初始化失败" />
-                            <Run Text="不影响程序使用,如需此功能请" />
-                            <Run  FontWeight="Bold"  Text="以管理员身份运行" />
-                            <Run Text="本程序" />
+                            <Run Text="请使用powershell运行文件夹里Add-PortAcl后重启程序即可" />
                             <LineBreak />
                             <Run Text="详细的RestApi使用方法，请看帮助文档" />
                             <Run FontWeight="SemiBold" Text="Rest Api" />
@@ -186,8 +184,8 @@
             </MaterialStyles:SnackbarHost>
         </materialDesign:DialogHost>
         <Grid ColumnDefinitions="*,*,100" Grid.Row="1" VerticalAlignment="Center" >
-            <TextBlock Margin="5 0 0 0" HorizontalAlignment="Center"  Text="{Binding HttpServicePort,TargetNullValue=RestApi初始化失败如需此以管理员权限身份运行此程序,Converter={x:Static converters:PortToLocalAddress.Instance}}" />
-            <TextBlock Grid.Column="1"  HorizontalAlignment="Center" Text="{Binding HttpServicePort,TargetNullValue=RestApi初始化失败如需请以管理员权限身份运行此程序,StringFormat=http://127.0.0.1:\{0\}}" />
+            <TextBlock Margin="5 0 0 0" HorizontalAlignment="Center"  Text="{Binding HttpServicePort,TargetNullValue=RestApi初始化失败请使用powershell运行文件夹Add-PortAcl,Converter={x:Static converters:PortToLocalAddress.Instance}}" />
+            <TextBlock Grid.Column="1"  HorizontalAlignment="Center" Text="{Binding HttpServicePort,TargetNullValue=RestApi初始化失败请使用powershell运行文件夹Add-PortAcl,StringFormat=http://127.0.0.1:\{0\}}" />
         </Grid>
     </Grid>
 </UserControl>
