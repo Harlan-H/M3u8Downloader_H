@@ -56,5 +56,14 @@ try {
     Write-Host "`n❌ 发生异常：$_" -ForegroundColor Red
 }
 
+Write-Host "`n正在配置防火墙规则..."
+
+netsh advfirewall firewall add rule name="M3u8Downloader_H_$TARGET_PORT" `
+    dir=in action=allow protocol=TCP localport=$TARGET_PORT 2>&1 | Out-Null
+
+Write-Host "✅ 防火墙规则已添加"
+
+
 Write-Host "`n按任意键关闭窗口..."
 $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+
