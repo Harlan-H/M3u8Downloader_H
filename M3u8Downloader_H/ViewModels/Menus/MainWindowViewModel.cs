@@ -1,114 +1,152 @@
-﻿using MaterialDesignThemes.Wpf;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows;
-using M3u8Downloader_H.Models;
-using M3u8Downloader_H.Services;
-using M3u8Downloader_H.ViewModels.FrameWork;
-using M3u8Downloader_H.Extensions;
-using M3u8Downloader_H.RestServer;
-using Caliburn.Micro;
-using System.Threading;
-using PropertyChanged;
-using System.Security.Principal;
-using M3u8Downloader_H.ViewModels.Windows;
+﻿using Avalonia;
+using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Threading;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using M3u8Downloader_H.Common.Models;
+using M3u8Downloader_H.Extensions;
+using M3u8Downloader_H.FrameWork;
+using M3u8Downloader_H.Models;
+using M3u8Downloader_H.RestServer;
+using M3u8Downloader_H.Services;
+using M3u8Downloader_H.Utils;
+using M3u8Downloader_H.ViewModels.Dialogs;
+using M3u8Downloader_H.ViewModels.Downloads;
+using M3u8Downloader_H.ViewModels.FrameWork;
+using M3u8Downloader_H.ViewModels.Windows;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace M3u8Downloader_H.ViewModels.Menus
 {
-    public class MainWindowViewModel : Screen
+    public partial class MainWindowViewModel : ViewModelBase
     {
         private readonly HttpListenService httpListenService = HttpListenService.Instance;
         private readonly SettingsService settingsService;
         private readonly PluginService pluginService;
+        private readonly ViewModelManager viewModelManager;
         private readonly M3u8WindowViewModel m3U8WindowViewModel;
         private readonly MediaWindowViewModel mediaWindowViewModel;
+        private readonly List<IDisposable> _disposables = [];
+        public static SnackbarManager Notifications { get; } = new SnackbarManager("MainWindowHost",TimeSpan.FromSeconds(5));
+        
 
-        public ISnackbarMessageQueue Notifications { get; } = new SnackbarMessageQueue(TimeSpan.FromSeconds(5));
-        public BindableCollection<DownloadViewModel> Downloads { get; } = [];
-        public BindableCollection<Screen> SubWindows { get; } = [];
+        public ObservableCollection<ViewModelBase> SubWindows { get; } = [];
 
-        [DoNotNotify]
-        public IList<DownloadViewModel> SelectedDownloads { get; set; } = Array.Empty<DownloadViewModel>();
+        public ObservableCollection<DownloadViewModel> Downloads { get; } = [];
 
-        public int? HttpServicePort { get; set; }
+        [ObservableProperty]
+        public partial int? HttpServicePort { get; set; } = default!;
 
         public MainWindowViewModel(SettingsService settingsService, PluginService pluginService)
         {
             this.settingsService = settingsService;
             this.pluginService = pluginService;
-            m3U8WindowViewModel = new M3u8WindowViewModel(settingsService, pluginService, Notifications) { DisplayName = "M3U8", EnqueueDownloadAction = EnqueueDownload };
+            viewModelManager = new(settingsService);
+            m3U8WindowViewModel = new M3u8WindowViewModel(settingsService, pluginService, viewModelManager, Notifications) { Title = "M3U8", EnqueueDownloadAction = EnqueueDownload };
             SubWindows.Add(m3U8WindowViewModel);
-            mediaWindowViewModel = new MediaWindowViewModel(settingsService, Notifications) { DisplayName = "长视频", EnqueueDownloadAction = EnqueueDownload };
+            mediaWindowViewModel = new MediaWindowViewModel(settingsService, viewModelManager, Notifications) { Title = "长视频", EnqueueDownloadAction = EnqueueDownload };
             SubWindows.Add(mediaWindowViewModel);
+
+            _disposables.Add(settingsService.WatchProperty(
+                s => s.MaxConcurrentDownloadCount,
+                () => ThrottlingSemaphore.Instance.MaxCount = settingsService.MaxConcurrentDownloadCount));
+
+            _disposables.Add(settingsService.WatchProperty(
+                s => s.ProxyAddress,
+                () => HttpClient.DefaultProxy = string.IsNullOrWhiteSpace(settingsService.ProxyAddress) ? new WebProxy() : new WebProxy(settingsService.ProxyAddress)));
         }
 
-        protected override Task OnInitializeAsync(CancellationToken cancellationToken)
+        ~MainWindowViewModel()
         {
-            _ = Task.Run(() =>
+            foreach (var item in _disposables)
             {
-                settingsService.Load();
-                settingsService.Validate();
-                settingsService.UpdateConcurrentDownloadCount();
-
-                pluginService.Load();
-                WindowsPrincipal windowsPrincipal = new(WindowsIdentity.GetCurrent());
-                if(windowsPrincipal.IsInRole(WindowsBuiltInRole.Administrator))
-                {
-                    httpListenService.Run(i => HttpServicePort = i);
-                    httpListenService.Initialization(m3U8WindowViewModel.ProcessM3u8Download, m3U8WindowViewModel.ProcessM3u8Download, mediaWindowViewModel.ProcessMediaDownload);
-                }
-            }, cancellationToken);
-
-            return base.OnInitializeAsync(cancellationToken);
+                item.Dispose();
+            }
         }
 
 
-        public override Task<bool> CanCloseAsync(CancellationToken cancellationToken = default)
-        {
-            foreach (var item in Downloads)
-                item.OnCancel();
 
+        public Task InitializeAsync()
+        {
+            settingsService.Load();
+            pluginService.Load();
+
+            httpListenService.Run(i => HttpServicePort = i);
+            httpListenService.Initialization(
+                (param, key) =>
+                {
+                    Dispatcher.UIThread.Post(() =>
+                    {
+                        m3U8WindowViewModel.ProcessM3u8Download(param, key);
+                    });
+                },
+                (param,fileinfo,key) =>
+                {
+                    Dispatcher.UIThread.Post(() =>
+                    {
+                        m3U8WindowViewModel.ProcessM3u8Download(param, fileinfo,key);
+                    });
+                },
+                (param) =>
+                {
+                    Dispatcher.UIThread.Post(() =>
+                    {
+                        mediaWindowViewModel.ProcessMediaDownload(param);
+                    });
+                });
+            
+            return Task.FromResult(0);
+        }
+
+        public void Closed()
+        {
             settingsService.Save();
-            return base.CanCloseAsync(cancellationToken);
         }
 
 
         private void EnqueueDownload(DownloadViewModel download)
         {
-            var existingDownloads = Downloads.Where(d =>  d == download ).FirstOrDefault();
+            var existingDownloads = Downloads.FirstOrDefault(d => d == download);
             if (existingDownloads is not null)
             {
-                Notifications.Enqueue($"{download.VideoName} 已经在下载列表中!");
+                Notifications.Notify($"{download.VideoName} 已经在下载列表中!");
                 return;
             }
-           
-            download.OnStart();
+
+            download.Start();
             Downloads.Insert(0, download);
         }
 
-
-        public void RestartDownloads()
+        [RelayCommand]
+        private void RestartDownloads(IList selectedDownloads)
         {
-            foreach (var item in SelectedDownloads)
+            foreach (DownloadViewModel item in selectedDownloads)
             {
-                item.OnRestart();
+                item.RestartCommand.Execute(null);
             }
         }
 
-        public void StopDownloads()
+        [RelayCommand]
+        private void StopDownloads(IList selectedDownload)
         {
-            foreach (var item in SelectedDownloads)
+            foreach (DownloadViewModel item in selectedDownload)
             {
-                item.OnCancel();
+                item.CancelCommand.Execute(null);
             }
         }
 
-        public async void RemoveDownloads()
+        [RelayCommand]
+        private async Task RemoveDownloads(IList selectedDownload)
         {
-            DeleteDialogViewModel deleteDialogViewModel = DeleteDialogViewModel.CreateDeleteDialogViewModel(SelectedDownloads.Count);
+            var tempSelectDwonload = selectedDownload.Cast<DownloadViewModel>().ToList();
+            DeleteDialogViewModel deleteDialogViewModel = DeleteDialogViewModel.CreateDeleteDialogViewModel(tempSelectDwonload.Count);
             DeleteDialogResult? deleteDialogResult = await DialogManager.ShowDialogAsync(deleteDialogViewModel);
             if (deleteDialogResult is null)
                 return;
@@ -116,48 +154,79 @@ namespace M3u8Downloader_H.ViewModels.Menus
             if (deleteDialogResult.DialogResult == false)
                 return;
 
-            foreach (var download in SelectedDownloads)
+            foreach (DownloadViewModel download in tempSelectDwonload)
             {
-                download.OnCancel();
+                download.CancelCommand.Execute(null);
                 Downloads.Remove(download);
                 if (deleteDialogResult.IsDeleteCache)
-                     download.DeleteCache();
+                    download.DeleteCache();
             }
         }
-     
 
-        public void RemoveInactiveDownloads()
+        [RelayCommand]
+        private void RemoveInactiveDownloads()
         {
+
             var inactiveDownloads = Downloads.Where(c => !c.IsActive).ToArray();
-            Downloads.RemoveRange(inactiveDownloads);
+            foreach(var inactiveDownload in inactiveDownloads)
+                Downloads.Remove(inactiveDownload);
         }
 
-        public void RemoveSuccessDownloads()
+        [RelayCommand]
+        private void RemoveSuccessDownloads()
         {
             var successDownloads = Downloads.Where(c => c.Status == DownloadStatus.Completed).ToArray();
-            Downloads.RemoveRange(successDownloads);
+            foreach (var successDownload in successDownloads)
+                Downloads.Remove(successDownload);
         }
 
-        public void RemoveFailedDownloads()
+        [RelayCommand]
+        private void RemoveFailedDownloads()
         {
             var failedDownloads = Downloads.Where(c => c.Status == DownloadStatus.Failed).ToArray();
-            Downloads.RemoveRange(failedDownloads);
-        }
-
-        public void RestartFailedDownloads()
-        {
-            var failedDownloads = Downloads.Where(c => c.Status == DownloadStatus.Failed);
             foreach (var failedDownload in failedDownloads)
-                failedDownload.OnRestart();
+                Downloads.Remove(failedDownload);
         }
 
-        public void CopyUrl(DownloadViewModel download) => Clipboard.SetText(download.RequestUrl.OriginalString);
+        [RelayCommand]
+        private void RestartFailedDownloads()
+        {
+            var failedDownloads = Downloads.Where(c => c.Status == DownloadStatus.Failed).ToArray();
+            foreach (var failedDownload in failedDownloads)
+                failedDownload.RestartCommand.Execute(null);
+        }
 
-        public void CopyTitle(DownloadViewModel download) => Clipboard.SetText(download.VideoName);
+        [RelayCommand]
+        private async Task CopyUrl(DownloadViewModel download)
+        {
+            if (Application.Current?.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop ||
+                desktop.MainWindow?.Clipboard is not { } provider)
+                return;
 
-        public void CopyFailReason(DownloadViewModel download) => Clipboard.SetText(download.FailReason);
+            await provider.SetTextAsync(download.RequestUrl.OriginalString);
+            
+        }
 
-        public void CopyLogs(DownloadViewModel download) => Clipboard.SetText(download.Log.CopyLog());
+        [RelayCommand]
+        private async Task CopyTitle(DownloadViewModel download)
+        {
+            if (Application.Current?.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop ||
+            desktop.MainWindow?.Clipboard is not { } provider)
+                return;
 
+
+            await  provider.SetTextAsync(download.VideoName);
+            
+        }
+
+        [RelayCommand]
+        private async Task CopyLogs(DownloadViewModel download)
+        {
+            if (Application.Current?.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop ||
+           desktop.MainWindow?.Clipboard is not { } provider)
+                return;
+
+            await provider.SetTextAsync(download.Log.CopyLog());       
+        }
     }
 }

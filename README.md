@@ -7,8 +7,7 @@
   - [支持作者](#支持作者)
  
 ## 简介
-1. 目前此项目已经使用ai分析过,所有的分析内容均保存在AGENTS.md文件中，每次发布本新版本都会重新进行分析以保证此文档是最新的，如果你想深入了解本项目可以参考此文档。
-2. 此项目下一步计划将是跨平台，以及更强大的插件支持。
+- 此项目跨平台已经完成，下一步是更新插件支持。
 
 ## 特点
  - 支持多线程，多任务,断点续传
@@ -32,14 +31,12 @@
  - https://github.com/Harlan-H/M3u8Downloader_H.Plugins
 
 ## 帮助文档
- - 在线地址：http://note.youdao.com/noteshare?id=c6ba2fb478ad300b7095c7c951556fc6
- - wiki  : https://github.com/Harlan-H/M3u8Downloader_H/wiki/
+ - wiki : https://github.com/Harlan-H/M3u8Downloader_H/wiki/
 
 ## 截图
-![QQ20250415-213221](https://github.com/user-attachments/assets/0ca9a064-18dd-45fe-a96e-e11d08787f4f)
-![QQ20250415-213225](https://github.com/user-attachments/assets/01bf9794-e500-4c29-a18e-814afcfe5e41)
-![QQ20250415-213238](https://github.com/user-attachments/assets/842ab4c2-143f-43ce-bce1-195f4e032feb)
-![QQ20250415-213242](https://github.com/user-attachments/assets/c0cac922-f133-44a5-ad8b-1fe5653ab578)
+![download-1](.assets/download-1.png)
+![download-2](.assets/download-2.png)
+![set](.assets/set.png)
 
 ## 支持作者
 |微信|支付宝|

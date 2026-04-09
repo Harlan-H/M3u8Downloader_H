@@ -1,0 +1,64 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             xmlns:dialog="using:M3u8Downloader_H.ViewModels.Dialogs"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             x:DataType="dialog:DeleteDialogViewModel"
+             x:Class="M3u8Downloader_H.Views.Dialogs.DeleteDialogView">
+
+   <Grid RowDefinitions="auto,*,auto">
+
+        <!--  标题  -->
+        <TextBlock
+            Grid.Row="0"
+            Margin="8,16"
+            FontSize="19"
+            FontWeight="SemiBold"
+            Text="{Binding Title}"
+            TextTrimming="CharacterEllipsis"
+            ToolTip.Tip="{Binding Title}" />
+        
+        <!-- 内容 -->
+        <Grid Grid.Row="1" ColumnDefinitions="auto,*">
+            <avalonia:MaterialIcon
+                    Grid.Column="0" 
+                    Width="50"
+                    Height="70"
+                    Kind="ShieldAlertOutline"  
+                    Margin="8,0,8,8"/>
+
+            <TextBlock Grid.Column="1"
+                VerticalAlignment="Center"
+                Margin="8,0,8,8"           
+                FontSize="18"
+                TextWrapping="Wrap" >
+                <Run Text="确定要删除这【" />
+                <Run Text="{Binding Count}" Foreground="Red" />
+                <Run Text="】行吗" />
+            </TextBlock>
+        </Grid>
+
+        
+
+        <!--  按钮  -->
+        <StackPanel  Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Stretch">
+            <CheckBox Margin="8"      
+            IsChecked="{Binding IsDeleteCached}"
+            Content="删除缓存" />
+            
+            <Button Command="{Binding ConfirmCommand}"
+                Margin="8"   
+                Content="{Binding ConfirmBtnText}"
+                IsDefault="True"
+                Theme="{DynamicResource MaterialDesignFlatButton}" />
+
+            <Button  Command="{Binding CancelCommand}"
+                Margin="8"
+                Content="{Binding CancelBtnText}"
+                IsCancel="True"
+                Theme="{DynamicResource MaterialDesignFlatButton}" />
+        </StackPanel>
+    </Grid>
+</UserControl>

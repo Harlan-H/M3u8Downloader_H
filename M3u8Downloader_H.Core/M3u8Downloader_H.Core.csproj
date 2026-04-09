@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
 	<Version>4.0.3.0</Version>
     <Authors>Harlan</Authors>
@@ -14,10 +14,10 @@
 	</PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\M3u8Downloader_H.Abstractions\M3u8Downloader_H.Abstractions.csproj" />
     <ProjectReference Include="..\M3u8Downloader_H.Combiners\M3u8Downloader_H.Combiners.csproj" />
     <ProjectReference Include="..\M3u8Downloader_H.Downloader\M3u8Downloader_H.Downloader.csproj" />
     <ProjectReference Include="..\M3u8Downloader_H.M3U8\M3u8Downloader_H.M3U8.csproj" />
-    <ProjectReference Include="..\M3u8Downloader_H.Plugin.Abstractions\M3u8Downloader_H.Abstractions.csproj" />
     <ProjectReference Include="..\M3u8Downloader_H.Plugin\M3u8Downloader_H.Plugin.csproj" />
   </ItemGroup>
 

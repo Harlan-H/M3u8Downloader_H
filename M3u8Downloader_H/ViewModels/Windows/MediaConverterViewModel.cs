@@ -1,31 +1,40 @@
-﻿using System;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
-using Caliburn.Micro;
+﻿using Avalonia;
+using Avalonia.Controls.ApplicationLifetimes;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using M3u8Downloader_H.Common.DownloadPrams;
 using M3u8Downloader_H.Core;
 using M3u8Downloader_H.Models;
 using M3u8Downloader_H.Services;
+using System;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace M3u8Downloader_H.ViewModels.Windows
 {
-    public class MediaConverterViewModel : Screen
+    public partial class MediaConverterViewModel : ViewModelBase
     {
         private CancellationTokenSource cancellationTokenSource = default!;
         private readonly SettingsService settingsService;
         private readonly DialogProgress _dialogProgress = default!;
         private MediaDownloadParams _downloadParams = default!;
 
-        public bool IsStart { get; private set; } = false;
+        [ObservableProperty]
+        [NotifyCanExecuteChangedFor(nameof(ProcessCommand),nameof(CancelCommand),nameof(ResetCommand))]
+        public partial bool IsStart { get; private set; } = false;
 
-        public string VideoFileUrl { get; set; } = default!;
+        [ObservableProperty]
+        public partial string VideoFileUrl { get; set; } = default!;
 
-        public string AudioFileUrl { get; set; } = default!;
+        [ObservableProperty]
+        public partial string AudioFileUrl { get; set; } = default!;
 
-        public string VideoName { get; set; } = default!;
+        [ObservableProperty]
+        public partial string VideoName { get; set; } = default!;
 
         public double Progress { get; set; } = default!;
+
         public MyLog Log { get; } = new();
 
         public MediaConverterViewModel(SettingsService settingsService)
@@ -33,6 +42,7 @@ namespace M3u8Downloader_H.ViewModels.Windows
             this.settingsService = settingsService;
             _dialogProgress = new(d => Progress = d);
         }
+
 
         private MediaDownloadParams GetMediaDownloadParams()
         {
@@ -48,7 +58,7 @@ namespace M3u8Downloader_H.ViewModels.Windows
             }
 
             Uri? audioUri = null;
-            if(!string.IsNullOrEmpty(AudioFileUrl))
+            if (!string.IsNullOrEmpty(AudioFileUrl))
             {
                 FileInfo audiofileInfo = new(AudioFileUrl);
                 if (!audiofileInfo.Exists)
@@ -64,8 +74,10 @@ namespace M3u8Downloader_H.ViewModels.Windows
         }
 
 
-        public bool CanOnProcess => !IsStart;
-        public void OnProcess()
+        private bool CanProcess => !IsStart;
+
+        [RelayCommand(CanExecute = nameof(CanProcess))]
+        private void Process()
         {
 
             if (IsStart)
@@ -113,26 +125,33 @@ namespace M3u8Downloader_H.ViewModels.Windows
 
         }
 
-        public bool CanOnCancel => IsStart;
-        public void OnCancel()
-        {
-            if (!IsStart)
-                return;
+        private bool CanCancel => IsStart;
 
+        [RelayCommand(CanExecute = nameof(CanCancel))]
+        private void Cancel()
+        {
             cancellationTokenSource?.Cancel();
         }
 
-        public bool CanOnReset => !IsStart;
-        public void OnReset()
-        {
-            if(IsStart)
-                return;
+        private bool CanReset => !IsStart;
 
+        [RelayCommand(CanExecute = nameof(CanReset))]
+        private void Reset()
+        {
             VideoFileUrl = string.Empty;
             AudioFileUrl = string.Empty;
             VideoName = string.Empty;
             Progress = 0;
         }
 
+        [RelayCommand]
+        private async Task CopyLogs()
+        {
+            if (Application.Current?.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop ||
+                desktop.MainWindow?.Clipboard is not { } provider)
+                return;
+
+            await provider.SetTextAsync(Log.CopyLog());
+        }
     }
 }

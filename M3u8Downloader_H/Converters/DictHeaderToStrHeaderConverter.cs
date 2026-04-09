@@ -9,7 +9,7 @@ namespace M3u8Downloader_H.Converters
     public class DictHeaderToStrHeaderConverter : BaseConverters<IEnumerable<KeyValuePair<string, string>>, string>
     {
         public static DictHeaderToStrHeaderConverter Instance { get; } = new();
-        public override string Convert(IEnumerable<KeyValuePair<string, string>> value, Type targetType, object parameter, CultureInfo culture)
+        public override string Convert(IEnumerable<KeyValuePair<string, string>> value, Type targetType, object? parameter, CultureInfo culture)
         {
             if (value is null) return string.Empty;
 
@@ -24,7 +24,7 @@ namespace M3u8Downloader_H.Converters
             return stringBuilder.ToString();
         }
 
-        public override IEnumerable<KeyValuePair<string, string>> ConvertBack(string value, Type targetType, object parameter, CultureInfo culture)
+        public override IEnumerable<KeyValuePair<string, string>> ConvertBack(string value, Type targetType, object? parameter, CultureInfo culture)
         {
             if (string.IsNullOrWhiteSpace(value)) return null!;
 

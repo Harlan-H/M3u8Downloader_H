@@ -1,15 +1,17 @@
-﻿using System;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Caliburn.Micro;
+
 
 namespace M3u8Downloader_H.Models
 {
-    public class MyLog : PropertyChangedBase, Abstractions.Common.ILog
+    public class MyLog : ObservableObject, Abstractions.Common.ILog
     {
-        public BindableCollection<LogParams> Logs { get; } = [];
+        public ObservableCollection<LogParams> Logs { get; } = [];
 
         public virtual void Info(string format, params object[] args)
         {
@@ -29,7 +31,7 @@ namespace M3u8Downloader_H.Models
         public virtual string CopyLog()
         {
             StringBuilder sb = new();
-            foreach (var log in Logs.ToArray())
+            foreach (var log in Logs)
             {
                 sb.Append(log.Time.ToString("yyyy-MM-dd HH:mm:ss"));
                 sb.Append(' ');

@@ -1,0 +1,123 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="M3u8Downloader_H.App"
+             xmlns:dialogHostAvalonia="clr-namespace:DialogHostAvalonia;assembly=DialogHost.Avalonia"
+             xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:materialStyles="clr-namespace:Material.Styles.Themes;assembly=Material.Styles"
+             xmlns:assists="clr-namespace:Material.Styles.Assists;assembly=Material.Styles"
+             xmlns:local="using:M3u8Downloader_H"
+             Name="M3u8Downloader_H"
+             RequestedThemeVariant="Default">
+
+    <Application.Styles>
+        <materialStyles:MaterialTheme BaseTheme="Light" PrimaryColor="DeepPurple" SecondaryColor="Lime" />
+        <materialIcons:MaterialIconStyles />
+        <dialogHostAvalonia:DialogHostStyles />
+
+        <Style Selector="TabControl">
+			<Style Selector="^[TabStripPlacement=Top] /template/ Rectangle#PART_Separator">
+				<Setter Property="IsVisible" Value="False" />
+            </Style>
+        </Style>
+
+            
+
+        <Style Selector="TextBlock.MyTextBlock">
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Width" Value="90" />
+            <Setter Property="HorizontalAlignment" Value="Right" />
+            <Setter Property="FontSize" Value="20" />
+            <Setter Property="Margin" Value="5" />
+        </Style>
+
+        <Style Selector="TextBox.universal" >
+            <Setter Property="FontSize" Value="18" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+
+        <!--<Style Selector="ToggleSwitch">
+            <Setter Property="assists:ToggleSwitchAssist.SwitchThumbOffBackground" Value="{DynamicResource ToggleBackgroundBrush}" />
+        </Style>-->
+    </Application.Styles>
+
+    <Application.Resources>
+
+            <Color x:Key="SuccessColor">#006400</Color>
+            <Color x:Key="CanceledColor">#FF8C00</Color>
+            <Color x:Key="FailedColor">#8B0000</Color>
+
+            <SolidColorBrush x:Key="SuccessBrush" Color="{DynamicResource SuccessColor}" />
+            <SolidColorBrush x:Key="CanceledBrush" Color="{DynamicResource CanceledColor}" />
+            <SolidColorBrush x:Key="FailedBrush" Color="{DynamicResource FailedColor}" />
+
+        <SolidColorBrush x:Key="backGroundBrush">#f2f2f2</SolidColorBrush>
+        <SolidColorBrush x:Key="forceGroundBrush">Gray</SolidColorBrush>
+        
+        <SolidColorBrush x:Key="selectedBackgroudBrush">White</SolidColorBrush>
+        
+        <ControlTheme x:Key="MenuButtonSytle" TargetType="{x:Type RadioButton}">
+            <Setter Property="GroupName" Value="menuGroup" />
+            <Setter Property="Background" Value="{StaticResource backGroundBrush}" />
+            <Setter Property="HorizontalContentAlignment" Value="Left" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="Foreground" Value="{StaticResource forceGroundBrush}" />
+            <Setter Property="FontSize" Value="20" />
+            <Setter Property="Height" Value="70" />
+            <Setter Property="Margin" Value="0,20" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type RadioButton}">
+                        <Border 
+                            CornerRadius="10,0,0,10" 
+                            Padding="20"
+                            Background="{TemplateBinding Background}"
+                            BorderThickness="10,0,0,0" >
+
+                            <Grid ColumnDefinitions="30,*">
+                                <Path Data="{Binding Tag, RelativeSource={RelativeSource TemplatedParent}}" 
+                                      Fill="{TemplateBinding Foreground}"
+                                      Stretch="Uniform"
+                                      Height="{TemplateBinding FontSize}"
+                                />
+                                <ContentPresenter Grid.Column="1" 
+                                      Margin="10,0,0,0"
+                                      HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                      VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                      Content="{TemplateBinding Content}" 
+                                      />
+                            </Grid>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style Selector="^:checked">
+                <Setter Property="Background" Value="{StaticResource selectedBackgroudBrush}" />
+                <Setter Property="Foreground" Value="{DynamicResource MaterialPrimaryMidBrush}" />
+                <Setter Property="FontWeight" Value="SemiBold" />
+            </Style>
+            <Style Selector="^:pointerover">
+                <Setter Property="Background" Value="{StaticResource selectedBackgroudBrush}" />
+                <Setter Property="Cursor" Value="Hand"/>
+            </Style>
+        </ControlTheme>
+
+        <ControlTheme
+                x:Key="CompactTextBox"
+                BasedOn="{StaticResource {x:Type TextBox}}"
+                TargetType="{x:Type TextBox}">
+                <Styles>
+                    <Style Selector="TextBox">
+                        <Setter Property="Height" Value="25" />
+
+                        <Style Selector="^ /template/ Panel#PART_TextFieldPanel">
+                            <Setter Property="MinHeight" Value="0" />
+                        </Style>
+
+                        <Style Selector="^ /template/ Panel#PART_TextContainer">
+                            <Setter Property="Margin" Value="0" />
+                        </Style>
+                    </Style>
+                </Styles>
+            </ControlTheme>
+    </Application.Resources>
+</Application>

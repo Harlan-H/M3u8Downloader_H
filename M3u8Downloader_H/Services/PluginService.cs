@@ -1,14 +1,15 @@
-﻿using System;
+﻿using M3u8Downloader_H.Common.Utils;
+using M3u8Downloader_H.Plugin.PluginClients;
+using System;
 using System.Collections.Generic;
 using System.IO;
-using M3u8Downloader_H.Plugin.PluginClients;
 
 
 namespace M3u8Downloader_H.Services
 {
     public class PluginService
     {
-        private readonly string _pluginDirPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Plugins");
+        private readonly string _pluginDirPath = StorageSpaceManager.GetPluginPath();
         private readonly PluginClient pluginClient;
         public PluginService()
         {

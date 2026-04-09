@@ -9,6 +9,7 @@ using M3u8Downloader_H.Combiners.Utils;
 using System.Diagnostics;
 using M3u8Downloader_H.Combiners.Extensions;
 using CliWrap.EventStream;
+using M3u8Downloader_H.Common.Utils;
 
 namespace M3u8Downloader_H.Combiners.VideoConverter
 {
@@ -16,13 +17,7 @@ namespace M3u8Downloader_H.Combiners.VideoConverter
     {
         public string CachePath { get; set; } = DownloadParams.CachePath;
 
-
-        private static readonly string _filePath
-#if DEBUG
-            = new(@"C:\Users\admin\Desktop\ffmpeg\ffmpeg.exe");
-#else
-            = new(Path.Combine(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ffmpeg.exe")));
-#endif
+        private static readonly string _filePath = StorageSpaceManager.GetFFmpegPath();
 
         public async ValueTask ConvertToMp4(IList<IStreamInfo> medias, IDialogProgress dialogProgress,CancellationToken cancellationToken = default)
         {
@@ -31,7 +26,7 @@ namespace M3u8Downloader_H.Combiners.VideoConverter
             {
                 arguments.Add("-i").Add(Path.Combine(CachePath, item.Title));
             }
-            arguments.Add("-allowed_extensions").Add("tmp");
+            arguments.Add("-allowed_extensions").Add("ALL");
 
             await ConvertToMp4(arguments, dialogProgress,null, cancellationToken);
         }
@@ -53,7 +48,7 @@ namespace M3u8Downloader_H.Combiners.VideoConverter
             {
                 arguments.Add("-f").Add("hls")
                     //allowed_extensions必须在-i pipe:0之前执行否则会报错"If you wish to override this adjust allowed_extensions, you can set it to 'ALL' to allow all"
-                    .Add("-allowed_extensions").Add("tmp");
+                    .Add("-allowed_extensions").Add("ALL");
                 pipeSource = PipeSource.Create(m3UFileInfo.GenerateM3U8Stream(CachePath));
             }
 
@@ -91,7 +86,7 @@ namespace M3u8Downloader_H.Combiners.VideoConverter
             var stdErrBuffer = new StringBuilder();
 
             var stdErrPipe = PipeTarget.Merge(
-                PipeTarget.ToStringBuilder(stdErrBuffer), // error data collector
+                PipeTarget.ToStringBuilder(stdErrBuffer,Encoding.UTF8), // error data collector
                 progress?.Pipe(p => new FFmpegProgressRouter(p)) ?? PipeTarget.Null // progress
             );
             

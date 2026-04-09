@@ -1,0 +1,16 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             xmlns:vm="using:M3u8Downloader_H.ViewModels.Menus"
+             x:DataType="vm:SponsorViewModel"
+             x:Class="M3u8Downloader_H.Views.Menus.SponsorView">
+
+     <Grid ColumnDefinitions="*,*" RowDefinitions="auto,*">
+        <TextBlock Grid.Row="0" VerticalAlignment="Bottom" Text="微信" FontWeight="SemiBold" FontSize="20" HorizontalAlignment="Center" Margin="5"  />
+        <TextBlock Grid.Row="0" Grid.Column="1"  FontWeight="SemiBold" FontSize="20" Text="支付宝"  HorizontalAlignment="Center" Margin="5"  />
+        <Image Grid.Row="1" Grid.Column="0" Source="/Assets/weixin.png" />
+        <Image Grid.Row="1" Grid.Column="1" Source="/Assets/zhifubao.png" />
+    </Grid>
+</UserControl>

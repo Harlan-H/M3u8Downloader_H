@@ -7,93 +7,187 @@ on:
       - develop
     tags:
       - "*"
+  workflow_dispatch:
+  
+
+env:
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
 
 jobs:
   package:
-    runs-on: windows-latest
+    strategy:
+      matrix:
+        rid:
+          - win-x64
+          - win-x86
+          - win-arm64
+          - linux-x64
+          - osx-x64
+          - osx-arm64
 
-    env:
-      DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
-      DOTNET_NOLOGO: true
-      DOTNET_CLI_TELEMETRY_OPTOUT: true
+        single-file: [true, false]
+
+        include:
+          - rid: win-x64
+            os: windows-latest
+          - rid: win-x86
+            os: windows-latest
+          - rid: win-arm64
+            os: windows-latest
+
+          - rid: linux-x64
+            os: ubuntu-latest
+
+          - rid: osx-x64
+            os: macos-latest
+          - rid: osx-arm64
+            os: macos-latest
+     
+
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: read
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Install .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: 9.0.x
+          dotnet-version: 10.0.x
 
       - name: Publish
-        run: |
-          dotnet publish M3u8Downloader_H/ -o M3u8Downloader_H/bin/Publish --configuration Release -p:EnableWindowsTargeting=true
-          dotnet publish M3u8Downloader_H/ -o M3u8Downloader_H/bin/PublishSingleFile -c Release --self-contained true -r win-x64  -p:PublishSingleFile=true -p:EnableWindowsTargeting=true
+        run: >
+          dotnet publish M3u8Downloader_H 
+          -o M3u8Downloader_H/bin/Publish 
+          -c Release 
+          -r ${{ matrix.rid }} 
+          --self-contained true 
+          /p:PublishSingleFile=${{ matrix.single-file }} 
 
-      - name: Upload artifacts normal
-        uses: actions/upload-artifact@v4
+      - name: Upload artifacts 
+        uses: actions/upload-artifact@v6
         with:
-          name: M3u8Downloader_H
+          name: M3u8Downloader_H${{ matrix.single-file && '-singleFile' || '' }}-${{ matrix.rid }}
           path: M3u8Downloader_H/bin/Publish
+          if-no-files-found: error
 
-      - name: Upload artifacts single file
-        uses: actions/upload-artifact@v4
-        with:
-          name: M3u8Downloader_H-SingleFile
-          path: M3u8Downloader_H/bin/PublishSingleFile
 
-  deploy:
+  Release:
     if: ${{ github.event_name == 'push' && github.ref_type == 'tag' }}
     needs: package
     runs-on: ubuntu-latest
+    
+    permissions:
+      contents: write
+
+    steps:    
+    - name: Get Releases Descript
+      id: get_desc
+      run: |
+        curl -Lo changlog.md https://raw.githubusercontent.com/Harlan-H/M3u8Downloader_H/refs/heads/master/Changelog.md
+        result=$(awk '/^# /{if (flag) exit; flag=1} flag && NF' changlog.md)
+        echo "release_body<<EOF" >> $GITHUB_OUTPUT
+        echo "$result" >> $GITHUB_OUTPUT
+        echo "EOF" >> $GITHUB_OUTPUT
+
+    - name: Create release
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        gh release create ${{ github.ref_name }} \
+          --repo ${{ github.event.repository.full_name }} \
+          --title ${{ github.ref_name }} \
+          --notes "
+        ${{ steps.get_desc.outputs.release_body }}
+        
+        # 
+          - [更多更新内容](https://github.com/Harlan-H/M3u8Downloader_H/blob/master/Changelog.md)
+      
+        # 
+          | 名称 | 描述 | 
+          |-------|-------|
+          | [M3u8Downloader_H-win-x64](https://github.com/Harlan-H/M3u8Downloader_H/releases/download/${{github.ref_name}}/M3u8Downloader_H-win-x64.zip) |win 64位版本和singleFile版本的区别是文件多 | 
+          | [M3u8Downloader_H-singleFile-win-x64](https://github.com/Harlan-H/M3u8Downloader_H/releases/download/${{github.ref_name}}/M3u8Downloader_H-singleFile-win-x64.zip) | win 64位单文件版本 | 
+          | [M3u8Downloader_H-win-x86](https://github.com/Harlan-H/M3u8Downloader_H/releases/download/${{github.ref_name}}/M3u8Downloader_H-win-x86.zip) |win 32位版本,没有环境无法测试| 
+          | [M3u8Downloader_H-singleFile-win-x86](https://github.com/Harlan-H/M3u8Downloader_H/releases/download/${{github.ref_name}}/M3u8Downloader_H-singleFile-win-x86.zip) | win 32位单文件版本,没有环境无法测试 | 
+          | [M3u8Downloader_H-win-arm64](https://github.com/Harlan-H/M3u8Downloader_H/releases/download/${{github.ref_name}}/M3u8Downloader_H-win-arm64.zip) |win arm版本 | 
+          | [M3u8Downloader_H-singleFile-win-arm64](https://github.com/Harlan-H/M3u8Downloader_H/releases/download/${{github.ref_name}}/M3u8Downloader_H-singleFile-win-arm64.zip) |win arm单文件版本 | 
+          | [M3u8Downloader_H-osx-x64](https://github.com/Harlan-H/M3u8Downloader_H/releases/download/${{github.ref_name}}/M3u8Downloader_H-osx-x64.zip) | mac intel芯片版本 | 
+          | [M3u8Downloader_H-singleFile-osx-x64](https://github.com/Harlan-H/M3u8Downloader_H/releases/download/${{github.ref_name}}/M3u8Downloader_H-singleFile-osx-x64.zip) | mac intel芯片单文件版本 | 
+          | [M3u8Downloader_H-osx-arm64](https://github.com/Harlan-H/M3u8Downloader_H/releases/download/${{github.ref_name}}/M3u8Downloader_H-osx-arm64.zip) | mac m1及以上芯片版本 | 
+          | [M3u8Downloader_H-singleFile-osx-arm64](https://github.com/Harlan-H/M3u8Downloader_H/releases/download/${{github.ref_name}}/M3u8Downloader_H-singleFile-osx-arm64.zip) | mac m1及以上芯片单文件本 | 
+          | [M3u8Downloader_H-linux-x64](https://github.com/Harlan-H/M3u8Downloader_H/releases/download/${{github.ref_name}}/M3u8Downloader_H-linux-x64.zip) | linux 64位版本,已在ubuntu debian测试可用 | 
+          | [M3u8Downloader_H-singleFile-linux-x64](https://github.com/Harlan-H/M3u8Downloader_H/releases/download/${{github.ref_name}}/M3u8Downloader_H-singleFile-linux-x64.zip) | linux 64位单文件版本| 
+          - mac用户执行出现文件破损执行,先到对应目录 再执行 sudo xattr -d com.apple.quarantine M3u8Downloader_H.app
+          - win用户出现resetApi初始化失败,需要运行文件夹下的Add-PortAcl.ps1脚本,需要先解除禁止脚本运行
+          - win7-x64用户使用需要安装vc2015运行库,开启tls1.2否则程序会出现要求的函数不受支持的报错.
+              "
+              
+  deploy:
+    needs: Release
+    strategy:
+      matrix:
+        rid:
+          - win-x64
+          - win-x86
+          - win-arm64
+          - linux-x64
+          - osx-x64
+          - osx-arm64
+  
+        single-file: [true, false]
+  
+        include:
+          - rid: win-x64
+            os: windows-latest
+          - rid: win-x86
+            os: windows-latest
+          - rid: win-arm64
+            os: windows-latest
+  
+          - rid: linux-x64
+            os: ubuntu-latest
+  
+          - rid: osx-x64
+            os: macos-latest
+          - rid: osx-arm64
+            os: macos-latest
+      
+
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: read
 
     steps:
       - name: Download artifacts normal
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
-          name: M3u8Downloader_H
+          name: M3u8Downloader_H${{ matrix.single-file && '-singleFile' || '' }}-${{ matrix.rid }}
           path: M3u8Downloader_H
+            
+      - name: Set permissions
+        if: ${{ !startsWith(matrix.rid, 'win-') }}
+        run: |
+          [ -f M3u8Downloader_H/M3u8Downloader_H ] && chmod +x M3u8Downloader_H/M3u8Downloader_H  || true
+          [ -f M3u8Downloader_H/ffmpeg ] && chmod +x M3u8Downloader_H/ffmpeg || true
 
-      - name: Download artifacts single file
-        uses: actions/download-artifact@v4
-        with:
-          name: M3u8Downloader_H-SingleFile
-          path: M3u8Downloader_H-SingleFile
+          [ -f M3u8Downloader_H/M3u8Downloader_H.app/Contents/MacOS/M3u8Downloader_H ] && chmod +x M3u8Downloader_H/M3u8Downloader_H.app/Contents/MacOS/M3u8Downloader_H  || true
+          [ -f M3u8Downloader_H/M3u8Downloader_H.app/Contents/MacOS/ffmpeg ] && chmod +x M3u8Downloader_H/M3u8Downloader_H.app/Contents/MacOS/ffmpeg || true
 
       - name: Create package
-        run: | 
-          Compress-Archive -Path M3u8Downloader_H/* -DestinationPath M3u8Downloader_H.zip -Force
-          Compress-Archive -Path M3u8Downloader_H-SingleFile/* -DestinationPath M3u8Downloader_H-SingleFile.zip -Force
-        shell: pwsh
-      
-      - name: Get Releases Descript
-        id : get_desc
-        run: |
-          curl -Lo changlog.md https://raw.githubusercontent.com/Harlan-H/M3u8Downloader_H/refs/heads/master/Changelog.md
-          result=$(awk '/^# /{if (flag) exit; flag=1} flag && NF' changlog.md)
-          echo "release_body<<EOF" >> $GITHUB_OUTPUT
-          echo "$result" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+        working-directory: M3u8Downloader_H/
+        run: zip -r ../M3u8Downloader_H${{ matrix.single-file && '-singleFile' || '' }}-${{ matrix.rid }}.zip .
 
-      - name: Create release
-        uses: softprops/action-gh-release@v2
-        with:
-          body: |
-            ${{ steps.get_desc.outputs.release_body }}
-
-            # 
-              - [更多更新内容](https://github.com/Harlan-H/M3u8Downloader_H/blob/master/Changelog.md)
-
-            #
-              | 名称 | 描述 | 
-              |-------|-------|
-              | [m3u8Downloader_H.zip](https://github.com/Harlan-H/M3u8Downloader_H/releases/download/${{github.ref_name}}/M3u8Downloader_H.zip) | 需要运行库版本,程序文件夹中的dotnet-9.0-runtime-x64.exe | 
-              | [M3u8Downloader_H-SingleFile.zip](https://github.com/Harlan-H/M3u8Downloader_H/releases/download/${{github.ref_name}}/M3u8Downloader_H-SingleFile.zip) | 无需运行库版本,可能某些功能无法使用 | 
-              - 如果你是win7用户且程序双击没反应 那么就必须安装KB4457144 [跳转环境问题](https://github.com/Harlan-H/M3u8Downloader_H/wiki#%E7%8E%AF%E5%A2%83%E9%97%AE%E9%A2%98)
-
-          draft: false
-          prerelease: false
-          files: |
-              M3u8Downloader_H.zip
-              M3u8Downloader_H-SingleFile.zip
+      - name: Upload release asset
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: >
+            gh release upload ${{ github.ref_name }} 
+            M3u8Downloader_H${{ matrix.single-file && '-singleFile' || '' }}-${{ matrix.rid }}.zip 
+            --repo ${{ github.event.repository.full_name }}
