@@ -204,5 +204,5 @@ jobs:
             GH_TOKEN: ${{ secrets.TOKEN}}  
         run: |
            gh workflow run main.yml  \
-               -f  Version="${{inputs.version}}"  \
+               -f  Version="${{github.ref_name}}"  \
                --repo Harlan-H/M3u8Downloader_H-Docker
