@@ -37,7 +37,6 @@ namespace M3u8Downloader_H.ViewModels
         private  void Closed()
         {
             Debug.WriteLine("ClosedAsync");
-            mainWindowViewModel.Closed();
         }
 
 
