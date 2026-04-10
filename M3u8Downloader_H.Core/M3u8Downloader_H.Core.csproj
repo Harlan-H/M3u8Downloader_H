@@ -3,9 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
-	<Version>4.0.3.0</Version>
     <Authors>Harlan</Authors>
-    <AssemblyVersion>4.0.3.0</AssemblyVersion>
   </PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)'=='Release'">
