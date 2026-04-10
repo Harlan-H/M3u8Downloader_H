@@ -2,7 +2,7 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net10.0</TargetFramework>
-	<AssemblyVersion>5.0</AssemblyVersion>
+	<AssemblyVersion>5.0.1</AssemblyVersion>
 	<Version>5.0.1</Version>
     <Nullable>enable</Nullable>
     <ApplicationManifest>app.manifest</ApplicationManifest>
