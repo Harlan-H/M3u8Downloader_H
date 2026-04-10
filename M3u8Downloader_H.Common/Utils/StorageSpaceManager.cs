@@ -28,7 +28,7 @@ public class StorageSpaceManager
         if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             return Path.Combine(StorageSpace.UserProfile.GetDirectoryPath(), "Downloads", "M3u8Downloader_H");
         else
-            return Path.Combine(StorageSpace.Instance.GetDirectoryPath(), "download");
+            return Path.Combine(StorageSpace.Instance.GetDirectoryPath(), "Downloads");
 #endif
     }
 
@@ -49,9 +49,9 @@ public class StorageSpaceManager
         return @"C:\Users\admin\Desktop\666";
 #else
         if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-            return Path.Combine(StorageSpace.UserDomain.GetDirectoryPath(), "M3u8Downloader_H");
+            return Path.Combine(StorageSpace.UserDomain.GetDirectoryPath(), "M3u8Downloader_H","Config");
         else
-            return Path.Combine(StorageSpace.Instance.GetDirectoryPath());
+            return Path.Combine(StorageSpace.Instance.GetDirectoryPath(),"Config");
 #endif
     }
 

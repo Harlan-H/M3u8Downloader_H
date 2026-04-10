@@ -105,10 +105,6 @@ namespace M3u8Downloader_H.ViewModels.Menus
             return Task.FromResult(0);
         }
 
-        public void Closed()
-        {
-            settingsService.Save();
-        }
 
 
         private void EnqueueDownload(DownloadViewModel download)

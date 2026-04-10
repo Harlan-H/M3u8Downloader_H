@@ -40,6 +40,7 @@ namespace M3u8Downloader_H.ViewModels.Menus
             {
                 settingService.CopyFrom(obj);
                 Notifications.Notify("设置已经保存！！！");
+                settingService.Save();
             }
             catch (Exception e)
             {

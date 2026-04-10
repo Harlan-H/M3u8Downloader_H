@@ -191,3 +191,18 @@ jobs:
             gh release upload ${{ github.ref_name }} 
             M3u8Downloader_H${{ matrix.single-file && '-singleFile' || '' }}-${{ matrix.rid }}.zip 
             --repo ${{ github.event.repository.full_name }}
+
+  DockerDeploy:
+    needs: deploy
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:         
+      - name: docker build and push
+        env:
+            GH_TOKEN: ${{ secrets.TOKEN}}  
+        run: |
+           gh workflow run main.yml  \
+               -f  Version="${{inputs.version}}"  \
+               --repo Harlan-H/M3u8Downloader_H-Docker
