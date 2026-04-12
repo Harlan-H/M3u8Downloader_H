@@ -14,6 +14,10 @@ namespace M3u8Downloader_H.Common.Extensions
             public bool IsCrypted => m3UFileInfo.Key is not null;
 
             public bool IsEmpty => m3UFileInfo.MediaFiles is null || m3UFileInfo.MediaFiles?.Count == 0;
+
+            public bool IsVod()
+                => !string.IsNullOrWhiteSpace(m3UFileInfo!.PlaylistType) && m3UFileInfo.PlaylistType == "VOD";
+            
         }
     }
 }

@@ -1,20 +1,42 @@
-﻿using M3u8Downloader_H.Common.M3u8Infos;
-using M3u8Downloader_H.Common.Extensions;
-using System.Text;
-using M3u8Downloader_H.Common.M3u8;
+﻿using M3u8Downloader_H.Abstractions.Common;
 using M3u8Downloader_H.Abstractions.M3u8;
+using M3u8Downloader_H.Abstractions.Models;
+using M3u8Downloader_H.Abstractions.Plugins;
+using M3u8Downloader_H.Common.Extensions;
+using M3u8Downloader_H.Common.M3u8;
+using M3u8Downloader_H.Common.M3u8Infos;
+using System.Text;
 
 namespace M3u8Downloader_H.Downloader.M3uDownloaders
 {
-    internal class CryptM3uDownloader(HttpClient httpClient, IM3uFileInfo m3UFileInfo) : M3u8Downloader(httpClient)
+    internal class CryptM3uDownloader : IDownloadService
     {
         private bool initialized = false;
-        private readonly HttpClient httpClient = httpClient;
+        private M3UFileInfo _m3uFileinfo = null!;
+        private readonly IDownloadService downloadService;
+        private readonly IDownloadContext context;
 
 
-        public override async ValueTask Initialization(CancellationToken cancellationToken)
+        public Func<Stream, CancellationToken, Stream> HandleDataFunc { get; set; } 
+        public Func<string, Stream, CancellationToken, Task> WriteToFileFunc { get ; set ; } 
+
+        public CryptM3uDownloader(IDownloadService downloadService, IDownloadContext context)
         {
-            await base.Initialization(cancellationToken);
+            this.downloadService = downloadService;
+            this.context = context;
+            HandleDataFunc = downloadService.HandleDataFunc;
+            WriteToFileFunc = downloadService.WriteToFileFunc;
+            downloadService.HandleDataFunc = HandleData;
+            downloadService.WriteToFileFunc = WriteToFileAsync;
+        }
+
+        public ValueTask Initialization(CancellationToken cancellationToken = default)
+        {
+            return downloadService.Initialization(cancellationToken);
+        }
+
+        public async ValueTask BeforeDownload(IM3uFileInfo m3UFileInfo,CancellationToken cancellationToken)
+        {
             if (initialized)
                 return;
 
@@ -28,9 +50,9 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
                 {              
                     byte[] data = m3UFileInfo.Key.Uri.IsFile
                         ? await File.ReadAllBytesAsync(m3UFileInfo.Key.Uri.OriginalString, cancellationToken)
-                        : await httpClient.GetByteArrayAsync(m3UFileInfo.Key.Uri, _headers, cancellationToken);
+                        : await context.HttpClient.GetByteArrayAsync(m3UFileInfo.Key.Uri, context.DownloadParam.Headers, cancellationToken);
 
-                    Log?.Info("获取转为base64的密钥 : {0}", Convert.ToBase64String(data));
+                    context.Log?.Info("获取转为base64的密钥 : {0}", Convert.ToBase64String(data));
                     m3uFileinfoTmp.Key = M3uKeyInfoHelper.GetKeyInfoInstance(m3UFileInfo.Key.Method, data, m3UFileInfo.Key.IV);
                 }
                 catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
@@ -47,12 +69,33 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
                     ? m3uFileinfoTmp.Key = M3uKeyInfoHelper.GetKeyInfoInstance(m3UFileInfo.Key)
                     : throw new InvalidDataException("密钥为空");
             }
+            _m3uFileinfo = m3uFileinfoTmp;
             initialized = true;
         }
 
-        protected override Stream DownloadAfter(Stream stream, string contentType, CancellationToken cancellationToken)
-        {   
-            return stream.AesDecrypt(m3UFileInfo.Key.BKey, m3UFileInfo.Key.IV);
+
+        public async Task StartDownload(IM3uFileInfo m3UFileInfo, CancellationToken cancellationToken = default)
+        {
+            await BeforeDownload(m3UFileInfo, cancellationToken);
+            await downloadService.StartDownload(m3UFileInfo, cancellationToken);
         }
+
+        public Task<bool> DownloadM3uMediaInfo(IM3uMediaInfo m3UMediaInfo, IEnumerable<KeyValuePair<string, string>>? headers, string mediaPath, CancellationToken cancellationToken = default)
+        {
+            return downloadService.DownloadM3uMediaInfo(m3UMediaInfo, headers, mediaPath, cancellationToken);
+        }
+
+        public Stream HandleData(Stream stream, CancellationToken cancellationToken)
+        {
+            var decryptedData = stream.AesDecrypt(_m3uFileinfo.Key.BKey, _m3uFileinfo.Key.IV);
+            return HandleDataFunc(decryptedData, cancellationToken);
+        }
+
+        public Task WriteToFileAsync(string file, Stream stream, CancellationToken token = default)
+        {
+            return WriteToFileFunc(file, stream, token);
+        }
+
+
     }
 }

@@ -1,5 +1,6 @@
 ﻿using M3u8Downloader_H.Abstractions.Common;
 using M3u8Downloader_H.Abstractions.M3uDownloaders;
+using M3u8Downloader_H.Abstractions.Models;
 using M3u8Downloader_H.Abstractions.Plugins;
 using M3u8Downloader_H.M3U8.AttributeReaders;
 using M3u8Downloader_H.M3U8.M3UFileReaderManangers;
@@ -9,7 +10,7 @@ using System.Net.Http;
 
 namespace M3u8Downloader_H.M3U8
 {
-    public partial class M3u8FileInfoClient(HttpClient httpClient, IPluginManager? PluginManager, ILog log, IM3u8DownloadParam DownloadParam, IDownloaderSetting DownloaderSetting)
+    public partial class M3u8FileInfoClient(IDownloadContext context, IPluginManager? PluginManager)
     {
         private M3UFileReaderManager? _m3UFileReaderManager;
         private IM3uFileReader? _m3UFileReader;
@@ -18,12 +19,7 @@ namespace M3u8Downloader_H.M3U8
         {
             get
             {
-                _m3UFileReaderManager ??= new M3UFileReaderManager(httpClient, M3u8FileReader)
-                    {
-                        DownloadParam = DownloadParam,
-                        DownloaderSetting = DownloaderSetting,
-                        Log = log
-                    };
+                _m3UFileReaderManager ??= new M3UFileReaderManager(context, M3u8FileReader);
                 return _m3UFileReaderManager;
             }
         }
@@ -34,13 +30,14 @@ namespace M3u8Downloader_H.M3U8
             {
                 if(_m3UFileReader is null)
                 {
-                    if (DownloadParam.RequestUrl.IsFile && DownloadParam.RequestUrl.OriginalString.EndsWith(".json"))
+                    IM3u8DownloadParam m3U8DownloadParam = (IM3u8DownloadParam)context.DownloadParam;
+                    if (m3U8DownloadParam.RequestUrl.IsFile && m3U8DownloadParam.RequestUrl.OriginalString.EndsWith(".json"))
                     {
-                        _m3UFileReader = new M3UFileReaderWithJson(DownloadParam.RequestUrl);
+                        _m3UFileReader = new M3UFileReaderWithJson(m3U8DownloadParam.RequestUrl);
                     }
                     else
                     {
-                        _m3UFileReader = new M3UFileReaderWithStream(DownloadParam.RequestUrl);
+                        _m3UFileReader = new M3UFileReaderWithStream(m3U8DownloadParam.RequestUrl);
                         _m3UFileReader.InitAttributeReade(AttributeReaderRoot.Instance.AttributeReaders);
                     }
                 }
@@ -52,7 +49,6 @@ namespace M3u8Downloader_H.M3U8
 
     public partial class M3u8FileInfoClient
     {
-
         public static IM3uFileReader CreateM3uFileReader(Uri requestUrl)
         {
             IM3uFileReader m3UFileReader = new M3UFileReaderWithStream(requestUrl);

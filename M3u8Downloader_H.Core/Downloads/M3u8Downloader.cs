@@ -8,6 +8,7 @@ using M3u8Downloader_H.Abstractions.Common;
 using M3u8Downloader_H.Abstractions.Downloader;
 using M3u8Downloader_H.Abstractions.M3u8;
 using M3u8Downloader_H.Abstractions.M3uDownloaders;
+using M3u8Downloader_H.Abstractions.Models;
 using M3u8Downloader_H.Abstractions.Plugins;
 using M3u8Downloader_H.Abstractions.Settings;
 using M3u8Downloader_H.Combiners;
@@ -22,7 +23,7 @@ using M3u8Downloader_H.Plugin.PluginManagers;
 
 namespace M3u8Downloader_H.Core.Downloads
 {
-    public partial class M3u8Downloader(IDownloadParamBase m3U8DownloadParam, IDownloaderSetting downloaderSetting, ILog log) : IDownloader
+    public partial class M3u8Downloader(IDownloadContext context) : IDownloader
     {
         private M3u8FileInfoClient m3U8FileInfoClient = default!;
         private DownloaderClient m3UDownloaderClient = default!;
@@ -43,9 +44,9 @@ namespace M3u8Downloader_H.Core.Downloads
 
             await MergeAsync(dialogProgress, cancellationToken);
 
-            IMergeSetting mergeSetting = (IMergeSetting)downloaderSetting;
+            IMergeSetting mergeSetting = (IMergeSetting)context.DownloaderSetting;
             if (mergeSetting.IsCleanUp)
-                DirectoryEx.DeleteCache(m3U8DownloadParam.CachePath);
+                DirectoryEx.DeleteCache(context.DownloadParam.CachePath);
         }
 
         private async ValueTask GetM3U8FileInfo(CancellationToken cancellationToken)
@@ -56,12 +57,12 @@ namespace M3u8Downloader_H.Core.Downloads
 
             if (M3U8FileInfo is not null && !M3U8FileInfo.IsEmpty)
             {
-                log.Info("获取视频流{0}个", M3U8FileInfo.MediaFiles.Count);
+                context.Log.Info("获取视频流{0}个", M3U8FileInfo.MediaFiles.Count);
                 _isParsed = true;
                 return;
             }
 
-            IM3u8DownloadParam m3u8DownloadParam = (IM3u8DownloadParam)m3U8DownloadParam;
+            IM3u8DownloadParam m3u8DownloadParam = (IM3u8DownloadParam)context.DownloadParam;
             if (m3u8DownloadParam.RequestUrl.IsFile)
                 M3U8FileInfo = m3U8FileInfoClient.M3u8FileReader.GetM3u8FileInfo(m3u8DownloadParam.RequestUrl);
             else
@@ -70,7 +71,7 @@ namespace M3u8Downloader_H.Core.Downloads
             if (M3U8FileInfo.IsEmpty)
                 throw new InvalidDataException("没有包含任何数据");
 
-            log.Info("获取视频流{0}个", M3U8FileInfo.MediaFiles.Count);
+            context.Log.Info("获取视频流{0}个", M3U8FileInfo.MediaFiles.Count);
             if (M3UKeyInfo is not null)
             {
                 M3UFileInfo m3UFileInfo = (M3UFileInfo)M3U8FileInfo;
@@ -89,7 +90,7 @@ namespace M3u8Downloader_H.Core.Downloads
             m3UDownloaderClient.M3UFileInfo = M3U8FileInfo;
             m3UDownloaderClient.DialogProgress = downloadProgress;
 
-            await m3UDownloaderClient.M3u8Downloader.DownloadAsync(M3U8FileInfo, cancellationToken);
+            await m3UDownloaderClient.M3u8Downloader.StartDownload(M3U8FileInfo, cancellationToken);
             _isDownloaded = true;
         }
 
@@ -110,44 +111,39 @@ namespace M3u8Downloader_H.Core.Downloads
     {
         //通过软件界面创建
         public static M3u8Downloader CreateM3u8Downloader(
-              HttpClient httpClient,
-              IM3u8DownloadParam m3U8DownloadParam,
-              IDownloaderSetting downloaderSetting,
-              ILog logger,
+              IDownloadContext context,
               Type? pluginType
             )
         {
-            M3u8Downloader m3U8Downloader = new(m3U8DownloadParam, downloaderSetting, logger);
-            PluginManger? pluginManger = PluginManger.CreatePluginMangaer(pluginType, httpClient, logger);
-            m3U8Downloader.m3U8FileInfoClient = new M3u8FileInfoClient(httpClient, pluginManger, logger, m3U8DownloadParam, downloaderSetting);
-            m3U8Downloader.m3UDownloaderClient = new DownloaderClient(httpClient, pluginManger, logger, m3U8DownloadParam, downloaderSetting)
+            M3u8Downloader m3U8Downloader = new(context);
+            PluginManger? pluginManger = null; /*PluginManger.CreatePluginMangaer(pluginType, context.HttpClient, context.Loglogger);*/
+            m3U8Downloader.m3U8FileInfoClient = new M3u8FileInfoClient(context, pluginManger);
+            m3U8Downloader.m3UDownloaderClient = new DownloaderClient(context, pluginManger)
             {
                 GetLiveFileInfoFunc = m3U8Downloader.m3U8FileInfoClient.M3UFileReadManager.GetM3u8FileInfo
             };
 
-            m3U8Downloader.m3UCombinerClient = new M3uCombinerClient(logger, m3U8DownloadParam, (IMergeSetting)downloaderSetting);
+            m3U8Downloader.m3UCombinerClient = new M3uCombinerClient(context.Log, context.DownloadParam, (IMergeSetting)context.DownloaderSetting);
 
+            IM3u8DownloadParam m3U8DownloadParam = (IM3u8DownloadParam)context.DownloadParam;
             m3U8Downloader.M3UKeyInfo = m3U8DownloadParam.M3UKeyInfo;
             return m3U8Downloader;
         }
 
         //通过接口创建
         public static M3u8Downloader CreateM3u8Downloader(
-            HttpClient httpClient,
-            IDownloadParamBase m3U8DownloadParam,
-            IDownloaderSetting downloaderSetting,
-            ILog logger,
+            IDownloadContext context,
             Type? pluginType,
             IM3uFileInfo m3UFileInfo
             )
         {
-            M3u8Downloader m3U8Downloader = new(m3U8DownloadParam, downloaderSetting, logger);
-            PluginManger? pluginManger = PluginManger.CreatePluginMangaer(pluginType, httpClient, logger);
-            m3U8Downloader.m3UDownloaderClient = new DownloaderClient(httpClient, pluginManger, logger, m3U8DownloadParam,downloaderSetting);
-            m3U8Downloader.m3UCombinerClient = new M3uCombinerClient(logger, m3U8DownloadParam, (IMergeSetting)downloaderSetting);
+            M3u8Downloader m3U8Downloader = new(context);
+            PluginManger? pluginManger = null; /* PluginManger.CreatePluginMangaer(pluginType, httpClient, logger);*/
+            m3U8Downloader.m3UDownloaderClient = new DownloaderClient(context, pluginManger);
+            m3U8Downloader.m3UCombinerClient = new M3uCombinerClient(context.Log, context.DownloadParam, (IMergeSetting)context.DownloaderSetting);
 
             m3U8Downloader.M3U8FileInfo = m3UFileInfo;
-            logger.Info("通过接口传入m3u8文件的视频流有{0}个,将跳过获取操作开始直接下载", m3UFileInfo.MediaFiles.Count);
+            context.Log.Info("通过接口传入m3u8文件的视频流有{0}个,将跳过获取操作开始直接下载", m3UFileInfo.MediaFiles.Count);
             m3U8Downloader._isParsed = true;
             return m3U8Downloader;
         }

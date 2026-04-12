@@ -3,7 +3,6 @@
     public interface IPluginManager
     {
         IM3uFileReader? M3UFileReaderInterface { get; }
-        IDictionary<string, IAttributeReader> AttributeReaders { get; }
         IDownloadService? PluginService { get; }
     }
 }

@@ -1,34 +1,28 @@
-﻿using System;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
-using M3u8Downloader_H.Abstractions.Common;
+﻿using M3u8Downloader_H.Abstractions.Common;
 using M3u8Downloader_H.Abstractions.Downloader;
 using M3u8Downloader_H.Abstractions.M3uDownloaders;
+using M3u8Downloader_H.Abstractions.Models;
 using M3u8Downloader_H.Abstractions.Settings;
 using M3u8Downloader_H.Combiners;
 using M3u8Downloader_H.Common.Models;
 using M3u8Downloader_H.Common.Utils;
 using M3u8Downloader_H.Downloader;
+using System;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace M3u8Downloader_H.Core.Downloads
 {
-    public partial class MediaDownloader : IDownloader
+    public partial class MediaDownloader(IDownloadContext downloadContext) : IDownloader
     {
-        private readonly IMediaDownloadParam mediaDownloadParam;
-        private readonly IDownloaderSetting downloaderSetting;
-        private readonly ILog log;
+        private readonly IMediaDownloadParam mediaDownloadParam = (IMediaDownloadParam)downloadContext.DownloadParam;
+        private readonly IDownloaderSetting downloaderSetting = downloadContext.DownloaderSetting;
+        private readonly ILog log = downloadContext.Log;
         private DownloaderClient m3UDownloaderClient = default!;
         private M3uCombinerClient m3UCombinerClient = default!;
 
         private bool _isDownloaded = false;
-
-        public MediaDownloader(IMediaDownloadParam mediaDownloadParam, IDownloaderSetting downloaderSetting,ILog log)
-        {
-            this.mediaDownloadParam = mediaDownloadParam;
-            this.downloaderSetting = downloaderSetting;
-            this.log = log;
-        }
 
         public async ValueTask StartDownload(Action<int> StateAction, IDialogProgress dialogProgress, CancellationToken cancellationToken)
         {
@@ -66,16 +60,12 @@ namespace M3u8Downloader_H.Core.Downloads
 
     public partial class MediaDownloader
     {
-        public static MediaDownloader CreateMediaDownloader(
-            HttpClient httpClient,
-            IMediaDownloadParam m3U8DownloadParam,
-            IDownloaderSetting downloaderSetting,
-            ILog logger)
+        public static MediaDownloader CreateMediaDownloader(IDownloadContext context)
         {
-            MediaDownloader mediaDownloader = new(m3U8DownloadParam, downloaderSetting, logger)
+            MediaDownloader mediaDownloader = new(context)
             {
-                m3UDownloaderClient = new DownloaderClient(httpClient, null, logger, m3U8DownloadParam, downloaderSetting),
-                m3UCombinerClient = new M3uCombinerClient(logger, m3U8DownloadParam, (IMergeSetting)downloaderSetting)
+                m3UDownloaderClient = new DownloaderClient(context,null),
+                m3UCombinerClient = new M3uCombinerClient(context.Log, context.DownloadParam, (IMergeSetting)context.DownloaderSetting)
             };
             return mediaDownloader;
         }

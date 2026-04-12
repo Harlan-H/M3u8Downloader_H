@@ -16,7 +16,6 @@
 	</PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Models\" />
     <AvaloniaResource Include="Assets\**" />
     <Folder Include="Services\" />
   </ItemGroup>
@@ -65,9 +64,7 @@
   </ItemGroup>
 	
 	<!-- 只在 publish 时自动下载 ffmpeg -->
-	<Target Name="DownloadFFmpeg"
-        BeforeTargets="PrepareForPublish"
-        Condition="'$(RuntimeIdentifier)' != ''">
+	<Target Name="DownloadFFmpeg" BeforeTargets="PrepareForPublish" Condition="'$(RuntimeIdentifier)' != ''">
 
 		<PropertyGroup>
 			<!-- 下载脚本 -->
@@ -82,11 +79,7 @@
 
 			<!-- 平台判断 -->
 			<IsWindows>false</IsWindows>
-			<IsWindows Condition="
-				'$(RuntimeIdentifier)' == 'win-x64' OR
-				'$(RuntimeIdentifier)' == 'win-x86' OR
-				'$(RuntimeIdentifier)' == 'win-arm64'
-			">true</IsWindows>
+			<IsWindows Condition="&#xD;&#xA;				'$(RuntimeIdentifier)' == 'win-x64' OR&#xD;&#xA;				'$(RuntimeIdentifier)' == 'win-x86' OR&#xD;&#xA;				'$(RuntimeIdentifier)' == 'win-arm64'&#xD;&#xA;			">true</IsWindows>
 
 			<!-- ffmpeg 文件名 -->
 			<FfmpegExeName Condition="'$(IsWindows)' == 'true'">ffmpeg.exe</FfmpegExeName>
@@ -100,25 +93,17 @@
 		<Message Text="DownloadFFmpeg triggered: RID=$(RuntimeIdentifier)" Importance="high" />
 
 		<!-- 下载 -->
-		<Exec
-		  Condition="!Exists('$(PublishFfmpegPath)')"
-		  Command="$(PowerShellCommand) -ExecutionPolicy Bypass -File &quot;$(FfmpegDownloadScript)&quot; -r &quot;$(RuntimeIdentifier)&quot;"
-		  ConsoleToMSBuild="true"
-		  IgnoreStandardErrorWarningFormat="true">
+		<Exec Condition="!Exists('$(PublishFfmpegPath)')" Command="$(PowerShellCommand) -ExecutionPolicy Bypass -File &quot;$(FfmpegDownloadScript)&quot; -r &quot;$(RuntimeIdentifier)&quot;" ConsoleToMSBuild="true" IgnoreStandardErrorWarningFormat="true">
 			<Output TaskParameter="ExitCode" PropertyName="DownloadExitCode" />
 		</Exec>
 
-		<Error Text="FFmpeg下载失败，请检查上方错误日志"
-			   Condition="'$(DownloadExitCode)' != '' AND '$(DownloadExitCode)' != '0'" />
+		<Error Text="FFmpeg下载失败，请检查上方错误日志" Condition="'$(DownloadExitCode)' != '' AND '$(DownloadExitCode)' != '0'" />
 
 		<!-- 创建目录 -->
 		<MakeDir Directories="$(PublishDir)" Condition="!Exists('$(PublishDir)')" />
 
 		<!-- 拷贝 -->
-		<Copy
-		  SourceFiles="$(LocalFfmpegPath)"
-		  DestinationFiles="$(PublishFfmpegPath)"
-		  SkipUnchangedFiles="true">
+		<Copy SourceFiles="$(LocalFfmpegPath)" DestinationFiles="$(PublishFfmpegPath)" SkipUnchangedFiles="true">
 			<Output TaskParameter="CopiedFiles" ItemName="CopiedFFmpeg" />
 		</Copy>
 

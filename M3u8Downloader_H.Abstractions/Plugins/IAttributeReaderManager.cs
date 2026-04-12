@@ -3,6 +3,9 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace M3u8Downloader_H.Abstractions.Plugins
 {
+    /// <summary>
+    /// AttributeReader的容器
+    /// </summary>
     public interface IAttributeReaderCollection:
         IDictionary<string, IAttributeReader>,
         ICollection<KeyValuePair<string, IAttributeReader>>,
