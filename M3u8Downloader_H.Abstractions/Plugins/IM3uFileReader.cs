@@ -4,6 +4,7 @@ namespace M3u8Downloader_H.Abstractions.Plugins
 {
     public interface IM3uFileReader
     {
-        IM3uFileInfo Read(Uri baseUri, Stream stream);
+        IAttributeReaderCollection CreateAttributeReaderCollection();
+        IM3uFileInfo Read(Stream stream);
     }
 }

@@ -33,7 +33,6 @@
         <Grid RowDefinitions="*,30" Background="{StaticResource backGroundBrush}">
             <StackPanel Grid.Row="0">
                 <RadioButton Content="下载" Command="{Binding NavigateToCommand}" CommandParameter="{x:Type menu:MainWindowViewModel}" Theme="{StaticResource MenuButtonSytle}"  Tag="{StaticResource Download}"  IsChecked="True"   />
-                <RadioButton Content="转码" Command="{Binding NavigateToCommand}" CommandParameter="{x:Type menu:ConverterViewModel}" Theme="{StaticResource MenuButtonSytle}" Tag="{StaticResource Merge}"  />
                 <RadioButton Content="设置" Command="{Binding NavigateToCommand}" CommandParameter="{x:Type menu:SettingsViewModel}" Theme="{StaticResource MenuButtonSytle}" Tag="{StaticResource Settings}"/>
                 <RadioButton Content="赞助" Command="{Binding NavigateToCommand}" CommandParameter="{x:Type menu:SponsorViewModel}" Theme="{StaticResource MenuButtonSytle}" Tag="{StaticResource Sponsor}"/>
                 <RadioButton Content="关于" Command="{Binding NavigateToCommand}" CommandParameter="{x:Type menu:AboutViewModel}" Theme="{StaticResource MenuButtonSytle}" Tag="{StaticResource About}" />

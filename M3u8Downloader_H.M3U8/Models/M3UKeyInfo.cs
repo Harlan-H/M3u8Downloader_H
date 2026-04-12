@@ -19,33 +19,6 @@ namespace M3u8Downloader_H.Common.M3u8Infos
         {
             
         }
-
-      /*  public M3UKeyInfo(string method, string key)
-        {
-            Method = method;
-            BKey = Encoding.UTF8.GetBytes(key);
-            IV = null!;
-        }
-
-        public M3UKeyInfo(string method, string key, string iv)
-        {
-            Method = method;
-            BKey = Encoding.UTF8.GetBytes(key);
-            IV = iv?.ToHex()!;
-        }
-
-        public M3UKeyInfo(string method, byte[] key, byte[] iv)
-        {
-            Method = method;
-            BKey = key;
-            IV = iv;
-        }
-
-        public M3UKeyInfo(M3UKeyInfo m3UKeyInfo) : this (m3UKeyInfo.Method, m3UKeyInfo.BKey, m3UKeyInfo.IV)
-        {
-
-        }*/
-
     }
     
     public partial class M3UKeyInfo 

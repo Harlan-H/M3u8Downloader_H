@@ -38,13 +38,10 @@ namespace M3u8Downloader_H.FrameWork
             {
                 MainWindowViewModel => serviceProvider.GetRequiredService<MainWindowView>(),
                 AboutViewModel => serviceProvider.GetRequiredService<AboutView>(),
-                ConverterViewModel => serviceProvider.GetRequiredService<ConverterView>(),
                 SettingsViewModel => new SettingsView(),
                 SponsorViewModel => serviceProvider.GetRequiredService<SponsorView>(),
                 M3u8WindowViewModel => serviceProvider.GetRequiredService<M3u8WindowView>(),
                 MediaWindowViewModel => serviceProvider.GetRequiredService<MediaWindowView>(),
-                M3u8ConverterViewModel => new M3u8ConverterView(),
-                MediaConverterViewModel => new MediaConverterView(),
                 DownloadViewModel => new DownloadView(),
                 DeleteDialogViewModel => new DeleteDialogView(),
                 _ => null
