@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -7,22 +8,22 @@ using M3u8Downloader_H.Abstractions.Common;
 using M3u8Downloader_H.Abstractions.Downloader;
 using M3u8Downloader_H.Abstractions.M3u8;
 using M3u8Downloader_H.Abstractions.M3uDownloaders;
+using M3u8Downloader_H.Abstractions.Plugins;
 using M3u8Downloader_H.Abstractions.Settings;
 using M3u8Downloader_H.Combiners;
+using M3u8Downloader_H.Common.Extensions;
 using M3u8Downloader_H.Common.M3u8Infos;
 using M3u8Downloader_H.Common.Models;
 using M3u8Downloader_H.Common.Utils;
 using M3u8Downloader_H.Downloader;
 using M3u8Downloader_H.M3U8;
+using M3u8Downloader_H.M3U8.Extensions;
 using M3u8Downloader_H.Plugin.PluginManagers;
 
 namespace M3u8Downloader_H.Core.Downloads
 {
-    public partial class M3u8Downloader : IDownloader
+    public partial class M3u8Downloader(IDownloadParamBase m3U8DownloadParam, IDownloaderSetting downloaderSetting, ILog log) : IDownloader
     {
-        private readonly IDownloadParamBase downloadParam;
-        private readonly IDownloaderSetting downloaderSetting;
-        private readonly ILog Log;
         private M3u8FileInfoClient m3U8FileInfoClient = default!;
         private DownloaderClient m3UDownloaderClient = default!;
         private M3uCombinerClient m3UCombinerClient = default!;
@@ -31,14 +32,6 @@ namespace M3u8Downloader_H.Core.Downloads
 
         private bool _isParsed = false;
         private bool _isDownloaded = false;
-
-
-        public M3u8Downloader(IDownloadParamBase m3U8DownloadParam, IDownloaderSetting downloaderSetting,ILog log)
-        {
-            this.downloadParam = m3U8DownloadParam;
-            this.downloaderSetting = downloaderSetting;
-            Log = log;
-        }
 
         public async ValueTask StartDownload(Action<int> StateAction,IDialogProgress dialogProgress, CancellationToken cancellationToken)
         {
@@ -52,7 +45,7 @@ namespace M3u8Downloader_H.Core.Downloads
 
             IMergeSetting mergeSetting = (IMergeSetting)downloaderSetting;
             if (mergeSetting.IsCleanUp)
-                DirectoryEx.DeleteCache(downloadParam.CachePath);
+                DirectoryEx.DeleteCache(m3U8DownloadParam.CachePath);
         }
 
         private async ValueTask GetM3U8FileInfo(CancellationToken cancellationToken)
@@ -60,18 +53,24 @@ namespace M3u8Downloader_H.Core.Downloads
             if (_isParsed)
                 return;
 
-            IM3u8DownloadParam m3u8DownloadParam = (IM3u8DownloadParam)downloadParam;
-            if (m3u8DownloadParam.RequestUrl.IsFile)
-            {
-                string ext = Path.GetExtension(m3u8DownloadParam.RequestUrl.OriginalString).Trim('.');
-                M3U8FileInfo = m3U8FileInfoClient.M3UFileReadManager.GetM3u8FileInfo(ext, m3u8DownloadParam.RequestUrl);
-            }
-            else
-            {
-                M3U8FileInfo = await m3U8FileInfoClient.M3UFileReadManager.GetM3u8FileInfo(cancellationToken);
-            }
-            Log.Info("获取视频流{0}个", M3U8FileInfo.MediaFiles.Count);
 
+            if (M3U8FileInfo is not null && !M3U8FileInfo.IsEmpty)
+            {
+                log.Info("获取视频流{0}个", M3U8FileInfo.MediaFiles.Count);
+                _isParsed = true;
+                return;
+            }
+
+            IM3u8DownloadParam m3u8DownloadParam = (IM3u8DownloadParam)m3U8DownloadParam;
+            if (m3u8DownloadParam.RequestUrl.IsFile)
+                M3U8FileInfo = m3U8FileInfoClient.M3u8FileReader.GetM3u8FileInfo(m3u8DownloadParam.RequestUrl);
+            else
+                M3U8FileInfo = await m3U8FileInfoClient.M3UFileReadManager.GetM3u8FileInfo(cancellationToken);
+
+            if (M3U8FileInfo.IsEmpty)
+                throw new InvalidDataException("没有包含任何数据");
+
+            log.Info("获取视频流{0}个", M3U8FileInfo.MediaFiles.Count);
             if (M3UKeyInfo is not null)
             {
                 M3UFileInfo m3UFileInfo = (M3UFileInfo)M3U8FileInfo;

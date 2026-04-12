@@ -1,83 +1,63 @@
-﻿using M3u8Downloader_H.M3U8.M3UFileReaderManangers;
-using System.Net.Http;
-using M3u8Downloader_H.M3U8.M3UFileReaders;
+﻿using M3u8Downloader_H.Abstractions.Common;
 using M3u8Downloader_H.Abstractions.M3uDownloaders;
-using M3u8Downloader_H.Abstractions.Common;
 using M3u8Downloader_H.Abstractions.Plugins;
+using M3u8Downloader_H.M3U8.AttributeReaders;
+using M3u8Downloader_H.M3U8.M3UFileReaderManangers;
+using M3u8Downloader_H.M3U8.M3UFileReaders;
+using System;
+using System.Net.Http;
 
 namespace M3u8Downloader_H.M3U8
 {
-    public class M3u8FileInfoClient
+    public partial class M3u8FileInfoClient(HttpClient httpClient, IPluginManager? PluginManager, ILog log, IM3u8DownloadParam DownloadParam, IDownloaderSetting DownloaderSetting)
     {
         private M3UFileReaderManager? _m3UFileReaderManager;
-
-        private readonly HttpClient httpClient = default!;
-        private readonly IPluginManager? pluginManager;
-        private readonly ILog log;
-        private readonly IM3u8DownloadParam downloadParam = default!;
-        public readonly IDownloaderSetting downloaderSetting = default!;
-
+        private IM3uFileReader? _m3UFileReader;
+ 
         public M3UFileReaderManager M3UFileReadManager
         {
             get
             {
-                if(_m3UFileReaderManager == null)
+                _m3UFileReaderManager ??= new M3UFileReaderManager(httpClient, M3u8FileReader)
+                    {
+                        DownloadParam = DownloadParam,
+                        DownloaderSetting = DownloaderSetting,
+                        Log = log
+                    };
+                return _m3UFileReaderManager;
+            }
+        }
+
+        public IM3uFileReader M3u8FileReader
+        {
+            get
+            {
+                if(_m3UFileReader is null)
                 {
-                    if (pluginManager?.M3U8FileInfoStreamService is not null)
-                        _m3UFileReaderManager = new PluginM3UFileReaderManager(pluginManager?.M3U8FileInfoStreamService!, httpClient);
+                    if (DownloadParam.RequestUrl.IsFile && DownloadParam.RequestUrl.OriginalString.EndsWith(".json"))
+                    {
+                        _m3UFileReader = new M3UFileReaderWithJson(DownloadParam.RequestUrl);
+                    }
                     else
-                        _m3UFileReaderManager = new M3UFileReaderManager(httpClient);
-
-                    _m3UFileReaderManager.M3u8FileReader = M3u8FileReader;
-                    _m3UFileReaderManager.DownloadParam = downloadParam;
-                    _m3UFileReaderManager.DownloaderSetting  = downloaderSetting;
-                    _m3UFileReaderManager.Log = log;
+                    {
+                        _m3UFileReader = new M3UFileReaderWithStream(DownloadParam.RequestUrl);
+                        _m3UFileReader.InitAttributeReade(AttributeReaderRoot.Instance.AttributeReaders);
+                    }
                 }
-
-                return _m3UFileReaderManager;
+                return _m3UFileReader;
             }
         }
 
+    }
 
-        public M3UFileReaderManager DefaultM3uFileReadManager
+    public partial class M3u8FileInfoClient
+    {
+
+        public static IM3uFileReader CreateM3uFileReader(Uri requestUrl)
         {
-            get
-            {
-                _m3UFileReaderManager ??= new()
-                {
-                    M3u8FileReader = new M3UFileReaderWithStream(),
-                    Log = log
-                };
-                return _m3UFileReaderManager;
-            }
-        }
-
-        internal M3UFileReaderWithStream M3u8FileReader
-        {
-            get
-            {
-                M3UFileReaderWithStream m3UFileReaderWithStream;
-                if (pluginManager?.M3UFileReaderInterface is not null)
-                    m3UFileReaderWithStream =  new M3UFileReaderWithPlugin(pluginManager?.M3UFileReaderInterface!);
-                else
-                    m3UFileReaderWithStream =  new M3UFileReaderWithStream(pluginManager?.AttributeReaders);
-
-                return m3UFileReaderWithStream;
-            }
-        }
-
-        public M3u8FileInfoClient(HttpClient httpClient, IPluginManager? PluginManager, ILog log, IM3u8DownloadParam DownloadParam, IDownloaderSetting DownloaderSetting)
-        {
-            this.httpClient = httpClient;
-            pluginManager = PluginManager;
-            this.log = log;
-            downloadParam = DownloadParam;
-            downloaderSetting = DownloaderSetting;
-        }
-
-        public M3u8FileInfoClient(ILog log)
-        {
-            this.log = log;
+            IM3uFileReader m3UFileReader = new M3UFileReaderWithStream(requestUrl);
+            m3UFileReader.InitAttributeReade(AttributeReaderRoot.Instance.AttributeReaders);
+            return m3UFileReader;
         }
     }
 }
