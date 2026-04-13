@@ -90,6 +90,7 @@ namespace M3u8Downloader_H.Core.Downloads
             m3UDownloaderClient.M3UFileInfo = M3U8FileInfo;
             m3UDownloaderClient.DialogProgress = downloadProgress;
 
+            await m3UDownloaderClient.M3u8Downloader.Initialization(cancellationToken);
             await m3UDownloaderClient.M3u8Downloader.StartDownload(M3U8FileInfo, cancellationToken);
             _isDownloaded = true;
         }

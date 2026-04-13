@@ -1,6 +1,5 @@
 ﻿using M3u8Downloader_H.Abstractions.Common;
 using M3u8Downloader_H.Abstractions.M3u8;
-using M3u8Downloader_H.Abstractions.M3uDownloaders;
 using M3u8Downloader_H.Abstractions.Models;
 using M3u8Downloader_H.Abstractions.Plugins;
 using M3u8Downloader_H.Downloader.Extensions;
@@ -20,13 +19,13 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
 
         private bool _firstTimeToRun = true;
 
-        protected IEnumerable<KeyValuePair<string, string>>? _headers => context.DownloadParam.Headers ?? context.DownloaderSetting.Headers;
-        protected string _cachePath => context.DownloadParam.CachePath;
+        private IEnumerable<KeyValuePair<string, string>>? _headers => context.DownloadParam.Headers ?? context.DownloaderSetting.Headers;
+        private string _cachePath => context.DownloadParam.CachePath;
 
         public Func<Stream, CancellationToken, Stream> HandleDataFunc { get; set; } = default!;
         public Func<string, Stream, CancellationToken, Task> WriteToFileFunc { get; set; } = default!;
 
-        protected bool _isFmp4 = false;
+        private bool _isFmp4 = false;
 
         public M3u8Downloader(IDownloadContext context, IDialogProgress DialogProgress)
         {

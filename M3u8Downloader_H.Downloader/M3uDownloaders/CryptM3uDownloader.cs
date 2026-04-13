@@ -17,23 +17,20 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
         private readonly IDownloadContext context;
 
 
-        public Func<Stream, CancellationToken, Stream> HandleDataFunc { get; set; } 
-        public Func<string, Stream, CancellationToken, Task> WriteToFileFunc { get ; set ; } 
+        public Func<Stream, CancellationToken, Stream> HandleDataFunc { get; set; }
+        public Func<string, Stream, CancellationToken, Task> WriteToFileFunc { get; set; } = default!;
 
         public CryptM3uDownloader(IDownloadService downloadService, IDownloadContext context)
         {
             this.downloadService = downloadService;
             this.context = context;
             HandleDataFunc = downloadService.HandleDataFunc;
-            WriteToFileFunc = downloadService.WriteToFileFunc;
             downloadService.HandleDataFunc = HandleData;
-            downloadService.WriteToFileFunc = WriteToFileAsync;
         }
 
         public ValueTask Initialization(CancellationToken cancellationToken = default)
-        {
-            return downloadService.Initialization(cancellationToken);
-        }
+            => downloadService.Initialization(cancellationToken);
+   
 
         public async ValueTask BeforeDownload(IM3uFileInfo m3UFileInfo,CancellationToken cancellationToken)
         {
@@ -82,18 +79,13 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
 
         public Task<bool> DownloadM3uMediaInfo(IM3uMediaInfo m3UMediaInfo, IEnumerable<KeyValuePair<string, string>>? headers, string mediaPath, CancellationToken cancellationToken = default)
         {
-            return downloadService.DownloadM3uMediaInfo(m3UMediaInfo, headers, mediaPath, cancellationToken);
+            throw new NotImplementedException();
         }
 
         public Stream HandleData(Stream stream, CancellationToken cancellationToken)
         {
-            var decryptedData = stream.AesDecrypt(_m3uFileinfo.Key.BKey, _m3uFileinfo.Key.IV);
-            return HandleDataFunc(decryptedData, cancellationToken);
-        }
-
-        public Task WriteToFileAsync(string file, Stream stream, CancellationToken token = default)
-        {
-            return WriteToFileFunc(file, stream, token);
+            var crtypedStream = HandleDataFunc(stream, cancellationToken);
+            return crtypedStream.AesDecrypt(_m3uFileinfo.Key.BKey, _m3uFileinfo.Key.IV);
         }
 
 

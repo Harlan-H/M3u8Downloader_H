@@ -12,7 +12,7 @@ namespace M3u8Downloader_H.Downloader
     public class DownloaderClient(IDownloadContext context, IPluginManager? PluginManager)
     {
         private IDownloadService? _m3u8downloader;
-        private MediaDownloads.DownloaderBase? _mediaDownloader;
+        private DownloaderBase? _mediaDownloader;
 
         public IDialogProgress DialogProgress { get; set; } = default!;
         public IM3uFileInfo M3UFileInfo { get; set; } = default!;
@@ -22,7 +22,6 @@ namespace M3u8Downloader_H.Downloader
         {
             get
             {
-
                 if (_m3u8downloader is null)
                 {
                     IDownloadService m3U8Downloader = new M3u8Downloader(context, DialogProgress);
@@ -43,7 +42,7 @@ namespace M3u8Downloader_H.Downloader
             }
         }
 
-        public MediaDownloads.DownloaderBase MediaDownloader
+        public DownloaderBase MediaDownloader
         {
             get
             {
@@ -51,13 +50,9 @@ namespace M3u8Downloader_H.Downloader
                 if(_mediaDownloader is null)
                 {
                     if (mediaDownloadParam.IsVideoStream)
-                        _mediaDownloader = new MediaDownloader(context.HttpClient);
+                        _mediaDownloader = new MediaDownloader(context);
                     else
-                        _mediaDownloader = new LiveVideoDownloader(context.HttpClient);
-
-                    _mediaDownloader.DownloadParam = mediaDownloadParam;
-                    _mediaDownloader.Log = context.Log;
-                    _mediaDownloader.DownloaderSetting = context.DownloaderSetting;
+                        _mediaDownloader = new LiveVideoDownloader(context);
                 }
 
                 _mediaDownloader.DialogProgress = DialogProgress;

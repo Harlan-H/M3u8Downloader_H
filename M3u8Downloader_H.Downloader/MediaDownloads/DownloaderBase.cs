@@ -1,5 +1,5 @@
 ﻿using M3u8Downloader_H.Abstractions.Common;
-using M3u8Downloader_H.Abstractions.M3uDownloaders;
+using M3u8Downloader_H.Abstractions.Models;
 using M3u8Downloader_H.Downloader.Extensions;
 using System.Buffers;
 using System.Net.Http.Headers;
@@ -7,15 +7,13 @@ using System.Net.Http.Headers;
 
 namespace M3u8Downloader_H.Downloader.MediaDownloads
 {
-    public abstract class DownloaderBase(HttpClient httpClient)
+    public abstract class DownloaderBase(IDownloadContext downloadContext)
     {
         private bool _firstTimeToRun = true;
-        internal IMediaDownloadParam DownloadParam { get; set; } = default!;
-        internal IDownloaderSetting DownloaderSetting { get; set; } = default!;
-        internal ILog Log { get; set; } = default!;
+        private readonly IMediaDownloadParam DownloadParam = (IMediaDownloadParam)downloadContext.DownloadParam;
         internal IDialogProgress DialogProgress { get; set; } = default!;
 
-        protected IEnumerable<KeyValuePair<string, string>>? _headers => DownloadParam.Headers ?? DownloaderSetting.Headers;
+        protected IEnumerable<KeyValuePair<string, string>>? _headers => DownloadParam.Headers ?? downloadContext.DownloaderSetting.Headers;
 
         protected string _cachePath => DownloadParam.CachePath;
 
@@ -33,7 +31,7 @@ namespace M3u8Downloader_H.Downloader.MediaDownloads
 
         protected async Task DownloadAsynInternal(IStreamInfo streamInfo, IEnumerable<KeyValuePair<string, string>>? headers, RangeHeaderValue? rangeHeaderValue,Func<FileStream> mediaFile, CancellationToken token)
         {  
-            using Stream stream = await httpClient.GetResponseContentAsync(streamInfo.Url, headers, rangeHeaderValue, token);
+            using Stream stream = await downloadContext.HttpClient.GetResponseContentAsync(streamInfo.Url, headers, rangeHeaderValue, token);
             using FileStream fileobject = mediaFile();
             await WriteToFileAsync(streamInfo, fileobject, stream, token); 
         }
@@ -64,11 +62,11 @@ namespace M3u8Downloader_H.Downloader.MediaDownloads
             DirectoryInfo directoryInfo = new(dirPath);
             if (directoryInfo.Exists)
             {
-                Log?.Info("找到缓存目录:{0},开始继续下载", dirPath);
+                downloadContext.Log?.Info("找到缓存目录:{0},开始继续下载", dirPath);
                 return;
             }
             directoryInfo.Create();
-            Log?.Info("创建缓存目录:{0}", dirPath);
+            downloadContext.Log?.Info("创建缓存目录:{0}", dirPath);
         }
 
     }

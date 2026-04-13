@@ -9,14 +9,10 @@ using System.Net;
 
 namespace M3u8Downloader_H.Downloader.M3uDownloaders
 {
-    internal class LiveM3uDownloader : IDownloadService
+    internal class LiveM3uDownloader(IDownloadService downloadService, IDownloadContext downloadContext, IDialogProgress DialogProgress) : IDownloadService
     {
         private static readonly Random _rand = Random.Shared;
         private static readonly TimeSpan _timeoutTimeSpan = TimeSpan.FromSeconds(3);
-        private readonly IDownloadService downloadService;
-        private readonly IDownloadContext downloadContext;
-        private readonly IDialogProgress dialogProgress;
-
         private bool _firstTimeToRun = true;
         private IM3uFileInfo? _m3uFileInfo;
         private float recordDuration;
@@ -25,24 +21,12 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
         protected IEnumerable<KeyValuePair<string, string>>? _headers => downloadContext.DownloadParam.Headers ?? downloadContext.DownloaderSetting.Headers;
 
         public Func<TimeSpan,CancellationToken, Task<IM3uFileInfo>> GetLiveFileInfoFunc { get; set; } = default!;
-        public Func<Stream, CancellationToken, Stream> HandleDataFunc { get; set ; }
-        public Func<string, Stream, CancellationToken, Task> WriteToFileFunc { get ; set; }
-
-        public LiveM3uDownloader(IDownloadService downloadService, IDownloadContext downloadContext, IDialogProgress DialogProgress)
-        {
-            this.downloadService = downloadService;
-            this.downloadContext = downloadContext;
-            dialogProgress = DialogProgress;
-            HandleDataFunc = downloadService.HandleDataFunc;
-            WriteToFileFunc = downloadService.WriteToFileFunc;
-            downloadService.HandleDataFunc = HandleData;
-            downloadService.WriteToFileFunc = WriteToFileAsync;
-        }
+        public Func<Stream, CancellationToken, Stream> HandleDataFunc { get; set ; } = default!;
+        public Func<string, Stream, CancellationToken, Task> WriteToFileFunc { get ; set; } = default!;
 
         public ValueTask Initialization(CancellationToken cancellationToken = default)
-        {
-            return downloadService.Initialization(cancellationToken);
-        }
+            => downloadService.Initialization(cancellationToken);
+        
 
         private void AddMedias(IM3uFileInfo m3UFileinfo)
         {
@@ -84,12 +68,10 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
 
         public async Task StartDownload(IM3uFileInfo m3UFileInfo,  CancellationToken cancellationToken = default)
         {
-            dialogProgress.SetDownloadStatus(true);
+            DialogProgress.SetDownloadStatus(true);
 
             downloadContext.Log?.Info("直播录制开始");
             _m3uFileInfo ??= m3UFileInfo;
-
-            //await DownloadMapInfoAsync(m3UFileInfo.Map, cancellationToken);
 
             IM3uFileInfo previousMediaInfo = await GetM3U8FileInfoAsync(cancellationToken);
             while (true)
@@ -125,7 +107,7 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
                 if(isSuccessful)
                 {
                     recordDuration += mediaFile.Duration;
-                    dialogProgress.Report(recordDuration);
+                    DialogProgress.Report(recordDuration);
                 }
             }
             return recordDuration;
@@ -201,14 +183,5 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
             return downloadService.DownloadM3uMediaInfo(m3UMediaInfo, headers, mediaPath, cancellationToken);
         }
 
-        public Stream HandleData(Stream stream, CancellationToken cancellationToken)
-        {
-            return HandleDataFunc(stream, cancellationToken);
-        }
-
-        public Task WriteToFileAsync(string file, Stream stream, CancellationToken token = default)
-        {
-            return WriteToFileFunc(file, stream, token);
-        }
     }
 }

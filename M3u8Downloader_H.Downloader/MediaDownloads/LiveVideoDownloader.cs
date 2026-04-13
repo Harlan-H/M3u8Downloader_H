@@ -1,32 +1,34 @@
 ﻿using System.Net;
 using M3u8Downloader_H.Abstractions.Common;
+using M3u8Downloader_H.Abstractions.Models;
 
 namespace M3u8Downloader_H.Downloader.MediaDownloads
 {
-    internal class LiveVideoDownloader(HttpClient httpClient) : DownloaderBase(httpClient)
+    public class LiveVideoDownloader(IDownloadContext downloadContext) : DownloaderBase(downloadContext)
     {
         private bool updated = false;
+        private readonly IDownloadContext downloadContext = downloadContext;
         public override async Task DownloadAsync(IStreamInfo streamInfo, CancellationToken cancellationToken = default)
         {
             await base.DownloadAsync(streamInfo, cancellationToken);
             DialogProgress.SetDownloadStatus(true);
             updated = false;
 
-            Log?.Info("直播录制开始");
+            downloadContext.Log?.Info("直播录制开始");
             string mediaPath = Path.Combine(_cachePath, streamInfo.Title);
 
             using CancellationTokenSource cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-            cancellationTokenSource.CancelAfter(DownloaderSetting.RecordDuration);
+            cancellationTokenSource.CancelAfter(downloadContext.DownloaderSetting.RecordDuration);
             try
             {
                 await DownloadAsynInternal(streamInfo, _headers, null, () => File.Create(mediaPath), cancellationTokenSource.Token);
             }catch(OperationCanceledException) when(cancellationTokenSource.IsCancellationRequested && !cancellationToken.IsCancellationRequested)
             {
-                Log?.Info("已录制{0},录制结束", DownloaderSetting.RecordDuration);
+                downloadContext.Log?.Info("已录制{0},录制结束", downloadContext.DownloaderSetting.RecordDuration);
             }
             catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.NotFound && updated)
             {
-                Log?.Info("地址返回404,直播可能已经结束");
+                downloadContext.Log?.Info("地址返回404,直播可能已经结束");
             }
         }
 

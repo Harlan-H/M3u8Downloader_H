@@ -101,6 +101,7 @@
                     
                     <!-- listbox  -->
                     <ListBox  ItemsSource="{Binding Downloads}"
+                              SelectionMode="Multiple"
                               IsVisible="{Binding Downloads.Count}" 
                               Margin="5,0" >
                         <ListBox.Resources>
