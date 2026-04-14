@@ -2,7 +2,6 @@
 using M3u8Downloader_H.Abstractions.M3u8;
 using M3u8Downloader_H.M3U8;
 using M3u8Downloader_H.M3U8.Extensions;
-using M3u8Downloader_H.M3U8.M3UFileReaders;
 using M3u8Downloader_H.RestServer.Extensions;
 using M3u8Downloader_H.RestServer.Models;
 using M3u8Downloader_H.RestServer.Utils;
@@ -11,16 +10,10 @@ using System.Text.Json;
 
 namespace M3u8Downloader_H.RestServer
 {
-    using DownloadByM3uFileInfoActionType = Action<IDownloadParamBase, IM3uFileInfo, string?>;
-    using DownloadByUrlActionType = Action<IM3u8DownloadParam, string?>;
-    using DownloadMediaActionType = Action<IMediaDownloadParam>;
-
     public class HttpListenService
     {
         private readonly HttpListen httpListen = new();
-        private DownloadByUrlActionType DownloadByUrlAction = default!;        
-        private DownloadByM3uFileInfoActionType DownloadByM3uFileInfoAction = default!;
-        private DownloadMediaActionType DownloadMediaAction = default!;
+        private IAppCommandService AppCommandService = default!;
 
         private readonly JsonSerializerOptions jsonSerializerOptions;
         private readonly static HttpListenService instance = new();
@@ -36,14 +29,9 @@ namespace M3u8Downloader_H.RestServer
             httpListen.RegisterService("getm3u8data", GetM3u8FileInfo);
         }
 
-        public void Initialization(
-            DownloadByUrlActionType downloadByUrl,
-            DownloadByM3uFileInfoActionType downloadByM3uFileInfo,
-            DownloadMediaActionType downloadMedia)
+        public void Initialization(IAppCommandService appCommandService)
         {
-            DownloadByUrlAction = downloadByUrl;
-            DownloadByM3uFileInfoAction = downloadByM3uFileInfo;
-            DownloadMediaAction = downloadMedia;
+            AppCommandService = appCommandService;
         }
 
         public void Run(Action<int> SetPortAction)
@@ -77,7 +65,7 @@ namespace M3u8Downloader_H.RestServer
                 requestWithMediaUri.Validate();
                 if (!string.IsNullOrWhiteSpace(requestWithMediaUri.SavePath))
                     requestWithMediaUri.SavePath = requestWithMediaUri.SavePath.Replace('/', Path.DirectorySeparatorChar);
-                DownloadMediaAction(requestWithMediaUri.ToMediaDownloadParams());
+                AppCommandService.DownloadMedia(requestWithMediaUri.ToMediaDownloadParams());
 
                 response.Json(Response.Success());
             }
@@ -101,7 +89,7 @@ namespace M3u8Downloader_H.RestServer
                 requestWithURI.Validate();
                 if (!string.IsNullOrWhiteSpace(requestWithURI.SavePath))
                     requestWithURI.SavePath = requestWithURI.SavePath.Replace('/', Path.DirectorySeparatorChar);
-                DownloadByUrlAction(requestWithURI.ToM3u8DownloadParams(),requestWithURI.PluginKey);
+                AppCommandService.DownloadByUrl(requestWithURI.ToM3u8DownloadParams(),requestWithURI.PluginKey);
 
                 response.Json(Response.Success());
             }
@@ -144,7 +132,7 @@ namespace M3u8Downloader_H.RestServer
                     SavePath = !string.IsNullOrWhiteSpace(requestWithContent.SavePath)? requestWithContent.SavePath.Replace('/', Path.DirectorySeparatorChar) : requestWithContent.SavePath,
                     Headers = requestWithContent.Headers,
                 };
-                DownloadByM3uFileInfoAction(requestWithM3U8FileInfo.ToDownloadParam(), requestWithM3U8FileInfo.M3UFileInfos, requestWithContent.PluginKey);
+                AppCommandService.DownloadByM3uFileInfo(requestWithM3U8FileInfo.ToDownloadParam(), requestWithM3U8FileInfo.M3UFileInfos, requestWithContent.PluginKey);
 
                 response.Json(Response.Success());
             }
@@ -171,7 +159,7 @@ namespace M3u8Downloader_H.RestServer
                 requestWithM3U8FileInfo.M3UFileInfos.PlaylistType = "VOD";
                 if (!string.IsNullOrWhiteSpace(requestWithM3U8FileInfo.SavePath))
                     requestWithM3U8FileInfo.SavePath = requestWithM3U8FileInfo.SavePath.Replace('/', Path.DirectorySeparatorChar);
-                DownloadByM3uFileInfoAction(requestWithM3U8FileInfo.ToDownloadParam(), requestWithM3U8FileInfo.M3UFileInfos, requestWithM3U8FileInfo.PluginKey);
+                AppCommandService.DownloadByM3uFileInfo(requestWithM3U8FileInfo.ToDownloadParam(), requestWithM3U8FileInfo.M3UFileInfos, requestWithM3U8FileInfo.PluginKey);
 
                 response.Json(Response.Success());
             }

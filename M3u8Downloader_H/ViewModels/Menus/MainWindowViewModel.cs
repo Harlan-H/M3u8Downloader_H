@@ -3,6 +3,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using M3u8Downloader_H.Abstractions.Common;
 using M3u8Downloader_H.Common.Models;
 using M3u8Downloader_H.Extensions;
 using M3u8Downloader_H.FrameWork;
@@ -34,6 +35,7 @@ namespace M3u8Downloader_H.ViewModels.Menus
         private readonly M3u8WindowViewModel m3U8WindowViewModel;
         private readonly MediaWindowViewModel mediaWindowViewModel;
         private readonly List<IDisposable> _disposables = [];
+        private readonly AppCommandService appCommandService;
         public static SnackbarManager Notifications { get; } = new SnackbarManager("MainWindowHost",TimeSpan.FromSeconds(5));
         
 
@@ -53,6 +55,7 @@ namespace M3u8Downloader_H.ViewModels.Menus
             SubWindows.Add(m3U8WindowViewModel);
             mediaWindowViewModel = new MediaWindowViewModel(settingsService, viewModelManager, Notifications) { Title = "长视频", EnqueueDownloadAction = EnqueueDownload };
             SubWindows.Add(mediaWindowViewModel);
+            appCommandService = new AppCommandService(m3U8WindowViewModel.ProcessM3u8Download, m3U8WindowViewModel.ProcessM3u8Download, mediaWindowViewModel.ProcessMediaDownload);
 
             _disposables.Add(settingsService.WatchProperty(
                 s => s.MaxConcurrentDownloadCount,
@@ -79,28 +82,7 @@ namespace M3u8Downloader_H.ViewModels.Menus
             pluginService.Load();
 
             httpListenService.Run(i => HttpServicePort = i);
-            httpListenService.Initialization(
-                (param, key) =>
-                {
-                    Dispatcher.UIThread.Post(() =>
-                    {
-                        m3U8WindowViewModel.ProcessM3u8Download(param, key);
-                    });
-                },
-                (param,fileinfo,key) =>
-                {
-                    Dispatcher.UIThread.Post(() =>
-                    {
-                        m3U8WindowViewModel.ProcessM3u8Download(param, fileinfo,key);
-                    });
-                },
-                (param) =>
-                {
-                    Dispatcher.UIThread.Post(() =>
-                    {
-                        mediaWindowViewModel.ProcessMediaDownload(param);
-                    });
-                });
+            httpListenService.Initialization(appCommandService);
             
             return Task.FromResult(0);
         }
