@@ -8,10 +8,8 @@ namespace M3u8Downloader_H.Abstractions.Plugins
 {
     public interface IPluginEntry
     {
-        bool HasWindow { get; }
-        IWindowPlugin? CreateWindoPlugin();
+        IWindowPlugin CreateWindowPlugin();
 
-        bool HasDownload { get; }
-        IDownloadPlugin? CreateDownloadPlugin();
+        IDownloadPlugin CreateDownloadPlugin();
     }
 }

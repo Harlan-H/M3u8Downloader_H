@@ -1,0 +1,78 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             xmlns:MaterialStyles="clr-namespace:Material.Styles.Controls;assembly=Material.Styles"
+             xmlns:menu="using:M3u8Downloader_H.ViewModels.Menus"
+             xmlns:ripple="clr-namespace:Material.Ripple;assembly=Material.Ripple"
+             x:DataType="menu:AdvancedViewModel"
+             x:Class="M3u8Downloader_H.AdvancedView">
+
+  <SplitView IsPaneOpen="True" DisplayMode="Inline" OpenPaneLength="180">
+      <SplitView.Pane>
+          <Border Background="#FFF9FAFB">
+	      <ListBox   ItemsSource="{Binding PluginNavItems}"
+                   SelectedItem="{Binding Seleted}">
+              <ListBox.ItemTemplate>
+                  <DataTemplate>
+                        <TextBlock Text="{Binding Title}"
+                                   TextWrapping="NoWrap"
+                                   VerticalAlignment="Center"
+                                   Margin="8,0"/>
+                  </DataTemplate>
+              </ListBox.ItemTemplate>
+              <ListBox.ItemContainerTheme>
+                  <ControlTheme TargetType="ListBoxItem">
+                        <Setter Property="Padding" Value="12,8"/>
+                        <Setter Property="Background" Value="Transparent"/>
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                      <Setter Property="Template">
+                          <ControlTemplate>
+                              <Grid ColumnDefinitions="4, *">
+                            <!-- 左侧高亮条 -->
+                                <Border x:Name="Indicator"
+                                        Background="Transparent"
+                                        Width="4"/>
+                                <ContentPresenter Grid.Column="1"
+                                                  Name="PART_ContentPresenter"
+                                                  Padding="{TemplateBinding Padding}"
+                                                  HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                  VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                  Background="{TemplateBinding Background}"
+                                                  BorderBrush="{TemplateBinding BorderBrush}"
+                                                  BorderThickness="{TemplateBinding BorderThickness}"
+                                                  Content="{TemplateBinding Content}"
+                                                  ContentTemplate="{TemplateBinding ContentTemplate}"
+                                                  CornerRadius="{TemplateBinding CornerRadius}" />
+                                </Grid>
+                          </ControlTemplate>
+                        </Setter>
+                        <Style Selector="^:pointerover">
+                            <Setter Property="Background" Value="#FFF3F4F6"/>
+                        </Style>
+
+                        <Style Selector="^:selected">
+                            <Setter Property="Background" Value="#fff2f2f2"/>
+                        </Style>
+
+                        <!-- 选中时显示 indicator -->
+                        <Style Selector="^:selected /template/ Border#Indicator">
+                            <Setter Property="Background" Value="{StaticResource MaterialPrimaryMidBrush}"/>
+                        </Style>
+                      </ControlTheme>
+              </ListBox.ItemContainerTheme>
+              <ListBox.Styles>
+                    <Style Selector="ListBoxItem:selected /template/ ContentPresenter">
+                            <Setter Property="TextBlock.Foreground" Value="{StaticResource MaterialPrimaryMidBrush}"/>
+                            <Setter Property="TextBlock.FontWeight" Value="Bold" />
+                        </Style>
+              </ListBox.Styles>
+          </ListBox>
+              </Border>
+        </SplitView.Pane>
+      <MaterialStyles:SnackbarHost Grid.Column="1"  HostName="AdvancedWindowHost" SnackbarMaxCounts="5">
+            <ContentControl  />
+      </MaterialStyles:SnackbarHost>
+  </SplitView>
+</UserControl>

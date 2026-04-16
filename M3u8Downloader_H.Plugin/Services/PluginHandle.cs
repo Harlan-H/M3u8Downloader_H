@@ -8,9 +8,9 @@ namespace M3u8Downloader_H.Plugin.Services
 {
     public class PluginHandle(string PluginPath, PluginManifest pluginManifest)
     {
+        private IPluginEntry? Instance = default!;
+        private PluginLoadContext LoadContext = default!;
         public PluginManifest PluginManifest => pluginManifest;
-        public IPluginEntry? Instance { get; private set; }
-        public PluginLoadContext LoadContext { get; set; } = default!;
 
         public void Toggle(bool Enable)
         {
@@ -19,7 +19,10 @@ namespace M3u8Downloader_H.Plugin.Services
 
         public IPluginEntry Load()
         {
-            var dirPath = Path.Combine(PluginPath, pluginManifest.DirecotryPath);
+            if (Instance is not null)
+                return Instance;
+
+            var dirPath = Path.Combine(PluginPath, pluginManifest.DirectoryPath);
             var dllPath = Path.Combine(dirPath, pluginManifest.Entry);
 
             var alc = new PluginLoadContext(dirPath);
@@ -34,19 +37,17 @@ namespace M3u8Downloader_H.Plugin.Services
 
             Instance = PluginInstance;
             LoadContext = alc;
-            return PluginInstance;
+            return Instance;
         }
 
 
         public void Unload()
         {
-            Instance = null;
+            Instance = null!;
             LoadContext.Unload();
 
             GC.Collect();
             GC.WaitForPendingFinalizers();
         }
-
-
     }
 }

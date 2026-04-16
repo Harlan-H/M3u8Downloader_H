@@ -60,7 +60,7 @@ namespace M3u8Downloader_H.ViewModels.Windows
                                 : string.IsNullOrWhiteSpace(settingsService.PluginKey)
                                 ? m3U8DownloadParam.RequestUrl.GetHostName()
                                 : settingsService.PluginKey;
-            DownloadViewModel download = viewModelManager.CreateDownloadViewModel(m3U8DownloadParam, pluginService[tmpPluginKey]);
+            DownloadViewModel download = viewModelManager.CreateDownloadViewModel(m3U8DownloadParam, null);
             if (download is null) return;
 
             EnqueueDownloadAction(download);
@@ -72,7 +72,7 @@ namespace M3u8Downloader_H.ViewModels.Windows
             FileEx.EnsureFileNotExist(m3U8DownloadParam.VideoFullName);
 
             //这里因为不可能有url所以直接通过设置来判别使用某个插件
-            DownloadViewModel download = viewModelManager.CreateDownloadViewModel(m3UFileInfo, m3U8DownloadParam, pluginService[pluginKey ?? settingsService.PluginKey]);
+            DownloadViewModel download = viewModelManager.CreateDownloadViewModel(m3UFileInfo, m3U8DownloadParam, null);
             if (download is null) return;
 
             EnqueueDownloadAction(download);

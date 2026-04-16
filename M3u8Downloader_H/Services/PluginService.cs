@@ -1,4 +1,5 @@
-﻿using M3u8Downloader_H.Abstractions.Plugins;
+﻿using M3u8Downloader_H.Abstractions.Models;
+using M3u8Downloader_H.Abstractions.Plugins;
 using M3u8Downloader_H.Common.Utils;
 using M3u8Downloader_H.Plugin.PluginClients;
 using M3u8Downloader_H.Plugin.Services;
@@ -27,15 +28,11 @@ namespace M3u8Downloader_H.Services
             pluginClient.PluginPath = _pluginDirPath;
         }
 
-        public void GetActivePlugin()
+        public void InitActivePlugin()
         {
-            foreach (var item in GetAllPlugins)
+            foreach (var item in GetAllActivePlugins)
             {
-                if(item.PluginManifest.Enabled)
-                {
-                    GetAllActivePlugins.Add(item);
-                    PluginEnabled?.Invoke(item);
-                }
+                PluginEnabled?.Invoke(item);
             }
         }
 
@@ -43,7 +40,7 @@ namespace M3u8Downloader_H.Services
         {
             if (p.PluginManifest.Enabled) return;
 
-            p.PluginManifest.Enabled = true;
+            p.Toggle(true);
 
             GetAllActivePlugins.Add(p);
             PluginEnabled?.Invoke(p);
@@ -53,7 +50,7 @@ namespace M3u8Downloader_H.Services
         {
             if (!p.PluginManifest.Enabled) return;
 
-            p.PluginManifest.Enabled = false;
+            p.Toggle(false);
 
             GetAllActivePlugins.Remove(p);
             PluginDisabled?.Invoke(p);
@@ -62,13 +59,15 @@ namespace M3u8Downloader_H.Services
 
         public void Load()
         {
-            var fileInfo =  new FileInfo(Path.Combine(_pluginConfigPath, "plugin.dat"));
+            var fileInfo =  new FileInfo(Path.Combine(_pluginConfigPath, "Plugin.dat"));
             if(!fileInfo.Exists) 
                 return;
 
             pluginClient.LoadFromConfig(fileInfo.OpenRead());
+            GetAllActivePlugins = [.. GetAllPlugins.Where(p => p.PluginManifest.Enabled)];
         }
 
-        public IPluginEntry? this[string key] => GetAllActivePlugins.FirstOrDefault(p => p.PluginManifest.Key.Equals(key))?.Instance;
+        public IPluginEntry? this[string key] 
+            => GetAllActivePlugins.FirstOrDefault(p => p.PluginManifest.Key.Equals(key))?.Load();
     }
 }

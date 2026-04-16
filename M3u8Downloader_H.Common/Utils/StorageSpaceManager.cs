@@ -46,7 +46,7 @@ public class StorageSpaceManager
     public static string GetConfigPath()
     {
 #if DEBUG
-        return @"C:\Users\admin\Desktop\666";
+        return @"C:\Users\admin\Desktop\666\Config";
 #else
         if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             return Path.Combine(StorageSpace.UserDomain.GetDirectoryPath(), "M3u8Downloader_H","Config");

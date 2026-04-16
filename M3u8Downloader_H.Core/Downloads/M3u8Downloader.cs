@@ -19,7 +19,6 @@ using M3u8Downloader_H.Common.Utils;
 using M3u8Downloader_H.Downloader;
 using M3u8Downloader_H.M3U8;
 using M3u8Downloader_H.M3U8.Extensions;
-using M3u8Downloader_H.Plugin.PluginManagers;
 
 namespace M3u8Downloader_H.Core.Downloads
 {
@@ -117,9 +116,9 @@ namespace M3u8Downloader_H.Core.Downloads
             )
         {
             M3u8Downloader m3U8Downloader = new(context);
-            PluginManger? pluginManger = null; /*PluginManger.CreatePluginMangaer(pluginType, context.HttpClient, context.Loglogger);*/
-            m3U8Downloader.m3U8FileInfoClient = new M3u8FileInfoClient(context, pluginManger);
-            m3U8Downloader.m3UDownloaderClient = new DownloaderClient(context, pluginManger)
+            IPluginEntry? pluginEntry = null; /*PluginManger.CreatePluginMangaer(pluginType, context.HttpClient, context.Loglogger);*/
+            m3U8Downloader.m3U8FileInfoClient = new M3u8FileInfoClient(context, pluginEntry);
+            m3U8Downloader.m3UDownloaderClient = new DownloaderClient(context, pluginEntry)
             {
                 GetLiveFileInfoFunc = m3U8Downloader.m3U8FileInfoClient.M3UFileReadManager.GetM3u8FileInfo
             };
@@ -139,8 +138,8 @@ namespace M3u8Downloader_H.Core.Downloads
             )
         {
             M3u8Downloader m3U8Downloader = new(context);
-            PluginManger? pluginManger = null; /* PluginManger.CreatePluginMangaer(pluginType, httpClient, logger);*/
-            m3U8Downloader.m3UDownloaderClient = new DownloaderClient(context, pluginManger);
+            IPluginEntry? pluginEntry =  null; /* PluginManger.CreatePluginMangaer(pluginType, httpClient, logger);*/
+            m3U8Downloader.m3UDownloaderClient = new DownloaderClient(context, pluginEntry);
             m3U8Downloader.m3UCombinerClient = new M3uCombinerClient(context.Log, context.DownloadParam, (IMergeSetting)context.DownloaderSetting);
 
             m3U8Downloader.M3U8FileInfo = m3UFileInfo;

@@ -7,6 +7,7 @@ namespace M3u8Downloader_H.Abstractions.Models
 {
     public interface IWindowContext
     {
+        HttpClient HttpClient { get; }
         ISnackbarMaranger SnackbarMaranger { get; }
 
         IAppCommandService AppCommandService { get; }

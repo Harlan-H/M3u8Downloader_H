@@ -10,7 +10,7 @@ using System.Net.Http;
 
 namespace M3u8Downloader_H.M3U8
 {
-    public partial class M3u8FileInfoClient(IDownloadContext context, IPluginManager? PluginManager)
+    public partial class M3u8FileInfoClient(IDownloadContext context, IPluginEntry? pluginEntry)
     {
         private M3UFileReaderManager? _m3UFileReaderManager;
         private IM3uFileReader? _m3UFileReader;

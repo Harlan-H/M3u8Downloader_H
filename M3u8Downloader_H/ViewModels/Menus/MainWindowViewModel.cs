@@ -3,10 +3,13 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using M3u8Downloader_H.Abstractions.Common;
+using M3u8Downloader_H.Abstractions.Models;
 using M3u8Downloader_H.Common.Models;
 using M3u8Downloader_H.Extensions;
 using M3u8Downloader_H.FrameWork;
+using M3u8Downloader_H.Messages;
 using M3u8Downloader_H.Models;
 using M3u8Downloader_H.RestServer;
 using M3u8Downloader_H.Services;
@@ -23,6 +26,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Tmds.DBus.Protocol;
 
 namespace M3u8Downloader_H.ViewModels.Menus
 {
@@ -57,6 +61,11 @@ namespace M3u8Downloader_H.ViewModels.Menus
             SubWindows.Add(mediaWindowViewModel);
             appCommandService = new AppCommandService(m3U8WindowViewModel.ProcessM3u8Download, m3U8WindowViewModel.ProcessM3u8Download, mediaWindowViewModel.ProcessMediaDownload);
 
+            WeakReferenceMessenger.Default.Register<GetAppComandServiceMessage>(this, (r, m) =>
+            {
+                m.Value.AppCommandService = appCommandService;
+            });
+
             _disposables.Add(settingsService.WatchProperty(
                 s => s.MaxConcurrentDownloadCount,
                 () => ThrottlingSemaphore.Instance.MaxCount = settingsService.MaxConcurrentDownloadCount));
@@ -80,6 +89,7 @@ namespace M3u8Downloader_H.ViewModels.Menus
         {
             settingsService.Load();
             pluginService.Load();
+
 
             httpListenService.Run(i => HttpServicePort = i);
             httpListenService.Initialization(appCommandService);

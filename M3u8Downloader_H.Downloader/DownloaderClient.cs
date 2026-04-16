@@ -9,7 +9,7 @@ using M3u8Downloader_H.Abstractions.Models;
 
 namespace M3u8Downloader_H.Downloader
 {
-    public class DownloaderClient(IDownloadContext context, IPluginManager? PluginManager)
+    public class DownloaderClient(IDownloadContext context, IPluginEntry? pluginEntry)
     {
         private IDownloadService? _m3u8downloader;
         private DownloaderBase? _mediaDownloader;

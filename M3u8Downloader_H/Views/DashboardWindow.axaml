@@ -32,7 +32,8 @@
     <Grid ColumnDefinitions="200,*">
         <Grid RowDefinitions="*,30" Background="{StaticResource backGroundBrush}">
             <StackPanel Grid.Row="0">
-                <RadioButton Content="下载" Command="{Binding NavigateToCommand}" CommandParameter="{x:Type menu:MainWindowViewModel}" Theme="{StaticResource MenuButtonSytle}"  Tag="{StaticResource Download}"  IsChecked="True"   />
+                <RadioButton Content="基本" Command="{Binding NavigateToCommand}" CommandParameter="{x:Type menu:MainWindowViewModel}" Theme="{StaticResource MenuButtonSytle}"  Tag="{StaticResource Download}"  IsChecked="True"   />
+                <RadioButton Content="高级" Command="{Binding NavigateToCommand}" CommandParameter="{x:Type menu:AdvancedViewModel}" Theme="{StaticResource MenuButtonSytle}"  Tag="{StaticResource Download}"    />
                 <RadioButton Content="设置" Command="{Binding NavigateToCommand}" CommandParameter="{x:Type menu:SettingsViewModel}" Theme="{StaticResource MenuButtonSytle}" Tag="{StaticResource Settings}"/>
                 <RadioButton Content="赞助" Command="{Binding NavigateToCommand}" CommandParameter="{x:Type menu:SponsorViewModel}" Theme="{StaticResource MenuButtonSytle}" Tag="{StaticResource Sponsor}"/>
                 <RadioButton Content="关于" Command="{Binding NavigateToCommand}" CommandParameter="{x:Type menu:AboutViewModel}" Theme="{StaticResource MenuButtonSytle}" Tag="{StaticResource About}" />

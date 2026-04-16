@@ -37,6 +37,7 @@ namespace M3u8Downloader_H.FrameWork
             return param switch
             {
                 MainWindowViewModel => serviceProvider.GetRequiredService<MainWindowView>(),
+                AdvancedViewModel => serviceProvider.GetRequiredService<AdvancedView>(),
                 AboutViewModel => serviceProvider.GetRequiredService<AboutView>(),
                 SettingsViewModel => new SettingsView(),
                 SponsorViewModel => serviceProvider.GetRequiredService<SponsorView>(),
