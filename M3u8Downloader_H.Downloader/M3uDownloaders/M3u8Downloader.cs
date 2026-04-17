@@ -1,7 +1,7 @@
 ﻿using M3u8Downloader_H.Abstractions.Common;
 using M3u8Downloader_H.Abstractions.M3u8;
 using M3u8Downloader_H.Abstractions.Models;
-using M3u8Downloader_H.Abstractions.Plugins;
+using M3u8Downloader_H.Abstractions.Plugins.Download;
 using M3u8Downloader_H.Downloader.Extensions;
 using M3u8Downloader_H.Downloader.Utils;
 using System.Security.Cryptography;

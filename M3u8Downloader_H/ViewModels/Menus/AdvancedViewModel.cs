@@ -19,7 +19,6 @@ namespace M3u8Downloader_H.ViewModels.Menus
         private readonly WindowContext windowContext = new(Http.Client, Notifications);
         public static SnackbarManager Notifications { get; } = new SnackbarManager("AdvancedWindowHost", TimeSpan.FromSeconds(5));
 
-
         public ObservableCollection<PluginNavItem> PluginNavItems { get; } = [];
 
         [ObservableProperty]
@@ -61,7 +60,13 @@ namespace M3u8Downloader_H.ViewModels.Menus
             if (oldValue == newValue)
                 return;
 
-            //CurrentView = newValue.GetView(windowContext);
+            try
+            {
+                CurrentView = newValue.GetView(windowContext);
+            }catch(Exception e)
+            {
+                Notifications.Notify(e.Message);
+            }
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 
-namespace M3u8Downloader_H.Abstractions.Plugins
+namespace M3u8Downloader_H.Abstractions.Plugins.Download
 {
     /// <summary>
     /// AttributeReader的容器

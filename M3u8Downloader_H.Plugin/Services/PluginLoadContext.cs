@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Reflection;
+﻿using System.Reflection;
 using System.Runtime.Loader;
-using System.Text;
 
 namespace M3u8Downloader_H.Plugin.Services
 {
@@ -14,7 +11,8 @@ namespace M3u8Downloader_H.Plugin.Services
         {
             if (assemblyName.Name!.StartsWith("Avalonia") ||
                 assemblyName.Name!.StartsWith("CommunityToolkit.Mvvm") ||
-                assemblyName.Name!.StartsWith("Microsoft.Extensions.DependencyInjection"))
+                assemblyName.Name!.StartsWith("M3u8Downloader_H.Common") ||
+                assemblyName.Name!.StartsWith("M3u8Downloader_H.Abstractions"))
                 return null;
 
             var path = _resolve.ResolveAssemblyToPath(assemblyName);

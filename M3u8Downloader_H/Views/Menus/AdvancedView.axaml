@@ -13,7 +13,7 @@
       <SplitView.Pane>
           <Border Background="#FFF9FAFB">
 	      <ListBox   ItemsSource="{Binding PluginNavItems}"
-                   SelectedItem="{Binding Seleted}">
+                     SelectedItem="{Binding Seleted}">
               <ListBox.ItemTemplate>
                   <DataTemplate>
                         <TextBlock Text="{Binding Title}"
@@ -71,8 +71,8 @@
           </ListBox>
               </Border>
         </SplitView.Pane>
-      <MaterialStyles:SnackbarHost Grid.Column="1"  HostName="AdvancedWindowHost" SnackbarMaxCounts="5">
-            <ContentControl  />
+      <MaterialStyles:SnackbarHost  HostName="AdvancedWindowHost" SnackbarMaxCounts="5" >
+            <ContentControl Padding="10" Content="{Binding CurrentView}"  />
       </MaterialStyles:SnackbarHost>
   </SplitView>
 </UserControl>

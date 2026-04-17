@@ -2,7 +2,7 @@
 using M3u8Downloader_H.Abstractions.M3u8;
 using M3u8Downloader_H.Abstractions.M3uDownloaders;
 using M3u8Downloader_H.Abstractions.Models;
-using M3u8Downloader_H.Abstractions.Plugins;
+using M3u8Downloader_H.Abstractions.Plugins.Download;
 using M3u8Downloader_H.Common.Extensions;
 using M3u8Downloader_H.M3U8.Extensions;
 using M3u8Downloader_H.M3U8.M3UFileReaders;

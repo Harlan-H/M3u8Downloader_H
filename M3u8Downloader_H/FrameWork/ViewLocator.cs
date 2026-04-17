@@ -11,8 +11,6 @@ using M3u8Downloader_H.Views.Menus;
 using M3u8Downloader_H.Views.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Diagnostics.CodeAnalysis;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace M3u8Downloader_H.FrameWork
 {
@@ -37,7 +35,7 @@ namespace M3u8Downloader_H.FrameWork
             return param switch
             {
                 MainWindowViewModel => serviceProvider.GetRequiredService<MainWindowView>(),
-                AdvancedViewModel => serviceProvider.GetRequiredService<AdvancedView>(),
+                AdvancedViewModel => new AdvancedView(),
                 AboutViewModel => serviceProvider.GetRequiredService<AboutView>(),
                 SettingsViewModel => new SettingsView(),
                 SponsorViewModel => serviceProvider.GetRequiredService<SponsorView>(),

@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+	  <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
+	  <PackageReference Include="Avalonia.Diagnostics" Version="11.3.11">
+		  <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
+		  <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
+	  </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+	  <ProjectReference Include="..\M3u8Downloader_H.Abstractions\M3u8Downloader_H.Abstractions.csproj" >
+		  <PrivateAssets>All</PrivateAssets>
+	  </ProjectReference>
+	  <ProjectReference Include="..\M3u8Downloader_H.Common\M3u8Downloader_H.Common.csproj" >
+		  <PrivateAssets>All</PrivateAssets>
+	  </ProjectReference>
+  </ItemGroup>
+
+</Project>

@@ -1,15 +1,15 @@
 ﻿using M3u8Downloader_H.Downloader.M3uDownloaders;
 using M3u8Downloader_H.Abstractions.Common;
 using M3u8Downloader_H.Downloader.MediaDownloads;
-using M3u8Downloader_H.Abstractions.Plugins;
 using M3u8Downloader_H.Abstractions.M3u8;
 using M3u8Downloader_H.Common.Extensions;
 using M3u8Downloader_H.Abstractions.Models;
+using M3u8Downloader_H.Abstractions.Plugins.Download;
 
 
 namespace M3u8Downloader_H.Downloader
 {
-    public class DownloaderClient(IDownloadContext context, IPluginEntry? pluginEntry)
+    public class DownloaderClient(IDownloadContext context, IDownloadPlugin? downloadPlugin)
     {
         private IDownloadService? _m3u8downloader;
         private DownloaderBase? _mediaDownloader;
@@ -25,6 +25,16 @@ namespace M3u8Downloader_H.Downloader
                 if (_m3u8downloader is null)
                 {
                     IDownloadService m3U8Downloader = new M3u8Downloader(context, DialogProgress);
+                    if(downloadPlugin is not null)
+                    {
+                        var pluginDownloader = downloadPlugin.CreateDownloadService(m3U8Downloader, context);
+                        if(pluginDownloader is not null)
+                        {
+                            _m3u8downloader = pluginDownloader;
+                            return pluginDownloader;
+                        }
+                    }
+
                     if (!M3UFileInfo.IsVod())
                     {
                         LiveM3uDownloader liveM3UDownloader = new(m3U8Downloader,context, DialogProgress)

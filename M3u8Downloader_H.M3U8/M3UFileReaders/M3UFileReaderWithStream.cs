@@ -3,10 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using M3u8Downloader_H.Common.M3u8Infos;
-using M3u8Downloader_H.Abstractions.Plugins;
 using M3u8Downloader_H.Abstractions.M3u8;
 using M3u8Downloader_H.M3U8.Utilities;
 using M3u8Downloader_H.M3U8.AttributeReaders;
+using M3u8Downloader_H.Abstractions.Plugins.Download;
 
 namespace M3u8Downloader_H.M3U8.M3UFileReaders
 {

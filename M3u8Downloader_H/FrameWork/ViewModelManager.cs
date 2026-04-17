@@ -1,5 +1,7 @@
 ﻿using M3u8Downloader_H.Abstractions.Common;
 using M3u8Downloader_H.Abstractions.M3u8;
+using M3u8Downloader_H.Abstractions.Plugins;
+using M3u8Downloader_H.Abstractions.Plugins.Download;
 using M3u8Downloader_H.Core;
 using M3u8Downloader_H.Models;
 using M3u8Downloader_H.Services;
@@ -14,7 +16,7 @@ public class ViewModelManager(SettingsService settingsService)
 {
     public  DownloadViewModel CreateDownloadViewModel(
            IM3u8DownloadParam m3U8DownloadParam,
-           Type? pluginType)
+           IDownloadPlugin? downloadPlugin)
     {
         DownloadViewModel viewModel = new(m3U8DownloadParam)
         {
@@ -22,14 +24,14 @@ public class ViewModelManager(SettingsService settingsService)
             VideoName = m3U8DownloadParam.VideoName
         };
         DownloadContext downloadContext = new(Http.Client, viewModel.Log,m3U8DownloadParam, settingsService.Clone<SettingsService>());
-        viewModel.downloaderCoreClient = new(downloadContext, pluginType);
+        viewModel.downloaderCoreClient = new(downloadContext, downloadPlugin);
         return viewModel;
     }
 
     public  DownloadViewModel CreateDownloadViewModel(
         IM3uFileInfo m3UFileInfo,
         IDownloadParamBase m3U8DownloadParam,
-        Type? pluginType)
+        IDownloadPlugin? downloadPlugin)
     {
         DownloadViewModel viewModel = new(m3U8DownloadParam)
         {
@@ -37,7 +39,7 @@ public class ViewModelManager(SettingsService settingsService)
         };
 
         DownloadContext downloadContext = new(Http.Client, viewModel.Log, m3U8DownloadParam, settingsService.Clone<SettingsService>());
-        viewModel.downloaderCoreClient = new(downloadContext, pluginType, m3UFileInfo);
+        viewModel.downloaderCoreClient = new(downloadContext,  m3UFileInfo, downloadPlugin);
         return viewModel;
     }
 

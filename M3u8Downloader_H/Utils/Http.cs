@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using System.Net.Http;
+using System.Threading;
 
 namespace M3u8Downloader_H.Utils
 {

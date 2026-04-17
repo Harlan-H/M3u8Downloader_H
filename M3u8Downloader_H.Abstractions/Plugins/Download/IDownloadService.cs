@@ -1,6 +1,6 @@
 ﻿using M3u8Downloader_H.Abstractions.M3u8;
 
-namespace M3u8Downloader_H.Abstractions.Plugins
+namespace M3u8Downloader_H.Abstractions.Plugins.Download
 {
     /// <summary>
     /// 此接口为m3u8下载核心接口

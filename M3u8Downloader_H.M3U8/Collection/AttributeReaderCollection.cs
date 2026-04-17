@@ -1,4 +1,4 @@
-﻿using M3u8Downloader_H.Abstractions.Plugins;
+﻿using M3u8Downloader_H.Abstractions.Plugins.Download;
 using System;
 using System.Collections;
 using System.Collections.Generic;

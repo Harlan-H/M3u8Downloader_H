@@ -10,6 +10,7 @@ using M3u8Downloader_H.Abstractions.M3u8;
 using M3u8Downloader_H.Abstractions.M3uDownloaders;
 using M3u8Downloader_H.Abstractions.Models;
 using M3u8Downloader_H.Abstractions.Plugins;
+using M3u8Downloader_H.Abstractions.Plugins.Download;
 using M3u8Downloader_H.Abstractions.Settings;
 using M3u8Downloader_H.Combiners;
 using M3u8Downloader_H.Common.Extensions;
@@ -112,13 +113,12 @@ namespace M3u8Downloader_H.Core.Downloads
         //通过软件界面创建
         public static M3u8Downloader CreateM3u8Downloader(
               IDownloadContext context,
-              Type? pluginType
+              IDownloadPlugin? downloadPlugin
             )
         {
             M3u8Downloader m3U8Downloader = new(context);
-            IPluginEntry? pluginEntry = null; /*PluginManger.CreatePluginMangaer(pluginType, context.HttpClient, context.Loglogger);*/
-            m3U8Downloader.m3U8FileInfoClient = new M3u8FileInfoClient(context, pluginEntry);
-            m3U8Downloader.m3UDownloaderClient = new DownloaderClient(context, pluginEntry)
+            m3U8Downloader.m3U8FileInfoClient = new M3u8FileInfoClient(context, downloadPlugin);
+            m3U8Downloader.m3UDownloaderClient = new DownloaderClient(context, downloadPlugin)
             {
                 GetLiveFileInfoFunc = m3U8Downloader.m3U8FileInfoClient.M3UFileReadManager.GetM3u8FileInfo
             };
@@ -133,16 +133,17 @@ namespace M3u8Downloader_H.Core.Downloads
         //通过接口创建
         public static M3u8Downloader CreateM3u8Downloader(
             IDownloadContext context,
-            Type? pluginType,
+            IDownloadPlugin? downloadPlugin,
             IM3uFileInfo m3UFileInfo
             )
         {
-            M3u8Downloader m3U8Downloader = new(context);
-            IPluginEntry? pluginEntry =  null; /* PluginManger.CreatePluginMangaer(pluginType, httpClient, logger);*/
-            m3U8Downloader.m3UDownloaderClient = new DownloaderClient(context, pluginEntry);
-            m3U8Downloader.m3UCombinerClient = new M3uCombinerClient(context.Log, context.DownloadParam, (IMergeSetting)context.DownloaderSetting);
+            M3u8Downloader m3U8Downloader = new(context)
+            {
+                m3UDownloaderClient = new DownloaderClient(context, downloadPlugin),
+                m3UCombinerClient = new M3uCombinerClient(context.Log, context.DownloadParam, (IMergeSetting)context.DownloaderSetting),
 
-            m3U8Downloader.M3U8FileInfo = m3UFileInfo;
+                M3U8FileInfo = m3UFileInfo
+            };
             context.Log.Info("通过接口传入m3u8文件的视频流有{0}个,将跳过获取操作开始直接下载", m3UFileInfo.MediaFiles.Count);
             m3U8Downloader._isParsed = true;
             return m3U8Downloader;

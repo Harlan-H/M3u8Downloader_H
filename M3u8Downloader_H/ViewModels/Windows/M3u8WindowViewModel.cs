@@ -2,6 +2,8 @@
 using CommunityToolkit.Mvvm.Input;
 using M3u8Downloader_H.Abstractions.Common;
 using M3u8Downloader_H.Abstractions.M3u8;
+using M3u8Downloader_H.Abstractions.Plugins;
+using M3u8Downloader_H.Abstractions.Plugins.Download;
 using M3u8Downloader_H.Common.DownloadPrams;
 using M3u8Downloader_H.Extensions;
 using M3u8Downloader_H.FrameWork;
@@ -55,12 +57,8 @@ namespace M3u8Downloader_H.ViewModels.Windows
         {
             FileEx.EnsureFileNotExist(m3U8DownloadParam.VideoFullName);
 
-            string tmpPluginKey = pluginKey is not null
-                                ? pluginKey
-                                : string.IsNullOrWhiteSpace(settingsService.PluginKey)
-                                ? m3U8DownloadParam.RequestUrl.GetHostName()
-                                : settingsService.PluginKey;
-            DownloadViewModel download = viewModelManager.CreateDownloadViewModel(m3U8DownloadParam, null);
+            IDownloadPlugin? downloadPlugin = pluginService[pluginKey ?? m3U8DownloadParam.RequestUrl.GetHostName()];
+            DownloadViewModel download = viewModelManager.CreateDownloadViewModel(m3U8DownloadParam, downloadPlugin);
             if (download is null) return;
 
             EnqueueDownloadAction(download);
@@ -72,7 +70,7 @@ namespace M3u8Downloader_H.ViewModels.Windows
             FileEx.EnsureFileNotExist(m3U8DownloadParam.VideoFullName);
 
             //这里因为不可能有url所以直接通过设置来判别使用某个插件
-            DownloadViewModel download = viewModelManager.CreateDownloadViewModel(m3UFileInfo, m3U8DownloadParam, null);
+            DownloadViewModel download = viewModelManager.CreateDownloadViewModel(m3UFileInfo, m3U8DownloadParam, pluginService[pluginKey]);
             if (download is null) return;
 
             EnqueueDownloadAction(download);

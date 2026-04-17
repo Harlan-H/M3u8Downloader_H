@@ -1,5 +1,6 @@
 ﻿using M3u8Downloader_H.Abstractions.Models;
 using M3u8Downloader_H.Abstractions.Plugins;
+using M3u8Downloader_H.Abstractions.Plugins.Download;
 using M3u8Downloader_H.Common.Utils;
 using M3u8Downloader_H.Plugin.PluginClients;
 using M3u8Downloader_H.Plugin.Services;
@@ -67,7 +68,19 @@ namespace M3u8Downloader_H.Services
             GetAllActivePlugins = [.. GetAllPlugins.Where(p => p.PluginManifest.Enabled)];
         }
 
-        public IPluginEntry? this[string key] 
-            => GetAllActivePlugins.FirstOrDefault(p => p.PluginManifest.Key.Equals(key))?.Load();
+        public IDownloadPlugin? this[string? key] 
+        {
+            get{
+                if(string.IsNullOrWhiteSpace(key))
+                    return null;
+
+                var plugin = GetAllActivePlugins.FirstOrDefault(p => p.PluginManifest.Key.Equals(key));
+                if (plugin is null || plugin.PluginManifest.HasDownload == false)
+                    return null;
+
+                return plugin.LoadDownload();
+            }            
+        }
+            
     }
 }
