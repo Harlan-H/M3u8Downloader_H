@@ -28,6 +28,9 @@ namespace M3u8Downloader_H.Abstractions.Plugins.Download
 
         /// <summary>
         /// 内部实际工作的方法
+        /// 正常流程是StartDownload内部开启多线程执行此方法
+        /// 如果你重写了StartDownload 且不调用传入接口的StartDownload
+        /// 那你可以自己调用这个方法来执行后续的操作
         /// </summary>
         /// <param name="m3UMediaInfo"></param>
         /// <param name="headers"></param>
@@ -41,6 +44,7 @@ namespace M3u8Downloader_H.Abstractions.Plugins.Download
         /// 当下载的数据接收到之后，会请求此函数，以便做后续处理
         /// 例如 当某些数据他没有采用通用的加密方式，而是使用了自己指定的一些加密方式，即可实现此函数来进一步处理
         /// 如果不需要处理此函数 可以直接将参数stream直接返回即可
+        /// 此方法是在多线程内部执行
         /// </summary>
         /// <param name="stream">请求到的数据流</param>
         /// <param name="cancellationToken">取消的token</param>
@@ -50,6 +54,7 @@ namespace M3u8Downloader_H.Abstractions.Plugins.Download
 
         /// <summary>
         /// 最终要写入的文件处理方法
+        /// 此方法是在多线程内部执行
         /// </summary>
         Func<string, Stream, CancellationToken, Task> WriteToFileFunc { get; set; }
     }

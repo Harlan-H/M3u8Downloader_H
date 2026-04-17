@@ -57,6 +57,7 @@ namespace M3u8Downloader_H.ViewModels.Windows
         {
             FileEx.EnsureFileNotExist(m3U8DownloadParam.VideoFullName);
 
+            m3U8DownloadParam.CompleteAttribute(settingsService);
             IDownloadPlugin? downloadPlugin = pluginService[pluginKey ?? m3U8DownloadParam.RequestUrl.GetHostName()];
             DownloadViewModel download = viewModelManager.CreateDownloadViewModel(m3U8DownloadParam, downloadPlugin);
             if (download is null) return;
@@ -70,6 +71,7 @@ namespace M3u8Downloader_H.ViewModels.Windows
             FileEx.EnsureFileNotExist(m3U8DownloadParam.VideoFullName);
 
             //这里因为不可能有url所以直接通过设置来判别使用某个插件
+            m3U8DownloadParam.CompleteAttribute(settingsService);
             DownloadViewModel download = viewModelManager.CreateDownloadViewModel(m3UFileInfo, m3U8DownloadParam, pluginService[pluginKey]);
             if (download is null) return;
 

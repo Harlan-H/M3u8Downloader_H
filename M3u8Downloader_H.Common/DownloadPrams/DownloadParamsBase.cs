@@ -19,7 +19,7 @@ namespace M3u8Downloader_H.Common.DownloadPrams
 
         public string SavePath { get;  set; } = default!;
 
-        public IDictionary<string, string>? Headers { get; protected set; } = default!;
+        public IDictionary<string, string>? Headers { get; set; } = default!;
 
         public string VideoName
         {

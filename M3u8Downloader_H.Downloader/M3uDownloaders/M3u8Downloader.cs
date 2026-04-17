@@ -165,7 +165,7 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
                     {
                         throw new CryptographicException("解密失败,请确认key,iv是否正确");
                     }
-                    context.Log?.Warn("{0} 遇到异常:{0},重试第{1}次", m3UMediaInfo.Uri.OriginalString, ex.Message, i + 1);
+                    context.Log?.Warn("{0} 遇到异常:{1},重试第{2}次", m3UMediaInfo.Uri.OriginalString, ex.Message, i + 1);
                     await Task.Delay(2000, token);
                     continue;
                 }

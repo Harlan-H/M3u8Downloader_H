@@ -8,6 +8,7 @@
              x:Class="M3u8Downloader_H.Demo.Plugins.MainWindowView">
   <StackPanel >
 	  <TextBlock Text="{Binding ShowText}" />
+      <TextBox Text="{Binding Url}" />
       <Button Command="{Binding TestClickCommand}">test</Button> 
   </StackPanel>
 </UserControl>

@@ -17,14 +17,13 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
         private readonly IDownloadContext context;
 
 
-        public Func<Stream, CancellationToken, Stream> HandleDataFunc { get; set; }
+        public Func<Stream, CancellationToken, Stream> HandleDataFunc { get; set; } = default!;
         public Func<string, Stream, CancellationToken, Task> WriteToFileFunc { get; set; } = default!;
 
         public CryptM3uDownloader(IDownloadService downloadService, IDownloadContext context)
         {
             this.downloadService = downloadService;
             this.context = context;
-            HandleDataFunc = downloadService.HandleDataFunc;
             downloadService.HandleDataFunc = HandleData;
         }
 
@@ -84,8 +83,7 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
 
         public Stream HandleData(Stream stream, CancellationToken cancellationToken)
         {
-            var crtypedStream = HandleDataFunc(stream, cancellationToken);
-            return crtypedStream.AesDecrypt(_m3uFileinfo.Key.BKey, _m3uFileinfo.Key.IV);
+            return stream.AesDecrypt(_m3uFileinfo.Key.BKey, _m3uFileinfo.Key.IV);
         }
 
 

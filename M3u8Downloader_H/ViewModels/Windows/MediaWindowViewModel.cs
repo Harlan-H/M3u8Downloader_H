@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using M3u8Downloader_H.Abstractions.Common;
 using M3u8Downloader_H.Common.DownloadPrams;
+using M3u8Downloader_H.Extensions;
 using M3u8Downloader_H.FrameWork;
 using M3u8Downloader_H.Models;
 using M3u8Downloader_H.Services;
@@ -65,6 +66,7 @@ namespace M3u8Downloader_H.ViewModels.Windows
         {
             FileEx.EnsureFileNotExist(mediaDownloadParams.VideoFullName);
 
+            mediaDownloadParams.CompleteAttribute(settingsService);
             DownloadViewModel download = viewModelManager.CreateDownloadViewModel(mediaDownloadParams);
             if (download is null) return;
 
