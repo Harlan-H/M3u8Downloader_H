@@ -28,13 +28,21 @@ namespace M3u8Downloader_H
 
             services.AddSingleton<DashboardWindowViewModel>();
             services.AddSingleton<MainWindowViewModel>();
+            services.AddSingleton<PluginManagerViewModel>();
             services.AddSingleton<AdvancedViewModel>();
+            services.AddSingleton<LocalPluginViewModel>();
+            services.AddSingleton<OnlinePluginViewModel>();
             services.AddSingleton<SponsorViewModel>();
             services.AddSingleton<AboutViewModel>();
             services.AddSingleton<SettingsViewModel>();
 
             services.AddSingleton<MainWindowView>();
+            services.AddSingleton<AdvancedView>();
+            services.AddSingleton<PluginManagerView>();
+            services.AddSingleton<LocalPluginView>();
+            services.AddSingleton<OnlinePluginView>();
             services.AddSingleton<AboutView>();
+            services.AddSingleton<SettingsView>();
             services.AddSingleton<SponsorView>();
             services.AddSingleton<M3u8WindowView>();
             services.AddSingleton<MediaWindowView>();

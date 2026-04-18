@@ -1,0 +1,43 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             xmlns:windows="using:M3u8Downloader_H.ViewModels.Windows"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             x:DataType="windows:LocalPluginViewModel"
+             x:Class="M3u8Downloader_H.LocalPluginView">
+    <UserControl.Styles>
+		<Style Selector="Grid TextBlock" >
+			<Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+    </UserControl.Styles>
+
+    <StackPanel Margin="10" Grid.IsSharedSizeScope="True">
+        
+
+      <ItemsControl ItemsSource="{Binding PluginItems}"
+                     ScrollViewer.VerticalScrollBarVisibility="Auto">
+	      <ItemsControl.ItemTemplate>
+		      <DataTemplate>
+                  <Border BorderThickness="0,0,0,1" BorderBrush="Gray" Height="35">
+			          <Grid ColumnDefinitions="*,*,*,*,150" >
+				          <TextBlock Text="{Binding Title}" />
+                          <TextBlock Grid.Column="1" Text="{Binding Desc}" />
+                          <TextBlock Grid.Column="2" Text="{Binding Version}" />
+                          <TextBlock Grid.Column="3" Text="{Binding State}" />
+                          <StackPanel Grid.Column="4" Orientation="Horizontal">
+					          <ToggleSwitch IsChecked="{Binding IsEnable}" />
+                              <Button Command="{Binding  $parent[UserControl].((windows:LocalPluginViewModel)DataContext).DelItemCommand}" 
+                                      CommandParameter="{Binding}"
+                                      Theme="{DynamicResource MaterialFlatButton}" Padding="8,0,0,0" VerticalAlignment="Center" Classes="primary" >
+								  <avalonia:MaterialIcon Width="24" Height="24" Kind="DeleteEmpty" />
+                              </Button>
+                          </StackPanel>
+                      </Grid>
+                    </Border>
+              </DataTemplate>
+          </ItemsControl.ItemTemplate>
+      </ItemsControl>
+        </StackPanel>
+</UserControl>

@@ -22,8 +22,17 @@ namespace M3u8Downloader_H.Demo.Plugins.ViewModel
         {
             ShowText = "this is test click output text";
             windowContext.SnackbarMaranger.Notify("plugin send");
-            var downloadParam = new M3u8DownloadParams(new Uri(Url), null, string.Empty, "mp4", null);
-            windowContext.AppCommandService.DownloadByUrl(downloadParam,"demo");
+
+            try
+            {
+                var downloadParam = new M3u8DownloadParams(new Uri(Url), null, string.Empty, "mp4", null);
+                windowContext.AppCommandService.DownloadByUrl(downloadParam, "demo");
+            }
+            catch (Exception ex)
+            {
+                windowContext.SnackbarMaranger.Notify(ex.Message);
+            }
+
         }
     }
 }

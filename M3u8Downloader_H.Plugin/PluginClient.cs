@@ -1,8 +1,6 @@
 ﻿using M3u8Downloader_H.Plugin.Models;
 using M3u8Downloader_H.Plugin.Services;
 using System.Text.Json;
-using System.Text.Json.Serialization;
-using static M3u8Downloader_H.Plugin.Models.PluginManifest;
 
 namespace M3u8Downloader_H.Plugin.PluginClients
 {

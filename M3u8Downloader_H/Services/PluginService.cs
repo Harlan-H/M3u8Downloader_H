@@ -1,6 +1,4 @@
-﻿using M3u8Downloader_H.Abstractions.Models;
-using M3u8Downloader_H.Abstractions.Plugins;
-using M3u8Downloader_H.Abstractions.Plugins.Download;
+﻿using M3u8Downloader_H.Abstractions.Plugins.Download;
 using M3u8Downloader_H.Common.Utils;
 using M3u8Downloader_H.Plugin.PluginClients;
 using M3u8Downloader_H.Plugin.Services;
@@ -53,9 +51,8 @@ namespace M3u8Downloader_H.Services
 
             p.Toggle(false);
 
-            GetAllActivePlugins.Remove(p);
             PluginDisabled?.Invoke(p);
-            p.Unload();
+            GetAllActivePlugins.Remove(p);
         }
 
         public void Load()

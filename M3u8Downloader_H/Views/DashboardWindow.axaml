@@ -5,6 +5,7 @@
         xmlns:viewmodels="using:M3u8Downloader_H.ViewModels"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        MinHeight="670"
         x:Class="M3u8Downloader_H.Views.DashboardWindow"
         x:DataType="viewmodels:DashboardWindowViewModel"
         Title="m3u8视频下载器 by:Harlan">
@@ -34,6 +35,7 @@
             <StackPanel Grid.Row="0">
                 <RadioButton Content="基本" Command="{Binding NavigateToCommand}" CommandParameter="{x:Type menu:MainWindowViewModel}" Theme="{StaticResource MenuButtonSytle}"  Tag="{StaticResource Download}"  IsChecked="True"   />
                 <RadioButton Content="高级" Command="{Binding NavigateToCommand}" CommandParameter="{x:Type menu:AdvancedViewModel}" Theme="{StaticResource MenuButtonSytle}"  Tag="{StaticResource Download}"    />
+                <RadioButton Content="插件" Command="{Binding NavigateToCommand}" CommandParameter="{x:Type menu:PluginManagerViewModel}" Theme="{StaticResource MenuButtonSytle}"  Tag="{StaticResource Plugin}"    />
                 <RadioButton Content="设置" Command="{Binding NavigateToCommand}" CommandParameter="{x:Type menu:SettingsViewModel}" Theme="{StaticResource MenuButtonSytle}" Tag="{StaticResource Settings}"/>
                 <RadioButton Content="赞助" Command="{Binding NavigateToCommand}" CommandParameter="{x:Type menu:SponsorViewModel}" Theme="{StaticResource MenuButtonSytle}" Tag="{StaticResource Sponsor}"/>
                 <RadioButton Content="关于" Command="{Binding NavigateToCommand}" CommandParameter="{x:Type menu:AboutViewModel}" Theme="{StaticResource MenuButtonSytle}" Tag="{StaticResource About}" />

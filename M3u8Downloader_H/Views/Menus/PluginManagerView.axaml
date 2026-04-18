@@ -1,0 +1,22 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             xmlns:menu="using:M3u8Downloader_H.ViewModels.Menus"
+             x:DataType="menu:PluginManagerViewModel"
+             x:Class="M3u8Downloader_H.PluginManagerView">
+
+   <TabControl ItemsSource="{Binding Tabs}" Margin="5,0">
+        <TabControl.ItemTemplate>
+            <DataTemplate>
+                <TextBlock Text="{Binding Title}"  />
+            </DataTemplate>
+        </TabControl.ItemTemplate>
+        <TabControl.Styles>
+			<Style Selector="TabItem">
+				<Setter Property="Width" Value="200" />
+            </Style>
+        </TabControl.Styles>
+    </TabControl>
+</UserControl>

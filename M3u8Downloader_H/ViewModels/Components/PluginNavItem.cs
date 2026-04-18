@@ -6,12 +6,12 @@ using System;
 
 namespace M3u8Downloader_H.ViewModels.Components
 {
-    public partial class PluginNavItem(PluginHandle pluginHandle) : ObservableObject
+    public partial class PluginNavItem(PluginHandle pluginHandle) : IDisposable
     {
         private Control? _view;
+        private bool disposedValue;
 
-        [ObservableProperty]
-        public partial string Title { get; set; } = pluginHandle.PluginManifest.Title;
+        public string Title => pluginHandle.PluginManifest.Title;
 
         public Control GetView(IWindowContext windowContext)
         {
@@ -22,6 +22,28 @@ namespace M3u8Downloader_H.ViewModels.Components
             uiInstance.InitializeWindow(windowContext);
             _view = uiInstance.CreateMainView();
             return _view;
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    // TODO: 释放托管状态(托管对象)
+                    _view = null;
+                }
+
+                // TODO: 释放未托管的资源(未托管的对象)并重写终结器
+                // TODO: 将大型字段设置为 null
+                disposedValue = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
     }
 

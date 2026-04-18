@@ -16,7 +16,7 @@ namespace M3u8Downloader_H.ViewModels.Menus
 {
     public partial class AdvancedViewModel : ViewModelBase
     {
-        private readonly WindowContext windowContext = new(Http.Client, Notifications);
+        private readonly WindowContext windowContext = new(Notifications);
         public static SnackbarManager Notifications { get; } = new SnackbarManager("AdvancedWindowHost", TimeSpan.FromSeconds(5));
 
         public ObservableCollection<PluginNavItem> PluginNavItems { get; } = [];
@@ -52,17 +52,21 @@ namespace M3u8Downloader_H.ViewModels.Menus
             if (item is null)
                 return;
 
+            item.Dispose();
             PluginNavItems.Remove(item);
         }
 
-        partial void OnSeletedChanged(PluginNavItem oldValue, PluginNavItem newValue) 
+        partial void OnSeletedChanged(PluginNavItem value) 
         {
-            if (oldValue == newValue)
+            if (value is null)
+            {
+                CurrentView = null!;
                 return;
+            }
 
             try
             {
-                CurrentView = newValue.GetView(windowContext);
+                CurrentView = value.GetView(windowContext);
             }catch(Exception e)
             {
                 Notifications.Notify(e.Message);
