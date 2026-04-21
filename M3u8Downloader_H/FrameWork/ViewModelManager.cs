@@ -23,7 +23,7 @@ public class ViewModelManager(SettingsService settingsService)
             RequestUrl = m3U8DownloadParam.RequestUrl,
             VideoName = m3U8DownloadParam.VideoName
         };
-        DownloadContext downloadContext = new(Http.Client, viewModel.Log,m3U8DownloadParam, settingsService.Clone<SettingsService>());
+        DownloadContext downloadContext = new(Http.Instance.Client, viewModel.Log,m3U8DownloadParam, settingsService.Clone<SettingsService>());
         viewModel.downloaderCoreClient = new(downloadContext, downloadPlugin);
         return viewModel;
     }
@@ -38,7 +38,7 @@ public class ViewModelManager(SettingsService settingsService)
             VideoName = m3U8DownloadParam.VideoName
         };
 
-        DownloadContext downloadContext = new(Http.Client, viewModel.Log, m3U8DownloadParam, settingsService.Clone<SettingsService>());
+        DownloadContext downloadContext = new(Http.Instance.Client, viewModel.Log, m3U8DownloadParam, settingsService.Clone<SettingsService>());
         viewModel.downloaderCoreClient = new(downloadContext,  m3UFileInfo, downloadPlugin);
         return viewModel;
     }
@@ -51,7 +51,7 @@ public class ViewModelManager(SettingsService settingsService)
             RequestUrl = mediaDownloadParam.Medias[0].Url,
             VideoName = mediaDownloadParam.VideoName
         };
-        DownloadContext downloadContext = new(Http.Client, viewModel.Log, mediaDownloadParam, settingsService.Clone<SettingsService>());
+        DownloadContext downloadContext = new(Http.Instance.Client, viewModel.Log, mediaDownloadParam, settingsService.Clone<SettingsService>());
         viewModel.downloaderCoreClient = new DownloaderCoreClient(downloadContext);
         return viewModel;
     }

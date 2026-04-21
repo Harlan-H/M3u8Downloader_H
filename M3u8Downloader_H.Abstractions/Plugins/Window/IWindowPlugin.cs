@@ -7,6 +7,6 @@ namespace M3u8Downloader_H.Abstractions.Plugins.Window
     public interface IWindowPlugin
     {
         void InitializeWindow(IWindowContext windowContext);
-        Control CreateMainView();
+        UserControl CreateMainView();
     }
 }

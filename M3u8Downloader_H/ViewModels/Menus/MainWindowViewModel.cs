@@ -1,11 +1,8 @@
 ﻿using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
-using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
-using M3u8Downloader_H.Abstractions.Common;
-using M3u8Downloader_H.Abstractions.Models;
 using M3u8Downloader_H.Common.Models;
 using M3u8Downloader_H.Extensions;
 using M3u8Downloader_H.FrameWork;
@@ -23,10 +20,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
-using Tmds.DBus.Protocol;
 
 namespace M3u8Downloader_H.ViewModels.Menus
 {
@@ -72,7 +66,7 @@ namespace M3u8Downloader_H.ViewModels.Menus
 
             _disposables.Add(settingsService.WatchProperty(
                 s => s.ProxyAddress,
-                () => HttpClient.DefaultProxy = string.IsNullOrWhiteSpace(settingsService.ProxyAddress) ? new WebProxy() : new WebProxy(settingsService.ProxyAddress)));
+                () => Http.Instance.UpdateProxy(settingsService.ProxyAddress)));
         }
 
         ~MainWindowViewModel()

@@ -23,8 +23,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "M3u8Downloader_H", "M3u8Dow
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "M3u8Downloader_H.Settings", "M3u8Downloader_H.SettingsManager\M3u8Downloader_H.Settings.csproj", "{ACE912B4-F0BA-BE25-484C-46D74968B9B7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "M3u8Downloader_H.Demo.Plugins", "M3u8Downloader_H.Demo.Plugins\M3u8Downloader_H.Demo.Plugins.csproj", "{44A5787F-7A4B-5E04-DDAF-009D2D78F423}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -155,18 +153,6 @@ Global
 		{ACE912B4-F0BA-BE25-484C-46D74968B9B7}.Release|x64.Build.0 = Release|Any CPU
 		{ACE912B4-F0BA-BE25-484C-46D74968B9B7}.Release|x86.ActiveCfg = Release|Any CPU
 		{ACE912B4-F0BA-BE25-484C-46D74968B9B7}.Release|x86.Build.0 = Release|Any CPU
-		{44A5787F-7A4B-5E04-DDAF-009D2D78F423}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{44A5787F-7A4B-5E04-DDAF-009D2D78F423}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{44A5787F-7A4B-5E04-DDAF-009D2D78F423}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{44A5787F-7A4B-5E04-DDAF-009D2D78F423}.Debug|x64.Build.0 = Debug|Any CPU
-		{44A5787F-7A4B-5E04-DDAF-009D2D78F423}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{44A5787F-7A4B-5E04-DDAF-009D2D78F423}.Debug|x86.Build.0 = Debug|Any CPU
-		{44A5787F-7A4B-5E04-DDAF-009D2D78F423}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{44A5787F-7A4B-5E04-DDAF-009D2D78F423}.Release|Any CPU.Build.0 = Release|Any CPU
-		{44A5787F-7A4B-5E04-DDAF-009D2D78F423}.Release|x64.ActiveCfg = Release|Any CPU
-		{44A5787F-7A4B-5E04-DDAF-009D2D78F423}.Release|x64.Build.0 = Release|Any CPU
-		{44A5787F-7A4B-5E04-DDAF-009D2D78F423}.Release|x86.ActiveCfg = Release|Any CPU
-		{44A5787F-7A4B-5E04-DDAF-009D2D78F423}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

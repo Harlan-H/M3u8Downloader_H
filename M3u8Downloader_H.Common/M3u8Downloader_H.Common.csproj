@@ -5,16 +5,20 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
 	 <Authors>Harlan</Authors>
+	  <Version>1.0.0</Version>
+	  <Description>M3u8Downloader_H Common</Description>
+
+	  <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)'=='Release'">
 		<DebugSymbols>False</DebugSymbols>
 		<DebugType>None</DebugType>
 	</PropertyGroup>
-	
-  <ItemGroup>
-    <ProjectReference Include="..\M3u8Downloader_H.Abstractions\M3u8Downloader_H.Abstractions.csproj" />
-  </ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\M3u8Downloader_H.Abstractions\M3u8Downloader_H.Abstractions.csproj" />
+	</ItemGroup>
 	
 	
 </Project>

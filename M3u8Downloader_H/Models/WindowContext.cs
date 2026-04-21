@@ -9,8 +9,11 @@ namespace M3u8Downloader_H.Models
         ISnackbarMaranger snackbarMaranger)
         : IWindowContext
     {
-        public HttpClient HttpClient { get; set; } = Http.Client;
+        public IApiFactory ApiFactory => Http.Instance;
+
         public ISnackbarMaranger SnackbarMaranger { get; set; } = snackbarMaranger;
         public IAppCommandService AppCommandService { get; set; } = default!;
+
+        
     }
 }
