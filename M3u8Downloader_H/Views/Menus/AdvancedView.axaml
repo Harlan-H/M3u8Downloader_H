@@ -9,9 +9,9 @@
              x:DataType="menu:AdvancedViewModel"
              x:Class="M3u8Downloader_H.AdvancedView">
 
-  <SplitView IsPaneOpen="True" DisplayMode="Inline" OpenPaneLength="180">
+  <SplitView IsPaneOpen="True" DisplayMode="Inline" OpenPaneLength="180"  >
       <SplitView.Pane>
-          <Border Background="#FFF9FAFB">
+          <Border Background="#FFF9FAFB" BorderThickness="1,0,1,0" BorderBrush="#ffd3d9e0">
 	      <ListBox   ItemsSource="{Binding PluginNavItems}"
                      SelectedItem="{Binding Seleted}">
               <ListBox.ItemTemplate>
@@ -24,7 +24,7 @@
               </ListBox.ItemTemplate>
               <ListBox.ItemContainerTheme>
                   <ControlTheme TargetType="ListBoxItem">
-                        <Setter Property="Padding" Value="12,8"/>
+                        <Setter Property="Padding" Value="12,14"/>
                         <Setter Property="Background" Value="Transparent"/>
                         <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
                       <Setter Property="Template">
@@ -67,6 +67,9 @@
                             <Setter Property="TextBlock.Foreground" Value="{StaticResource MaterialPrimaryMidBrush}"/>
                             <Setter Property="TextBlock.FontWeight" Value="Bold" />
                         </Style>
+                  <Style Selector="ListBox /template/ Border#PART_RootBorder">
+					  <Setter Property="Margin" Value="0,10,0,10" />
+                  </Style>
               </ListBox.Styles>
           </ListBox>
               </Border>

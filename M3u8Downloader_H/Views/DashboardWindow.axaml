@@ -42,6 +42,6 @@
             </StackPanel>
             <TextBlock Grid.Row="1" Text="{Binding Version}" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="0,0,15,0" />
         </Grid> 
-        <ContentControl Grid.Column="1" Padding="5,0,0,0"  Content="{Binding CurrentViewModel}" />
+        <ContentControl Grid.Column="1" Content="{Binding CurrentViewModel}" />
     </Grid>
 </Window>

@@ -12,7 +12,7 @@
              x:DataType="vm:MainWindowViewModel"
              x:Class="M3u8Downloader_H.Views.Menus.MainWindowView">
 
-     <Grid RowDefinitions="*,30">
+     <Grid RowDefinitions="*,30" Margin="5,0,0,0">
         <materialDesign:DialogHost
             CloseOnClickAway="False">
             <MaterialStyles:SnackbarHost  HostName="MainWindowHost" SnackbarMaxCounts="5">

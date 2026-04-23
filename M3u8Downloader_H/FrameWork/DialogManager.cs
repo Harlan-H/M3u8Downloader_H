@@ -1,10 +1,9 @@
 ﻿using DialogHostAvalonia;
-using M3u8Downloader_H.FrameWork;
 using System;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace M3u8Downloader_H.ViewModels.FrameWork
+namespace M3u8Downloader_H.FrameWork
 {
     public class DialogManager
     {

@@ -13,7 +13,6 @@ using M3u8Downloader_H.Services;
 using M3u8Downloader_H.Utils;
 using M3u8Downloader_H.ViewModels.Dialogs;
 using M3u8Downloader_H.ViewModels.Downloads;
-using M3u8Downloader_H.ViewModels.FrameWork;
 using M3u8Downloader_H.ViewModels.Windows;
 using System;
 using System.Collections;
