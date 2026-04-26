@@ -14,7 +14,7 @@ namespace M3u8Downloader_H.Services
     {
         private readonly string _pluginDirPath = StorageSpaceManager.GetPluginPath();
         private readonly string _pluginConfigPath = StorageSpaceManager.GetConfigPath();
-        private readonly PluginClient pluginClient;
+        private readonly PluginRegistry pluginClient;
         public IReadOnlyList<PluginHandle> GetAllPlugins => pluginClient.Plugins;
         public List<PluginHandle> GetAllActivePlugins = [];
 
@@ -23,8 +23,9 @@ namespace M3u8Downloader_H.Services
 
         public PluginService()
         {
-            pluginClient = PluginClient.Instance;
+            pluginClient = PluginRegistry.Instance;
             pluginClient.PluginPath = _pluginDirPath;
+            pluginClient.PluginConfigPath = _pluginConfigPath;
         }
 
         public void InitActivePlugin()
@@ -37,9 +38,9 @@ namespace M3u8Downloader_H.Services
 
         public void Enable(PluginHandle p)
         {
-            if (p.PluginManifest.Enabled) return;
+            if (p.Enable) return;
 
-            p.Toggle(true);
+            p.Enable = true;
 
             GetAllActivePlugins.Add(p);
             PluginEnabled?.Invoke(p);
@@ -47,9 +48,9 @@ namespace M3u8Downloader_H.Services
 
         public void Disable(PluginHandle p)
         {
-            if (!p.PluginManifest.Enabled) return;
+            if (!p.Enable) return;
 
-            p.Toggle(false);
+            p.Enable = false;
 
             PluginDisabled?.Invoke(p);
             GetAllActivePlugins.Remove(p);
@@ -57,27 +58,29 @@ namespace M3u8Downloader_H.Services
 
         public void Load()
         {
-            var fileInfo =  new FileInfo(Path.Combine(_pluginConfigPath, "Plugin.dat"));
-            if(!fileInfo.Exists) 
-                return;
-
-            pluginClient.LoadFromConfig(fileInfo.OpenRead());
-            GetAllActivePlugins = [.. GetAllPlugins.Where(p => p.PluginManifest.Enabled)];
-        }
-
-        public IDownloadPlugin? this[string? key] 
-        {
-            get{
-                if(string.IsNullOrWhiteSpace(key))
-                    return null;
-
-                var plugin = GetAllActivePlugins.FirstOrDefault(p => p.PluginManifest.Key.Equals(key));
-                if (plugin is null || plugin.PluginManifest.HasDownload == false)
-                    return null;
-
-                return plugin.LoadDownload();
-            }            
+            pluginClient.LoadFromConfig();
+            GetAllActivePlugins = [.. GetAllPlugins.Where(p => p.Enable)];
         }
             
+        public IDownloadPlugin? CreateDownloadPlugin(string? key,Uri url)
+        {
+            if(!string.IsNullOrWhiteSpace(key))
+            {
+                var plugin = GetAllActivePlugins.FirstOrDefault(p => p.PluginManifest.Key.Equals(key));
+                if (plugin is null || plugin.PluginManifest.Runtime.HasDownload == false)
+                    return null;
+
+                var canHandle = plugin.CanHandleDownload(url);
+                return canHandle ? plugin.LoadDownload() : null;
+            }
+            else if (url is not null)
+            {
+                var plugin = GetAllActivePlugins.FirstOrDefault(p => p.CanHandleDownload(url));
+                return plugin?.LoadDownload();
+            }else
+            {
+                return null;
+            }
+        }
     }
 }

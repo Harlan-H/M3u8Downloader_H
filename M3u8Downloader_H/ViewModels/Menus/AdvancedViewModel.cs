@@ -37,7 +37,7 @@ namespace M3u8Downloader_H.ViewModels.Menus
 
         private void PluginService_PluginEnabled(PluginHandle obj)
         {
-            if (!obj.PluginManifest.HasUi)
+            if (!obj.PluginManifest.Runtime.HasUi)
                 return;
 
             PluginNavItems.Add(new PluginNavItem(obj));
@@ -45,7 +45,7 @@ namespace M3u8Downloader_H.ViewModels.Menus
 
         private void PluginService_PluginDisabled(PluginHandle obj)
         {
-            if (!obj.PluginManifest.HasUi)
+            if (!obj.PluginManifest.Runtime.HasUi)
                 return;
 
             var item = PluginNavItems.FirstOrDefault(p => p == obj);

@@ -13,15 +13,15 @@ namespace M3u8Downloader_H.ViewModels.Components
     public partial class PluginLocalItem(PluginService pluginService , PluginHandle pluginHandle) : ObservableObject
     {
         private readonly DebounceDispatcher debounceDispatcher = new();
-        public string Title => pluginHandle.PluginManifest.Title;
-        public string Desc => pluginHandle.PluginManifest.Descriptor;
-        public Version Version => pluginHandle.PluginManifest.Version;
+        public string Title => pluginHandle.PluginManifest.BasicInfo.Title;
+        public string Desc => pluginHandle.PluginManifest.BasicInfo.Descriptor;
+        public Version Version => pluginHandle.PluginManifest.Release.Version;
 
         [ObservableProperty]
         public partial string State {  get; set; }
 
         [ObservableProperty]
-        public partial bool IsEnable { get; set; } = pluginHandle.PluginManifest.Enabled;
+        public partial bool IsEnable { get; set; } = pluginHandle.Enable;
 
 
         partial void OnIsEnableChanged(bool value)
