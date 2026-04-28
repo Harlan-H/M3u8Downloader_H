@@ -14,7 +14,7 @@ namespace M3u8Downloader_H.ViewModels.Components
     {
         private readonly DebounceDispatcher debounceDispatcher = new();
         public string Title => pluginHandle.PluginManifest.BasicInfo.Title;
-        public string Desc => pluginHandle.PluginManifest.BasicInfo.Descriptor;
+        public string Desc => pluginHandle.PluginManifest.BasicInfo.Description;
         public Version Version => pluginHandle.PluginManifest.Release.Version;
 
         [ObservableProperty]

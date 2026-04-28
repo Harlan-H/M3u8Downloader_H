@@ -7,6 +7,7 @@ namespace M3u8Downloader_H.Plugin.PluginClients
 {
     public partial class PluginRegistry
     {
+        private FileInfo pluginConfigFileInfo = default!;
         private Dictionary<string, PluginState> _states = [];
         private readonly List<PluginHandle> plugins  = [];
         public IReadOnlyList<PluginHandle> Plugins => plugins;
@@ -16,7 +17,7 @@ namespace M3u8Downloader_H.Plugin.PluginClients
 
         private PluginRegistry()
         {
-
+            
         }
 
 
@@ -41,10 +42,10 @@ namespace M3u8Downloader_H.Plugin.PluginClients
 
         public void LoadFromConfig()
         {
-            FileInfo fileInfo = new(Path.Combine(PluginConfigPath,"Plugin.dat"));
-            if(fileInfo.Exists)
+            pluginConfigFileInfo = new(Path.Combine(PluginConfigPath, "Plugin.dat"));
+            if (pluginConfigFileInfo.Exists)
             {
-                var states = JsonSerializer.Deserialize(fileInfo.OpenRead(), PluginStateContext.Default.DictionaryStringPluginState);
+                var states = JsonSerializer.Deserialize(pluginConfigFileInfo.OpenRead(), PluginStateContext.Default.DictionaryStringPluginState);
                 if (states is not null)
                     _states = states;
             }
@@ -58,6 +59,9 @@ namespace M3u8Downloader_H.Plugin.PluginClients
                 handle.LoadAssembils(zip);
                 plugins.Add(handle);
             }
+
+//             if(_states.Count > 0)
+//                 JsonSerializer.Serialize(pluginConfigFileInfo.OpenWrite(), _states, PluginStateContext.Default.DictionaryStringPluginState);
         }
     }
 

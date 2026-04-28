@@ -4,10 +4,10 @@
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-	  <Version>1.0.4</Version>
+	  <Version>1.0.6</Version>
 	  <Authors>Harlan</Authors>
-	  <Description>M3u8Downloader_H abstractions</Description>
-
+	  <Description>M3u8Downloader_H插件开发所使用的接口文件</Description>
+	  <RepositoryUrl>https://github.com/Harlan-H/M3u8Downloader_H</RepositoryUrl>
 	  <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
@@ -18,7 +18,6 @@
 
 	<ItemGroup>
 		<PackageReference Include="Avalonia" Version="11.3.11" />
-		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.1" />
 		<PackageReference Include="Refit" Version="10.1.6" />
 	</ItemGroup>
 </Project>

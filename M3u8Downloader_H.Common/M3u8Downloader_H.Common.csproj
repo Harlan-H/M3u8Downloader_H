@@ -5,9 +5,9 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
 	 <Authors>Harlan</Authors>
-	  <Version>1.0.0</Version>
-	  <Description>M3u8Downloader_H Common</Description>
-
+	  <Version>1.0.1</Version>
+	  <Description>M3u8Downloader_H插件开发可能会用到的公共文件</Description>
+	  <RepositoryUrl>https://github.com/Harlan-H/M3u8Downloader_H</RepositoryUrl>
 	  <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
