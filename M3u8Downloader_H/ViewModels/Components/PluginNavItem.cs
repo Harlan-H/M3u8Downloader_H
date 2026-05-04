@@ -20,7 +20,14 @@ namespace M3u8Downloader_H.ViewModels.Components
 
             var uiInstance = pluginHandle.LoadUI();
             uiInstance.InitializeWindow(windowContext);
-            _view = uiInstance.CreateMainView();
+
+            var view = Activator.CreateInstance(uiInstance.ViewType);
+            if (view is not UserControl control)
+                throw new InvalidOperationException("ui接口继承有误 不是UserControl类型");
+
+            control.DataContext = uiInstance.CreateMainView();
+            
+            _view = control;
             return _view;
         }
 

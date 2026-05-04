@@ -1,5 +1,4 @@
-﻿using Avalonia.Controls;
-using M3u8Downloader_H.Abstractions.Models;
+﻿using M3u8Downloader_H.Abstractions.Models;
 
 
 namespace M3u8Downloader_H.Abstractions.Plugins.Window
@@ -7,6 +6,8 @@ namespace M3u8Downloader_H.Abstractions.Plugins.Window
     public interface IWindowPlugin
     {
         void InitializeWindow(IWindowContext windowContext);
-        UserControl CreateMainView();
+        Type ViewType { get; }
+        object CreateMainView();
+
     }
 }
