@@ -1,39 +1,67 @@
-﻿using M3u8Downloader_H.Models;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using M3u8Downloader_H.Models;
+using M3u8Downloader_H.Plugin;
+using M3u8Downloader_H.Plugin.PluginClients;
+using M3u8Downloader_H.Utils;
 using M3u8Downloader_H.ViewModels.Components;
-using Material.Styles.Themes;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
-using System.Xml;
 
 namespace M3u8Downloader_H.ViewModels.Windows
 {
-    public class OnlinePluginViewModel : ViewModelBase
+    public partial class OnlinePluginViewModel : ViewModelBase
     {
+        private readonly PluginRepository pluginRepository;
+        private readonly PluginRegistry pluginRegistry;
+
         public ObservableCollection<PluginOnlineItem> PluginOnlineItems { get; } = [];
-        public LoadState State { get; set; } = LoadState.NotLoaded;
+
+        [ObservableProperty]
+        public partial LoadState State { get; set; } = LoadState.NotLoaded;
+
+        [ObservableProperty]
+        public partial string ErrorString { get; set; } = string.Empty;
+
+        public OnlinePluginViewModel()
+        {
+            pluginRegistry = PluginRegistry.Instance;
+            pluginRepository = new PluginRepository(Http.Instance.GetClient());
+        }
+
+        public async Task InitPluginItem()
+        {
+            using CancellationTokenSource cancellationTokenSource = new();
+            cancellationTokenSource.CancelAfter(TimeSpan.FromSeconds(10));
+            var pluginManifests = await pluginRepository.InitPluginManifest(cancellationTokenSource.Token);
+            foreach (var item in pluginManifests)
+            {
+                var pluginState = pluginRegistry.TryGetPluginStateByKey(item.Key);
+                PluginOnlineItems.Add(
+                    new PluginOnlineItem(token => pluginRepository.DownloadPlugin(item.Release.DownloadUrl,token),
+                            item, pluginState));
+            }
+        }
+
+
 
         public async Task EnsureLoadedAsync()
         {
-            if (State != LoadState.NotLoaded)
+            if (State == LoadState.Loaded)
                 return;
 
             State = LoadState.Loading;
 
             try
             {
-                 await Task.Delay(1000);/* _service.GetOnlineAsync();*/
-
-//                 foreach (var item in data)
-//                     PluginOnlineItems.Add(item);
-
+                await InitPluginItem();
                 State = LoadState.Loaded;
             }
-            catch
+            catch(Exception ex)
             {
                 State = LoadState.Failed;
+                ErrorString = ex.ToString();
             }
         }
     }

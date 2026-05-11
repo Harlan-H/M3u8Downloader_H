@@ -11,10 +11,7 @@
 		<Style Selector="Grid TextBlock" >
 			<Setter Property="VerticalAlignment" Value="Center" />
         </Style>
-    </UserControl.Styles>
-
-    <StackPanel Margin="10" Grid.IsSharedSizeScope="True">
-        
+    </UserControl.Styles>      
 
       <ItemsControl ItemsSource="{Binding PluginItems}"
                      ScrollViewer.VerticalScrollBarVisibility="Auto">
@@ -39,5 +36,4 @@
               </DataTemplate>
           </ItemsControl.ItemTemplate>
       </ItemsControl>
-        </StackPanel>
 </UserControl>

@@ -2,14 +2,13 @@
 using M3u8Downloader_H.Abstractions.Plugins.Download;
 using M3u8Downloader_H.Abstractions.Plugins.Window;
 using M3u8Downloader_H.Plugin.Models;
-using M3u8Downloader_H.Plugin.PluginClients;
 using System.IO.Compression;
 using System.Reflection;
 using System.Text.Json;
 
 namespace M3u8Downloader_H.Plugin.Services
 {
-    public class PluginHandle(Action<PluginManifest,bool> registerAction,Func<string,PluginState> stateFunc)
+    public class PluginHandle(FileInfo fileInfo, Action<PluginManifest,bool> registerAction,Func<string,PluginState> stateFunc)
     {
         private readonly Dictionary<string, MemoryStream> _assemblies = [];
 
@@ -110,6 +109,9 @@ namespace M3u8Downloader_H.Plugin.Services
             registerAction(PluginManifest, false);
             LoadContext?.Unload();
             _assemblies.Clear();
+            fileInfo.Delete();
         }
+
+
     }
 }

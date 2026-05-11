@@ -7,7 +7,7 @@
              x:DataType="menu:PluginManagerViewModel"
              x:Class="M3u8Downloader_H.PluginManagerView">
 
-   <TabControl ItemsSource="{Binding Tabs}" Margin="5,0">
+   <TabControl ItemsSource="{Binding Tabs}"  SelectedItem="{Binding SelectedTab}" Margin="5,0">
         <TabControl.ItemTemplate>
             <DataTemplate>
                 <TextBlock Text="{Binding Title}"  />

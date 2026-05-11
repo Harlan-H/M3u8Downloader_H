@@ -41,16 +41,9 @@ namespace M3u8Downloader_H.Utils
         public void UpdateProxy(string? address)
         {
             _webProxy = string.IsNullOrEmpty(address) ? null:  new WebProxy(address);
-            foreach (var (key, clientEntry) in _clients)
-            {
-                if (key == "m3u8downloader_h")
-                {
-                    clientEntry.Client = null;
-                    continue;
-                }
-                clientEntry.Client?.Dispose();
-            }
-            
+            foreach (var clientEntry in _clients.Values)
+                clientEntry.Client = null;
+
             ProxyChanged?.Invoke();
         }
 

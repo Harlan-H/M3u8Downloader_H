@@ -1,5 +1,4 @@
 ﻿using Avalonia.Controls;
-using CommunityToolkit.Mvvm.ComponentModel;
 using M3u8Downloader_H.Abstractions.Models;
 using M3u8Downloader_H.Plugin.Services;
 using System;
@@ -49,7 +48,7 @@ namespace M3u8Downloader_H.ViewModels.Components
 
         public void Dispose()
         {
-            Dispose(disposing: true);
+            Dispose(true);
             GC.SuppressFinalize(this);
         }
     }

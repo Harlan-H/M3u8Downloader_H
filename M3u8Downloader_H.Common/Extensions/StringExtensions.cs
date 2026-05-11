@@ -15,8 +15,7 @@ namespace M3u8Downloader_H.Common.Extensions
 
         public static string GetMd5(this string s)
         {
-            using SHA256 md5 = SHA256.Create();
-            byte[] data = md5.ComputeHash(Encoding.UTF8.GetBytes(s));
+            byte[] data = SHA256.HashData(Encoding.UTF8.GetBytes(s));
             return Convert.ToHexString(data);
         }
 

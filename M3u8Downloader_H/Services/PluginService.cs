@@ -12,8 +12,6 @@ namespace M3u8Downloader_H.Services
 {
     public class PluginService
     {
-        private readonly string _pluginDirPath = StorageSpaceManager.GetPluginPath();
-        private readonly string _pluginConfigPath = StorageSpaceManager.GetConfigPath();
         private readonly PluginRegistry pluginClient;
         public IReadOnlyList<PluginHandle> GetAllPlugins => pluginClient.Plugins;
         public List<PluginHandle> GetAllActivePlugins = [];
@@ -24,8 +22,6 @@ namespace M3u8Downloader_H.Services
         public PluginService()
         {
             pluginClient = PluginRegistry.Instance;
-            pluginClient.PluginPath = _pluginDirPath;
-            pluginClient.PluginConfigPath = _pluginConfigPath;
         }
 
         public void InitActivePlugin()
@@ -58,7 +54,8 @@ namespace M3u8Downloader_H.Services
 
         public void Load()
         {
-            pluginClient.LoadFromConfig();
+            pluginClient.LoadConfig();
+            pluginClient.LoadPlugins();
             GetAllActivePlugins = [.. GetAllPlugins.Where(p => p.Enable)];
         }
             

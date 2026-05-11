@@ -1,4 +1,5 @@
-﻿using M3u8Downloader_H.Plugin.Models;
+﻿using M3u8Downloader_H.Common.Utils;
+using M3u8Downloader_H.Plugin.Models;
 using M3u8Downloader_H.Plugin.Services;
 using System.IO.Compression;
 using System.Text.Json;
@@ -7,19 +8,25 @@ namespace M3u8Downloader_H.Plugin.PluginClients
 {
     public partial class PluginRegistry
     {
-        private FileInfo pluginConfigFileInfo = default!;
+        private readonly string _pluginDirPath = StorageSpaceManager.GetPluginPath();
+        private readonly string _pluginConfigPath = Path.Combine(StorageSpaceManager.GetConfigPath(), "Plugin.dat");
+
         private Dictionary<string, PluginState> _states = [];
         private readonly List<PluginHandle> plugins  = [];
         public IReadOnlyList<PluginHandle> Plugins => plugins;
-        public string PluginPath { get; set; } = default!;
-        public string PluginConfigPath { get; set; } = default!;
 
 
         private PluginRegistry()
         {
-            
+            Directory.CreateDirectory(_pluginDirPath);
         }
 
+
+        public PluginState? TryGetPluginStateByKey(string key)
+        {
+            _states.TryGetValue(key, out var state);
+            return state;
+        }
 
         private void Register(PluginManifest manifest,bool isRegister = true)
         {
@@ -40,28 +47,31 @@ namespace M3u8Downloader_H.Plugin.PluginClients
             => _states[key];
 
 
-        public void LoadFromConfig()
+        public void LoadConfig()
         {
-            pluginConfigFileInfo = new(Path.Combine(PluginConfigPath, "Plugin.dat"));
+            var pluginConfigFileInfo = new FileInfo(_pluginConfigPath);
             if (pluginConfigFileInfo.Exists)
             {
                 var states = JsonSerializer.Deserialize(pluginConfigFileInfo.OpenRead(), PluginStateContext.Default.DictionaryStringPluginState);
                 if (states is not null)
                     _states = states;
             }
+        }
 
-            var dir = new DirectoryInfo(PluginPath);
+        public void LoadPlugins()
+        {
+            var dir = new DirectoryInfo(_pluginDirPath);
             foreach (var fileinfo in dir.EnumerateFiles("*.zip"))
             {
-                var handle = new PluginHandle(Register, GetStateByKey);
+                var handle = new PluginHandle(fileinfo, Register, GetStateByKey);
                 using var zip = ZipFile.OpenRead(fileinfo.FullName);
                 handle.LoadManifest(zip);
                 handle.LoadAssembils(zip);
                 plugins.Add(handle);
             }
 
-//             if(_states.Count > 0)
-//                 JsonSerializer.Serialize(pluginConfigFileInfo.OpenWrite(), _states, PluginStateContext.Default.DictionaryStringPluginState);
+//              if(_states.Count > 0)
+//                  JsonSerializer.Serialize(pluginConfigFileInfo.OpenWrite(), _states, PluginStateContext.Default.DictionaryStringPluginState);
         }
     }
 

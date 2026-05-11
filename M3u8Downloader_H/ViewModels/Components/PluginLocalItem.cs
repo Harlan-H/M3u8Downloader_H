@@ -48,7 +48,7 @@ namespace M3u8Downloader_H.ViewModels.Components
                     }
 
                 }
-                , 2000);
+                , 1000);
         }
     }
 }

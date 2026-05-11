@@ -45,6 +45,15 @@ public class StorageSpaceManager
 #endif
     }
 
+    public static string GetTempPath()
+    {
+#if DEBUG
+        return @"C:\Users\admin\Desktop\666\Temp";
+#else
+        return Path.Combine(StorageSpace.UserDomain.GetDirectoryPath(), "M3u8Downloader_H", "Temp");
+#endif
+    }
+
 
     public static string GetConfigPath()
     {

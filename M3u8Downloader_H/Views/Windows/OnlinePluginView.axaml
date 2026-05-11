@@ -3,6 +3,98 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             xmlns:vm="using:M3u8Downloader_H.ViewModels.Windows"
+             xmlns:icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:converters="using:M3u8Downloader_H.Converters"
+             xmlns:model="using:M3u8Downloader_H.Models"
+             x:DataType="vm:OnlinePluginViewModel"
              x:Class="M3u8Downloader_H.OnlinePluginView">
-  local plugin view!!!!
+  <UserControl.Styles>
+		<Style Selector="Grid TextBlock" >
+			<Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Margin" Value="5,0,5,0" />
+        </Style>
+    </UserControl.Styles>
+    <Panel>
+        <StackPanel IsVisible="{Binding !PluginOnlineItems.Count}" Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center">
+			<ProgressBar 
+                 Classes.loading="{Binding State,Converter={x:Static converters:EqualityConverter.IsNotEqual},ConverterParameter={x:Static model:LoadState.Loading}}"
+                Classes="circular" Height="100" Width="100">
+                <ProgressBar.Styles>
+                    <Style Selector="ProgressBar">
+						<Setter Property="IsIndeterminate" Value="true"/>
+
+                        <Style Selector="^.loading">
+							<Setter Property="IsIndeterminate" Value="False" />
+                        </Style>
+                    </Style>
+					
+                </ProgressBar.Styles>
+            </ProgressBar>
+            <TextBlock 
+                    Classes.loading="{Binding State,Converter={x:Static converters:EqualityConverter.IsEqual},ConverterParameter={x:Static model:LoadState.Loading}}"
+                    Classes.error="{Binding State,Converter={x:Static converters:EqualityConverter.IsEqual},ConverterParameter={x:Static model:LoadState.Failed}}">
+                <TextBlock.Styles>
+					<Style Selector="TextBlock.loading">
+						<Setter Property="Text" Value="正在获取数据,请稍后" />
+                    </Style>
+                    <Style Selector="TextBlock.error" >
+						<Setter Property="Text" Value="{Binding ErrorString,StringFormat=获取数据失败 请确认是否可以访问到github 请尝试使用带有github加速的软件&#10;{0}}" />
+                        <Setter Property="Foreground" Value="red" />
+                    </Style>
+                </TextBlock.Styles>
+            </TextBlock>
+        </StackPanel>
+
+      <ItemsControl IsVisible="{Binding PluginOnlineItems.Count}" ItemsSource="{Binding PluginOnlineItems}"
+                     ScrollViewer.VerticalScrollBarVisibility="Auto">
+	      <ItemsControl.ItemTemplate>
+		      <DataTemplate>
+                  <Border BorderThickness="0,0,0,1" BorderBrush="Gray" Height="35">
+			          <Grid ColumnDefinitions="150,3*,50,50,*,*,auto,40" >
+				          <TextBlock Text="{Binding Title}" />
+                          <TextBlock Grid.Column="1" Text="{Binding Desc}" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding Desc}"  />
+                          <TextBlock Grid.Column="2" Text="{Binding Version}" />
+                          <TextBlock Grid.Column="3" Text="{Binding LocalVersion}" />
+                          <TextBlock Grid.Column="4" Text="{Binding Author}" />
+                          <TextBlock 
+                                Classes.loading="{Binding State,Converter={x:Static converters:EqualityConverter.IsEqual},ConverterParameter={x:Static model:LoadState.Loading}}"
+                                Classes.loaded="{Binding State,Converter={x:Static converters:EqualityConverter.IsEqual},ConverterParameter={x:Static model:LoadState.Loaded}}"
+                                Classes.error="{Binding State,Converter={x:Static converters:EqualityConverter.IsEqual},ConverterParameter={x:Static model:LoadState.Failed}}" 
+                          Grid.Column="5" >
+							  <TextBlock.Styles>
+								  <Style Selector="TextBlock.loading" >
+									  <Setter Property="Text" Value="开始下载..." />
+                                  </Style>
+                                  <Style Selector="TextBlock.loaded" >
+                                      <Setter Property="Text" Value="✔ 安装完成等待重启" />
+                                      <Setter Property="Foreground"  Value="{DynamicResource SuccessBrush}"  />
+                                  </Style>
+                                  <Style Selector="TextBlock.error" >
+									  <Setter Property="Text" Value="⚠ 错误" />
+                                      <Setter Property="Foreground" Value="{DynamicResource FailedBrush}" />
+                                      <Setter Property="ToolTip.Tip" Value="{Binding ErrorString}" />
+                                  </Style>
+                              </TextBlock.Styles>
+                          </TextBlock>
+                          <TextBlock Grid.Column="6" Text="{Binding Time}" />
+                          <StackPanel Grid.Column="7" Margin="8,0,10,0" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                              <Button Command="{Binding InstallPluginCommand}" 
+                                      IsVisible="{Binding $self.IsEffectivelyEnabled}"
+                                      Theme="{DynamicResource MaterialFlatButton}" Padding="2,0" VerticalAlignment="Center" Classes="primary" >
+								  <icons:MaterialIcon Width="24" Height="24" Kind="ArrowDownThinCircleOutline" />
+                              </Button>
+
+                              <Button Command="{Binding UpdatePluginCommand}"
+                                      IsVisible="{Binding $self.IsEffectivelyEnabled}"
+                                      Theme="{DynamicResource MaterialFlatButton}" Padding="2,0" VerticalAlignment="Center" Classes="primary" >
+                                  <icons:MaterialIcon Width="24" Height="24" Kind="Update" />
+                                </Button>
+                          </StackPanel>
+                      </Grid>
+                    </Border>
+              </DataTemplate>
+          </ItemsControl.ItemTemplate>
+      </ItemsControl>
+        </Panel>
 </UserControl>
