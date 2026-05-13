@@ -58,11 +58,16 @@
                           <TextBlock Grid.Column="3" Text="{Binding LocalVersion}" />
                           <TextBlock Grid.Column="4" Text="{Binding Author}" />
                           <TextBlock 
-                                Classes.loading="{Binding State,Converter={x:Static converters:EqualityConverter.IsEqual},ConverterParameter={x:Static model:LoadState.Loading}}"
-                                Classes.loaded="{Binding State,Converter={x:Static converters:EqualityConverter.IsEqual},ConverterParameter={x:Static model:LoadState.Loaded}}"
-                                Classes.error="{Binding State,Converter={x:Static converters:EqualityConverter.IsEqual},ConverterParameter={x:Static model:LoadState.Failed}}" 
+                                Classes.versionlow="{Binding State,Converter={x:Static converters:EqualityConverter.IsEqual},ConverterParameter={x:Static model:PluginStatus.VersionTooLow}}"
+                                Classes.loading="{Binding State,Converter={x:Static converters:EqualityConverter.IsEqual},ConverterParameter={x:Static model:PluginStatus.Loading}}"
+                                Classes.loaded="{Binding State,Converter={x:Static converters:EqualityConverter.IsEqual},ConverterParameter={x:Static model:PluginStatus.Installed}}"
+                                Classes.error="{Binding State,Converter={x:Static converters:EqualityConverter.IsEqual},ConverterParameter={x:Static model:PluginStatus.Failed}}" 
                           Grid.Column="5" >
 							  <TextBlock.Styles>
+                                  <Style Selector="TextBlock.versionlow" >
+									  <Setter Property="Text" Value="❗ 主程序需要更新" />
+                                      <Setter Property="Foreground" Value="red" />
+                                  </Style>
 								  <Style Selector="TextBlock.loading" >
 									  <Setter Property="Text" Value="开始下载..." />
                                   </Style>
