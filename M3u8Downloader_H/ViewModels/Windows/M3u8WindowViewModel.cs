@@ -13,6 +13,7 @@ using M3u8Downloader_H.Utils;
 using M3u8Downloader_H.ViewModels.Downloads;
 using System;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace M3u8Downloader_H.ViewModels.Windows
 {

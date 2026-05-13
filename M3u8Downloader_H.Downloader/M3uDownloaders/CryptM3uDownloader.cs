@@ -17,7 +17,7 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
         private readonly IDownloadContext context;
 
 
-        public Func<Stream, CancellationToken, Stream> HandleDataFunc { get; set; } = default!;
+        public Func<Stream, CancellationToken,Task< Stream>> HandleDataFunc { get; set; } = default!;
         public Func<string, Stream, CancellationToken, Task> WriteToFileFunc { get; set; } = default!;
 
         public CryptM3uDownloader(IDownloadService downloadService, IDownloadContext context)
@@ -81,9 +81,9 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
             throw new NotImplementedException();
         }
 
-        public Stream HandleData(Stream stream, CancellationToken cancellationToken)
+        public Task<Stream> HandleData(Stream stream, CancellationToken cancellationToken)
         {
-            return stream.AesDecrypt(_m3uFileinfo.Key.BKey, _m3uFileinfo.Key.IV);
+            return Task.FromResult(stream.AesDecrypt(_m3uFileinfo.Key.BKey, _m3uFileinfo.Key.IV));
         }
 
 

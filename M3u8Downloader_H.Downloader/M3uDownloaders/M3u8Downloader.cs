@@ -22,7 +22,7 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
         private IEnumerable<KeyValuePair<string, string>>? _headers => context.DownloadParam.Headers ?? context.DownloaderSetting.Headers;
         private string _cachePath => context.DownloadParam.CachePath;
 
-        public Func<Stream, CancellationToken, Stream> HandleDataFunc { get; set; } = default!;
+        public Func<Stream, CancellationToken, Task<Stream>> HandleDataFunc { get; set; } = default!;
         public Func<string, Stream, CancellationToken, Task> WriteToFileFunc { get; set; } = default!;
 
         private bool _isFmp4 = false;
@@ -147,7 +147,7 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
                     cancellationTokenSource.CancelAfter(TimeSpan.FromSeconds(context.DownloaderSetting.Timeouts));
 
                     Stream tmpstream = await context.HttpClient.GetResponseContentAsync(m3UMediaInfo.Uri, headers, m3UMediaInfo.RangeValue, cancellationTokenSource.Token);
-                    using Stream stream = HandleDataFunc(new HandleStreamInternal(tmpstream, dialogProgress),  cancellationTokenSource.Token);
+                    using Stream stream = await HandleDataFunc(new HandleStreamInternal(tmpstream, dialogProgress),  cancellationTokenSource.Token);
 
                     await WriteToFileFunc(mediaPath, stream, cancellationTokenSource.Token);
                     IsSuccessful = true;
@@ -188,13 +188,12 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
         }
 
 
-        public Stream HandleData(Stream stream,  CancellationToken cancellationToken = default)
+        public async Task<Stream> HandleData(Stream stream,  CancellationToken cancellationToken = default)
         {
             HandleStreamInternal handleImageStream = (HandleStreamInternal)stream;
             if (_isFmp4 is false)
             {
-                Task t = handleImageStream.InitializePositionAsync(2000, cancellationToken);
-                t.Wait(cancellationToken);
+                 await handleImageStream.InitializePositionAsync(2000, cancellationToken);
             }
             return handleImageStream;
         }

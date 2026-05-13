@@ -21,7 +21,7 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
         protected IEnumerable<KeyValuePair<string, string>>? _headers => downloadContext.DownloadParam.Headers ?? downloadContext.DownloaderSetting.Headers;
 
         public Func<TimeSpan,CancellationToken, Task<IM3uFileInfo>> GetLiveFileInfoFunc { get; set; } = default!;
-        public Func<Stream, CancellationToken, Stream> HandleDataFunc { get; set ; } = default!;
+        public Func<Stream, CancellationToken,Task< Stream>> HandleDataFunc { get; set ; } = default!;
         public Func<string, Stream, CancellationToken, Task> WriteToFileFunc { get ; set; } = default!;
 
         public ValueTask Initialization(CancellationToken cancellationToken = default)

@@ -49,7 +49,7 @@ namespace M3u8Downloader_H.Abstractions.Plugins.Download
         /// <param name="stream">请求到的数据流</param>
         /// <param name="cancellationToken">取消的token</param>
         /// <returns>返回处理后的数据</returns>
-        Func<Stream, CancellationToken, Stream> HandleDataFunc { get; set; }
+        Func<Stream, CancellationToken, Task<Stream>> HandleDataFunc { get; set; }
 
 
         /// <summary>

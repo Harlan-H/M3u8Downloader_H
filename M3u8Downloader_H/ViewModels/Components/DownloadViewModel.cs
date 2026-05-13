@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using Avalonia.Threading;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using M3u8Downloader_H.Abstractions.Common;
 using M3u8Downloader_H.Common.Models;
@@ -10,6 +11,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Timers;
 
 namespace M3u8Downloader_H.ViewModels.Downloads
@@ -81,7 +83,6 @@ namespace M3u8Downloader_H.ViewModels.Downloads
                 downloadProgress?.Clear();
                 cancellationTokenSource?.Dispose();
             }
-
         }
 
         private bool CanShowFile => Status == DownloadStatus.Completed;
@@ -187,7 +188,7 @@ namespace M3u8Downloader_H.ViewModels.Downloads
 
             public void SetDownloadStatus(bool IsLiveDownloading)
             {
-                downloadViewModel.Status = IsLiveDownloading ? DownloadStatus.StartedLive : DownloadStatus.StartedVod;
+                    downloadViewModel.Status = IsLiveDownloading ? DownloadStatus.StartedLive : DownloadStatus.StartedVod;
             }
 
             public void IncProgressNum(bool isInc)

@@ -101,8 +101,8 @@ namespace M3u8Downloader_H.ViewModels.Menus
                 return;
             }
 
-            download.Start();
             Downloads.Insert(0, download);
+            download.Start();
         }
 
         [RelayCommand]
