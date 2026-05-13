@@ -7,7 +7,7 @@
 	 <Authors>Harlan</Authors>
 	  <Version>1.0.2</Version>
 	  <Description>M3u8Downloader_H插件开发可能会用到的公共文件</Description>
-	  <RepositoryUrl>https://github.com/Harlan-H/M3u8Downloader_H</RepositoryUrl>
+	  <projectUrl>https://github.com/Harlan-H/M3u8Downloader_H</projectUrl>
 	  <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 

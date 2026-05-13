@@ -3,6 +3,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
 using M3u8Downloader_H.FrameWork;
+using M3u8Downloader_H.Plugin;
 using M3u8Downloader_H.Services;
 using M3u8Downloader_H.ViewModels;
 using M3u8Downloader_H.ViewModels.Menus;
@@ -24,7 +25,7 @@ namespace M3u8Downloader_H
             var services = new ServiceCollection();
 
             services.AddSingleton<SettingsService>();
-            services.AddSingleton<PluginService>();
+            services.AddSingleton<PluginManager>();
 
             services.AddSingleton<DashboardWindowViewModel>();
             services.AddSingleton<MainWindowViewModel>();

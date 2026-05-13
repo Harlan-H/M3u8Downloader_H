@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using M3u8Downloader_H.Plugin;
 using M3u8Downloader_H.Services;
 using M3u8Downloader_H.ViewModels.Components;
 using M3u8Downloader_H.ViewModels.Windows;
@@ -17,12 +18,12 @@ namespace M3u8Downloader_H.ViewModels.Menus
         public partial ViewModelBase SelectedTab { get; set; } 
 
 
-        public PluginManagerViewModel(PluginService pluginService)
+        public PluginManagerViewModel(PluginManager pluginManager)
         {
             Tabs =
             [
-                new LocalPluginViewModel(pluginService) { Title = "本地插件" },
-                new OnlinePluginViewModel() {Title = "在线插件"}
+                new LocalPluginViewModel(pluginManager) { Title = "本地插件" },
+                new OnlinePluginViewModel(pluginManager) {Title = "在线插件"}
             ];
 
             SelectedTab = Tabs[0];

@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.Messaging;
 using M3u8Downloader_H.FrameWork;
 using M3u8Downloader_H.Messages;
 using M3u8Downloader_H.Models;
+using M3u8Downloader_H.Plugin;
 using M3u8Downloader_H.Plugin.Services;
 using M3u8Downloader_H.Services;
 using M3u8Downloader_H.Utils;
@@ -27,12 +28,12 @@ namespace M3u8Downloader_H.ViewModels.Menus
         [ObservableProperty]
         public partial PluginNavItem Seleted { get; set; } = default!;
 
-        public AdvancedViewModel(PluginService pluginService)
+        public AdvancedViewModel(PluginManager pluginManager)
         {
-            pluginService.PluginEnabled += PluginService_PluginEnabled;
-            pluginService.PluginDisabled += PluginService_PluginDisabled;
+            pluginManager.PluginEnabled += PluginService_PluginEnabled;
+            pluginManager.PluginDisabled += PluginService_PluginDisabled;
             WeakReferenceMessenger.Default.Send(new GetAppComandServiceMessage(windowContext));
-            pluginService.InitActivePlugin();
+            pluginManager.InitActivePlugin();
         }
 
         private void PluginService_PluginEnabled(PluginHandle obj)

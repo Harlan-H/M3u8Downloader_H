@@ -19,8 +19,8 @@ namespace M3u8Downloader_H.Plugin.Models.Online
     public class OnlinePlugin
     {
         [JsonPropertyName("plugins")]
-        public List<OnlinePluginManifest> OnlinePluginManifests { get; set;  }
-    }
+        public List<OnlinePluginManifest> OnlinePluginManifests { get; set; } = default!;
+    } 
 
     [JsonSerializable(typeof(OnlinePlugin))]
     public partial class OnlinePluginManifestContext : JsonSerializerContext;

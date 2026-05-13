@@ -8,7 +8,7 @@ using System.Text.Json;
 
 namespace M3u8Downloader_H.Plugin.Services
 {
-    public class PluginHandle(FileInfo fileInfo, Action<PluginManifest,bool> registerAction,Func<string,PluginState> stateFunc)
+    public class PluginHandle
     {
         private readonly Dictionary<string, MemoryStream> _assemblies = [];
 
@@ -20,25 +20,17 @@ namespace M3u8Downloader_H.Plugin.Services
 
         public PluginManifest PluginManifest { get; private set; } = default!;
 
-        public bool Enable 
-        {
-            get => stateFunc(PluginManifest.Key).Enabled;
-            set => stateFunc(PluginManifest.Key).Enabled = value;
-        }
 
-        public void LoadManifest(ZipArchive zip)
+        public PluginManifest LoadManifest(ZipArchive zip)
         {
-            var manifestFile = zip.GetEntry("manifest.json");
-            if (manifestFile is null)
-                return;
+            var manifestFile = zip.GetEntry("manifest.json") ?? throw new InvalidDataException("没有manifest.json文件,无法加载插件");
 
             using var manifestSteam = manifestFile.Open();
-            var manifest = JsonSerializer.Deserialize(manifestSteam, PluginManifestContext.Default.PluginManifest);
-            if (manifest is null)
-                return;
+            var manifest = JsonSerializer.Deserialize(manifestSteam, PluginManifestContext.Default.PluginManifest)
+                    ?? throw new InvalidDataException("manifest反序列失败");
 
             PluginManifest = manifest;
-            registerAction(manifest,true);
+            return manifest;
         }
 
         public void LoadAssembils(ZipArchive zip)
@@ -106,12 +98,8 @@ namespace M3u8Downloader_H.Plugin.Services
             if (WindowInstance is not null)
                 WindowInstance = null;
 
-            registerAction(PluginManifest, false);
             LoadContext?.Unload();
             _assemblies.Clear();
-            fileInfo.Delete();
         }
-
-
     }
 }

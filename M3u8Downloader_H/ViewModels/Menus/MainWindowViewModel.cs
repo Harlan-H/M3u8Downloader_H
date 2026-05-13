@@ -8,6 +8,7 @@ using M3u8Downloader_H.Extensions;
 using M3u8Downloader_H.FrameWork;
 using M3u8Downloader_H.Messages;
 using M3u8Downloader_H.Models;
+using M3u8Downloader_H.Plugin;
 using M3u8Downloader_H.RestServer;
 using M3u8Downloader_H.Services;
 using M3u8Downloader_H.Utils;
@@ -27,7 +28,7 @@ namespace M3u8Downloader_H.ViewModels.Menus
     {
         private readonly HttpListenService httpListenService = HttpListenService.Instance;
         private readonly SettingsService settingsService;
-        private readonly PluginService pluginService;
+        private readonly PluginManager pluginManager;
         private readonly ViewModelManager viewModelManager;
         private readonly M3u8WindowViewModel m3U8WindowViewModel;
         private readonly MediaWindowViewModel mediaWindowViewModel;
@@ -43,12 +44,12 @@ namespace M3u8Downloader_H.ViewModels.Menus
         [ObservableProperty]
         public partial int? HttpServicePort { get; set; } = default!;
 
-        public MainWindowViewModel(SettingsService settingsService, PluginService pluginService)
+        public MainWindowViewModel(SettingsService settingsService, PluginManager pluginManager)
         {
             this.settingsService = settingsService;
-            this.pluginService = pluginService;
+            this.pluginManager = pluginManager;
             viewModelManager = new(settingsService);
-            m3U8WindowViewModel = new M3u8WindowViewModel(settingsService, pluginService, viewModelManager, Notifications) { Title = "M3U8", EnqueueDownloadAction = EnqueueDownload };
+            m3U8WindowViewModel = new M3u8WindowViewModel(settingsService, pluginManager, viewModelManager, Notifications) { Title = "M3U8", EnqueueDownloadAction = EnqueueDownload };
             SubWindows.Add(m3U8WindowViewModel);
             mediaWindowViewModel = new MediaWindowViewModel(settingsService, viewModelManager, Notifications) { Title = "长视频", EnqueueDownloadAction = EnqueueDownload };
             SubWindows.Add(mediaWindowViewModel);
@@ -81,7 +82,7 @@ namespace M3u8Downloader_H.ViewModels.Menus
         public Task InitializeAsync()
         {
             settingsService.Load();
-            pluginService.Load();
+            pluginManager.Load();
 
 
             httpListenService.Run(i => HttpServicePort = i);

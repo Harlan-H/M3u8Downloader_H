@@ -1,18 +1,15 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using M3u8Downloader_H.Plugin;
 using M3u8Downloader_H.Plugin.Services;
-using M3u8Downloader_H.Services;
 using M3u8Downloader_H.Utils;
 using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace M3u8Downloader_H.ViewModels.Components
 {
-    public partial class PluginLocalItem(PluginService pluginService , PluginHandle pluginHandle) : ObservableObject
+    public partial class PluginLocalItem(PluginManager pluginManager , PluginHandle pluginHandle) : ObservableObject
     {
         private readonly DebounceDispatcher debounceDispatcher = new();
+
         public string Title => pluginHandle.PluginManifest.BasicInfo.Title;
         public string Desc => pluginHandle.PluginManifest.BasicInfo.Description;
         public Version Version => pluginHandle.PluginManifest.Release.Version;
@@ -21,7 +18,7 @@ namespace M3u8Downloader_H.ViewModels.Components
         public partial string State {  get; set; }
 
         [ObservableProperty]
-        public partial bool IsEnable { get; set; } = pluginHandle.Enable;
+        public partial bool IsEnable { get; set; } = pluginManager.RegistryClient.IsEnable(pluginHandle.PluginManifest);
 
 
         partial void OnIsEnableChanged(bool value)
@@ -33,12 +30,12 @@ namespace M3u8Downloader_H.ViewModels.Components
                     {
                         if (value)
                         {
-                            pluginService.Enable(pluginHandle);
+                            pluginManager.Enable(pluginHandle);
                             State = "启动成功";
                         }
                         else
                         {
-                            pluginService.Disable(pluginHandle);
+                            pluginManager.Disable(pluginHandle);
                             State = "禁用成功";
                         }
                     }
@@ -49,6 +46,11 @@ namespace M3u8Downloader_H.ViewModels.Components
 
                 }
                 , 1000);
+        }
+
+        public void DeletePlugin()
+        {
+            pluginManager.DelPlugins(pluginHandle);
         }
     }
 }

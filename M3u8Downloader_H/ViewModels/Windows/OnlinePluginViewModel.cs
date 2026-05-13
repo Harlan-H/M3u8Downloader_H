@@ -1,7 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using M3u8Downloader_H.Models;
 using M3u8Downloader_H.Plugin;
-using M3u8Downloader_H.Plugin.PluginClients;
+using M3u8Downloader_H.Plugin.Services;
 using M3u8Downloader_H.Utils;
 using M3u8Downloader_H.ViewModels.Components;
 using System;
@@ -11,10 +11,10 @@ using System.Threading.Tasks;
 
 namespace M3u8Downloader_H.ViewModels.Windows
 {
-    public partial class OnlinePluginViewModel : ViewModelBase
+    public partial class OnlinePluginViewModel(PluginManager pluginManager) : ViewModelBase
     {
-        private readonly PluginRepository pluginRepository;
-        private readonly PluginRegistry pluginRegistry;
+        private readonly PluginRepository pluginRepository = new(Http.Instance.GetClient());
+        private readonly PluginRegistry pluginRegistry = pluginManager.RegistryClient;
 
         public ObservableCollection<PluginOnlineItem> PluginOnlineItems { get; } = [];
 
@@ -23,12 +23,6 @@ namespace M3u8Downloader_H.ViewModels.Windows
 
         [ObservableProperty]
         public partial string ErrorString { get; set; } = string.Empty;
-
-        public OnlinePluginViewModel()
-        {
-            pluginRegistry = PluginRegistry.Instance;
-            pluginRepository = new PluginRepository(Http.Instance.GetClient());
-        }
 
         public async Task InitPluginItem()
         {

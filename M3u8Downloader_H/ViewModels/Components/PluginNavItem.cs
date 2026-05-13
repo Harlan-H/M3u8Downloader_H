@@ -10,6 +10,8 @@ namespace M3u8Downloader_H.ViewModels.Components
         private Control? _view;
         private bool disposedValue;
 
+        public string Key => pluginHandle.PluginManifest.Key;
+
         public string Title => pluginHandle.PluginManifest.BasicInfo.Title;
 
         public Control GetView(IWindowContext windowContext)
@@ -57,9 +59,9 @@ namespace M3u8Downloader_H.ViewModels.Components
     {
         extension(PluginNavItem)
         {
-            public static bool operator ==(PluginNavItem pluginNavItem, PluginHandle pluginHandle) => pluginNavItem.Title.Equals(pluginHandle.PluginManifest.BasicInfo.Title);
+            public static bool operator ==(PluginNavItem pluginNavItem, PluginHandle pluginHandle) => pluginNavItem.Key.Equals(pluginHandle.PluginManifest.Key);
             public static bool operator !=(PluginNavItem pluginNavItem, PluginHandle pluginHandle) => !(pluginNavItem == pluginHandle);
-            public static bool operator ==(PluginHandle pluginHandle, PluginNavItem pluginNavItem) => pluginHandle.PluginManifest.BasicInfo.Title.Equals(pluginNavItem.Title);
+            public static bool operator ==(PluginHandle pluginHandle, PluginNavItem pluginNavItem) => pluginHandle.PluginManifest.Key.Equals(pluginNavItem.Key);
             public static bool operator !=(PluginHandle pluginHandle, PluginNavItem pluginNavItem) => !(pluginHandle == pluginNavItem);
             public static bool operator ==(PluginNavItem pluginNavItem, PluginNavItem pluginNavItem2) => ReferenceEquals(pluginNavItem,pluginNavItem2);
             public static bool operator !=(PluginNavItem pluginNavItem, PluginNavItem pluginNavItem2) => !(pluginNavItem == pluginNavItem2);

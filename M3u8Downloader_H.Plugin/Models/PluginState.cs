@@ -9,6 +9,7 @@ namespace M3u8Downloader_H.Plugin.Models
     {
         public string Key { get; set; } = default!;
         public bool Enabled { get; set; }
+        public string FullName { get; set; } = default!;
         public Version CurrentVersion { get; set; } = default!;
         public DateTime LastLoadedTime { get; set; } = DateTimeOffset.Now.LocalDateTime;
 

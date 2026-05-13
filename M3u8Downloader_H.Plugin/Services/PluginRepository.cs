@@ -2,7 +2,7 @@
 using M3u8Downloader_H.Plugin.Models.Online;
 using System.Text.Json;
 
-namespace M3u8Downloader_H.Plugin
+namespace M3u8Downloader_H.Plugin.Services
 {
     public partial class PluginRepository
     {
