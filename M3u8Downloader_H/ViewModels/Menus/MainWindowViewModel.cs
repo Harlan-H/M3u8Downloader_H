@@ -79,13 +79,18 @@ namespace M3u8Downloader_H.ViewModels.Menus
 
         public Task InitializeAsync()
         {
-            settingsService.Load();
-            pluginManager.Load();
+            try
+            {
+                settingsService.Load();
+                pluginManager.Load();
 
 
-            httpListenService.Run(i => HttpServicePort = i);
-            httpListenService.Initialization(appCommandService);
-            
+                httpListenService.Run(i => HttpServicePort = i);
+                httpListenService.Initialization(appCommandService);
+            }
+            catch (Exception ex) {
+                Notifications.Notify($"初始化失敗\n {ex}");
+            }
             return Task.FromResult(0);
         }
 

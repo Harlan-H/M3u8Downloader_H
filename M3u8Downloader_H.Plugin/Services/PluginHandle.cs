@@ -52,7 +52,7 @@ namespace M3u8Downloader_H.Plugin.Services
              => pluginEntry.CanHandle(url);
 
 
-        private void LoadLibrary()
+        public void LoadLibrary()
         {
             if (pluginEntry is not null)
                 return;
@@ -60,18 +60,18 @@ namespace M3u8Downloader_H.Plugin.Services
             LoadContext = new PluginLoadContext(_assemblies);
             Assembly = LoadContext.LoadFromStream(_assemblies[PluginManifest.Runtime.EntryPoint]);
             var type  = Assembly.GetType(PluginManifest.Runtime.EntryType)
-                    ?? throw new InvalidDataException("未实现IPluginEntry接口无法开启");
+                    ?? throw new InvalidDataException($"{PluginManifest.Runtime.EntryPoint} 未实现IPluginEntry接口无法开启");
 
             var instance = Activator.CreateInstance(type);
             if (instance is null || instance is not IPluginEntry ipluginEntryInstance)
-                throw new InvalidDataException("继承IWindowPlugin接口的类没有默认的构造函数");
+                throw new InvalidDataException($"{PluginManifest.Runtime.EntryPoint} 继承IWindowPlugin接口的类没有默认的构造函数");
 
             pluginEntry = ipluginEntryInstance;
         }
 
         public IWindowPlugin LoadUI()
         {
-            LoadLibrary();
+            //LoadLibrary();
 
             var instance = pluginEntry.CreateWindoPlugin();
             if (instance is null || instance is not IWindowPlugin windowInstance)
@@ -83,7 +83,7 @@ namespace M3u8Downloader_H.Plugin.Services
 
         public IDownloadPlugin? LoadDownload()
         {
-            LoadLibrary();
+            //LoadLibrary();
 
             var instance = pluginEntry.CreateDownloadPlugin();
             if (instance is null || instance is not IDownloadPlugin downloadInstance)

@@ -29,7 +29,11 @@ namespace M3u8Downloader_H.Plugin
         {
             RegistryClient.Load();
             LoadPlugins();
-            _activePlugins = [.. plugins.Where(p => RegistryClient.IsEnable(p.PluginManifest))];
+            foreach (var item in plugins.Where(p => RegistryClient.IsEnable(p.PluginManifest)))
+            {
+                item.LoadLibrary();
+                _activePlugins.Add(item);
+            }
         }
 
         public void DelPlugins(PluginHandle pluginHandle)
@@ -63,6 +67,7 @@ namespace M3u8Downloader_H.Plugin
 
             _activePlugins.Add(p);
             PluginEnabled?.Invoke(p);
+            p.LoadLibrary();
         }
 
         public void Disable(PluginHandle p)
@@ -73,6 +78,7 @@ namespace M3u8Downloader_H.Plugin
 
             PluginDisabled?.Invoke(p);
             _activePlugins.Remove(p);
+            p.Unload();
         }
 
         public IDownloadPlugin? CreateDownloadPlugin(string? key, Uri url)
@@ -91,10 +97,7 @@ namespace M3u8Downloader_H.Plugin
                 var plugin = _activePlugins.FirstOrDefault(p => p.CanHandleDownload(url));
                 return plugin?.LoadDownload();
             }
-            else
-            {
-                return null;
-            }
+            return null;
         }
     }
 }

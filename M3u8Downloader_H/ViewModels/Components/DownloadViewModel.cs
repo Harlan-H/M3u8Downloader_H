@@ -188,7 +188,7 @@ namespace M3u8Downloader_H.ViewModels.Downloads
 
             public void SetDownloadStatus(bool IsLiveDownloading)
             {
-                    downloadViewModel.Status = IsLiveDownloading ? DownloadStatus.StartedLive : DownloadStatus.StartedVod;
+                downloadViewModel.Status = IsLiveDownloading ? DownloadStatus.StartedLive : DownloadStatus.StartedVod;
             }
 
             public void IncProgressNum(bool isInc)
