@@ -3,6 +3,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
 using M3u8Downloader_H.FrameWork;
+using M3u8Downloader_H.Plugin;
 using M3u8Downloader_H.Services;
 using M3u8Downloader_H.ViewModels;
 using M3u8Downloader_H.ViewModels.Menus;
@@ -24,18 +25,25 @@ namespace M3u8Downloader_H
             var services = new ServiceCollection();
 
             services.AddSingleton<SettingsService>();
-            services.AddSingleton<PluginService>();
+            services.AddSingleton<PluginManager>();
 
             services.AddSingleton<DashboardWindowViewModel>();
             services.AddSingleton<MainWindowViewModel>();
-            services.AddSingleton<ConverterViewModel>();
+            services.AddSingleton<PluginManagerViewModel>();
+            services.AddSingleton<AdvancedViewModel>();
+            services.AddSingleton<LocalPluginViewModel>();
+            services.AddSingleton<OnlinePluginViewModel>();
             services.AddSingleton<SponsorViewModel>();
             services.AddSingleton<AboutViewModel>();
             services.AddSingleton<SettingsViewModel>();
 
             services.AddSingleton<MainWindowView>();
+            services.AddSingleton<AdvancedView>();
+            services.AddSingleton<PluginManagerView>();
+            services.AddSingleton<LocalPluginView>();
+            services.AddSingleton<OnlinePluginView>();
             services.AddSingleton<AboutView>();
-            services.AddSingleton<ConverterView>();
+            services.AddSingleton<SettingsView>();
             services.AddSingleton<SponsorView>();
             services.AddSingleton<M3u8WindowView>();
             services.AddSingleton<MediaWindowView>();

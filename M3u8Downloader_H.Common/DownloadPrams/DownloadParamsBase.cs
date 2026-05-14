@@ -1,6 +1,5 @@
 ﻿using M3u8Downloader_H.Abstractions.Common;
 using M3u8Downloader_H.Common.Utils;
-using M3u8Downloader_H.Utils;
 
 namespace M3u8Downloader_H.Common.DownloadPrams
 {
@@ -19,7 +18,7 @@ namespace M3u8Downloader_H.Common.DownloadPrams
 
         public string SavePath { get;  set; } = default!;
 
-        public IDictionary<string, string>? Headers { get; protected set; } = default!;
+        public IDictionary<string, string>? Headers { get; set; } = default!;
 
         public string VideoName
         {

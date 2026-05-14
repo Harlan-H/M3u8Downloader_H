@@ -1,111 +1,73 @@
 ﻿using M3u8Downloader_H.Downloader.M3uDownloaders;
-using M3u8Downloader_H.Abstractions.M3uDownloaders;
 using M3u8Downloader_H.Abstractions.Common;
 using M3u8Downloader_H.Downloader.MediaDownloads;
-using M3u8Downloader_H.Abstractions.Plugins;
 using M3u8Downloader_H.Abstractions.M3u8;
-using M3u8Downloader_H.Downloader.Extensions;
+using M3u8Downloader_H.Common.Extensions;
+using M3u8Downloader_H.Abstractions.Models;
+using M3u8Downloader_H.Abstractions.Plugins.Download;
 
 
 namespace M3u8Downloader_H.Downloader
 {
-    public class DownloaderClient
+    public class DownloaderClient(IDownloadContext context, IDownloadPlugin? downloadPlugin)
     {
-        private readonly HttpClient httpClient = default!;
-        private readonly IPluginManager? pluginManager;
-        private readonly ILog log;
-        private readonly IDownloadParamBase downloadParam;
-        private readonly IDownloaderSetting downloaderSetting = default!;
-
-        private OnlyDecryptDownloader? _onlyDecryptDownloader;
-        private M3uDownloaders.DownloaderBase? _m3u8downloader;
-        private MediaDownloads.DownloaderBase? _mediaDownloader;
+        private IDownloadService? _m3u8downloader;
+        private DownloaderBase? _mediaDownloader;
 
         public IDialogProgress DialogProgress { get; set; } = default!;
         public IM3uFileInfo M3UFileInfo { get; set; } = default!;
         public Func<TimeSpan,CancellationToken, Task<IM3uFileInfo>> GetLiveFileInfoFunc { get; set; } = default!;
 
-        public M3uDownloaders.DownloaderBase M3u8Downloader
+        public IDownloadService M3u8Downloader
         {
             get
             {
-                if(_m3u8downloader is null)
+                if (_m3u8downloader is null)
                 {
+                    IDownloadService m3U8Downloader = new M3u8Downloader(context, DialogProgress);
+                    if(downloadPlugin is not null)
+                    {
+                        var pluginDownloader = downloadPlugin.CreateDownloadService(m3U8Downloader, context);
+                        if(pluginDownloader is not null)
+                        {
+                            _m3u8downloader = pluginDownloader;
+                            return pluginDownloader;
+                        }
+                    }
+
                     if (!M3UFileInfo.IsVod())
                     {
-                        LiveM3uDownloader liveM3UDownloader = new(httpClient)
+                        LiveM3uDownloader liveM3UDownloader = new(m3U8Downloader,context, DialogProgress)
                         {
                             GetLiveFileInfoFunc = GetLiveFileInfoFunc
                         };
-                        _m3u8downloader = liveM3UDownloader;
+                        m3U8Downloader = liveM3UDownloader;
                     }
                     else if (M3UFileInfo.Key is not null)
-                        _m3u8downloader = new CryptM3uDownloader(httpClient, M3UFileInfo);
-                    else if (pluginManager?.PluginService is not null)
-                        _m3u8downloader = new PluginM3u8Downloader(pluginManager?.PluginService!, httpClient, M3UFileInfo);
-                    else
-                        _m3u8downloader = new M3u8Downloader(httpClient);
-
-                    _m3u8downloader.DownloadParam = downloadParam;
-                    _m3u8downloader.Log = log;
-                    _m3u8downloader.DownloaderSetting = downloaderSetting;
+                        m3U8Downloader = new CryptM3uDownloader(m3U8Downloader, context);
+                        
+                _m3u8downloader = m3U8Downloader;
                 }
-
-                _m3u8downloader.DialogProgress = DialogProgress;
                 return _m3u8downloader;
             }
         }
 
-        public MediaDownloads.DownloaderBase MediaDownloader
+        public DownloaderBase MediaDownloader
         {
             get
             {
-                IMediaDownloadParam mediaDownloadParam = (IMediaDownloadParam)downloadParam;
+                IMediaDownloadParam mediaDownloadParam = (IMediaDownloadParam)context.DownloadParam;
                 if(_mediaDownloader is null)
                 {
                     if (mediaDownloadParam.IsVideoStream)
-                        _mediaDownloader = new MediaDownloader(httpClient);
+                        _mediaDownloader = new MediaDownloader(context);
                     else
-                        _mediaDownloader = new LiveVideoDownloader(httpClient);
-
-                    _mediaDownloader.DownloadParam = mediaDownloadParam;
-                    _mediaDownloader.Log = log;
-                    _mediaDownloader.DownloaderSetting = downloaderSetting;
+                        _mediaDownloader = new LiveVideoDownloader(context);
                 }
 
                 _mediaDownloader.DialogProgress = DialogProgress;
                 return _mediaDownloader;
             }
-        }
-
-        public OnlyDecryptDownloader M3uDecrypter
-        {
-            get
-            {
-                _onlyDecryptDownloader ??= new()
-                {
-                    DownloadParam = downloadParam,
-                    Log = log,
-                };
-                _onlyDecryptDownloader.DialogProgress = DialogProgress;
-                return _onlyDecryptDownloader;
-            }
-        }
-
-
-        public DownloaderClient(HttpClient httpClient, IPluginManager? PluginManager, ILog log, IDownloadParamBase downloadParam, IDownloaderSetting downloaderSetting)
-        {
-            this.httpClient = httpClient;
-            pluginManager = PluginManager;
-            this.log = log;
-            this.downloadParam = downloadParam;
-            this.downloaderSetting = downloaderSetting;
-        }
-
-        public DownloaderClient(ILog log, IDownloadParamBase DownloadParam)
-        {
-            this.log = log;
-            downloadParam = DownloadParam;
         }
     }
 }

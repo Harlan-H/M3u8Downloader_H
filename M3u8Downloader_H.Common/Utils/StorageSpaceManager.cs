@@ -35,18 +35,30 @@ public class StorageSpaceManager
 
     public static string GetPluginPath()
     {
+#if DEBUG
+        return @"C:\Users\admin\Desktop\666\Plugins";
+#else
         if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             return Path.Combine(StorageSpace.UserDomain.GetDirectoryPath(), "M3u8Downloader_H", "Plugins");
         else
             return Path.Combine(StorageSpace.Instance.GetDirectoryPath(), "Plugins");
+#endif
+    }
 
+    public static string GetTempPath()
+    {
+#if DEBUG
+        return @"C:\Users\admin\Desktop\666\Temp";
+#else
+        return Path.Combine(StorageSpace.UserDomain.GetDirectoryPath(), "M3u8Downloader_H", "Temp");
+#endif
     }
 
 
     public static string GetConfigPath()
     {
 #if DEBUG
-        return @"C:\Users\admin\Desktop\666";
+        return @"C:\Users\admin\Desktop\666\Config";
 #else
         if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             return Path.Combine(StorageSpace.UserDomain.GetDirectoryPath(), "M3u8Downloader_H","Config");

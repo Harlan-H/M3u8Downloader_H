@@ -1,26 +1,25 @@
 ﻿using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
-using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using M3u8Downloader_H.Common.Models;
 using M3u8Downloader_H.Extensions;
 using M3u8Downloader_H.FrameWork;
+using M3u8Downloader_H.Messages;
 using M3u8Downloader_H.Models;
+using M3u8Downloader_H.Plugin;
 using M3u8Downloader_H.RestServer;
 using M3u8Downloader_H.Services;
 using M3u8Downloader_H.Utils;
 using M3u8Downloader_H.ViewModels.Dialogs;
 using M3u8Downloader_H.ViewModels.Downloads;
-using M3u8Downloader_H.ViewModels.FrameWork;
 using M3u8Downloader_H.ViewModels.Windows;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace M3u8Downloader_H.ViewModels.Menus
@@ -29,11 +28,12 @@ namespace M3u8Downloader_H.ViewModels.Menus
     {
         private readonly HttpListenService httpListenService = HttpListenService.Instance;
         private readonly SettingsService settingsService;
-        private readonly PluginService pluginService;
+        private readonly PluginManager pluginManager;
         private readonly ViewModelManager viewModelManager;
         private readonly M3u8WindowViewModel m3U8WindowViewModel;
         private readonly MediaWindowViewModel mediaWindowViewModel;
         private readonly List<IDisposable> _disposables = [];
+        private readonly AppCommandService appCommandService;
         public static SnackbarManager Notifications { get; } = new SnackbarManager("MainWindowHost",TimeSpan.FromSeconds(5));
         
 
@@ -44,23 +44,29 @@ namespace M3u8Downloader_H.ViewModels.Menus
         [ObservableProperty]
         public partial int? HttpServicePort { get; set; } = default!;
 
-        public MainWindowViewModel(SettingsService settingsService, PluginService pluginService)
+        public MainWindowViewModel(SettingsService settingsService, PluginManager pluginManager)
         {
             this.settingsService = settingsService;
-            this.pluginService = pluginService;
+            this.pluginManager = pluginManager;
             viewModelManager = new(settingsService);
-            m3U8WindowViewModel = new M3u8WindowViewModel(settingsService, pluginService, viewModelManager, Notifications) { Title = "M3U8", EnqueueDownloadAction = EnqueueDownload };
+            m3U8WindowViewModel = new M3u8WindowViewModel(settingsService, pluginManager, viewModelManager, Notifications) { Title = "M3U8", EnqueueDownloadAction = EnqueueDownload };
             SubWindows.Add(m3U8WindowViewModel);
             mediaWindowViewModel = new MediaWindowViewModel(settingsService, viewModelManager, Notifications) { Title = "长视频", EnqueueDownloadAction = EnqueueDownload };
             SubWindows.Add(mediaWindowViewModel);
+            appCommandService = new AppCommandService(m3U8WindowViewModel.ProcessM3u8Download, m3U8WindowViewModel.ProcessM3u8Download, mediaWindowViewModel.ProcessMediaDownload);
+
+            WeakReferenceMessenger.Default.Register<GetAppComandServiceMessage>(this, (r, m) =>
+            {
+                m.Value.AppCommandService = appCommandService;
+            });
 
             _disposables.Add(settingsService.WatchProperty(
                 s => s.MaxConcurrentDownloadCount,
                 () => ThrottlingSemaphore.Instance.MaxCount = settingsService.MaxConcurrentDownloadCount));
 
             _disposables.Add(settingsService.WatchProperty(
-                s => s.ProxyAddress,
-                () => HttpClient.DefaultProxy = string.IsNullOrWhiteSpace(settingsService.ProxyAddress) ? new WebProxy() : new WebProxy(settingsService.ProxyAddress)));
+                s => s.ProxyInfo,
+                () => Http.Instance.UpdateProxy(settingsService.ProxyInfo)));
         }
 
         ~MainWindowViewModel()
@@ -71,37 +77,20 @@ namespace M3u8Downloader_H.ViewModels.Menus
             }
         }
 
-
-
         public Task InitializeAsync()
         {
-            settingsService.Load();
-            pluginService.Load();
+            try
+            {
+                settingsService.Load();
+                pluginManager.Load();
 
-            httpListenService.Run(i => HttpServicePort = i);
-            httpListenService.Initialization(
-                (param, key) =>
-                {
-                    Dispatcher.UIThread.Post(() =>
-                    {
-                        m3U8WindowViewModel.ProcessM3u8Download(param, key);
-                    });
-                },
-                (param,fileinfo,key) =>
-                {
-                    Dispatcher.UIThread.Post(() =>
-                    {
-                        m3U8WindowViewModel.ProcessM3u8Download(param, fileinfo,key);
-                    });
-                },
-                (param) =>
-                {
-                    Dispatcher.UIThread.Post(() =>
-                    {
-                        mediaWindowViewModel.ProcessMediaDownload(param);
-                    });
-                });
-            
+
+                httpListenService.Run(i => HttpServicePort = i);
+                httpListenService.Initialization(appCommandService);
+            }
+            catch (Exception ex) {
+                Notifications.Notify($"初始化失敗\n {ex}");
+            }
             return Task.FromResult(0);
         }
 
@@ -116,8 +105,8 @@ namespace M3u8Downloader_H.ViewModels.Menus
                 return;
             }
 
-            download.Start();
             Downloads.Insert(0, download);
+            download.Start();
         }
 
         [RelayCommand]

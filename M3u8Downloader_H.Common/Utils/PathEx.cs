@@ -4,7 +4,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace M3u8Downloader_H.Utils
+namespace M3u8Downloader_H.Common.Utils
 {
     internal static class PathEx
     {

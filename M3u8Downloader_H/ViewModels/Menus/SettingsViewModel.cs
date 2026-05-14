@@ -25,12 +25,15 @@ namespace M3u8Downloader_H.ViewModels.Menus
         [ObservableProperty]
         public partial string[] Formats { get; private set; } = { "mp4" };
 
+        [ObservableProperty]
+        public partial ProxyService ProxyInfo { get; set; }
 
         [RelayCommand]
         private void Initialize()
         {
             Debug.WriteLine("Initialize");
             SettingsServiceClone = settingService.Clone<SettingsService>();
+            ProxyInfo = SettingsServiceClone.ProxyInfo.Clone();
         }
 
         [RelayCommand]
@@ -38,6 +41,10 @@ namespace M3u8Downloader_H.ViewModels.Menus
         {
             try
             {
+                if (SettingsServiceClone.ProxyInfo != ProxyInfo)
+                {
+                    SettingsServiceClone.ProxyInfo = ProxyInfo.Clone();
+                }
                 settingService.CopyFrom(obj);
                 Notifications.Notify("设置已经保存！！！");
                 settingService.Save();
@@ -58,9 +65,9 @@ namespace M3u8Downloader_H.ViewModels.Menus
         private bool CanTryConnectProxy => !IsActived;
 
         [RelayCommand(CanExecute = nameof(CanTryConnectProxy))]
-        private async Task TryConnectProxy(string proxy)
+        private async Task TryConnectProxy(ProxyService proxy)
         {
-            if (string.IsNullOrWhiteSpace(proxy))
+            if (string.IsNullOrWhiteSpace(proxy.Address))
             {
                 Notifications.Notify("请输入代理地址后,再次点击");
                 return;
@@ -69,9 +76,13 @@ namespace M3u8Downloader_H.ViewModels.Menus
             IsActived = true;
             try
             {
+                var webproxy = new WebProxy(proxy.Address);
+                if (!string.IsNullOrWhiteSpace(proxy.UserName))
+                    webproxy.Credentials = new NetworkCredential(proxy.UserName, proxy.PassWord);
+
                 using HttpClientHandler clientHandler = new()
                 {
-                    Proxy = new WebProxy(proxy)
+                    Proxy = webproxy
                 };
                 using HttpClient httpclient = new(clientHandler)
                 {

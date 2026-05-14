@@ -123,6 +123,7 @@ jobs:
           | [M3u8Downloader_H-singleFile-osx-arm64](https://github.com/Harlan-H/M3u8Downloader_H/releases/download/${{github.ref_name}}/M3u8Downloader_H-singleFile-osx-arm64.zip) | mac m1及以上芯片单文件本 | 
           | [M3u8Downloader_H-linux-x64](https://github.com/Harlan-H/M3u8Downloader_H/releases/download/${{github.ref_name}}/M3u8Downloader_H-linux-x64.zip) | linux 64位版本,已在ubuntu debian测试可用 | 
           | [M3u8Downloader_H-singleFile-linux-x64](https://github.com/Harlan-H/M3u8Downloader_H/releases/download/${{github.ref_name}}/M3u8Downloader_H-singleFile-linux-x64.zip) | linux 64位单文件版本| 
+          | [M3u8Downloader_H-Docker](https://github.com/Harlan-H/M3u8Downloader_H-Docker)| linux x64  Docker版本 |
           - mac用户执行出现文件破损执行,先到对应目录 再执行 sudo xattr -d com.apple.quarantine M3u8Downloader_H.app
           - win用户出现resetApi初始化失败,需要运行文件夹下的Add-PortAcl.ps1脚本,需要先解除禁止脚本运行
           - win7-x64用户使用需要安装vc2015运行库,开启tls1.2否则程序会出现要求的函数不受支持的报错.

@@ -2,19 +2,23 @@
 using CommunityToolkit.Mvvm.Input;
 using M3u8Downloader_H.Abstractions.Common;
 using M3u8Downloader_H.Abstractions.M3u8;
+using M3u8Downloader_H.Abstractions.Plugins;
+using M3u8Downloader_H.Abstractions.Plugins.Download;
 using M3u8Downloader_H.Common.DownloadPrams;
 using M3u8Downloader_H.Extensions;
 using M3u8Downloader_H.FrameWork;
 using M3u8Downloader_H.Models;
+using M3u8Downloader_H.Plugin;
 using M3u8Downloader_H.Services;
 using M3u8Downloader_H.Utils;
 using M3u8Downloader_H.ViewModels.Downloads;
 using System;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace M3u8Downloader_H.ViewModels.Windows
 {
-    public partial class M3u8WindowViewModel(SettingsService settingsService, PluginService pluginService, ViewModelManager viewModelManager, SnackbarManager Notification) : ViewModelBase
+    public partial class M3u8WindowViewModel(SettingsService settingsService, PluginManager pluginManager, ViewModelManager viewModelManager, SnackbarManager Notification) : ViewModelBase
     {
         public M3u8DownloadInfo VideoDownloadInfo { get; } = new M3u8DownloadInfo();
 
@@ -55,12 +59,9 @@ namespace M3u8Downloader_H.ViewModels.Windows
         {
             FileEx.EnsureFileNotExist(m3U8DownloadParam.VideoFullName);
 
-            string tmpPluginKey = pluginKey is not null
-                                ? pluginKey
-                                : string.IsNullOrWhiteSpace(settingsService.PluginKey)
-                                ? m3U8DownloadParam.RequestUrl.GetHostName()
-                                : settingsService.PluginKey;
-            DownloadViewModel download = viewModelManager.CreateDownloadViewModel(m3U8DownloadParam, pluginService[tmpPluginKey]);
+            m3U8DownloadParam.CompleteAttribute(settingsService);
+            IDownloadPlugin? downloadPlugin = pluginManager.CreateDownloadPlugin(pluginKey, m3U8DownloadParam.RequestUrl);
+            DownloadViewModel download = viewModelManager.CreateDownloadViewModel(m3U8DownloadParam, downloadPlugin);
             if (download is null) return;
 
             EnqueueDownloadAction(download);
@@ -72,7 +73,9 @@ namespace M3u8Downloader_H.ViewModels.Windows
             FileEx.EnsureFileNotExist(m3U8DownloadParam.VideoFullName);
 
             //这里因为不可能有url所以直接通过设置来判别使用某个插件
-            DownloadViewModel download = viewModelManager.CreateDownloadViewModel(m3UFileInfo, m3U8DownloadParam, pluginService[pluginKey ?? settingsService.PluginKey]);
+            m3U8DownloadParam.CompleteAttribute(settingsService);
+            IDownloadPlugin? downloadPlugin = pluginManager.CreateDownloadPlugin(pluginKey,null!);
+            DownloadViewModel download = viewModelManager.CreateDownloadViewModel(m3UFileInfo, m3U8DownloadParam, downloadPlugin);
             if (download is null) return;
 
             EnqueueDownloadAction(download);

@@ -27,13 +27,6 @@ namespace M3u8Downloader_H.Common.M3u8Infos
 
         public IList<IM3uMediaInfo> MediaFiles { get; set; } = default!;
 
-        //当原始的m3u8中的数据 不满足需求的时候 可以通过自定义的数据 进行操作
-        public object? UserData { get; set; }
-
-        public bool IsFile => MediaFiles.Any(m => m.Uri.IsFile);
-
-        public bool IsCrypted => Key is not null;
-
         public M3UFileInfo(M3UFileInfo m3UFileInfo)
         {
             Version = m3UFileInfo.Version;
@@ -46,7 +39,6 @@ namespace M3u8Downloader_H.Common.M3u8Infos
             Key = m3UFileInfo.Key;
             Streams = [.. m3UFileInfo.Streams];
             MediaFiles = [.. m3UFileInfo.MediaFiles];
-            UserData = m3UFileInfo.UserData;
         }
 
 
@@ -59,13 +51,13 @@ namespace M3u8Downloader_H.Common.M3u8Infos
 
     public partial class M3UFileInfo
     {
-        public static M3UFileInfo CreateVodM3UFileInfo()
-        {
-            M3UFileInfo m3UFileInfo = new()
-            {
-                PlaylistType = "VOD"
-            };
-            return m3UFileInfo;
-        }
+//         public static M3UFileInfo CreateVodM3UFileInfo()
+//         {
+//             M3UFileInfo m3UFileInfo = new()
+//             {
+//                 PlaylistType = "VOD"
+//             };
+//             return m3UFileInfo;
+//         }
     }
 }

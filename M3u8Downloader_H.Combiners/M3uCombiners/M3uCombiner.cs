@@ -3,6 +3,7 @@ using M3u8Downloader_H.Abstractions.Settings;
 using M3u8Downloader_H.Abstractions.M3u8;
 using System.Diagnostics;
 using M3u8Downloader_H.Combiners.Utils;
+using M3u8Downloader_H.Common.Extensions;
 
 namespace M3u8Downloader_H.Combiners.M3uCombiners
 {

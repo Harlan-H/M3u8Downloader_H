@@ -11,8 +11,6 @@ using M3u8Downloader_H.Views.Menus;
 using M3u8Downloader_H.Views.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Diagnostics.CodeAnalysis;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace M3u8Downloader_H.FrameWork
 {
@@ -37,14 +35,15 @@ namespace M3u8Downloader_H.FrameWork
             return param switch
             {
                 MainWindowViewModel => serviceProvider.GetRequiredService<MainWindowView>(),
+                AdvancedViewModel => serviceProvider.GetRequiredService<AdvancedView>(),
+                PluginManagerViewModel => serviceProvider.GetRequiredService<PluginManagerView>(),
+                LocalPluginViewModel => serviceProvider.GetRequiredService<LocalPluginView>(),
+                OnlinePluginViewModel => serviceProvider.GetRequiredService<OnlinePluginView>(),
                 AboutViewModel => serviceProvider.GetRequiredService<AboutView>(),
-                ConverterViewModel => serviceProvider.GetRequiredService<ConverterView>(),
-                SettingsViewModel => new SettingsView(),
+                SettingsViewModel => serviceProvider.GetRequiredService<SettingsView>(),
                 SponsorViewModel => serviceProvider.GetRequiredService<SponsorView>(),
                 M3u8WindowViewModel => serviceProvider.GetRequiredService<M3u8WindowView>(),
                 MediaWindowViewModel => serviceProvider.GetRequiredService<MediaWindowView>(),
-                M3u8ConverterViewModel => new M3u8ConverterView(),
-                MediaConverterViewModel => new MediaConverterView(),
                 DownloadViewModel => new DownloadView(),
                 DeleteDialogViewModel => new DeleteDialogView(),
                 _ => null

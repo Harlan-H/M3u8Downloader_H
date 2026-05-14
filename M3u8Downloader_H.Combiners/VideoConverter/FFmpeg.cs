@@ -8,6 +8,7 @@ using M3u8Downloader_H.Abstractions.M3u8;
 using M3u8Downloader_H.Combiners.Utils;
 using System.Diagnostics;
 using M3u8Downloader_H.Combiners.Extensions;
+
 using CliWrap.EventStream;
 using M3u8Downloader_H.Common.Utils;
 
