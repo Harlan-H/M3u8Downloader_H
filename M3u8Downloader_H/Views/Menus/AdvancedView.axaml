@@ -8,8 +8,16 @@
              xmlns:ripple="clr-namespace:Material.Ripple;assembly=Material.Ripple"
              x:DataType="menu:AdvancedViewModel"
              x:Class="M3u8Downloader_H.AdvancedView">
+   <Panel>
+       <TextBlock IsVisible="{Binding !PluginNavItems.Count}" FontSize="24" VerticalAlignment="Center" HorizontalAlignment="Center">
+		   <Run Text="当前没有安装或者启用任何插件" />
+           <LineBreak />
+           <Run Text="请点击左边" />
+           <Run Text="插件" FontWeight="SemiBold" />
+           <Run Text="进行安装和启用后再次点击此页面" />
+       </TextBlock>
 
-  <SplitView IsPaneOpen="True" DisplayMode="Inline" OpenPaneLength="180"  >
+  <SplitView IsPaneOpen="{Binding PluginNavItems.Count}" DisplayMode="Inline" OpenPaneLength="180"  >
       <SplitView.Pane>
           <Border Background="#FFF9FAFB" BorderThickness="1,0,1,0" BorderBrush="#ffd3d9e0">
 	      <ListBox   ItemsSource="{Binding PluginNavItems}"
@@ -78,4 +86,6 @@
             <ContentControl Padding="10" Content="{Binding CurrentView}"  />
       </MaterialStyles:SnackbarHost>
   </SplitView>
+
+</Panel>
 </UserControl>

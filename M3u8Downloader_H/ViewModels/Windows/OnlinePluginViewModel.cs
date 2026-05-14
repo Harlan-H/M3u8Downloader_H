@@ -13,7 +13,7 @@ namespace M3u8Downloader_H.ViewModels.Windows
 {
     public partial class OnlinePluginViewModel(PluginManager pluginManager) : ViewModelBase
     {
-        private readonly PluginRepository pluginRepository = new(Http.Instance.GetClient());
+        private readonly PluginRepository pluginRepository = new(() => Http.Instance.GetClient());
         private readonly PluginRegistry pluginRegistry = pluginManager.RegistryClient;
 
         public ObservableCollection<PluginOnlineItem> PluginOnlineItems { get; } = [];

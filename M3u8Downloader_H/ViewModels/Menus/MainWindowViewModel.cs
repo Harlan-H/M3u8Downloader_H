@@ -65,8 +65,8 @@ namespace M3u8Downloader_H.ViewModels.Menus
                 () => ThrottlingSemaphore.Instance.MaxCount = settingsService.MaxConcurrentDownloadCount));
 
             _disposables.Add(settingsService.WatchProperty(
-                s => s.ProxyAddress,
-                () => Http.Instance.UpdateProxy(settingsService.ProxyAddress)));
+                s => s.ProxyInfo,
+                () => Http.Instance.UpdateProxy(settingsService.ProxyInfo)));
         }
 
         ~MainWindowViewModel()
@@ -76,8 +76,6 @@ namespace M3u8Downloader_H.ViewModels.Menus
                 item.Dispose();
             }
         }
-
-
 
         public Task InitializeAsync()
         {

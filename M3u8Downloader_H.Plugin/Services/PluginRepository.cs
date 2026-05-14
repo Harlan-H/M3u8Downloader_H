@@ -10,12 +10,14 @@ namespace M3u8Downloader_H.Plugin.Services
         private static readonly string PackUrl = "https://raw.githubusercontent.com/Harlan-H/M3u8Downloader_H.Plugins/refs/heads/master/data/plugins/%s.json";
         private static readonly string _pluginTempPath = StorageSpaceManager.GetTempPath();
         private static readonly string _pluginDirPath = StorageSpaceManager.GetPluginPath();
-        private readonly HttpClient httpClient;
+        private readonly Func<HttpClient> getHttpClient;
+
+        private  HttpClient _httpClient => getHttpClient();
         private OnlinePlugin? onlinePlugin;
 
-        public PluginRepository(HttpClient httpClient)
+        public PluginRepository(Func<HttpClient> GetHttpClient)
         {
-            this.httpClient = httpClient;
+            getHttpClient = GetHttpClient;
             Directory.CreateDirectory(_pluginTempPath);
         }
 
@@ -24,7 +26,7 @@ namespace M3u8Downloader_H.Plugin.Services
             if (onlinePlugin is not null )
                 return onlinePlugin.OnlinePluginManifests;
 
-            var resp = await httpClient.GetStringAsync(RepositoryUri, cancellationToken);
+            var resp = await _httpClient.GetStringAsync(RepositoryUri, cancellationToken);
 
             onlinePlugin = JsonSerializer.Deserialize(resp,
                 OnlinePluginManifestContext.Default.OnlinePlugin)
@@ -37,7 +39,7 @@ namespace M3u8Downloader_H.Plugin.Services
         {
             Uri packUri = new(string.Format(PackUrl,key));
 
-            var resp = await httpClient.GetStringAsync(packUri, cancellationToken);
+            var resp = await _httpClient.GetStringAsync(packUri, cancellationToken);
             
             var pluginPackage = JsonSerializer.Deserialize(resp, PluginPackageContext.Default.PluginPackage) 
                    ?? throw new InvalidDataException($"获取【{key}】插件数据失败");
@@ -46,7 +48,7 @@ namespace M3u8Downloader_H.Plugin.Services
 
         public async Task DownloadPlugin(Uri url, CancellationToken cancellationToken) 
         {
-            var resp = await httpClient.GetStreamAsync(url, cancellationToken);
+            var resp = await _httpClient.GetStreamAsync(url, cancellationToken);
 
             var downloadFileName = Path.Combine(_pluginTempPath, url.Segments.Last()) + ".download";
             await WriteToFileAsync(downloadFileName, resp, cancellationToken);

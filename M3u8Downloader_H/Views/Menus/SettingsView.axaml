@@ -178,7 +178,7 @@
                 <!--   网络配置区  -->
                 <TextBlock Text="网络配置"  Margin="10" HorizontalAlignment="Center"  FontSize="20" FontWeight="Bold" />
 
-                <DockPanel Margin="8 0 8 0">
+                <DockPanel Margin="8 0 8 0" >
                     <ToolTip.Tip>
                         <TextBlock>
                             <Run Text="必须是http代理 例如：http://127.0.0.1:7890  注意冒号是英文得冒号" />
@@ -189,15 +189,19 @@
                         </TextBlock>
                     </ToolTip.Tip>
                     <TextBlock Text="代理地址" Classes="MyTextBlock" />
-                    <Button DockPanel.Dock="Right"
+                    <Button DockPanel.Dock="Right" Height="40"
                             Command="{Binding $parent[UserControl].((vm:SettingsViewModel)DataContext).TryConnectProxyCommand}"
-                            CommandParameter="{Binding #proxyTextBox.Text}"
+                            CommandParameter="{Binding #proxyInfo.DataContext}"
                             Content="连接测试"
                              >
                     </Button>
-                    <TextBox Name="proxyTextBox" Margin="5" FontSize="18" Theme="{StaticResource CompactTextBox}"  Text="{Binding ProxyAddress}"
-                             
-                             />
+                    <StackPanel Name="proxyInfo" DataContext="{Binding $parent[UserControl].((vm:SettingsViewModel)DataContext).ProxyInfo}">
+                        <TextBox Watermark="http代理地址" Margin="5" FontSize="18" Theme="{StaticResource CompactTextBox}"  Text="{Binding Address}"/>
+                        <TextBox Watermark="账号(选填)" Margin="5" FontSize="18" Theme="{StaticResource CompactTextBox}"  Text="{Binding UserName}"/>
+                        <TextBox Watermark="密码(选填)" Margin="5" FontSize="18" Theme="{StaticResource CompactTextBox}"  Text="{Binding PassWord}"/>
+
+                    </StackPanel>
+
                 </DockPanel>
 
                 <DockPanel Margin="8 5 8 0">

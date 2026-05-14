@@ -2,7 +2,9 @@
 using M3u8Downloader_H.Abstractions.M3uDownloaders;
 using M3u8Downloader_H.Abstractions.Settings;
 using M3u8Downloader_H.Common.Utils;
+using M3u8Downloader_H.Plugin.Services;
 using M3u8Downloader_H.Settings.Services;
+using M3u8Downloader_H.ViewModels.Components;
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
@@ -64,7 +66,8 @@ namespace M3u8Downloader_H.Services
         public string Separator { get; set; } = "----";
 
         [ObservableProperty]
-        public partial string ProxyAddress { get; set; } = string.Empty;
+        [JsonPropertyName("Proxy")]
+        public partial ProxyService ProxyInfo { get; set; } = new();
 
         [ObservableProperty]
         public partial Dictionary<string,string> Headers { get; set; } = default!;
@@ -113,4 +116,42 @@ namespace M3u8Downloader_H.Services
     }
 
 
+    public partial class ProxyService : ObservableObject
+    {
+
+        [ObservableProperty]
+        public partial string Address { get; set; } = default!;
+
+        [ObservableProperty]
+        public partial string UserName { get; set; } = default!;
+
+        [ObservableProperty]
+        public partial string PassWord { get; set; } = default!;
+
+
+        public ProxyService Clone()
+        {
+            return new ProxyService()
+            {
+                Address = Address,
+                UserName = UserName,
+                PassWord = PassWord,
+            };
+        }
+
+    }
+
+    public partial class ProxyService : IEquatable<ProxyService>
+    {
+        public bool Equals(ProxyService? other)
+            => StringComparer.Ordinal.Equals(Address, other?.Address)
+            && StringComparer.Ordinal.Equals(UserName, other?.UserName)
+            && StringComparer.Ordinal.Equals(PassWord, other?.PassWord);
+
+        public override bool Equals(object? obj) => obj is ProxyService proxyService && Equals(proxyService);
+        public override int GetHashCode()  => base.GetHashCode();
+
+        public static bool operator ==(ProxyService proxyInfo, ProxyService proxyInfo1) => proxyInfo.Equals(proxyInfo1);
+        public static bool operator !=(ProxyService proxyInfo, ProxyService proxyInfo1) => !(proxyInfo == proxyInfo1);
+    }
 }

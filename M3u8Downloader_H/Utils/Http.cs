@@ -4,6 +4,7 @@ using System.Collections.Concurrent;
 using System.Net;
 using System.Threading;
 using System.Net.Http;
+using M3u8Downloader_H.Services;
 
 namespace M3u8Downloader_H.Utils
 {
@@ -38,9 +39,18 @@ namespace M3u8Downloader_H.Utils
             return handler;
         }
 
-        public void UpdateProxy(string? address)
+        public void UpdateProxy(ProxyService proxy)
         {
-            _webProxy = string.IsNullOrEmpty(address) ? null:  new WebProxy(address);
+            if(string.IsNullOrWhiteSpace(proxy.Address))
+                _webProxy = null;
+            else
+            {
+                var webproxy = new WebProxy(proxy.Address);
+                if (!string.IsNullOrWhiteSpace(proxy.UserName))
+                    webproxy.Credentials = new NetworkCredential(proxy.UserName, proxy.PassWord);
+
+                _webProxy = webproxy;
+            } 
             foreach (var clientEntry in _clients.Values)
                 clientEntry.Client = null;
 
