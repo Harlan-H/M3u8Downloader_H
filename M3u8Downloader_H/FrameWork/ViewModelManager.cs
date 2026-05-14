@@ -1,13 +1,11 @@
 ﻿using M3u8Downloader_H.Abstractions.Common;
 using M3u8Downloader_H.Abstractions.M3u8;
-using M3u8Downloader_H.Abstractions.Plugins;
 using M3u8Downloader_H.Abstractions.Plugins.Download;
 using M3u8Downloader_H.Core;
 using M3u8Downloader_H.Models;
 using M3u8Downloader_H.Services;
 using M3u8Downloader_H.Utils;
 using M3u8Downloader_H.ViewModels.Downloads;
-using System;
 
 
 namespace M3u8Downloader_H.FrameWork;

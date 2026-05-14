@@ -39,7 +39,7 @@
 						<Setter Property="Text" Value="正在获取数据,请稍后" />
                     </Style>
                     <Style Selector="TextBlock.error" >
-						<Setter Property="Text" Value="{Binding ErrorString,StringFormat=获取数据失败 请确认是否可以访问到github 请尝试使用带有github加速的软件&#10;{0}}" />
+						<Setter Property="Text" Value="{Binding ErrorString,StringFormat=获取数据失败 请确认是否可以访问到github 请尝试使用带有github加速的软件或者在设置中配置代理后再次点击此页面&#10;{0}}" />
                         <Setter Property="Foreground" Value="red" />
                     </Style>
                 </TextBlock.Styles>
