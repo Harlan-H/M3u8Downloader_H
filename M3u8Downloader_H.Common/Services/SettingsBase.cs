@@ -6,24 +6,20 @@ using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
 using M3u8Downloader_H.Common.Utils;
 
-namespace M3u8Downloader_H.Settings.Services;
+namespace M3u8Downloader_H.Common.Services;
 
 public abstract class SettingsBase
 {
     private readonly JsonTypeInfo _rootTypeInfo;
-    private static string FullDirectoryPath => StorageSpaceManager.GetConfigPath();
-    private string FullFilePath => Path.Combine(FullDirectoryPath, Configuration.FileName);
+    private readonly string FullFilePath = string.Empty;
 
-    [JsonIgnore]
-    public Configuration Configuration { get; } = new Configuration();
-
-
-    protected SettingsBase(IJsonTypeInfoResolver jsonTypeInfoResolver)
+    protected SettingsBase(IJsonTypeInfoResolver jsonTypeInfoResolver,string fullFilePath)
         :this(new JsonSerializerOptions
     {
         TypeInfoResolver = jsonTypeInfoResolver
     })
     {
+        FullFilePath = fullFilePath;
     }
 
     protected SettingsBase(JsonSerializerOptions jsonOptions)
@@ -34,7 +30,7 @@ public abstract class SettingsBase
     public virtual void Save()
     {
         byte[] bytes = JsonSerializer.SerializeToUtf8Bytes(this, _rootTypeInfo);
-        string directoryName = Path.GetDirectoryName(FullFilePath);
+        string? directoryName = Path.GetDirectoryName(FullFilePath);
         if (!string.IsNullOrWhiteSpace(directoryName))
         {
             Directory.CreateDirectory(directoryName);
@@ -55,7 +51,7 @@ public abstract class SettingsBase
             });
             foreach (JsonProperty jsonProperty in jsonDocument.RootElement.EnumerateObject())
             {
-                JsonPropertyInfo jsonPropertyInfo = _rootTypeInfo.Properties.FirstOrDefault((JsonPropertyInfo p) => string.Equals(p.Name, jsonProperty.Name, StringComparison.Ordinal));
+                JsonPropertyInfo? jsonPropertyInfo = _rootTypeInfo.Properties.FirstOrDefault((JsonPropertyInfo p) => string.Equals(p.Name, jsonProperty.Name, StringComparison.Ordinal));
                 if (jsonPropertyInfo is not null)
                 {
                     JsonSerializerOptions jsonSerializerOptions = new(jsonPropertyInfo.Options);

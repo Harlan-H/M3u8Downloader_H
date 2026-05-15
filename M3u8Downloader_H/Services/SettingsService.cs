@@ -1,12 +1,13 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using M3u8Downloader_H.Abstractions.M3uDownloaders;
 using M3u8Downloader_H.Abstractions.Settings;
+using M3u8Downloader_H.Common.Services;
 using M3u8Downloader_H.Common.Utils;
 using M3u8Downloader_H.Plugin.Services;
-using M3u8Downloader_H.Settings.Services;
 using M3u8Downloader_H.ViewModels.Components;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -84,7 +85,7 @@ namespace M3u8Downloader_H.Services
         [ObservableProperty]
         public partial int Timeouts { get; set; } = 30;
 
-        public SettingsService() : base(SerializerContext.Default)
+        public SettingsService() : base(SerializerContext.Default,Path.Combine(StorageSpaceManager.GetConfigPath(), "Settings.dat"))
         {
 
         }
