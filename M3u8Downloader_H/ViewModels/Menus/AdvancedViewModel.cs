@@ -5,6 +5,7 @@ using M3u8Downloader_H.FrameWork;
 using M3u8Downloader_H.Messages;
 using M3u8Downloader_H.Models;
 using M3u8Downloader_H.Plugin;
+using M3u8Downloader_H.Plugin.Models.Context;
 using M3u8Downloader_H.Plugin.Services;
 using M3u8Downloader_H.Services;
 using M3u8Downloader_H.Utils;
@@ -17,7 +18,7 @@ namespace M3u8Downloader_H.ViewModels.Menus
 {
     public partial class AdvancedViewModel : ViewModelBase
     {
-        private readonly WindowContext windowContext = new(Notifications);
+        private readonly WindowContext windowContext = new(Http.Instance, Notifications);
         public static SnackbarManager Notifications { get; } = new SnackbarManager("AdvancedWindowHost", TimeSpan.FromSeconds(5));
 
         public ObservableCollection<PluginNavItem> PluginNavItems { get; } = [];
@@ -41,7 +42,7 @@ namespace M3u8Downloader_H.ViewModels.Menus
             if (!obj.PluginManifest.Runtime.HasUi)
                 return;
 
-            PluginNavItems.Add(new PluginNavItem(obj));
+            PluginNavItems.Add(new PluginNavItem(obj, windowContext));
         }
 
         private void PluginService_PluginDisabled(PluginHandle obj)
@@ -67,10 +68,10 @@ namespace M3u8Downloader_H.ViewModels.Menus
 
             try
             {
-                CurrentView = value.GetView(windowContext);
+                CurrentView = value.GetView();
             }catch(Exception e)
             {
-                Notifications.Notify(e.Message);
+                Notifications.Info(e.Message);
             }
         }
     }

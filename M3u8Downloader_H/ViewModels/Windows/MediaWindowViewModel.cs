@@ -10,6 +10,7 @@ using M3u8Downloader_H.Utils;
 using M3u8Downloader_H.ViewModels.Downloads;
 using System;
 using System.Diagnostics;
+using System.Net.Http;
 
 namespace M3u8Downloader_H.ViewModels.Windows
 {
@@ -47,14 +48,14 @@ namespace M3u8Downloader_H.ViewModels.Windows
                 {
                     IsVideoStream = mediaDownloadInfo.StreamIndex == 0
                 };
-                ProcessMediaDownload(mediaDownloadParams);
+                ProcessMediaDownload(null,mediaDownloadParams);
 
                 mediaDownloadInfo.Reset(settingsService.IsResetAddress, settingsService.IsResetName);
             }
             catch (Exception e)
             {
                 Debug.WriteLine(e);
-                notification.Notify(e.ToString());
+                notification.Info(e.ToString());
             }
             finally
             {
@@ -62,12 +63,12 @@ namespace M3u8Downloader_H.ViewModels.Windows
             }
         }
 
-        public void ProcessMediaDownload(IMediaDownloadParam mediaDownloadParams)
+        public void ProcessMediaDownload(HttpClient? httpClient, IMediaDownloadParam mediaDownloadParams)
         {
             FileEx.EnsureFileNotExist(mediaDownloadParams.VideoFullName);
 
             mediaDownloadParams.CompleteAttribute(settingsService);
-            DownloadViewModel download = viewModelManager.CreateDownloadViewModel(mediaDownloadParams);
+            DownloadViewModel download = viewModelManager.CreateDownloadViewModel(httpClient,mediaDownloadParams);
             if (download is null) return;
 
             EnqueueDownloadAction(download);

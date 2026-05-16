@@ -2,6 +2,7 @@
 using M3u8Downloader_H.Abstractions.Plugins.Download;
 using M3u8Downloader_H.Abstractions.Plugins.Window;
 using M3u8Downloader_H.Plugin.Models;
+using M3u8Downloader_H.Plugin.Models.Context;
 using System.IO.Compression;
 using System.Reflection;
 using System.Text.Json;
@@ -69,16 +70,24 @@ namespace M3u8Downloader_H.Plugin.Services
             pluginEntry = ipluginEntryInstance;
         }
 
-        public IWindowPlugin LoadUI()
+        public T LoadUI<T>(Action<T,object> handleDataContext,WindowContext windowContext)
         {
-            //LoadLibrary();
-
             var instance = pluginEntry.CreateWindoPlugin();
             if (instance is null || instance is not IWindowPlugin windowInstance)
                 throw new InvalidDataException("继承IWindowPlugin接口的类没有默认的构造函数");
 
+            var view = Activator.CreateInstance(instance.ViewType);
+            if (view is not T control)
+                throw new InvalidOperationException($"ui接口继承有误 不是{nameof(T)}类型");
+
+            handleDataContext(control,instance.CreateMainView());
+
+            var windowContextClone = windowContext.Clone();
+            windowContextClone.PluginStorageService = new PluginStorage(PluginManifest.Key);
+            instance.InitializeWindow(windowContextClone);
+
             WindowInstance = windowInstance;
-            return windowInstance;
+            return control;
         }
 
         public IDownloadPlugin? LoadDownload()

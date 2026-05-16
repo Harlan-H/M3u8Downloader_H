@@ -14,6 +14,7 @@ using M3u8Downloader_H.Utils;
 using M3u8Downloader_H.ViewModels.Downloads;
 using System;
 using System.Diagnostics;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace M3u8Downloader_H.ViewModels.Windows
@@ -38,7 +39,7 @@ namespace M3u8Downloader_H.ViewModels.Windows
             {
                 Uri uri = obj.GetRequestUri();
                 M3u8DownloadParams m3U8DownloadParams = new(uri, obj.VideoName, settingsService.SavePath, settingsService.SelectedFormat, settingsService.Headers, obj.Method, obj.Key, obj.Iv);
-                ProcessM3u8Download(m3U8DownloadParams, null);
+                ProcessM3u8Download(null,m3U8DownloadParams, pluginManager.CreateDownloadPlugin(uri));
 
                 //只有操作成功才会清空
                 obj.Reset(settingsService.IsResetAddress, settingsService.IsResetName);
@@ -46,7 +47,7 @@ namespace M3u8Downloader_H.ViewModels.Windows
             catch (Exception e)
             {
                 Debug.WriteLine(e);
-                Notification.Notify(e.ToString());
+                Notification.Info(e.ToString());
             }
             finally
             {
@@ -55,27 +56,25 @@ namespace M3u8Downloader_H.ViewModels.Windows
         }
 
         //处理软件界面来的请求
-        public void ProcessM3u8Download(IM3u8DownloadParam m3U8DownloadParam, string? pluginKey = default!)
+        public void ProcessM3u8Download(HttpClient? httpClient, IM3u8DownloadParam m3U8DownloadParam, IDownloadPlugin? downloadPlugin)
         {
             FileEx.EnsureFileNotExist(m3U8DownloadParam.VideoFullName);
 
             m3U8DownloadParam.CompleteAttribute(settingsService);
-            IDownloadPlugin? downloadPlugin = pluginManager.CreateDownloadPlugin(pluginKey, m3U8DownloadParam.RequestUrl);
-            DownloadViewModel download = viewModelManager.CreateDownloadViewModel(m3U8DownloadParam, downloadPlugin);
+            DownloadViewModel download = viewModelManager.CreateDownloadViewModel(httpClient,m3U8DownloadParam, downloadPlugin);
             if (download is null) return;
 
             EnqueueDownloadAction(download);
         }
 
         //处理接口过来的请求
-        public void ProcessM3u8Download(IDownloadParamBase m3U8DownloadParam, IM3uFileInfo m3UFileInfo, string? pluginKey = default!)
+        public void ProcessM3u8Download(HttpClient? httpClient,IDownloadParamBase m3U8DownloadParam, IM3uFileInfo m3UFileInfo, IDownloadPlugin? downloadPlugin)
         {
             FileEx.EnsureFileNotExist(m3U8DownloadParam.VideoFullName);
 
             //这里因为不可能有url所以直接通过设置来判别使用某个插件
             m3U8DownloadParam.CompleteAttribute(settingsService);
-            IDownloadPlugin? downloadPlugin = pluginManager.CreateDownloadPlugin(pluginKey,null!);
-            DownloadViewModel download = viewModelManager.CreateDownloadViewModel(m3UFileInfo, m3U8DownloadParam, downloadPlugin);
+            DownloadViewModel download = viewModelManager.CreateDownloadViewModel(httpClient,m3UFileInfo, m3U8DownloadParam, downloadPlugin);
             if (download is null) return;
 
             EnqueueDownloadAction(download);

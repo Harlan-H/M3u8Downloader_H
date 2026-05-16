@@ -4,6 +4,7 @@ using M3u8Downloader_H.ViewModels.Menus;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace M3u8Downloader_H.ViewModels

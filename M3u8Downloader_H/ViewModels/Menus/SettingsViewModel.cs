@@ -46,12 +46,12 @@ namespace M3u8Downloader_H.ViewModels.Menus
                     SettingsServiceClone.ProxyInfo = ProxyInfo.Clone();
                 }
                 settingService.CopyFrom(obj);
-                Notifications.Notify("设置已经保存！！！");
+                Notifications.Info("设置已经保存！！！");
                 settingService.Save();
             }
             catch (Exception e)
             {
-                Notifications.Notify($"提交失败,错误信息:{e.Message}");
+                Notifications.Info($"提交失败,错误信息:{e.Message}");
             }
         }
 
@@ -59,7 +59,7 @@ namespace M3u8Downloader_H.ViewModels.Menus
         private void ResetSettingInfo()
         {
             SettingsServiceClone = settingService.Clone<SettingsService>();
-            Notifications.Notify("设置已经重置！");
+            Notifications.Info("设置已经重置！");
         }
 
         private bool CanTryConnectProxy => !IsActived;
@@ -69,7 +69,7 @@ namespace M3u8Downloader_H.ViewModels.Menus
         {
             if (string.IsNullOrWhiteSpace(proxy.Address))
             {
-                Notifications.Notify("请输入代理地址后,再次点击");
+                Notifications.Info("请输入代理地址后,再次点击");
                 return;
             }
 
@@ -91,11 +91,11 @@ namespace M3u8Downloader_H.ViewModels.Menus
 
                 var statu = await httpclient.GetConnectStatus(new Uri("https://www.google.com"));
 
-                Notifications.Notify(statu ? "测试成功,代理正常" : "测试失败,代理不可用");
+                Notifications.Info(statu ? "测试成功,代理正常" : "测试失败,代理不可用");
             }
             catch (Exception e)
             {
-                Notifications.Notify($"连接失败,{e.Message}");
+                Notifications.Info($"连接失败,{e.Message}");
             }
             finally
             {

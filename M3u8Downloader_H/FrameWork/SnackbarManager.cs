@@ -6,9 +6,9 @@ using System;
 
 namespace M3u8Downloader_H.FrameWork;
 
-public class SnackbarManager(string hostname,TimeSpan duration) : ISnackbarMaranger
+public class SnackbarManager(string hostname,TimeSpan duration) : INotificationService
 {
-    public void Notify(string message)
+    public void Info(string message)
     {
         SnackbarHost.Post(
             new SnackbarModel(message, duration),

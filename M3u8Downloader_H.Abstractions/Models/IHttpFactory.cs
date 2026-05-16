@@ -4,7 +4,7 @@ using System.Text;
 
 namespace M3u8Downloader_H.Abstractions.Models
 {
-    public interface IApiFactory
+    public interface IHttpFactory
     {
         event Action? ProxyChanged;
         HttpClient GetClient(string name);

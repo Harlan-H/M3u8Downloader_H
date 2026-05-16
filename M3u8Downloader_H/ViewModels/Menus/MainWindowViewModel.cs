@@ -1,5 +1,6 @@
 ﻿using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
@@ -9,6 +10,7 @@ using M3u8Downloader_H.FrameWork;
 using M3u8Downloader_H.Messages;
 using M3u8Downloader_H.Models;
 using M3u8Downloader_H.Plugin;
+using M3u8Downloader_H.Plugin.Services;
 using M3u8Downloader_H.RestServer;
 using M3u8Downloader_H.Services;
 using M3u8Downloader_H.Utils;
@@ -30,12 +32,9 @@ namespace M3u8Downloader_H.ViewModels.Menus
         private readonly SettingsService settingsService;
         private readonly PluginManager pluginManager;
         private readonly ViewModelManager viewModelManager;
-        private readonly M3u8WindowViewModel m3U8WindowViewModel;
-        private readonly MediaWindowViewModel mediaWindowViewModel;
         private readonly List<IDisposable> _disposables = [];
         private readonly AppCommandService appCommandService;
         public static SnackbarManager Notifications { get; } = new SnackbarManager("MainWindowHost",TimeSpan.FromSeconds(5));
-        
 
         public ObservableCollection<ViewModelBase> SubWindows { get; } = [];
 
@@ -49,16 +48,11 @@ namespace M3u8Downloader_H.ViewModels.Menus
             this.settingsService = settingsService;
             this.pluginManager = pluginManager;
             viewModelManager = new(settingsService);
-            m3U8WindowViewModel = new M3u8WindowViewModel(settingsService, pluginManager, viewModelManager, Notifications) { Title = "M3U8", EnqueueDownloadAction = EnqueueDownload };
+            var m3U8WindowViewModel = new M3u8WindowViewModel(settingsService, pluginManager, viewModelManager, Notifications) { Title = "M3U8", EnqueueDownloadAction = EnqueueDownload };
             SubWindows.Add(m3U8WindowViewModel);
-            mediaWindowViewModel = new MediaWindowViewModel(settingsService, viewModelManager, Notifications) { Title = "长视频", EnqueueDownloadAction = EnqueueDownload };
+            var  mediaWindowViewModel = new MediaWindowViewModel(settingsService, viewModelManager, Notifications) { Title = "长视频", EnqueueDownloadAction = EnqueueDownload };
             SubWindows.Add(mediaWindowViewModel);
-            appCommandService = new AppCommandService(m3U8WindowViewModel.ProcessM3u8Download, m3U8WindowViewModel.ProcessM3u8Download, mediaWindowViewModel.ProcessMediaDownload);
-
-            WeakReferenceMessenger.Default.Register<GetAppComandServiceMessage>(this, (r, m) =>
-            {
-                m.Value.AppCommandService = appCommandService;
-            });
+            appCommandService = InitAppCommand(m3U8WindowViewModel, mediaWindowViewModel);
 
             _disposables.Add(settingsService.WatchProperty(
                 s => s.MaxConcurrentDownloadCount,
@@ -77,6 +71,39 @@ namespace M3u8Downloader_H.ViewModels.Menus
             }
         }
 
+        public AppCommandService InitAppCommand(M3u8WindowViewModel m3U8WindowViewModel, MediaWindowViewModel mediaWindowViewModel)
+        {
+            var appCommandService = new AppCommandService(
+                (http, param, downloadPlugin) =>
+                {
+                    Dispatcher.UIThread.Post(() =>
+                    {
+                        m3U8WindowViewModel.ProcessM3u8Download(http,param, downloadPlugin);
+                    });
+                },
+                (http, param, fileinfo, downloadPlugin) =>
+                {
+                    Dispatcher.UIThread.Post(() =>
+                    {
+                        m3U8WindowViewModel.ProcessM3u8Download(http,param, fileinfo, downloadPlugin);
+                    });
+                },
+                (http,param) =>
+                {
+                    Dispatcher.UIThread.Post(() =>
+                    {
+                        mediaWindowViewModel.ProcessMediaDownload(http,param);
+                    });
+                });
+
+            WeakReferenceMessenger.Default.Register<GetAppComandServiceMessage>(this, (r, m) =>
+            {
+                m.Value.AppCommandService = appCommandService;
+            });
+
+            return appCommandService;
+        }
+
         public Task InitializeAsync()
         {
             try
@@ -89,7 +116,7 @@ namespace M3u8Downloader_H.ViewModels.Menus
                 httpListenService.Initialization(appCommandService);
             }
             catch (Exception ex) {
-                Notifications.Notify($"初始化失敗\n {ex}");
+                Notifications.Info($"初始化失敗\n {ex}");
             }
             return Task.FromResult(0);
         }
@@ -101,7 +128,7 @@ namespace M3u8Downloader_H.ViewModels.Menus
             var existingDownloads = Downloads.FirstOrDefault(d => d == download);
             if (existingDownloads is not null)
             {
-                Notifications.Notify($"{download.VideoName} 已经在下载列表中!");
+                Notifications.Info($"{download.VideoName} 已经在下载列表中!");
                 return;
             }
 

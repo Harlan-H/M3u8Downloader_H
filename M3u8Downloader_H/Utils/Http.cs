@@ -8,7 +8,7 @@ using M3u8Downloader_H.Services;
 
 namespace M3u8Downloader_H.Utils
 {
-    internal partial class Http : IApiFactory
+    internal partial class Http : IHttpFactory
     {
         private class ClientEntry
         {

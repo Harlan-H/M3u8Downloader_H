@@ -1,11 +1,12 @@
 ﻿using Avalonia.Controls;
 using M3u8Downloader_H.Abstractions.Models;
+using M3u8Downloader_H.Plugin.Models.Context;
 using M3u8Downloader_H.Plugin.Services;
 using System;
 
 namespace M3u8Downloader_H.ViewModels.Components
 {
-    public partial class PluginNavItem(PluginHandle pluginHandle) : IDisposable
+    public partial class PluginNavItem(PluginHandle pluginHandle , WindowContext windowContext) : IDisposable
     {
         private Control? _view;
         private bool disposedValue;
@@ -14,20 +15,15 @@ namespace M3u8Downloader_H.ViewModels.Components
 
         public string Title => pluginHandle.PluginManifest.BasicInfo.Title;
 
-        public Control GetView(IWindowContext windowContext)
+        public Control GetView()
         {
             if (_view != null) 
                 return _view;
 
-            var uiInstance = pluginHandle.LoadUI();
-            uiInstance.InitializeWindow(windowContext);
-
-            var view = Activator.CreateInstance(uiInstance.ViewType);
-            if (view is not UserControl control)
-                throw new InvalidOperationException("ui接口继承有误 不是UserControl类型");
-
-            control.DataContext = uiInstance.CreateMainView();
-            
+            var control = pluginHandle.LoadUI<UserControl>(
+                    (control, datacontext) => control.DataContext = datacontext,
+                    windowContext);
+           
             _view = control;
             return _view;
         }

@@ -7,9 +7,9 @@ namespace M3u8Downloader_H.Abstractions.Models
 {
     public interface IWindowContext
     {
-        IApiFactory ApiFactory { get; }
-        ISnackbarMaranger SnackbarMaranger { get; }
-
+        IHttpFactory ApiFactory { get; }
+        INotificationService NotificationService { get; }
         IAppCommandService AppCommandService { get; }
+        IPluginStorage PluginStorageService { get; }
     }
 }

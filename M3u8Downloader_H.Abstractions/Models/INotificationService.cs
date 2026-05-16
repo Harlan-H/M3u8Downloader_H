@@ -4,8 +4,8 @@ using System.Text;
 
 namespace M3u8Downloader_H.Abstractions.Models
 {
-    public interface ISnackbarMaranger
+    public interface INotificationService
     {
-        void Notify(string message);
+        void Info(string message);
     }
 }

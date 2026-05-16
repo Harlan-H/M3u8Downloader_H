@@ -1,11 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.Messaging.Messages;
-using M3u8Downloader_H.Abstractions.Common;
-using M3u8Downloader_H.Abstractions.Models;
-using M3u8Downloader_H.Models;
-using M3u8Downloader_H.Utils;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using M3u8Downloader_H.Plugin.Models.Context;
 
 namespace M3u8Downloader_H.Messages
 {

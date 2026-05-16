@@ -81,18 +81,9 @@ namespace M3u8Downloader_H.Plugin
             p.Unload();
         }
 
-        public IDownloadPlugin? CreateDownloadPlugin(string? key, Uri url)
+        public IDownloadPlugin? CreateDownloadPlugin(Uri url)
         {
-            if (!string.IsNullOrWhiteSpace(key))
-            {
-                var plugin = _activePlugins.FirstOrDefault(p => p.PluginManifest.Key.Equals(key));
-                if (plugin is null || plugin.PluginManifest.Runtime.HasDownload == false)
-                    return null;
-
-                var canHandle = plugin.CanHandleDownload(url);
-                return canHandle ? plugin.LoadDownload() : null;
-            }
-            else if (url is not null)
+            if (url is not null)
             {
                 var plugin = _activePlugins.FirstOrDefault(p => p.CanHandleDownload(url));
                 return plugin?.LoadDownload();

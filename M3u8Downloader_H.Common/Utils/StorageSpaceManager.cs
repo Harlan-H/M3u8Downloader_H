@@ -45,6 +45,19 @@ public class StorageSpaceManager
 #endif
     }
 
+    public static string GetPluginDataPath()
+    {
+#if DEBUG
+        return @"C:\Users\admin\Desktop\666\PluginData";
+#else
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            return Path.Combine(StorageSpace.UserDomain.GetDirectoryPath(), "M3u8Downloader_H", "PluginData");
+        else
+            return Path.Combine(StorageSpace.Instance.GetDirectoryPath(), "PluginData");
+#endif
+    }
+
+
     public static string GetTempPath()
     {
 #if DEBUG
@@ -72,7 +85,7 @@ public class StorageSpaceManager
 #if DEBUG
         return @"C:\Users\admin\Desktop\666\ffmpeg.exe";
 #else
-        if(OperatingSystem.IsWindows())
+        if(RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             return Path.Combine(StorageSpace.Instance.GetDirectoryPath(), "ffmpeg.exe");
         else 
             return Path.Combine(StorageSpace.Instance.GetDirectoryPath(), "ffmpeg");

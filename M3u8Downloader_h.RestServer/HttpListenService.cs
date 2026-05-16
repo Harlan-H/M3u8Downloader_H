@@ -6,12 +6,14 @@ using M3u8Downloader_H.RestServer.Extensions;
 using M3u8Downloader_H.RestServer.Models;
 using M3u8Downloader_H.RestServer.Utils;
 using System.Net;
+using System.Runtime.InteropServices;
 using System.Text.Json;
 
 namespace M3u8Downloader_H.RestServer
 {
     public class HttpListenService
     {
+        private readonly char _DirectorySeparatorChar = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? '/' : '\\';
         private readonly HttpListen httpListen = new();
         private IAppCommandService AppCommandService = default!;
 
@@ -64,8 +66,8 @@ namespace M3u8Downloader_H.RestServer
 
                 requestWithMediaUri.Validate();
                 if (!string.IsNullOrWhiteSpace(requestWithMediaUri.SavePath))
-                    requestWithMediaUri.SavePath = requestWithMediaUri.SavePath.Replace('/', Path.DirectorySeparatorChar);
-                AppCommandService.DownloadMedia(requestWithMediaUri.ToMediaDownloadParams());
+                    requestWithMediaUri.SavePath = requestWithMediaUri.SavePath.Replace(_DirectorySeparatorChar, Path.DirectorySeparatorChar);
+                AppCommandService.DownloadMedia(null, requestWithMediaUri.ToMediaDownloadParams());
 
                 response.Json(Response.Success());
             }
@@ -88,8 +90,8 @@ namespace M3u8Downloader_H.RestServer
 
                 requestWithURI.Validate();
                 if (!string.IsNullOrWhiteSpace(requestWithURI.SavePath))
-                    requestWithURI.SavePath = requestWithURI.SavePath.Replace('/', Path.DirectorySeparatorChar);
-                AppCommandService.DownloadByUrl(requestWithURI.ToM3u8DownloadParams(),requestWithURI.PluginKey);
+                    requestWithURI.SavePath = requestWithURI.SavePath.Replace(_DirectorySeparatorChar, Path.DirectorySeparatorChar);
+                AppCommandService.DownloadByUrl(null,requestWithURI.ToM3u8DownloadParams(),null);
 
                 response.Json(Response.Success());
             }
@@ -129,10 +131,10 @@ namespace M3u8Downloader_H.RestServer
                 {
                     M3UFileInfos = m3UFileInfo,
                     VideoName = requestWithContent.VideoName,
-                    SavePath = !string.IsNullOrWhiteSpace(requestWithContent.SavePath)? requestWithContent.SavePath.Replace('/', Path.DirectorySeparatorChar) : requestWithContent.SavePath,
+                    SavePath = !string.IsNullOrWhiteSpace(requestWithContent.SavePath)? requestWithContent.SavePath.Replace(_DirectorySeparatorChar, Path.DirectorySeparatorChar) : requestWithContent.SavePath,
                     Headers = requestWithContent.Headers,
                 };
-                AppCommandService.DownloadByM3uFileInfo(requestWithM3U8FileInfo.ToDownloadParam(), requestWithM3U8FileInfo.M3UFileInfos, requestWithContent.PluginKey);
+                AppCommandService.DownloadByM3uFileInfo(null, requestWithM3U8FileInfo.ToDownloadParam(), requestWithM3U8FileInfo.M3UFileInfos, null);
 
                 response.Json(Response.Success());
             }
@@ -158,8 +160,8 @@ namespace M3u8Downloader_H.RestServer
                 requestWithM3U8FileInfo.Validate();
                 requestWithM3U8FileInfo.M3UFileInfos.PlaylistType = "VOD";
                 if (!string.IsNullOrWhiteSpace(requestWithM3U8FileInfo.SavePath))
-                    requestWithM3U8FileInfo.SavePath = requestWithM3U8FileInfo.SavePath.Replace('/', Path.DirectorySeparatorChar);
-                AppCommandService.DownloadByM3uFileInfo(requestWithM3U8FileInfo.ToDownloadParam(), requestWithM3U8FileInfo.M3UFileInfos, requestWithM3U8FileInfo.PluginKey);
+                    requestWithM3U8FileInfo.SavePath = requestWithM3U8FileInfo.SavePath.Replace(_DirectorySeparatorChar, Path.DirectorySeparatorChar);
+                AppCommandService.DownloadByM3uFileInfo(null, requestWithM3U8FileInfo.ToDownloadParam(), requestWithM3U8FileInfo.M3UFileInfos, null);
 
                 response.Json(Response.Success());
             }
