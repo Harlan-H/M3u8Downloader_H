@@ -155,7 +155,7 @@
                 </ToggleButton>
             </StackPanel>
     </Grid>
-     <ItemsControl Grid.Row="1" Height="150" ItemsSource="{Binding Log.Logs}"
+     <ItemsControl Grid.Row="1" Height="150" ItemsSource="{Binding Logs}"
                       ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                       ScrollViewer.VerticalScrollBarVisibility="Auto"
                       IsVisible="{Binding #VisibilityBtn.IsChecked}" >

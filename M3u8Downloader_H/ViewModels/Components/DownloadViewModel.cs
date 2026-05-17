@@ -8,29 +8,33 @@ using M3u8Downloader_H.Extensions;
 using M3u8Downloader_H.Models;
 using M3u8Downloader_H.Utils;
 using System;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 
 namespace M3u8Downloader_H.ViewModels.Downloads
 {
-    public partial class DownloadViewModel(IDownloadParamBase DownloadParam) : ViewModelBase
+    public partial class DownloadViewModel : ViewModelBase
     {
         private readonly ThrottlingSemaphore throttlingSemaphore = ThrottlingSemaphore.Instance;
+        private readonly IDownloadParamBase downloadParam;
         private CancellationTokenSource? cancellationTokenSource;
         protected DownloadProgress? downloadProgress;
 
         public DownloaderCoreClient downloaderCoreClient = default!;
 
-        [ObservableProperty]
-        public partial MyLog Log { get; set; } = new();
+        public MyLog Log { get; } 
+
+        public ObservableCollection<LogParams> Logs { get;  } = [];
 
         [ObservableProperty]
-        public partial Uri RequestUrl { get; set; } 
+        public partial Uri RequestUrl { get; set; } = default!;
         [ObservableProperty]
-        public partial string VideoName { get; set; }
+        public partial string VideoName { get; set; } = default!;
         [ObservableProperty]
         public partial double ProgressNum { get; set; }
         [ObservableProperty]
@@ -46,6 +50,12 @@ namespace M3u8Downloader_H.ViewModels.Downloads
         [NotifyCanExecuteChangedFor(nameof(ShowFileCommand), nameof(CancelCommand), nameof(RestartCommand))]
         public partial DownloadStatus Status { get; set; }
 
+
+        public DownloadViewModel(IDownloadParamBase DownloadParam)
+        {
+            downloadParam = DownloadParam;
+            Log = new(Logs);
+        }
 
         public  bool IsProgressIndeterminate => IsActive && Status < DownloadStatus.StartedVod;
 
@@ -92,7 +102,7 @@ namespace M3u8Downloader_H.ViewModels.Downloads
         {
             try
             {
-                Process.ShowFile(DownloadParam.VideoFullName);
+                Process.ShowFile(downloadParam.VideoFullName);
             }
             catch (Exception)
             {
@@ -122,13 +132,27 @@ namespace M3u8Downloader_H.ViewModels.Downloads
             if (!isDelete)
                 return;
 
-            DirectoryInfo directory = new(DownloadParam.CachePath);
+            DirectoryInfo directory = new(downloadParam.CachePath);
             if (!directory.Exists) return;
 
             directory.Delete(true);
 
             if (isShowLog)
                 Log.Info("删除{0}目录成功", directory);
+        }
+
+
+        public virtual string CopyLog()
+        {
+            StringBuilder sb = new();
+            foreach (var log in Logs)
+            {
+                sb.Append(log.Time.ToString("yyyy-MM-dd HH:mm:ss"));
+                sb.Append(' ');
+                sb.Append(log.Message);
+                sb.Append(Environment.NewLine);
+            }
+            return sb.ToString();
         }
 
     }
@@ -138,7 +162,7 @@ namespace M3u8Downloader_H.ViewModels.Downloads
 
         public bool Equals(DownloadViewModel? other) => GetHashCode() == other?.GetHashCode();
         public override bool Equals(object? obj) => obj is DownloadViewModel downloadviewmodel && Equals(downloadviewmodel);
-        public override int GetHashCode() => StringComparer.Ordinal.GetHashCode(DownloadParam.CachePath);
+        public override int GetHashCode() => StringComparer.Ordinal.GetHashCode(downloadParam.CachePath);
         public static bool operator ==(DownloadViewModel downloadviewmode, DownloadViewModel downloadviewmode1) => downloadviewmode.Equals(downloadviewmode1);
         public static bool operator !=(DownloadViewModel downloadviewmode, DownloadViewModel downloadviewmode1) => !(downloadviewmode == downloadviewmode1);
     }

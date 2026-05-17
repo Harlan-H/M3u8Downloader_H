@@ -111,7 +111,6 @@ namespace M3u8Downloader_H.ViewModels.Menus
                 settingsService.Load();
                 pluginManager.Load();
 
-
                 httpListenService.Run(i => HttpServicePort = i);
                 httpListenService.Initialization(appCommandService);
             }
@@ -238,7 +237,7 @@ namespace M3u8Downloader_H.ViewModels.Menus
            desktop.MainWindow?.Clipboard is not { } provider)
                 return;
 
-            await provider.SetTextAsync(download.Log.CopyLog());       
+            await provider.SetTextAsync(download.CopyLog());       
         }
     }
 }
