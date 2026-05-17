@@ -80,11 +80,11 @@ namespace M3u8Downloader_H.Plugin.Services
             if (view is not T control)
                 throw new InvalidOperationException($"ui接口继承有误 不是{nameof(T)}类型");
 
-            handleDataContext(control,instance.CreateMainView());
-
             var windowContextClone = windowContext.Clone();
             windowContextClone.PluginStorageService = new PluginStorage(PluginManifest.Key);
             instance.InitializeWindow(windowContextClone);
+
+            handleDataContext(control,instance.CreateMainView());
 
             WindowInstance = windowInstance;
             return control;

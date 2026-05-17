@@ -76,6 +76,7 @@ namespace M3u8Downloader_H.ViewModels.Menus
             var appCommandService = new AppCommandService(
                 (http, param, downloadPlugin) =>
                 {
+                    param.CompleteAttribute(settingsService);
                     Dispatcher.UIThread.Post(() =>
                     {
                         m3U8WindowViewModel.ProcessM3u8Download(http,param, downloadPlugin);
@@ -83,6 +84,7 @@ namespace M3u8Downloader_H.ViewModels.Menus
                 },
                 (http, param, fileinfo, downloadPlugin) =>
                 {
+                    param.CompleteAttribute(settingsService);
                     Dispatcher.UIThread.Post(() =>
                     {
                         m3U8WindowViewModel.ProcessM3u8Download(http,param, fileinfo, downloadPlugin);
@@ -90,6 +92,7 @@ namespace M3u8Downloader_H.ViewModels.Menus
                 },
                 (http,param) =>
                 {
+                    param.CompleteAttribute(settingsService);
                     Dispatcher.UIThread.Post(() =>
                     {
                         mediaWindowViewModel.ProcessMediaDownload(http,param);
