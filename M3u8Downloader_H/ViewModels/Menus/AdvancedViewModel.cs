@@ -1,6 +1,8 @@
 ﻿using Avalonia.Controls;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
+using M3u8Downloader_H.Abstractions.Common;
+using M3u8Downloader_H.Abstractions.Models;
 using M3u8Downloader_H.FrameWork;
 using M3u8Downloader_H.Messages;
 using M3u8Downloader_H.Models;
@@ -10,6 +12,7 @@ using M3u8Downloader_H.Plugin.Services;
 using M3u8Downloader_H.Services;
 using M3u8Downloader_H.Utils;
 using M3u8Downloader_H.ViewModels.Components;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -41,6 +44,7 @@ namespace M3u8Downloader_H.ViewModels.Menus
         {
             if (!obj.PluginManifest.Runtime.HasUi)
                 return;
+
 
             PluginNavItems.Add(new PluginNavItem(obj, windowContext));
         }

@@ -21,10 +21,23 @@ namespace M3u8Downloader_H.ViewModels.Components
             if (_view != null) 
                 return _view;
 
-            var control = pluginHandle.LoadUI<UserControl>(
-                    (control, datacontext) => control.DataContext = datacontext,
-                    windowContext);
-           
+            ServiceCollection serviceDescriptors = new();
+            var instance = pluginHandle.LoadUI(storage =>
+            {
+                serviceDescriptors.AddSingleton(windowContext.NotificationService);
+                serviceDescriptors.AddSingleton(windowContext.HttpFactory);
+                serviceDescriptors.AddSingleton(windowContext.AppCommandService);
+                serviceDescriptors.AddSingleton(storage);
+            });
+
+            instance.ConfigureServices(serviceDescriptors);
+            var serviceProvider = serviceDescriptors.BuildServiceProvider();
+            var view = Activator.CreateInstance(instance.MainWindowViewType);
+            if (view is not UserControl control)
+                throw new InvalidOperationException($"ui接口继承有误 不是{nameof(UserControl)}类型");
+
+            control.DataContext = serviceProvider.GetRequiredService(instance.MainWindowViewModelType); 
+
             _view = control;
             return _view;
         }

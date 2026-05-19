@@ -1,13 +1,15 @@
 ﻿using M3u8Downloader_H.Abstractions.Models;
+using Microsoft.Extensions.DependencyInjection;
 
 
 namespace M3u8Downloader_H.Abstractions.Plugins.Window
 {
     public interface IWindowPlugin
     {
-        void InitializeWindow(IWindowContext windowContext);
-        Type ViewType { get; }
-        object CreateMainView();
+        Type MainWindowViewType { get; }
 
+        Type MainWindowViewModelType { get;  }
+
+        void ConfigureServices(IServiceCollection services);
     }
 }
