@@ -78,6 +78,16 @@ namespace M3u8Downloader_H.Utils
             return client;
         }
 
+
+        public void CloseClient(string name = "m3u8downloader_h")
+        {
+            if (_clients.TryGetValue(name, out ClientEntry? clientEntry))
+            {
+                clientEntry?.Client?.Dispose();
+                clientEntry?.Client = null;
+            }
+        }
+
         public void Configure(string name, Action<HttpClient, HttpClientHandler> configure)
         {
             var entry = _clients.GetOrAdd(name, _ => new ClientEntry());

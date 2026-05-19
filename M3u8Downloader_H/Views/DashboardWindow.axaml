@@ -21,7 +21,7 @@
         </ResourceDictionary>
     </Window.Resources>
 
-        <Interaction.Behaviors>
+    <Interaction.Behaviors>
         <LoadedTrigger>
 			<InvokeCommandAction Command="{Binding InitializeCommand}" />
         </LoadedTrigger>

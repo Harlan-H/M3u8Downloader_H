@@ -87,7 +87,7 @@ namespace M3u8Downloader_H.Services
 
         public SettingsService() : base(SerializerContext.Default,Path.Combine(StorageSpaceManager.GetConfigPath(), "Settings.dat"))
         {
-
+            
         }
 
     }

@@ -2,6 +2,7 @@
 using M3u8Downloader_H.Abstractions.Models;
 using M3u8Downloader_H.Plugin.Models.Context;
 using M3u8Downloader_H.Plugin.Services;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 
 namespace M3u8Downloader_H.ViewModels.Components

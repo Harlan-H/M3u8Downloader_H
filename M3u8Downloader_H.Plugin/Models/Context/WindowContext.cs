@@ -9,7 +9,7 @@ namespace M3u8Downloader_H.Plugin.Models.Context
         INotificationService snackbarMaranger)
         : IWindowContext
     {
-        public IHttpFactory ApiFactory => apiFactory;
+        public IHttpFactory HttpFactory => apiFactory;
 
         public INotificationService NotificationService { get; set; } = snackbarMaranger;
         public IAppCommandService AppCommandService { get; set; } = default!;
@@ -18,7 +18,7 @@ namespace M3u8Downloader_H.Plugin.Models.Context
 
         public WindowContext Clone()
         {
-            return new WindowContext(this.ApiFactory, this.NotificationService)
+            return new WindowContext(this.HttpFactory, this.NotificationService)
             {
                 AppCommandService = AppCommandService,
             };

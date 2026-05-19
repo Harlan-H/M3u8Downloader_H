@@ -9,6 +9,8 @@ namespace M3u8Downloader_H.Abstractions.Models
         event Action? ProxyChanged;
         HttpClient GetClient(string name);
 
+        void CloseClient(string name);
+
         void Configure(string name, Action<HttpClient, HttpClientHandler> configure);
 
         void Remove(string name);
