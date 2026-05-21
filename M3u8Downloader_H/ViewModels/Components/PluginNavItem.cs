@@ -22,13 +22,10 @@ namespace M3u8Downloader_H.ViewModels.Components
                 return _view;
 
             ServiceCollection serviceDescriptors = new();
-            var instance = pluginHandle.LoadUI(storage =>
-            {
-                serviceDescriptors.AddSingleton(windowContext.NotificationService);
-                serviceDescriptors.AddSingleton(windowContext.HttpFactory);
-                serviceDescriptors.AddSingleton(windowContext.AppCommandService);
-                serviceDescriptors.AddSingleton(storage);
-            });
+            serviceDescriptors.AddSingleton(windowContext.NotificationService);
+            serviceDescriptors.AddSingleton(windowContext.HttpFactory);
+            serviceDescriptors.AddSingleton(windowContext.AppCommandService);
+            var instance = pluginHandle.LoadUI(serviceDescriptors, windowContext.MemoryCacheSercie);
 
             instance.ConfigureServices(serviceDescriptors);
             var serviceProvider = serviceDescriptors.BuildServiceProvider();

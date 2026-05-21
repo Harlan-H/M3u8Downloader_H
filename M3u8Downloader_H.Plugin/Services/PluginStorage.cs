@@ -24,11 +24,8 @@ namespace M3u8Downloader_H.Plugin.Services
 
         private static string EscapePath(string path)
         {
-            var relativePath =
-                path.Replace('\\', '/')
+            return path.Replace('\\', '/')
                 .TrimStart('/');
-            
-            return Path.GetInvalidFileNameChars().Append('.').Aggregate(relativePath, (current, invalidChar) => current.Replace(invalidChar, '_'));
         }
 
   

@@ -4,6 +4,7 @@ using M3u8Downloader_H.Abstractions.Plugins.Download;
 using M3u8Downloader_H.Abstractions.Plugins.Window;
 using M3u8Downloader_H.Plugin.Models;
 using M3u8Downloader_H.Plugin.Models.Context;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using System.IO.Compression;
 using System.Reflection;
@@ -72,13 +73,16 @@ namespace M3u8Downloader_H.Plugin.Services
             pluginEntry = ipluginEntryInstance;
         }
 
-        public IWindowPlugin LoadUI(Action<IPluginStorage> InitPluginSerice)
+        public IWindowPlugin LoadUI(IServiceCollection service,IMemoryCache memoryCache)
         {
             var instance = pluginEntry.CreateWindoPlugin();
             if (instance is null || instance is not IWindowPlugin windowInstance)
                 throw new InvalidDataException("继承IWindowPlugin接口的类没有默认的构造函数");
 
-            InitPluginSerice(new PluginStorage(PluginManifest.Key));
+
+            service.AddSingleton(new PluginStorage(PluginManifest.Key));
+            service.AddSingleton<ICacheService>(new CacheService(memoryCache,PluginManifest.Key));
+ 
             WindowInstance = windowInstance;
             return windowInstance;
         }

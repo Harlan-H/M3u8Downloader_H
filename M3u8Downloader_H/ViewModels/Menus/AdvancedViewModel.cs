@@ -12,6 +12,7 @@ using M3u8Downloader_H.Plugin.Services;
 using M3u8Downloader_H.Services;
 using M3u8Downloader_H.Utils;
 using M3u8Downloader_H.ViewModels.Components;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.ObjectModel;
@@ -32,11 +33,12 @@ namespace M3u8Downloader_H.ViewModels.Menus
         [ObservableProperty]
         public partial PluginNavItem Seleted { get; set; } = default!;
 
-        public AdvancedViewModel(PluginManager pluginManager)
+        public AdvancedViewModel(PluginManager pluginManager,IMemoryCache memoryCache)
         {
             pluginManager.PluginEnabled += PluginService_PluginEnabled;
             pluginManager.PluginDisabled += PluginService_PluginDisabled;
             WeakReferenceMessenger.Default.Send(new GetAppComandServiceMessage(windowContext));
+            windowContext.MemoryCacheSercie = memoryCache;
             pluginManager.InitActivePlugin();
         }
 

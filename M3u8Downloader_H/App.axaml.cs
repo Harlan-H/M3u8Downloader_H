@@ -11,6 +11,7 @@ using M3u8Downloader_H.ViewModels.Windows;
 using M3u8Downloader_H.Views;
 using M3u8Downloader_H.Views.Menus;
 using M3u8Downloader_H.Views.Windows;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using System.Linq;
 
@@ -26,6 +27,7 @@ namespace M3u8Downloader_H
 
             services.AddSingleton<SettingsService>();
             services.AddSingleton<PluginManager>();
+            services.AddSingleton<IMemoryCache>(new MemoryCache(new MemoryCacheOptions()));
 
             services.AddSingleton<DashboardWindowViewModel>();
             services.AddSingleton<MainWindowViewModel>();

@@ -1,5 +1,6 @@
 ﻿using M3u8Downloader_H.Abstractions.Common;
 using M3u8Downloader_H.Abstractions.Models;
+using Microsoft.Extensions.Caching.Memory;
 
 
 namespace M3u8Downloader_H.Plugin.Models.Context
@@ -7,7 +8,6 @@ namespace M3u8Downloader_H.Plugin.Models.Context
     public class WindowContext(
         IHttpFactory apiFactory,
         INotificationService snackbarMaranger)
-        : IWindowContext
     {
         public IHttpFactory HttpFactory => apiFactory;
 
@@ -15,6 +15,8 @@ namespace M3u8Downloader_H.Plugin.Models.Context
         public IAppCommandService AppCommandService { get; set; } = default!;
 
         public IPluginStorage PluginStorageService { get; set; } = default!;
+
+        public IMemoryCache MemoryCacheSercie { get; set; } = default!;
 
         public WindowContext Clone()
         {

@@ -85,7 +85,7 @@ namespace M3u8Downloader_H.Plugin
         {
             if (url is not null)
             {
-                var plugin = _activePlugins.FirstOrDefault(p => p.CanHandleDownload(url));
+                var plugin = _activePlugins.Where(p => p.PluginManifest.Runtime.HasDownload).FirstOrDefault(p => p.CanHandleDownload(url));
                 return plugin?.LoadDownload();
             }
             return null;
