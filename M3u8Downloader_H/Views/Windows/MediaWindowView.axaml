@@ -22,17 +22,17 @@
                 </ComboBox>
                 <TextBox Text="{Binding VideoUrl}" Grid.Column="1"  Margin="5,0,0,3"
                   Classes="clearButton dense" 
-                  Watermark="视频地址mp4,flv等视频格式地址"  FontSize="18"  VerticalAlignment="Center" >
+                  PlaceholderText="视频地址mp4,flv等视频格式地址"  FontSize="18"  VerticalAlignment="Center" >
                 </TextBox>
             </Grid>
 
             <TextBox Grid.Row="1" Text="{Binding AudioUrl}"  
                   Classes="clearButton dense" 
-                  Watermark="音频地址aac等音频格式地址(音视频分离使用,没有可以不填)"  FontSize="18"  VerticalAlignment="Center" >
+                  PlaceholderText="音频地址aac等音频格式地址(音视频分离使用,没有可以不填)"  FontSize="18"  VerticalAlignment="Center" >
             </TextBox>
             <TextBox  Grid.Row="2" Text="{Binding VideoName}"
                      Classes="clearButton dense" 
-                    Watermark="视频名称(可以不填写,不写默认随机名称)" FontSize="18"  VerticalAlignment="Center">
+                    PlaceholderText="视频名称(可以不填写,不写默认随机名称)" FontSize="18"  VerticalAlignment="Center">
             </TextBox>
         </Grid>
 

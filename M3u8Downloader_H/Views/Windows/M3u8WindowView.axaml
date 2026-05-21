@@ -15,14 +15,14 @@
         <StackPanel >
             <TextBox Text="{Binding RequestUrl,Delay=150}" 
                         Classes="clearButton dense" 
-                        Watermark="下载地址,m3u8,json文件(文件可以直接拖拽到此)"  FontSize="18"  VerticalAlignment="Center" >
+                        PlaceholderText="下载地址,m3u8,json文件(文件可以直接拖拽到此)"  FontSize="18"  VerticalAlignment="Center" >
                 <Interaction.Behaviors>
                     <behavior:DragAndDropBehavior IsFile="True" FilterString=".m3u8|.txt|.json" />
                 </Interaction.Behaviors>
             </TextBox>
             <TextBox Text="{Binding VideoName,Delay=150}" 
                     Classes="clearButton dense" 
-                    Watermark="视频名称(可以不填写,不写默认随机名称)" FontSize="18"  VerticalAlignment="Center">
+                    PlaceholderText="视频名称(可以不填写,不写默认随机名称)" FontSize="18"  VerticalAlignment="Center">
             </TextBox>
 
             <!-- 密钥填写区  -->
@@ -35,10 +35,10 @@
                     </ComboBox.Styles>
                 </ComboBox>
                 <TextBox Margin="5,0,0,2" Grid.Column="1" Classes="dense" Text="{Binding Key}" FontSize="18"
-                        Watermark="KEY(字符串或者base64)" />
+                        PlaceholderText="KEY(字符串或者base64)" />
             </Grid>
             <TextBox Text="{Binding Iv}"    FontSize="18"  Classes="dense"
-                        Watermark="IV(例如0x11223344556677888877665544332211)"/>
+                        PlaceholderText="IV(例如0x11223344556677888877665544332211)"/>
         </StackPanel>
 
         <StackPanel Grid.Column="1" VerticalAlignment="Center">

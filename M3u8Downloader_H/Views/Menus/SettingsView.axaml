@@ -196,9 +196,9 @@
                              >
                     </Button>
                     <StackPanel Name="proxyInfo" DataContext="{Binding $parent[UserControl].((vm:SettingsViewModel)DataContext).ProxyInfo}">
-                        <TextBox Watermark="http代理地址" Margin="5" FontSize="18" Theme="{StaticResource CompactTextBox}"  Text="{Binding Address}"/>
-                        <TextBox Watermark="账号(选填)" Margin="5" FontSize="18" Theme="{StaticResource CompactTextBox}"  Text="{Binding UserName}"/>
-                        <TextBox Watermark="密码(选填)" Margin="5" FontSize="18" Theme="{StaticResource CompactTextBox}"  Text="{Binding PassWord}"/>
+                        <TextBox PlaceholderText="http代理地址" Margin="5" FontSize="18" Theme="{StaticResource CompactTextBox}"  Text="{Binding Address}"/>
+                        <TextBox PlaceholderText="账号(选填)" Margin="5" FontSize="18" Theme="{StaticResource CompactTextBox}"  Text="{Binding UserName}"/>
+                        <TextBox PlaceholderText="密码(选填)" Margin="5" FontSize="18" Theme="{StaticResource CompactTextBox}"  Text="{Binding PassWord}"/>
 
                     </StackPanel>
 
