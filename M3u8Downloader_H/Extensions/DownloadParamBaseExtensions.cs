@@ -1,8 +1,8 @@
 ﻿using M3u8Downloader_H.Abstractions.Common;
 using M3u8Downloader_H.Common.DownloadPrams;
 using M3u8Downloader_H.Services;
+using System;
 using System.IO;
-using System.Linq;
 
 namespace M3u8Downloader_H.Extensions;
 
@@ -21,8 +21,11 @@ internal static class DownloadParamBaseExtensions
                 }
                 else
                 {
-                    var savePath = Path.GetInvalidFileNameChars().Append('.').Aggregate(downloadParamBase.SavePath.TrimStart('/'), (current, invalidChar) => current.Replace(invalidChar, '_'));
-                    downloadParamBase.SavePath = Path.Combine(settingsService.SavePath, savePath);
+                    var savePath = Path.GetFullPath(Path.Combine(settingsService.SavePath, downloadParamBase.SavePath));
+                    var rootSavePath = Path.GetFullPath(settingsService.SavePath);
+                    if (!savePath.StartsWith(rootSavePath))
+                        throw new InvalidOperationException("路径非法");
+                    downloadParamBase.SavePath = savePath;
                 }
                 downloadParamBase.Headers ??= settingsService.Headers;
             }

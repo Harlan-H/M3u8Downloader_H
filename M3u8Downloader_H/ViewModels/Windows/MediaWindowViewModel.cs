@@ -67,7 +67,6 @@ namespace M3u8Downloader_H.ViewModels.Windows
         {
             FileEx.EnsureFileNotExist(mediaDownloadParams.VideoFullName);
 
-            mediaDownloadParams.CompleteAttribute(settingsService);
             DownloadViewModel download = viewModelManager.CreateDownloadViewModel(httpClient,mediaDownloadParams);
             if (download is null) return;
 

@@ -10,7 +10,7 @@
 
         public override bool Validate(object obj, object value)
         {
-            return value is not null && content.Contains(value);
+            return value is null || content.Contains(value);
         }
     }
 }

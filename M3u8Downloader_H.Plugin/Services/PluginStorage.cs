@@ -8,24 +8,27 @@ namespace M3u8Downloader_H.Plugin.Services
         private readonly string _rootPath = Path.Combine(StorageSpaceManager.GetPluginDataPath(), key);
 
         public bool Exists(string path)
-            => File.Exists(Path.Combine(_rootPath, EscapePath(path)));
+            => File.Exists(EscapePath(path));
 
         public string GetPath(string path)
-            => Path.Combine(_rootPath, EscapePath(path));
+            => EscapePath(path);
 
         public Stream OpenRead(string path)
-            => File.OpenRead(Path.Combine(_rootPath, EscapePath(path)));
+            => File.OpenRead(EscapePath(path));
 
         public Stream OpenWrite(string path)
-            => File.OpenWrite(Path.Combine(_rootPath, EscapePath(path)));
+            => File.OpenWrite(EscapePath(path));
 
         public DirectoryInfo CreateDirectory(string Dir)
-            => Directory.CreateDirectory(Path.Combine(_rootPath, EscapePath(Dir)));
+            => Directory.CreateDirectory(EscapePath(Dir));
 
-        private static string EscapePath(string path)
+        private string EscapePath(string path)
         {
-            return path.Replace('\\', '/')
-                .TrimStart('/');
+            var fullPath = Path.GetFullPath(Path.Combine(_rootPath, path));
+            var rootPath = Path.GetFullPath(_rootPath);
+            if(!fullPath.StartsWith(rootPath))
+                throw new InvalidOperationException("非法路径");
+            return fullPath;
         }
 
   

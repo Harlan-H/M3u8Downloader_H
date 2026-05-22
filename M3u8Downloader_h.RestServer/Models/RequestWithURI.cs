@@ -12,7 +12,7 @@ namespace M3u8Downloader_H.RestServer.Models
         public Uri RequestUrl { get; set; } = default!;
 
         [Contained(["AES-128", "AES-192", "AES-256"], ExceptionMsg = "不可用的key方法,必须是AES-128,AES-192,AES-256其中之一")]
-        public string Method { get; set; } = string.Empty;
+        public string Method { get; set; } = default!;
         public string? Key { get; set; }
         public string? Iv { get; set; }
 

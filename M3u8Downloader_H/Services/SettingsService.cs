@@ -12,10 +12,6 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 
 
-#if !DEBUG
-using System.IO;
-#endif
-
 namespace M3u8Downloader_H.Services
 {
     [ObservableObject]
