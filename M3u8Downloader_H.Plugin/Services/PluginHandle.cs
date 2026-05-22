@@ -80,7 +80,7 @@ namespace M3u8Downloader_H.Plugin.Services
                 throw new InvalidDataException("继承IWindowPlugin接口的类没有默认的构造函数");
 
 
-            service.AddSingleton(new PluginStorage(PluginManifest.Key));
+            service.AddSingleton<IPluginStorage>(new PluginStorage(PluginManifest.Key));
             service.AddSingleton<ICacheService>(new CacheService(memoryCache,PluginManifest.Key));
  
             WindowInstance = windowInstance;
