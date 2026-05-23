@@ -10,14 +10,14 @@ namespace M3u8Downloader_H.Plugin.Services
         private static readonly string PackUrl = "https://raw.githubusercontent.com/Harlan-H/M3u8Downloader_H.Plugins/refs/heads/master/data/plugins/%s.json";
         private static readonly string _pluginTempPath = StorageSpaceManager.GetTempPath();
         private static readonly string _pluginDirPath = StorageSpaceManager.GetPluginPath();
-        private readonly Func<HttpClient> getHttpClient;
+        private readonly Func<HttpClient> HttpClientFactory;
 
-        private  HttpClient _httpClient => getHttpClient();
+        private  HttpClient _httpClient => HttpClientFactory();
         private OnlinePlugin? onlinePlugin;
 
-        public PluginRepository(Func<HttpClient> GetHttpClient)
+        public PluginRepository(Func<HttpClient> httpClientFactory)
         {
-            getHttpClient = GetHttpClient;
+            HttpClientFactory = httpClientFactory;
             Directory.CreateDirectory(_pluginTempPath);
         }
 

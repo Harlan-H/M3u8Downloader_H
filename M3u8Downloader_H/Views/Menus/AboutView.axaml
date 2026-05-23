@@ -29,11 +29,6 @@
                              Command="{Binding ExploreCommand}"
                              CommandParameter="{Binding $self.Content}"
                               />
-            <HyperlinkButton FontSize="18" Theme="{StaticResource MaterialHyperlinkButton}" HorizontalAlignment="Center" Content="http://note.youdao.com/noteshare?id=c6ba2fb478ad300b7095c7c951556fc6" 
-                             ToolTip.Tip="http://note.youdao.com/noteshare?id=c6ba2fb478ad300b7095c7c951556fc6" 
-                             Command="{Binding ExploreCommand}"
-                             CommandParameter="{Binding $self.Content}"
-                     />
         </StackPanel>
         <Grid Grid.Row="2">
         <TextBlock  HorizontalAlignment="Right" VerticalAlignment="Center"  Text="Copyright (c) 2026 Harlan" Margin="0 5 32 0" />

@@ -1,8 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using M3u8Downloader_H.Models;
 using M3u8Downloader_H.Plugin;
-using M3u8Downloader_H.Plugin.Services;
-using M3u8Downloader_H.Utils;
 using M3u8Downloader_H.ViewModels.Components;
 using System;
 using System.Collections.ObjectModel;
@@ -13,9 +11,6 @@ namespace M3u8Downloader_H.ViewModels.Windows
 {
     public partial class OnlinePluginViewModel(PluginManager pluginManager) : ViewModelBase
     {
-        private readonly PluginRepository pluginRepository = new(() => Http.Instance.GetClient());
-        private readonly PluginRegistry pluginRegistry = pluginManager.RegistryClient;
-
         public ObservableCollection<PluginOnlineItem> PluginOnlineItems { get; } = [];
 
         [ObservableProperty]
@@ -28,13 +23,10 @@ namespace M3u8Downloader_H.ViewModels.Windows
         {
             using CancellationTokenSource cancellationTokenSource = new();
             cancellationTokenSource.CancelAfter(TimeSpan.FromSeconds(10));
-            var pluginManifests = await pluginRepository.InitPluginManifest(cancellationTokenSource.Token);
+            var pluginManifests = await pluginManager.InitPluginManifest(cancellationTokenSource.Token);
             foreach (var item in pluginManifests)
             {
-                var pluginState = pluginRegistry.TryGetPluginStateByKey(item.Key);
-                PluginOnlineItems.Add(
-                    new PluginOnlineItem(token => pluginRepository.DownloadPlugin(item.Release.DownloadUrl,token),
-                            item, pluginState));
+                PluginOnlineItems.Add( new PluginOnlineItem(pluginManager, item));
             }
         }
 

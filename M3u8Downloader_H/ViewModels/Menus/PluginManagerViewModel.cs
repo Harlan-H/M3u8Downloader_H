@@ -1,12 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using M3u8Downloader_H.Plugin;
-using M3u8Downloader_H.Services;
-using M3u8Downloader_H.ViewModels.Components;
 using M3u8Downloader_H.ViewModels.Windows;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Text;
 
 namespace M3u8Downloader_H.ViewModels.Menus
 {

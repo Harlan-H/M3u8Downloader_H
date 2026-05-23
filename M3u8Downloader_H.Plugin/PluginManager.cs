@@ -1,21 +1,24 @@
 ﻿using M3u8Downloader_H.Abstractions.Plugins.Download;
 using M3u8Downloader_H.Common.Utils;
+using M3u8Downloader_H.Plugin.Models.Online;
 using M3u8Downloader_H.Plugin.Services;
+using Microsoft.Extensions.Caching.Memory;
 using System.IO.Compression;
 
 namespace M3u8Downloader_H.Plugin
 {
-    public class PluginManager
+    public class PluginManager(Func<HttpClient> httpClientFactory)
     {
         private readonly string _pluginDirPath = StorageSpaceManager.GetPluginPath();
         private readonly List<PluginHandle> plugins = [];
-        private List<PluginHandle> _activePlugins = [];
+        private readonly List<PluginHandle> _activePlugins = [];
         public event Action<PluginHandle>? PluginEnabled;
         public event Action<PluginHandle>? PluginDisabled;
 
         public IReadOnlyList<PluginHandle> AllPlugins => plugins;
         public PluginRegistry RegistryClient { get; } = new PluginRegistry();
 
+        public PluginRepository RepositoryClient { get; } = new PluginRepository(httpClientFactory);
 
         public void InitActivePlugin()
         {
@@ -25,10 +28,30 @@ namespace M3u8Downloader_H.Plugin
             }
         }
 
+
+        public async Task<List<OnlinePluginManifest>> InitPluginManifest(CancellationToken cancellationToken)
+        {
+              return await RepositoryClient.InitPluginManifest(cancellationToken);
+        }
+
+        public async Task UpdatePlugin(OnlinePluginManifest onlinePluginManifest, CancellationToken cancellationToken = default)
+        {
+            await RepositoryClient.DownloadPlugin(onlinePluginManifest.Release.DownloadUrl, cancellationToken);
+            RegistryClient.UpdateVersionByKey(onlinePluginManifest.Key, onlinePluginManifest.Release.Version);
+            RegistryClient.Save(2);
+        }
+
+
+        public async Task InstallPlugin(OnlinePluginManifest onlinePluginManifest, CancellationToken cancellationToken = default)
+        {
+            await RepositoryClient.DownloadPlugin(onlinePluginManifest.Release.DownloadUrl, cancellationToken);
+        }
+
         public void Load()
         {
             RegistryClient.Load();
             LoadPlugins();
+
             foreach (var item in plugins.Where(p => RegistryClient.IsEnable(p.PluginManifest)))
             {
                 item.LoadLibrary();

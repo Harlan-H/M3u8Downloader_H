@@ -28,7 +28,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="AsyncImageLoader.Avalonia" Version="3.8.0" />
     <PackageReference Include="Avalonia" Version="12.0.3" />
     <PackageReference Include="Avalonia.Desktop" Version="12.0.3" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="12.0.3" />

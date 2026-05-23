@@ -1,7 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using M3u8Downloader_H.Common.Models;
 using M3u8Downloader_H.Models;
+using M3u8Downloader_H.Plugin;
 using M3u8Downloader_H.Plugin.Models;
 using M3u8Downloader_H.Plugin.Models.Online;
 using System;
@@ -10,16 +10,18 @@ using System.Threading.Tasks;
 
 namespace M3u8Downloader_H.ViewModels.Components
 {
-    public partial class PluginOnlineItem(Func<CancellationToken, Task> downloadFunc, OnlinePluginManifest onlinePluginManifest, PluginState? pluginState) : ObservableObject
+    public partial class PluginOnlineItem(PluginManager pluginManager, OnlinePluginManifest onlinePluginManifest) : ObservableObject
     {
         private readonly bool versionTooLow = Program.Version < onlinePluginManifest.Release.MinAppVersion;
+        private readonly PluginState? pluginState = pluginManager.RegistryClient.TryGetPluginStateByKey(onlinePluginManifest.Key);
+
         private bool _installed = false;
         public string Title => onlinePluginManifest.BasicInfo.Title;
         public string Desc => onlinePluginManifest.BasicInfo.Description;
         public string Author => onlinePluginManifest.BasicInfo.Author;
         public Version Version => onlinePluginManifest.Release.Version;
         public Version? LocalVersion => pluginState?.CurrentVersion;
-        public DateTime Time =>  onlinePluginManifest.BasicInfo.Time;
+        public DateTime Time => onlinePluginManifest.BasicInfo.Time;
 
         [ObservableProperty]
         public partial PluginStatus State { get; set; } = Program.Version < onlinePluginManifest.Release.MinAppVersion ? PluginStatus.VersionTooLow : PluginStatus.Normal;
@@ -37,7 +39,7 @@ namespace M3u8Downloader_H.ViewModels.Components
                 using CancellationTokenSource cancellationTokenSource = new();
                 cancellationTokenSource.CancelAfter(TimeSpan.FromSeconds(30));
                 State = PluginStatus.Loading;
-                await downloadFunc.Invoke(cancellationTokenSource.Token);
+                await pluginManager.InstallPlugin(onlinePluginManifest, cancellationTokenSource.Token);
                 _installed = true;
                 InstallPluginCommand.NotifyCanExecuteChanged();
                 State = PluginStatus.Installed;
@@ -59,7 +61,7 @@ namespace M3u8Downloader_H.ViewModels.Components
                 using CancellationTokenSource cancellationTokenSource = new();
                 cancellationTokenSource.CancelAfter(TimeSpan.FromSeconds(30));
                 State = PluginStatus.Loading;
-                await downloadFunc.Invoke(cancellationTokenSource.Token);
+                await pluginManager.UpdatePlugin(onlinePluginManifest, cancellationTokenSource.Token);
                 _installed = true;
                 UpdatePluginCommand.NotifyCanExecuteChanged();
                 State = PluginStatus.Installed;
