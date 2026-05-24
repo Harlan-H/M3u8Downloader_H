@@ -1,6 +1,5 @@
 ﻿using M3u8Downloader_H.Abstractions.Common;
 using M3u8Downloader_H.Abstractions.Models;
-using M3u8Downloader_H.Common.Extensions;
 using M3u8Downloader_H.Downloader.Utils;
 using System.Net;
 using System.Net.Http.Headers;
@@ -9,6 +8,7 @@ namespace M3u8Downloader_H.Downloader.MediaDownloads
 {
     public class MediaDownloader(IDownloadContext downloadContext) : DownloaderBase(downloadContext)
     {
+       
         private readonly IDownloadContext downloadContext = downloadContext;
         protected async Task SetVideoSize(IStreamInfo streamInfo, CancellationToken cancellationToken = default)
         { 
@@ -16,7 +16,7 @@ namespace M3u8Downloader_H.Downloader.MediaDownloads
             {
                 try
                 {
-                    long fileSize = await downloadContext.HttpClient.TryGetContentLengthAsync(streamInfo.Url.OriginalString, _headers, cancellationToken) ?? throw new InvalidDataException("获取视频大小失败");
+                    long fileSize = await httpClientWrap.TryGetContentLengthAsync(streamInfo.Url.OriginalString, _headers, cancellationToken) ?? throw new InvalidDataException("获取视频大小失败");
                     streamInfo.SetFileSize(fileSize);
                     downloadContext.Log?.Info("获得文件大小是:{0}", new FileSize(fileSize).ToString());
                 }
@@ -55,11 +55,7 @@ namespace M3u8Downloader_H.Downloader.MediaDownloads
             else
                 rangeHeaderValue = new RangeHeaderValue(0, streamInfo.FileSize);
             
-            using CancellationTokenSource cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-            cancellationTokenSource.CancelAfter(TimeSpan.FromSeconds(downloadContext.DownloaderSetting.Timeouts));
-            downloadContext.Log?.Info("当前超时时间是【{0}】秒,请不要设置过小以免造成过早退出", downloadContext.DownloaderSetting.Timeouts);
-
-            await DownloadAsynInternal(streamInfo, _headers, rangeHeaderValue, () => fileInfo.Open(FileMode.Append), cancellationTokenSource.Token);
+            await DownloadAsynInternal(streamInfo, _headers, rangeHeaderValue, () => fileInfo.Open(FileMode.Append), cancellationToken);
             downloadContext.Log?.Info("【{0}】下载完成", streamInfo.Title);
         }
 

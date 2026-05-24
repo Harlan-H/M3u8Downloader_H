@@ -6,7 +6,7 @@ namespace M3u8Downloader_H.Abstractions.Models
 {
     public interface IDownloadContext
     {
-        HttpClient HttpClient { get; }
+        IHttpClientWrapper HttpClient { get; }
         ILog Log { get; }
         IDownloadParamBase DownloadParam { get; }
         IDownloaderSetting DownloaderSetting { get; }

@@ -1,6 +1,8 @@
 ﻿using M3u8Downloader_H.Abstractions.Common;
 using M3u8Downloader_H.Abstractions.M3u8;
+using M3u8Downloader_H.Abstractions.Models;
 using M3u8Downloader_H.Abstractions.Plugins.Download;
+using M3u8Downloader_H.Common.Services;
 using M3u8Downloader_H.Core;
 using M3u8Downloader_H.Plugin.Models.Context;
 using M3u8Downloader_H.Services;
@@ -23,7 +25,9 @@ public class ViewModelManager(SettingsService settingsService)
             RequestUrl = m3U8DownloadParam.RequestUrl,
             VideoName = m3U8DownloadParam.VideoName
         };
-        DownloadContext downloadContext = new(httpClient ?? Http.Instance.GetClient(), viewModel.Log,m3U8DownloadParam, settingsService.Clone<SettingsService>());
+        SettingsService settingsService1 = settingsService.Clone<SettingsService>();
+        IHttpClientWrapper httpClientWrapper = new HttpClientWrapper(httpClient ?? Http.Instance.GetClient(), settingsService1.Timeouts);
+        DownloadContext downloadContext = new(httpClientWrapper, viewModel.Log,m3U8DownloadParam, settingsService1);
         viewModel.downloaderCoreClient = new(downloadContext, downloadPlugin);
         return viewModel;
     }
@@ -38,8 +42,9 @@ public class ViewModelManager(SettingsService settingsService)
         {
             VideoName = m3U8DownloadParam.VideoName
         };
-
-        DownloadContext downloadContext = new(httpClient ?? Http.Instance.GetClient(), viewModel.Log, m3U8DownloadParam, settingsService.Clone<SettingsService>());
+        SettingsService settingsService1 = settingsService.Clone<SettingsService>();
+        IHttpClientWrapper httpClientWrapper = new HttpClientWrapper(httpClient ?? Http.Instance.GetClient(), settingsService1.Timeouts);
+        DownloadContext downloadContext = new(httpClientWrapper, viewModel.Log, m3U8DownloadParam, settingsService1);
         viewModel.downloaderCoreClient = new(downloadContext,  m3UFileInfo, downloadPlugin);
         return viewModel;
     }
@@ -53,7 +58,9 @@ public class ViewModelManager(SettingsService settingsService)
             RequestUrl = mediaDownloadParam.Medias[0].Url,
             VideoName = mediaDownloadParam.VideoName
         };
-        DownloadContext downloadContext = new(httpClient ?? Http.Instance.GetClient(), viewModel.Log, mediaDownloadParam, settingsService.Clone<SettingsService>());
+        SettingsService settingsService1 = settingsService.Clone<SettingsService>();
+        IHttpClientWrapper httpClientWrapper = new HttpClientWrapper(httpClient ?? Http.Instance.GetClient(), settingsService1.Timeouts);
+        DownloadContext downloadContext = new(httpClientWrapper, viewModel.Log, mediaDownloadParam, settingsService1);
         viewModel.downloaderCoreClient = new DownloaderCoreClient(downloadContext);
         return viewModel;
     }

@@ -3,6 +3,7 @@ using M3u8Downloader_H.Abstractions.M3u8;
 using System.Collections.Generic;
 using System;
 using M3u8Downloader_H.Abstractions.Plugins.Download;
+using System.Threading.Tasks;
 
 namespace M3u8Downloader_H.M3U8.AttributeReaders
 {
@@ -10,11 +11,11 @@ namespace M3u8Downloader_H.M3U8.AttributeReaders
     {
         public virtual bool ShouldTerminate => false;
 
-        public abstract void Write(M3UFileInfo m3UFileInfo, string value, IEnumerator<string> reader, Uri baseUri);
+        public abstract Task WriteAsync(M3UFileInfo m3UFileInfo, string value, IAsyncEnumerator<string> reader, Uri baseUri);
 
-        public void Write(IM3uFileInfo m3UFileInfo, string value, IEnumerator<string> reader, Uri baseUri)
+        public async Task WriteAsync(IM3uFileInfo m3UFileInfo, string value, IAsyncEnumerator<string> reader, Uri baseUri)
         {
-            Write((M3UFileInfo)m3UFileInfo, value, reader, baseUri);
+            await WriteAsync((M3UFileInfo)m3UFileInfo, value, reader, baseUri);
         }
     }
 }

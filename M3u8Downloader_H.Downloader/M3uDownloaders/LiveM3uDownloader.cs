@@ -12,7 +12,6 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
     internal class LiveM3uDownloader(IDownloadService downloadService, IDownloadContext downloadContext, IDialogProgress DialogProgress) : IDownloadService
     {
         private static readonly Random _rand = Random.Shared;
-        private static readonly TimeSpan _timeoutTimeSpan = TimeSpan.FromSeconds(3);
         private bool _firstTimeToRun = true;
         private IM3uFileInfo? _m3uFileInfo;
         private float recordDuration;
@@ -20,7 +19,7 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
 
         protected IEnumerable<KeyValuePair<string, string>>? _headers => downloadContext.DownloadParam.Headers ?? downloadContext.DownloaderSetting.Headers;
 
-        public Func<TimeSpan,CancellationToken, Task<IM3uFileInfo>> GetLiveFileInfoFunc { get; set; } = default!;
+        public Func<CancellationToken, Task<IM3uFileInfo>> GetLiveFileInfoFunc { get; set; } = default!;
         public Func<Stream, CancellationToken,Task< Stream>> HandleDataFunc { get; set ; } = default!;
         public Func<string, Stream, CancellationToken, Task> WriteToFileFunc { get ; set; } = default!;
 
@@ -119,13 +118,19 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
             {
                 try
                 {
-                    IM3uFileInfo m3UFileInfo = await GetLiveFileInfoFunc(_timeoutTimeSpan, cancellationToken);
+                    IM3uFileInfo m3UFileInfo = await GetLiveFileInfoFunc(cancellationToken);
                     return (M3UFileInfo)m3UFileInfo;
                 }
                 catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.NotFound && i < 4)
                 {
                     downloadContext.Log?.Warn("获取直播数据失败,网页返回代码:{0},返回内容:{1},正在进行第{2}次重试", e.StatusCode, e.Message, i + 1);
                     await Task.Delay(2000, cancellationToken);
+                    continue;
+                }
+                catch (TimeoutException e)
+                {
+                    downloadContext.Log?.Warn("{0},正在进行第{1}次重试",  e.Message, i + 1);
+                    await Task.Delay(500, cancellationToken);
                     continue;
                 }
             }

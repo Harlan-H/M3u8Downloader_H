@@ -8,7 +8,6 @@ using M3u8Downloader_H.Common.Models;
 using M3u8Downloader_H.Common.Utils;
 using M3u8Downloader_H.Downloader;
 using System;
-using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -24,7 +23,7 @@ namespace M3u8Downloader_H.Core.Downloads
 
         private bool _isDownloaded = false;
 
-        public async ValueTask StartDownload(Action<int> StateAction, IDialogProgress dialogProgress, CancellationToken cancellationToken)
+        public async Task StartDownload(Action<int> StateAction, IDialogProgress dialogProgress, CancellationToken cancellationToken)
         {
             StateAction.Invoke((int)DownloadStatus.Enqueued);
             using var acquire = dialogProgress.Acquire();
@@ -38,7 +37,7 @@ namespace M3u8Downloader_H.Core.Downloads
                 DirectoryEx.DeleteCache(mediaDownloadParam.CachePath);
         }
 
-        private async ValueTask DownloadAsync(IDialogProgress downloadProgress, CancellationToken cancellationToken)
+        private async Task DownloadAsync(IDialogProgress downloadProgress, CancellationToken cancellationToken)
         {
             if (_isDownloaded)
                 return;
@@ -51,7 +50,7 @@ namespace M3u8Downloader_H.Core.Downloads
             _isDownloaded = true;
         }
 
-        private async ValueTask MergeAsync(IDialogProgress downloadProgress, CancellationToken cancellationToken)
+        private async Task MergeAsync(IDialogProgress downloadProgress, CancellationToken cancellationToken)
         {
             await m3UCombinerClient.FFmpeg.ConvertToMp4(mediaDownloadParam.Medias, downloadProgress, cancellationToken);
         }

@@ -9,6 +9,7 @@ namespace M3u8Downloader_H.Downloader.MediaDownloads
 {
     public abstract class DownloaderBase(IDownloadContext downloadContext)
     {
+        protected readonly IHttpClientWrapper httpClientWrap = downloadContext.HttpClient;
         private bool _firstTimeToRun = true;
         private readonly IMediaDownloadParam DownloadParam = (IMediaDownloadParam)downloadContext.DownloadParam;
         internal IDialogProgress DialogProgress { get; set; } = default!;
@@ -31,8 +32,8 @@ namespace M3u8Downloader_H.Downloader.MediaDownloads
 
         protected async Task DownloadAsynInternal(IStreamInfo streamInfo, IEnumerable<KeyValuePair<string, string>>? headers, RangeHeaderValue? rangeHeaderValue,Func<FileStream> mediaFile, CancellationToken token)
         {  
-            using Stream stream = await downloadContext.HttpClient.GetResponseContentAsync(streamInfo.Url, headers, rangeHeaderValue, token);
-            using FileStream fileobject = mediaFile();
+            await using Stream stream = await httpClientWrap.GetStreamAsync(streamInfo.Url, headers, rangeHeaderValue, token);
+            await using FileStream fileobject = mediaFile();
             await WriteToFileAsync(streamInfo, fileobject, stream, token); 
         }
 
@@ -41,7 +42,7 @@ namespace M3u8Downloader_H.Downloader.MediaDownloads
 
         protected async Task WriteToFileAsync(IStreamInfo streamInfo, FileStream fileStream, Stream stream, CancellationToken token = default)
         {
-            using var buffer = MemoryPool<byte>.Shared.Rent(0x10000);
+            using var buffer = MemoryPool<byte>.Shared.Rent(81920);
             Memory<byte> memory = buffer.Memory;
             long totalBytes = fileStream.Length;
             int bytesCopied = 0;

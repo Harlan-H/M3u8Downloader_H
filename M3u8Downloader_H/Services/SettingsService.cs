@@ -3,8 +3,6 @@ using M3u8Downloader_H.Abstractions.M3uDownloaders;
 using M3u8Downloader_H.Abstractions.Settings;
 using M3u8Downloader_H.Common.Services;
 using M3u8Downloader_H.Common.Utils;
-using M3u8Downloader_H.Plugin.Services;
-using M3u8Downloader_H.ViewModels.Components;
 using System;
 using System.Collections.Generic;
 using System.IO;

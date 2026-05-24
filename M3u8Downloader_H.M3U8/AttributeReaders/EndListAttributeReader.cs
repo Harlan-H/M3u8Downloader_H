@@ -2,6 +2,7 @@
 using M3u8Downloader_H.M3U8.AttributeReader.Attributes;
 using System.Collections.Generic;
 using System;
+using System.Threading.Tasks;
 
 namespace M3u8Downloader_H.M3U8.AttributeReaders
 {
@@ -10,9 +11,10 @@ namespace M3u8Downloader_H.M3U8.AttributeReaders
     {
         public override bool ShouldTerminate => true;
 
-        public override void Write(M3UFileInfo m3UFileInfo, string value, IEnumerator<string> reader, Uri baseUri)
+        public override Task WriteAsync(M3UFileInfo m3UFileInfo, string value, IAsyncEnumerator<string> reader, Uri baseUri)
         {
             m3UFileInfo.PlaylistType = "VOD";
+            return Task.CompletedTask;
         }
     }
 }

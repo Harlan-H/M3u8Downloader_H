@@ -5,6 +5,7 @@ using M3u8Downloader_H.M3U8.AttributeReader.Attributes;
 using M3u8Downloader_H.M3U8.Utilities;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace M3u8Downloader_H.M3U8.AttributeReaders
 {
@@ -12,7 +13,7 @@ namespace M3u8Downloader_H.M3U8.AttributeReaders
     internal class MapAttributeReader : AttributeReader
     {
 
-        public override void Write(M3UFileInfo m3UFileInfo, string value, IEnumerator<string> reader, Uri baseUri)
+        public override Task WriteAsync(M3UFileInfo m3UFileInfo, string value, IAsyncEnumerator<string> reader, Uri baseUri)
         {
             var result =
                 value.Split([','], StringSplitOptions.RemoveEmptyEntries)
@@ -41,6 +42,7 @@ namespace M3u8Downloader_H.M3U8.AttributeReaders
 
             }
             m3UFileInfo.Map = m3UMapInfo;
+            return Task.CompletedTask;
         }
 
         private static System.Net.Http.Headers.RangeHeaderValue HandleRangeValue(string CurrentValue)

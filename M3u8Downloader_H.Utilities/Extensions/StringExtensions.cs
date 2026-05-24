@@ -1,0 +1,30 @@
+﻿using System;
+using System.Security.Cryptography;
+using System.Text;
+
+namespace M3u8Downloader_H.Common.Extensions
+{
+    public static class StringExtensions
+    {
+
+        public static string? NullIfWhiteSpace(this string s) =>
+            !string.IsNullOrWhiteSpace(s)
+                ? s
+                : null;
+
+
+        public static string GetMd5(this string s)
+        {
+            byte[] data = SHA256.HashData(Encoding.UTF8.GetBytes(s));
+            return Convert.ToHexString(data);
+        }
+
+        public static byte[] ToHex(this string s)
+        {
+            s = s.StartsWith("0x", StringComparison.Ordinal) ? s[2..] : s;
+            return Convert.FromHexString(s);
+        }
+
+
+    }
+}

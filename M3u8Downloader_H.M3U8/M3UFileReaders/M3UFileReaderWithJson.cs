@@ -1,12 +1,13 @@
-﻿using System;
-using System.IO;
-using System.Text;
-using System.Text.Json;
-using M3u8Downloader_H.Abstractions.M3u8;
+﻿using M3u8Downloader_H.Abstractions.M3u8;
 using M3u8Downloader_H.Abstractions.Plugins.Download;
 using M3u8Downloader_H.Common.Extensions;
 using M3u8Downloader_H.Common.M3u8Infos;
 using M3u8Downloader_H.M3U8.Extensions;
+using System;
+using System.IO;
+using System.Text;
+using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace M3u8Downloader_H.M3U8.M3UFileReaders
 {
@@ -20,7 +21,8 @@ namespace M3u8Downloader_H.M3U8.M3UFileReaders
            
         }
 
-        public IM3uFileInfo GetM3u8FileInfo(Stream stream)
+
+        public Task<IM3uFileInfo> GetM3u8FileInfo(Stream stream)
         {
             M3UFileInfo? m3ufileInfo = JsonSerializer.Deserialize<M3UFileInfo>(stream) ?? throw new InvalidDataException("不能是空的m3u8数据");
 
@@ -38,7 +40,7 @@ namespace M3u8Downloader_H.M3U8.M3UFileReaders
 
             m3ufileInfo.PlaylistType = "VOD";
             stream?.Dispose();
-            return m3ufileInfo;
+            return Task.FromResult<IM3uFileInfo>(m3ufileInfo);
         }
 
 

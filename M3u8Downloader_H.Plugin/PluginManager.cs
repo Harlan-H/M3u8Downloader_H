@@ -2,7 +2,6 @@
 using M3u8Downloader_H.Common.Utils;
 using M3u8Downloader_H.Plugin.Models.Online;
 using M3u8Downloader_H.Plugin.Services;
-using Microsoft.Extensions.Caching.Memory;
 using System.IO.Compression;
 
 namespace M3u8Downloader_H.Plugin

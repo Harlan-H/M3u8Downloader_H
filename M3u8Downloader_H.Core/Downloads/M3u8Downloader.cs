@@ -1,15 +1,11 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
-using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using M3u8Downloader_H.Abstractions.Common;
 using M3u8Downloader_H.Abstractions.Downloader;
 using M3u8Downloader_H.Abstractions.M3u8;
-using M3u8Downloader_H.Abstractions.M3uDownloaders;
 using M3u8Downloader_H.Abstractions.Models;
-using M3u8Downloader_H.Abstractions.Plugins;
 using M3u8Downloader_H.Abstractions.Plugins.Download;
 using M3u8Downloader_H.Abstractions.Settings;
 using M3u8Downloader_H.Combiners;
@@ -34,7 +30,7 @@ namespace M3u8Downloader_H.Core.Downloads
         private bool _isParsed = skipParse;
         private bool _isDownloaded = false;
 
-        public async ValueTask StartDownload(Action<int> StateAction,IDialogProgress dialogProgress, CancellationToken cancellationToken)
+        public async Task StartDownload(Action<int> StateAction,IDialogProgress dialogProgress, CancellationToken cancellationToken)
         {
             StateAction.Invoke((int)DownloadStatus.Parsed);
             await GetM3U8FileInfo(cancellationToken);
@@ -49,14 +45,15 @@ namespace M3u8Downloader_H.Core.Downloads
                 DirectoryEx.DeleteCache(context.DownloadParam.CachePath);
         }
 
-        private async ValueTask GetM3U8FileInfo(CancellationToken cancellationToken)
+        private async Task GetM3U8FileInfo(CancellationToken cancellationToken)
         {
             if (_isParsed)
                 return;
 
+            context.Log.Info("开始获取m3u8数据,请等待..");
             IM3u8DownloadParam m3u8DownloadParam = (IM3u8DownloadParam)context.DownloadParam;
             if (m3u8DownloadParam.RequestUrl.IsFile)
-                M3U8FileInfo = m3U8FileInfoClient.M3u8FileReader.GetM3u8FileInfo(m3u8DownloadParam.RequestUrl);
+                M3U8FileInfo = await m3U8FileInfoClient.M3u8FileReader.GetM3u8FileInfo(m3u8DownloadParam.RequestUrl);
             else
                 M3U8FileInfo = await m3U8FileInfoClient.M3UFileReadManager.GetM3u8FileInfo(cancellationToken);
 
@@ -74,7 +71,7 @@ namespace M3u8Downloader_H.Core.Downloads
         }
 
 
-        private async ValueTask DownloadAsync(IDialogProgress downloadProgress, CancellationToken cancellationToken)
+        private async Task DownloadAsync(IDialogProgress downloadProgress, CancellationToken cancellationToken)
         {
             if (_isDownloaded)
                 return;
@@ -87,7 +84,7 @@ namespace M3u8Downloader_H.Core.Downloads
             _isDownloaded = true;
         }
 
-        private async ValueTask MergeAsync(IDialogProgress progress, CancellationToken cancellationToken)
+        private async Task MergeAsync(IDialogProgress progress, CancellationToken cancellationToken)
         {
             if (M3U8FileInfo.Map is not null)
             {

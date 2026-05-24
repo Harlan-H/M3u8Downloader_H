@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System;
 using M3u8Downloader_H.M3U8.Utilities;
+using System.Threading.Tasks;
 
 namespace M3u8Downloader_H.M3U8.AttributeReaders
 {
@@ -19,9 +20,9 @@ namespace M3u8Downloader_H.M3U8.AttributeReaders
 
         }
 
-        private static string GetNextValue(IEnumerator<string> reader)
+        private static async Task<string> GetNextValueAsync(IAsyncEnumerator<string> reader)
         {
-            if (!reader.MoveNext())
+            if (!await reader.MoveNextAsync())
                 throw new InvalidDataException("Invalid M3U file. Missing a media URI.");
 
             if (reader.Current == null)
@@ -30,7 +31,7 @@ namespace M3u8Downloader_H.M3U8.AttributeReaders
             return reader.Current;
         }
 
-        public override void Write(M3UFileInfo fileInfo, string value, IEnumerator<string> reader, Uri baseUri)
+        public override async Task WriteAsync(M3UFileInfo fileInfo, string value, IAsyncEnumerator<string> reader, Uri baseUri)
         {
             fileInfo.MediaFiles ??= [];
             var m3UmediaInfo = new M3UMediaInfo();
@@ -41,16 +42,16 @@ namespace M3u8Downloader_H.M3U8.AttributeReaders
                 //m3UmediaInfo.Title = strArray.Length > 1 ? strArray[1].Trim() : string.Empty;
             }
 
-            string CurrentValue = GetNextValue(reader);
+            string CurrentValue = await GetNextValueAsync(reader);
             if (reader.Current.StartsWith("#EXT-X-BYTERANGE", StringComparison.InvariantCultureIgnoreCase))
             {
                 HandleRangeValue(m3UmediaInfo, CurrentValue);
-                CurrentValue = GetNextValue(reader);
+                CurrentValue = await GetNextValueAsync(reader);
             }
             // https://p2.bdstatic.com/rtmp.liveshow.lss-user.baidubce.com/live/stream_bduid_5053309598_7538660179/merged_1658753298319_318594_681_2732.m3u8
             if (reader.Current.StartsWith("#EXT-X-PROGRAM-DATE-TIME", StringComparison.InvariantCultureIgnoreCase))
             {
-                CurrentValue = GetNextValue(reader);
+                CurrentValue = await GetNextValueAsync(reader);
             }
 
             var relativeUri = new Uri(CurrentValue.Trim(), UriKind.RelativeOrAbsolute);

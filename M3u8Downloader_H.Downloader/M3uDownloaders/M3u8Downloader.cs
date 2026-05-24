@@ -10,6 +10,7 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
 {
     internal class M3u8Downloader : IDownloadService
     {
+        private readonly IHttpClientWrapper httpClientWrap;
         private readonly Lock balanceLock = new();
         private readonly Lock countLock = new();
         private readonly IDownloadContext context;
@@ -33,6 +34,7 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
             this.context = context;
             HandleDataFunc = HandleData;
             WriteToFileFunc = WriteToFileAsync;
+            httpClientWrap = context.HttpClient;
         }
 
         public ValueTask Initialization(CancellationToken cancellationToken = default)
@@ -143,19 +145,22 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
             {
                 try
                 {
-                    using CancellationTokenSource cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(token);
-                    cancellationTokenSource.CancelAfter(TimeSpan.FromSeconds(context.DownloaderSetting.Timeouts));
+                    Stream tmpstream = await httpClientWrap.GetStreamAsync(m3UMediaInfo.Uri, headers, m3UMediaInfo.RangeValue, token);
+                    using Stream stream = await HandleDataFunc(new HandleStreamInternal(tmpstream, dialogProgress), token);
 
-                    Stream tmpstream = await context.HttpClient.GetResponseContentAsync(m3UMediaInfo.Uri, headers, m3UMediaInfo.RangeValue, cancellationTokenSource.Token);
-                    using Stream stream = await HandleDataFunc(new HandleStreamInternal(tmpstream, dialogProgress),  cancellationTokenSource.Token);
-
-                    await WriteToFileFunc(mediaPath, stream, cancellationTokenSource.Token);
+                    await WriteToFileFunc(mediaPath, stream, token);
                     IsSuccessful = true;
                     break;
                 }
                 catch (OperationCanceledException) when (!token.IsCancellationRequested)
                 {
                     context.Log?.Warn("{0} 请求超时，重试第{1}次", m3UMediaInfo.Uri.OriginalString, i + 1);
+                    await Task.Delay(2000, token);
+                    continue;
+                }
+                catch (TimeoutException e)
+                {
+                    context.Log?.Warn("{0} {1} ，重试第{2}次", e.Message, m3UMediaInfo.Uri.OriginalString , i + 1);
                     await Task.Delay(2000, token);
                     continue;
                 }

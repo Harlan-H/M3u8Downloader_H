@@ -7,6 +7,7 @@ using M3u8Downloader_H.Abstractions.M3u8;
 using M3u8Downloader_H.M3U8.Utilities;
 using M3u8Downloader_H.M3U8.AttributeReaders;
 using M3u8Downloader_H.Abstractions.Plugins.Download;
+using System.Threading.Tasks;
 
 namespace M3u8Downloader_H.M3U8.M3UFileReaders
 {
@@ -19,16 +20,17 @@ namespace M3u8Downloader_H.M3U8.M3UFileReaders
             attributeReaders = readers;
         }
 
-        public IM3uFileInfo GetM3u8FileInfo(Stream stream)
+        public async Task<IM3uFileInfo> GetM3u8FileInfo(Stream stream)
         {
+
             M3UFileInfo m3UFileInfo = new();
-            using var reader = new LineReader(stream);
-            if (!reader.MoveNext())
+            await using var reader = new LineReader(stream);
+            if (!await reader.MoveNextAsync())
                 throw new InvalidDataException("无效得m3u8文件");
             if (!string.Equals(reader.Current?.Trim(), "#EXTM3U", StringComparison.Ordinal))
                 throw new InvalidDataException("无效得m3u8文件头部");
 
-            while (reader.MoveNext())
+            while (await reader.MoveNextAsync())
             {
                 var text = reader.Current?.Trim();
                 if (string.IsNullOrEmpty(text))
@@ -43,8 +45,8 @@ namespace M3u8Downloader_H.M3U8.M3UFileReaders
                 if (attributeReader is null)
                     throw new InvalidDataException($"{text} 无法识别的标签,可能是非标准的标签，你可以删除此行，然后拖拽m3u8文件到请求地址，再次尝试下载");
 
-                attributeReader.Write(m3UFileInfo, keyValuePair.Value, reader, baseUri);
-                if(attributeReader.ShouldTerminate) break;
+                await attributeReader.WriteAsync(m3UFileInfo, keyValuePair.Value, reader, baseUri);
+                if (attributeReader.ShouldTerminate) break;
             }
 
             stream?.Dispose();

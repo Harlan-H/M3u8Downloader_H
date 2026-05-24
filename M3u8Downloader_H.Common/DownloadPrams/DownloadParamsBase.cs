@@ -1,6 +1,7 @@
 ﻿using M3u8Downloader_H.Abstractions.Common;
 using M3u8Downloader_H.Common.Utils;
 
+
 namespace M3u8Downloader_H.Common.DownloadPrams
 {
     public class DownloadParamsBase : IDownloadParamBase

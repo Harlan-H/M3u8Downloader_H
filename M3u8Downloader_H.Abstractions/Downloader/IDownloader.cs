@@ -4,6 +4,6 @@ namespace M3u8Downloader_H.Abstractions.Downloader
 {
     public interface IDownloader
     {
-        ValueTask StartDownload(Action<int> StateAction,IDialogProgress dialogProgress, CancellationToken cancellationToken);
+        Task StartDownload(Action<int> StateAction,IDialogProgress dialogProgress, CancellationToken cancellationToken);
     }
 }

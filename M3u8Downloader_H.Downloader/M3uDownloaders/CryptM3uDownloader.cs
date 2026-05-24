@@ -1,16 +1,16 @@
-﻿using M3u8Downloader_H.Abstractions.Common;
-using M3u8Downloader_H.Abstractions.M3u8;
+﻿using M3u8Downloader_H.Abstractions.M3u8;
 using M3u8Downloader_H.Abstractions.Models;
 using M3u8Downloader_H.Abstractions.Plugins.Download;
 using M3u8Downloader_H.Common.Extensions;
 using M3u8Downloader_H.Common.M3u8;
 using M3u8Downloader_H.Common.M3u8Infos;
-using System.Text;
+
 
 namespace M3u8Downloader_H.Downloader.M3uDownloaders
 {
     internal class CryptM3uDownloader : IDownloadService
     {
+        private readonly IHttpClientWrapper HttpClientWrap;
         private bool initialized = false;
         private M3UFileInfo _m3uFileinfo = null!;
         private readonly IDownloadService downloadService;
@@ -25,6 +25,7 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
             this.downloadService = downloadService;
             this.context = context;
             downloadService.HandleDataFunc = HandleData;
+            HttpClientWrap = context.HttpClient;
         }
 
         public ValueTask Initialization(CancellationToken cancellationToken = default)
@@ -46,7 +47,7 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
                 {              
                     byte[] data = m3UFileInfo.Key.Uri.IsFile
                         ? await File.ReadAllBytesAsync(m3UFileInfo.Key.Uri.OriginalString, cancellationToken)
-                        : await context.HttpClient.GetByteArrayAsync(m3UFileInfo.Key.Uri, context.DownloadParam.Headers, cancellationToken);
+                        : await HttpClientWrap.GetByteArrayAsync(m3UFileInfo.Key.Uri, context.DownloadParam.Headers, cancellationToken);
 
                     context.Log?.Info("获取转为base64的密钥 : {0}", Convert.ToBase64String(data));
                     m3uFileinfoTmp.Key = M3uKeyInfoHelper.GetKeyInfoInstance(m3UFileInfo.Key.Method, data, m3UFileInfo.Key.IV);

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Net.Http;
 
-namespace M3u8Downloader_H.Common.Extensions
+namespace M3u8Downloader_H.Utilities.Extensions
 {
     public static class HttpRequestMessageExtension
     {

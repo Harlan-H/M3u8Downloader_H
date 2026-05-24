@@ -4,13 +4,13 @@ using M3u8Downloader_H.Abstractions.Models;
 
 namespace M3u8Downloader_H.Plugin.Models.Context
 {
-    public class DownloadContext(HttpClient httpClient,
+    public class DownloadContext(IHttpClientWrapper httpClient,
         ILog log,
         IDownloadParamBase downloadParamBase,
         IDownloaderSetting downloaderSetting
             ) : IDownloadContext
     {
-        public HttpClient HttpClient { get; private set; } = httpClient;
+        public IHttpClientWrapper HttpClient { get; private set; } = httpClient;
 
         public ILog Log { get; private set; } = log;
 

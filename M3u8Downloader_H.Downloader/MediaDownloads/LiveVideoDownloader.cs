@@ -16,13 +16,10 @@ namespace M3u8Downloader_H.Downloader.MediaDownloads
 
             downloadContext.Log?.Info("直播录制开始");
             string mediaPath = Path.Combine(_cachePath, streamInfo.Title);
-
-            using CancellationTokenSource cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-            cancellationTokenSource.CancelAfter(downloadContext.DownloaderSetting.RecordDuration);
             try
             {
-                await DownloadAsynInternal(streamInfo, _headers, null, () => File.Create(mediaPath), cancellationTokenSource.Token);
-            }catch(OperationCanceledException) when(cancellationTokenSource.IsCancellationRequested && !cancellationToken.IsCancellationRequested)
+                await DownloadAsynInternal(streamInfo, _headers, null, () => File.Create(mediaPath), cancellationToken);
+            }catch(OperationCanceledException) when(cancellationToken.IsCancellationRequested && !cancellationToken.IsCancellationRequested)
             {
                 downloadContext.Log?.Info("已录制{0},录制结束", downloadContext.DownloaderSetting.RecordDuration);
             }

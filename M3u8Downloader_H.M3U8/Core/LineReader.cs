@@ -1,36 +1,29 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace M3u8Downloader_H.M3U8.Core
 {
-    internal sealed class LineReader(Stream stream) : IEnumerator<string>
+    internal sealed class LineReader(Stream stream) : IAsyncEnumerator<string>
     {
         private readonly StreamReader _reader = new(stream);
 
-        public string Current { get; private set; } = default!;
+        public string Current  { get; private set; } = default!;
 
-        object IEnumerator.Current => Current;
-
-        public void Dispose()
+        public async ValueTask DisposeAsync()
         {
             _reader.Dispose();
         }
 
-        public bool MoveNext()
+        public async ValueTask<bool> MoveNextAsync()
         {
-            bool endOfStream = _reader.EndOfStream;
-            Current = endOfStream ? string.Empty : _reader.ReadLine() ?? string.Empty;
-            return !endOfStream;
-        }
+            var line = await _reader.ReadLineAsync();
+            if (line == null)
+                return false;
 
-        public void Reset()
-        {
-            var baseStream = _reader.BaseStream;
-            if (baseStream.CanSeek)
-                baseStream.Seek(0L, SeekOrigin.Begin);
-            _reader.DiscardBufferedData();
-            Current = string.Empty;
+            Current = line;
+            return true;
         }
     }
 }

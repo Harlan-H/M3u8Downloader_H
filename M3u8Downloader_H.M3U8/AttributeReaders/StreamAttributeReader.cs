@@ -5,6 +5,7 @@ using M3u8Downloader_H.Common.M3u8Infos;
 using System;
 using System.Linq;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace M3u8Downloader_H.M3U8.AttributeReaders
 {
@@ -12,7 +13,7 @@ namespace M3u8Downloader_H.M3U8.AttributeReaders
     internal class StreamAttributeReader : AttributeReader
     {
 
-        public override void Write(M3UFileInfo fileInfo, string value, IEnumerator<string> reader, Uri baseUri)
+        public override async Task WriteAsync(M3UFileInfo fileInfo, string value, IAsyncEnumerator<string> reader, Uri baseUri)
         {
             var source = value.Split([','], StringSplitOptions.RemoveEmptyEntries)
                               .Select(e => KV.Parse(e, '='))
@@ -40,7 +41,7 @@ namespace M3u8Downloader_H.M3U8.AttributeReaders
                 }
             }
 
-            if (!reader.MoveNext())
+            if (!await reader.MoveNextAsync())
                 throw new InvalidDataException("Invalid M3U file. Missing a stream URI.");
 
             if (reader.Current != null)

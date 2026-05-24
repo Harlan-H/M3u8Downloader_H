@@ -5,22 +5,23 @@ using M3u8Downloader_H.M3U8.Utilities;
 using System.Collections.Generic;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace M3u8Downloader_H.M3U8.AttributeReaders
 {
     [M3U8Reader("#EXT-X-KEY", typeof(KeyAttributeReader))]
     internal class KeyAttributeReader : AttributeReader
     {
-        public override void Write(M3UFileInfo fileInfo, string value, IEnumerator<string> reader, Uri baseUri)
+        public override Task WriteAsync(M3UFileInfo fileInfo, string value, IAsyncEnumerator<string> reader, Uri baseUri)
         {
-            if (fileInfo.Key is not null) return;
+            if (fileInfo.Key is not null) return Task.CompletedTask;
 
             var source =
                 value.Split([','], StringSplitOptions.RemoveEmptyEntries)
                      .Select(e => KV.Parse(e, '='))
                      .ToList();
 
-            if (source.Count == 0) return;
+            if (source.Count == 0) return Task.CompletedTask;
 
             var m3ukeyinfo = new M3UKeyInfo();
             foreach (var keyValuePair in source)
@@ -28,7 +29,7 @@ namespace M3u8Downloader_H.M3U8.AttributeReaders
                 switch (keyValuePair.Key)
                 {
                     case "METHOD":
-                        if (keyValuePair!.Value!.Equals("NONE", StringComparison.Ordinal)) return;
+                        if (keyValuePair!.Value!.Equals("NONE", StringComparison.Ordinal)) return Task.CompletedTask;
 
                         m3ukeyinfo.Method = keyValuePair.Value;
                         break;
@@ -60,6 +61,7 @@ namespace M3u8Downloader_H.M3U8.AttributeReaders
                 }
             }
             fileInfo.Key = m3ukeyinfo;
+            return Task.CompletedTask;
         }
 
 
