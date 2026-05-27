@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using M3u8Downloader_H.Abstractions.M3u8;
 
-namespace M3u8Downloader_H.Common.M3u8Infos
+namespace M3u8Downloader_H.M3U8.Models
 {
     public partial class M3UFileInfo : IM3uFileInfo
     {
@@ -24,6 +24,8 @@ namespace M3u8Downloader_H.Common.M3u8Infos
         public IM3uKeyInfo Key { get; set; } = default!;
 
         public IList<IM3uStreamInfo> Streams { get; set; } = default!;
+
+        public IList<IM3uMediaManifest> Medias { get; set; } = default!;
 
         public IList<IM3uMediaInfo> MediaFiles { get; set; } = default!;
 

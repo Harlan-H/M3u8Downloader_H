@@ -1,9 +1,10 @@
-﻿using M3u8Downloader_H.Common.M3u8Infos;
+﻿
 using M3u8Downloader_H.Abstractions.M3u8;
 using System.Collections.Generic;
 using System;
 using M3u8Downloader_H.Abstractions.Plugins.Download;
 using System.Threading.Tasks;
+using M3u8Downloader_H.M3U8.Models;
 
 namespace M3u8Downloader_H.M3U8.AttributeReaders
 {

@@ -20,6 +20,8 @@
 
         public IList<IM3uStreamInfo> Streams { get;  }
 
+        public IList<IM3uMediaManifest> Medias { get;  }
+
         public IList<IM3uMediaInfo> MediaFiles { get;  }
     }
 }

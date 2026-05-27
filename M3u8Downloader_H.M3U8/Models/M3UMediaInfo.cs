@@ -2,7 +2,7 @@
 using System.Net.Http.Headers;
 using M3u8Downloader_H.Abstractions.M3u8;
 
-namespace M3u8Downloader_H.Common.M3u8Infos
+namespace M3u8Downloader_H.M3U8.Models
 {
     public partial class M3UMediaInfo : IM3uMediaInfo
     {

@@ -14,8 +14,14 @@ namespace M3u8Downloader_H.Abstractions.M3u8
 
         public string Codecs { get;  }
 
-        public string Resolution { get;  } 
+        public string Resolution { get;  }
+
+        public string Audio { get; }
+
+        public string Subtitles { get;  }
 
         public Uri Uri { get;  } 
+
+
     }
 }

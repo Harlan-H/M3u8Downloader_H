@@ -2,6 +2,7 @@
 using M3u8Downloader_H.Abstractions.M3u8;
 using M3u8Downloader_H.Abstractions.Models;
 using M3u8Downloader_H.Abstractions.Plugins.Download;
+using M3u8Downloader_H.M3U8.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -15,22 +16,22 @@ namespace M3u8Downloader_H.M3U8.M3UFileReaderManangers
     {
         private readonly IHttpClientWrapper httpClientWrap = context.HttpClient;
         internal IM3u8DownloadParam DownloadParam => (IM3u8DownloadParam)context.DownloadParam;
-        internal IEnumerable<KeyValuePair<string, string>>? headers => context.DownloadParam.Headers ?? context.DownloaderSetting.Headers;
-
-
-        public async Task<IM3uFileInfo> GetM3u8FileInfo(TimeSpan timeouts, CancellationToken cancellationToken = default)
-        {
-            return await GetM3u8FileInfoInternal(DownloadParam.RequestUrl, DownloadParam.Headers ?? context.DownloaderSetting.Headers, cancellationToken);
-        }
+        internal IEnumerable<KeyValuePair<string, string>>? _headers => context.DownloadParam.Headers ?? context.DownloaderSetting.Headers;
 
         public async Task<IM3uFileInfo> GetM3u8FileInfo(CancellationToken cancellationToken = default)
+            => await GetM3u8FileInfo(DownloadParam.RequestUrl, cancellationToken);
+
+        public async Task<IM3uFileInfo> GetM3u8FileInfo(string url, CancellationToken cancellationToken = default)
+            => await GetM3u8FileInfo(new Uri(url), cancellationToken);
+
+        public async Task<IM3uFileInfo> GetM3u8FileInfo(Uri requestUrl, CancellationToken cancellationToken = default)
         {
 
             for (int i = 0; i < 5; i++)
             {
                 try
                 {
-                    return await GetM3u8FileInfoInternal(DownloadParam.RequestUrl, headers, cancellationToken);
+                    return await GetM3u8FileInfoInternal(requestUrl, _headers, cancellationToken);
                 }
                 catch (TimeoutException ex)
                 {
@@ -49,10 +50,35 @@ namespace M3u8Downloader_H.M3U8.M3UFileReaderManangers
             throw new InvalidOperationException($"'{DownloadParam.RequestUrl.OriginalString}' 请求失败，请检查网络是否可以访问");
         }
 
+        public List<M3uFileInfoSource>? AutoHandleM3uFileInfo(IList<IM3uStreamInfo> Streams,IEnumerable<IM3uMediaManifest>? audios, IEnumerable<IM3uMediaManifest>? subtitls)
+        {
+            List<M3uFileInfoSource> m3UFileInfoSources = [];
+            var stream = Streams.Count > 1 ? Streams.OrderByDescending(s => s.Bandwidth).First() : Streams.Single();
+            m3UFileInfoSources.Add(new M3uFileInfoSource(stream.Uri));
+            if (stream.Audio is not null && audios is not null)
+            {
+                var medias = audios.Where(m => m.GroupId == stream.Audio).ToArray();
+                if (medias.Length > 1)
+                    return null;
+
+                var audio = medias.Single();
+                m3UFileInfoSources.Add(new M3uFileInfoSource(audio.Uri, M3uType.AUDIO));
+            }
+            if(stream.Subtitles is not null && subtitls is not null)
+            {
+                var subtitlArr = subtitls.Where(m => m.GroupId == stream.Subtitles).ToArray();
+                if (subtitlArr.Length > 1)
+                    return null;
+
+                var subtile = subtitls.Single();
+                m3UFileInfoSources.Add(new M3uFileInfoSource(subtile.Uri, M3uType.SUBTITLE));
+            }
+            return m3UFileInfoSources;
+        }
+
         protected async Task<IM3uFileInfo> GetM3u8FileInfoInternal(Uri uri, IEnumerable<KeyValuePair<string, string>>? headers, CancellationToken cancellationToken = default)
         {
             await using Stream stream = await httpClientWrap.GetStreamAsync(uri, headers, cancellationToken);
-           // await using var timeoutStream = new TimeoutStream(stream, new M3u8Downloader_H.Utilities.Models.TimeOutOptions(context.DownloaderSetting.Timeouts));
             IM3uFileInfo m3uFileInfo = await M3u8FileReader.GetM3u8FileInfo(stream);
             if (m3uFileInfo.Streams != null && m3uFileInfo.Streams.Any())
             {

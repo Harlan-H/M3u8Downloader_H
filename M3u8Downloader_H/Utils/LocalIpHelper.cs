@@ -13,7 +13,7 @@ namespace M3u8Downloader_H.Utils
         /// </summary>
         public static List<IPAddress> GetAllLocalIPv4(bool includeVirtual = false)
         {
-            return NetworkInterface.GetAllNetworkInterfaces()
+            return [.. NetworkInterface.GetAllNetworkInterfaces()
                 .Where(n =>
                     n.OperationalStatus == OperationalStatus.Up &&
                     n.NetworkInterfaceType != NetworkInterfaceType.Loopback &&
@@ -23,8 +23,7 @@ namespace M3u8Downloader_H.Utils
                     ip.Address.AddressFamily == AddressFamily.InterNetwork &&
                     !IPAddress.IsLoopback(ip.Address))
                 .Select(ip => ip.Address)
-                .Distinct()
-                .ToList();
+                .Distinct()];
         }
 
         /// <summary>

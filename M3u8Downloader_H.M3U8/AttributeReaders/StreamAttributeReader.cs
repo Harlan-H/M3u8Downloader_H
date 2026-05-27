@@ -1,7 +1,7 @@
 ﻿using M3u8Downloader_H.M3U8.AttributeReader.Attributes;
 using M3u8Downloader_H.M3U8.Utilities;
 using System.Collections.Generic;
-using M3u8Downloader_H.Common.M3u8Infos;
+using M3u8Downloader_H.M3U8.Models;
 using System;
 using System.Linq;
 using System.IO;
@@ -37,6 +37,12 @@ namespace M3u8Downloader_H.M3U8.AttributeReaders
                         break;
                     case "RESOLUTION":
                         m3UstreamInfo.Resolution = keyValuePair.Value;
+                        break;
+                    case "AUDIO":
+                        m3UstreamInfo.Audio = keyValuePair.Value;
+                        break;
+                    case "SUBTITLES":
+                        m3UstreamInfo.Subtitles = keyValuePair.Value;
                         break;
                 }
             }

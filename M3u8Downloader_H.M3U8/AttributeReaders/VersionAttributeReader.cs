@@ -1,4 +1,4 @@
-﻿using M3u8Downloader_H.Common.M3u8Infos;
+﻿using M3u8Downloader_H.M3U8.Models;
 using M3u8Downloader_H.M3U8.AttributeReader.Attributes;
 using System.Collections.Generic;
 using M3u8Downloader_H.M3U8.Utilities;

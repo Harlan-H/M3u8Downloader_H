@@ -10,20 +10,29 @@ using M3u8Downloader_H.Abstractions.Plugins.Download;
 using M3u8Downloader_H.Abstractions.Settings;
 using M3u8Downloader_H.Combiners;
 using M3u8Downloader_H.Common.Extensions;
-using M3u8Downloader_H.Common.M3u8Infos;
+using M3u8Downloader_H.M3U8.Models;
 using M3u8Downloader_H.Common.Models;
 using M3u8Downloader_H.Common.Utils;
 using M3u8Downloader_H.Downloader;
 using M3u8Downloader_H.M3U8;
 using M3u8Downloader_H.M3U8.Extensions;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace M3u8Downloader_H.Core.Downloads
 {
+    public record M3uFileInfoState(M3uFileInfoSource M3UFileInfoSource)
+    {
+        public bool IsDownloaded { get; set; }
+        public string CachePath => nameof(M3UFileInfoSource.Type);
+    }
+
     public partial class M3u8Downloader(IDownloadContext context,bool skipParse) : IDownloader
     {
         private M3u8FileInfoClient m3U8FileInfoClient = default!;
         private DownloaderClient m3UDownloaderClient = default!;
         private M3uCombinerClient m3UCombinerClient = default!;
+        private List<M3uFileInfoState> m3UFileInfoStates = [];
         private IM3uFileInfo M3U8FileInfo = default!;
         private IM3uKeyInfo? M3UKeyInfo;
 
@@ -55,10 +64,22 @@ namespace M3u8Downloader_H.Core.Downloads
             if (m3u8DownloadParam.RequestUrl.IsFile)
                 M3U8FileInfo = await m3U8FileInfoClient.M3u8FileReader.GetM3u8FileInfo(m3u8DownloadParam.RequestUrl);
             else
-                M3U8FileInfo = await m3U8FileInfoClient.M3UFileReadManager.GetM3u8FileInfo(cancellationToken);
+            {
+                var m3UFileInfo = await m3U8FileInfoClient.M3UFileReadManager.GetM3u8FileInfo(cancellationToken);
+                var audios = m3UFileInfo.Medias.Where(a => a.Name.ToUpper().Equals("AUDIO"));
+                var subtitls = m3UFileInfo.Medias.Where(s => s.Name.ToUpper().Equals("SUBTITLES"));
+                var m3UFileInfoSources = m3U8FileInfoClient.M3UFileReadManager.AutoHandleM3uFileInfo(m3UFileInfo.Streams, audios, subtitls)
+                                            ?? [];
 
-            if (M3U8FileInfo.IsEmpty)
-                throw new InvalidDataException("没有包含任何数据");
+                foreach (var item in m3UFileInfoSources)
+                {
+                    item.M3uFile = await m3U8FileInfoClient.M3UFileReadManager.GetM3u8FileInfo(item.Requests, cancellationToken);
+                    m3UFileInfoStates.Add(new M3uFileInfoState(item));
+                }
+            }
+
+//             if (M3U8FileInfo.IsEmpty)
+//                 throw new InvalidDataException("没有包含任何数据");
 
             context.Log.Info("获取视频流{0}个", M3U8FileInfo.MediaFiles.Count);
             if (M3UKeyInfo is not null)

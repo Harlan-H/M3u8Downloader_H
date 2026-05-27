@@ -3,7 +3,7 @@ using System.Text;
 using M3u8Downloader_H.Abstractions.M3u8;
 using M3u8Downloader_H.Common.Extensions;
 
-namespace M3u8Downloader_H.Common.M3u8Infos
+namespace M3u8Downloader_H.M3U8.Models
 {
     public partial class M3UKeyInfo : IM3uKeyInfo
     {

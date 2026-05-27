@@ -3,7 +3,7 @@ using M3u8Downloader_H.Abstractions.M3u8;
 using M3u8Downloader_H.Abstractions.Models;
 using M3u8Downloader_H.Abstractions.Plugins.Download;
 using M3u8Downloader_H.Common.Extensions;
-using M3u8Downloader_H.Common.M3u8Infos;
+using M3u8Downloader_H.M3U8.Models;
 using M3u8Downloader_H.Downloader.Extensions;
 using System.Net;
 
