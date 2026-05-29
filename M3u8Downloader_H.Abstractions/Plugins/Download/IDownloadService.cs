@@ -1,4 +1,5 @@
-﻿using M3u8Downloader_H.Abstractions.M3u8;
+﻿using M3u8Downloader_H.Abstractions.Common;
+using M3u8Downloader_H.Abstractions.M3u8;
 
 namespace M3u8Downloader_H.Abstractions.Plugins.Download
 {
@@ -15,7 +16,7 @@ namespace M3u8Downloader_H.Abstractions.Plugins.Download
         /// <param name="m3UFileInfo">m3u8的数据</param>
         /// <param name="cancellationToken">取消的token</param>
         /// <returns>没有返回内容</returns>
-        ValueTask Initialization(CancellationToken cancellationToken = default);
+        ValueTask Initialization(IM3uFileInfoSource m3UFileInfoSource, CancellationToken cancellationToken = default);
 
 
         /// <summary>
@@ -24,7 +25,7 @@ namespace M3u8Downloader_H.Abstractions.Plugins.Download
         /// <param name="m3UFileInfo"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task StartDownload(IM3uFileInfo m3UFileInfo, CancellationToken cancellationToken = default);
+        Task StartDownload(IM3uFileInfoSource m3UFileInfo, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// 内部实际工作的方法
@@ -37,8 +38,9 @@ namespace M3u8Downloader_H.Abstractions.Plugins.Download
         /// <param name="mediaPath"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<bool> DownloadM3uMediaInfo(IM3uMediaInfo m3UMediaInfo, IEnumerable<KeyValuePair<string, string>>? headers, string mediaPath, CancellationToken cancellationToken = default);
+        //Task<bool> DownloadM3uMediaInfo(IM3uMediaInfo m3UMediaInfo, IEnumerable<KeyValuePair<string, string>>? headers, string mediaPath, CancellationToken cancellationToken = default);
 
+        Func<IM3uMediaInfo, IEnumerable<KeyValuePair<string, string>>?, string, CancellationToken, Task<bool>> DownloadM3uMediaInfoFunc { get; set;}
 
         /// <summary>
         /// 当下载的数据接收到之后，会请求此函数，以便做后续处理
@@ -49,7 +51,7 @@ namespace M3u8Downloader_H.Abstractions.Plugins.Download
         /// <param name="stream">请求到的数据流</param>
         /// <param name="cancellationToken">取消的token</param>
         /// <returns>返回处理后的数据</returns>
-        Func<Stream, CancellationToken, Task<Stream>> HandleDataFunc { get; set; }
+        Func <Stream, CancellationToken, Task<Stream>> HandleDataFunc { get; set; }
 
 
         /// <summary>

@@ -1,4 +1,5 @@
-﻿using M3u8Downloader_H.Abstractions.M3u8;
+﻿using M3u8Downloader_H.Abstractions.Common;
+using M3u8Downloader_H.Abstractions.M3u8;
 using M3u8Downloader_H.Abstractions.Models;
 using M3u8Downloader_H.Abstractions.Plugins.Download;
 using M3u8Downloader_H.Common.Extensions;
@@ -16,9 +17,9 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
         private readonly IDownloadService downloadService;
         private readonly IDownloadContext context;
 
-
         public Func<Stream, CancellationToken,Task< Stream>> HandleDataFunc { get; set; } = default!;
         public Func<string, Stream, CancellationToken, Task> WriteToFileFunc { get; set; } = default!;
+        public Func<IM3uMediaInfo, IEnumerable<KeyValuePair<string, string>>?, string, CancellationToken, Task<bool>> DownloadM3uMediaInfoFunc { get; set; } = default!;
 
         public CryptM3uDownloader(IDownloadService downloadService, IDownloadContext context)
         {
@@ -28,8 +29,8 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
             HttpClientWrap = context.HttpClient;
         }
 
-        public ValueTask Initialization(CancellationToken cancellationToken = default)
-            => downloadService.Initialization(cancellationToken);
+        public ValueTask Initialization(IM3uFileInfoSource m3UFileInfoSource, CancellationToken cancellationToken = default)
+            => downloadService.Initialization(m3UFileInfoSource,cancellationToken);
    
 
         public async ValueTask BeforeDownload(IM3uFileInfo m3UFileInfo,CancellationToken cancellationToken)
@@ -71,16 +72,12 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
         }
 
 
-        public async Task StartDownload(IM3uFileInfo m3UFileInfo, CancellationToken cancellationToken = default)
+        public async Task StartDownload(IM3uFileInfoSource m3UFileInfoSource, CancellationToken cancellationToken = default)
         {
-            await BeforeDownload(m3UFileInfo, cancellationToken);
-            await downloadService.StartDownload(m3UFileInfo, cancellationToken);
+            await BeforeDownload(m3UFileInfoSource.M3uFile!, cancellationToken);
+            await downloadService.StartDownload(m3UFileInfoSource, cancellationToken);
         }
 
-        public Task<bool> DownloadM3uMediaInfo(IM3uMediaInfo m3UMediaInfo, IEnumerable<KeyValuePair<string, string>>? headers, string mediaPath, CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
-        }
 
         public Task<Stream> HandleData(Stream stream, CancellationToken cancellationToken)
         {

@@ -17,14 +17,13 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
         private readonly IDialogProgress dialogProgress;
         private int downloadedCount;
         private int CurIndex = -1;
-
-        private bool _firstTimeToRun = true;
+        private string _cachePath = default!;
 
         private IEnumerable<KeyValuePair<string, string>>? _headers => context.DownloadParam.Headers ?? context.DownloaderSetting.Headers;
-        private string _cachePath => context.DownloadParam.CachePath;
 
         public Func<Stream, CancellationToken, Task<Stream>> HandleDataFunc { get; set; } = default!;
         public Func<string, Stream, CancellationToken, Task> WriteToFileFunc { get; set; } = default!;
+        public Func<IM3uMediaInfo, IEnumerable<KeyValuePair<string, string>>?, string, CancellationToken, Task<bool>> DownloadM3uMediaInfoFunc { get; set; } = default!;
 
         private bool _isFmp4 = false;
 
@@ -34,20 +33,17 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
             this.context = context;
             HandleDataFunc = HandleData;
             WriteToFileFunc = WriteToFileAsync;
+            DownloadM3uMediaInfoFunc = DownloadM3uMediaInfo;
             httpClientWrap = context.HttpClient;
         }
 
-        public ValueTask Initialization(CancellationToken cancellationToken = default)
+        public ValueTask Initialization(IM3uFileInfoSource m3UFileInfoSource, CancellationToken cancellationToken = default)
         {
             downloadedCount = 0;
             CurIndex = -1;
 
-            if (_firstTimeToRun)
-            {
-                CreateDirectory(_cachePath);
-                _firstTimeToRun = false;
-            }
-
+            _cachePath = Path.Combine(context.DownloadParam.CachePath, m3UFileInfoSource.CachePath);
+            CreateDirectory(_cachePath);
             return ValueTask.CompletedTask;
         }
 
@@ -69,8 +65,12 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
         }
 
 
-        public async Task StartDownload(IM3uFileInfo m3UFileInfo,  CancellationToken cancellationToken = default)
+        public async Task StartDownload(IM3uFileInfoSource m3UFileInfoSource,  CancellationToken cancellationToken = default)
         {
+            if(m3UFileInfoSource.M3uFile is null)
+                throw new InvalidDataException($"获取的 {m3UFileInfoSource.RequestUrl} 数据为空,已经停止下载");
+            
+            var m3UFileInfo = m3UFileInfoSource.M3uFile;
             dialogProgress.SetDownloadStatus(false);
 
             await DownloadMapInfoAsync(m3UFileInfo.Map, cancellationToken);
@@ -126,7 +126,7 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
                 }
 
 
-                bool isSuccessful = await DownloadM3uMediaInfo(mediaInfo, headers, mediaPath, token);
+                bool isSuccessful = await DownloadM3uMediaInfoFunc(mediaInfo, headers, mediaPath, token);
                 if (isSuccessful)
                 {
                     lock (countLock)

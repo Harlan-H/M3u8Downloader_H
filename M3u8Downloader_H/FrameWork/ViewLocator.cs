@@ -1,6 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
 using M3u8Downloader_H.ViewModels;
+using M3u8Downloader_H.ViewModels.Components;
 using M3u8Downloader_H.ViewModels.Dialogs;
 using M3u8Downloader_H.ViewModels.Downloads;
 using M3u8Downloader_H.ViewModels.Menus;
@@ -44,6 +45,7 @@ namespace M3u8Downloader_H.FrameWork
                 SponsorViewModel => serviceProvider.GetRequiredService<SponsorView>(),
                 M3u8WindowViewModel => serviceProvider.GetRequiredService<M3u8WindowView>(),
                 MediaWindowViewModel => serviceProvider.GetRequiredService<MediaWindowView>(),
+                MultiMediaSetupViewModel => new MultiMediaSetupView(),
                 DownloadViewModel => new DownloadView(),
                 DeleteDialogViewModel => new DeleteDialogView(),
                 _ => null

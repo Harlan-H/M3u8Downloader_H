@@ -11,45 +11,40 @@ namespace M3u8Downloader_H.Downloader
 {
     public class DownloaderClient(IDownloadContext context, IDownloadPlugin? downloadPlugin)
     {
-        private IDownloadService? _m3u8downloader;
         private DownloaderBase? _mediaDownloader;
 
         public IDialogProgress DialogProgress { get; set; } = default!;
         public IM3uFileInfo M3UFileInfo { get; set; } = default!;
         public Func<CancellationToken, Task<IM3uFileInfo>> GetLiveFileInfoFunc { get; set; } = default!;
 
-        public IDownloadService M3u8Downloader
+        public IDownloadService CreateM3u8Downloader(IM3uFileInfoSource m3UFileInfoSource)
         {
-            get
+            IDownloadService m3U8Downloader = new M3u8Downloader(context, DialogProgress);
+            if(m3UFileInfoSource.Type == M3uType.SUBTITLE)
             {
-                if (_m3u8downloader is null)
-                {
-                    IDownloadService m3U8Downloader = new M3u8Downloader(context, DialogProgress);
-                    if(downloadPlugin is not null)
-                    {
-                        var pluginDownloader = downloadPlugin.CreateDownloadService(m3U8Downloader, context);
-                        if(pluginDownloader is not null)
-                        {
-                            _m3u8downloader = pluginDownloader;
-                            return pluginDownloader;
-                        }
-                    }
-
-                    if (!M3UFileInfo.IsVod())
-                    {
-                        LiveM3uDownloader liveM3UDownloader = new(m3U8Downloader,context, DialogProgress)
-                        {
-                            GetLiveFileInfoFunc = GetLiveFileInfoFunc
-                        };
-                        m3U8Downloader = liveM3UDownloader;
-                    }
-                    else if (M3UFileInfo.Key is not null)
-                        m3U8Downloader = new CryptM3uDownloader(m3U8Downloader, context);
-                        
-                _m3u8downloader = m3U8Downloader;
-                }
-                return _m3u8downloader;
+                m3U8Downloader = new SubtitleDownloader(m3U8Downloader, context);
+                return m3U8Downloader;
             }
+
+            if (downloadPlugin is not null)
+            {
+                var pluginDownloader = downloadPlugin.CreateDownloadService(m3U8Downloader, context);
+                if (pluginDownloader is not null)
+                    return pluginDownloader;
+            }
+
+            if (!m3UFileInfoSource.M3uFile!.IsVod())
+            {
+                LiveM3uDownloader liveM3UDownloader = new(m3U8Downloader, context, DialogProgress)
+                {
+                    GetLiveFileInfoFunc = GetLiveFileInfoFunc
+                };
+                m3U8Downloader = liveM3UDownloader;
+            }
+            else if (m3UFileInfoSource.M3uFile!.Key is not null)
+                m3U8Downloader = new CryptM3uDownloader(m3U8Downloader, context);
+
+            return m3U8Downloader;
         }
 
         public DownloaderBase MediaDownloader

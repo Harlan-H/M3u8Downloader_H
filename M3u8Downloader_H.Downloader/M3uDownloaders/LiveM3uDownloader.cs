@@ -22,9 +22,10 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
         public Func<CancellationToken, Task<IM3uFileInfo>> GetLiveFileInfoFunc { get; set; } = default!;
         public Func<Stream, CancellationToken,Task< Stream>> HandleDataFunc { get; set ; } = default!;
         public Func<string, Stream, CancellationToken, Task> WriteToFileFunc { get ; set; } = default!;
+        public Func<IM3uMediaInfo, IEnumerable<KeyValuePair<string, string>>?, string, CancellationToken, Task<bool>> DownloadM3uMediaInfoFunc { get; set; } = default!;
 
-        public ValueTask Initialization(CancellationToken cancellationToken = default)
-            => downloadService.Initialization(cancellationToken);
+        public ValueTask Initialization(IM3uFileInfoSource m3UFileInfoSource, CancellationToken cancellationToken = default)
+            => downloadService.Initialization(m3UFileInfoSource,cancellationToken);
         
 
         private void AddMedias(IM3uFileInfo m3UFileinfo)
@@ -65,12 +66,12 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
             return m3uFileInfo;
         }
 
-        public async Task StartDownload(IM3uFileInfo m3UFileInfo,  CancellationToken cancellationToken = default)
+        public async Task StartDownload(IM3uFileInfoSource m3UFileInfoSource,  CancellationToken cancellationToken = default)
         {
             DialogProgress.SetDownloadStatus(true);
 
             downloadContext.Log?.Info("直播录制开始");
-            _m3uFileInfo ??= m3UFileInfo;
+            _m3uFileInfo ??= m3UFileInfoSource.M3uFile;
 
             IM3uFileInfo previousMediaInfo = await GetM3U8FileInfoAsync(cancellationToken);
             while (true)
@@ -185,7 +186,7 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
 
         public Task<bool> DownloadM3uMediaInfo(IM3uMediaInfo m3UMediaInfo, IEnumerable<KeyValuePair<string, string>>? headers, string mediaPath, CancellationToken cancellationToken = default)
         {
-            return downloadService.DownloadM3uMediaInfo(m3UMediaInfo, headers, mediaPath, cancellationToken);
+            return downloadService.DownloadM3uMediaInfoFunc(m3UMediaInfo, headers, mediaPath, cancellationToken);
         }
 
     }

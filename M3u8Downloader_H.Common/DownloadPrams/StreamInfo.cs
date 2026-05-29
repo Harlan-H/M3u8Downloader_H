@@ -11,16 +11,20 @@ namespace M3u8Downloader_H.Common.DownloadPrams
 
         public string? Codec { get; private set; }
 
-        public long? FileSize { get; private set; }
+        public long? FileSize 
+        {
+            get => field;
+
+            set
+            {
+                if (value < 1000)
+                    throw new InvalidDataException($"传入的文件大小过小,文件大小是{value}");
+
+                field = value;
+            }
+        }
 
         public string Title { get; set; }
-        public void SetFileSize(long fileSize)
-        {
-            if (fileSize < 1000)
-                throw new InvalidDataException($"传入的文件大小过小,文件大小是{fileSize}");
-
-            FileSize = fileSize;
-        }
 
         public StreamInfo(Uri url, string title, string mediaType)
         {

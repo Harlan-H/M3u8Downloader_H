@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace M3u8Downloader_H.M3U8.M3UFileReaders
 {
-    public class M3UFileReaderWithStream(Uri baseUri) : IM3uFileReader
+    public class M3UFileReaderWithStream : IM3uFileReader
     {
         public IAttributeReaderCollection attributeReaders = default!;
 
@@ -20,9 +20,8 @@ namespace M3u8Downloader_H.M3U8.M3UFileReaders
             attributeReaders = readers;
         }
 
-        public async Task<IM3uFileInfo> GetM3u8FileInfo(Stream stream)
+        public async Task<IM3uFileInfo> GetM3u8FileInfo(Uri baseUri,Stream stream)
         {
-
             M3UFileInfo m3UFileInfo = new();
             await using var reader = new LineReader(stream);
             if (!await reader.MoveNextAsync())

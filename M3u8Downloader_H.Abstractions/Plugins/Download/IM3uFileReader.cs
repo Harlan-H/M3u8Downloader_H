@@ -20,6 +20,6 @@ namespace M3u8Downloader_H.Abstractions.Plugins.Download
         /// </summary>
         /// <param name="stream">网站或者文件流</param>
         /// <returns></returns>
-        Task<IM3uFileInfo> GetM3u8FileInfo(Stream stream);
+        Task<IM3uFileInfo> GetM3u8FileInfo(Uri baseUri,Stream stream);
     }
 }

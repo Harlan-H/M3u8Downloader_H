@@ -18,5 +18,8 @@ namespace M3u8Downloader_H.M3U8.Models
         public string Audio { get; set; } = default!;
 
         public string Subtitles { get; set; } = default!;
+
+        public override string ToString() => $"{Resolution} - {Codecs}";
+
     }
 }

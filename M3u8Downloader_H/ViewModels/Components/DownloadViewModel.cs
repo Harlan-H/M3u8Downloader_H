@@ -2,15 +2,22 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using M3u8Downloader_H.Abstractions.Common;
+using M3u8Downloader_H.Abstractions.M3u8;
+using M3u8Downloader_H.Common.DownloadPrams;
 using M3u8Downloader_H.Common.Models;
 using M3u8Downloader_H.Core;
+using M3u8Downloader_H.Core.Downloads;
 using M3u8Downloader_H.Extensions;
+using M3u8Downloader_H.M3U8.Models;
 using M3u8Downloader_H.Models;
 using M3u8Downloader_H.Utils;
+using M3u8Downloader_H.ViewModels.Components;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -30,6 +37,12 @@ namespace M3u8Downloader_H.ViewModels.Downloads
         public MyLog Log { get; } 
 
         public ObservableCollection<LogParams> Logs { get;  } = [];
+
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(HasMultiMedia))]
+        public partial MultiMediaSetupViewModel? MultiMediaSetupViewModel { get; private set; }
+
+        public bool HasMultiMedia => MultiMediaSetupViewModel is not null;
 
         [ObservableProperty]
         public partial Uri RequestUrl { get; set; } = default!;
@@ -56,6 +69,17 @@ namespace M3u8Downloader_H.ViewModels.Downloads
             downloadParam = DownloadParam;
             Log = new(Logs);
         }
+
+        public async Task<IList<IM3uFileInfoSource>> GetM3uFileInfoState(IM3uFileInfo m3UFileInfo)
+        {
+            var audios = m3UFileInfo.Medias?.Where(m => m.Type.ToUpper().Equals("AUDIO")).ToList();
+            var subtitles = m3UFileInfo.Medias?.Where(s => s.Type.ToUpper().Equals("SUBTITLES")).ToList();
+            MultiMediaSetupViewModel = new MultiMediaSetupViewModel(m3UFileInfo.Streams, audios, subtitles);
+            var result = await MultiMediaSetupViewModel.GetM3uFileInfoState();
+            MultiMediaSetupViewModel = null;
+            return result;
+        }
+
 
         public  bool IsProgressIndeterminate => IsActive && Status < DownloadStatus.StartedVod;
 

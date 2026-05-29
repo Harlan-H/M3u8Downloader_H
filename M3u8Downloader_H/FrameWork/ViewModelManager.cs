@@ -4,6 +4,7 @@ using M3u8Downloader_H.Abstractions.Models;
 using M3u8Downloader_H.Abstractions.Plugins.Download;
 using M3u8Downloader_H.Common.Services;
 using M3u8Downloader_H.Core;
+using M3u8Downloader_H.Core.Interfaces;
 using M3u8Downloader_H.Plugin.Models.Context;
 using M3u8Downloader_H.Services;
 using M3u8Downloader_H.Utils;
@@ -28,7 +29,7 @@ public class ViewModelManager(SettingsService settingsService)
         SettingsService settingsService1 = settingsService.Clone<SettingsService>();
         IHttpClientWrapper httpClientWrapper = new HttpClientWrapper(httpClient ?? Http.Instance.GetClient(), settingsService1.Timeouts);
         DownloadContext downloadContext = new(httpClientWrapper, viewModel.Log,m3U8DownloadParam, settingsService1);
-        viewModel.downloaderCoreClient = new(downloadContext, downloadPlugin);
+        viewModel.downloaderCoreClient = new(viewModel.GetM3uFileInfoState,downloadContext, downloadPlugin);
         return viewModel;
     }
 

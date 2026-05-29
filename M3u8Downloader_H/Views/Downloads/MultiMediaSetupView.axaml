@@ -1,0 +1,18 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             xmlns:components="using:M3u8Downloader_H.ViewModels.Components"
+             x:DataType="components:MultiMediaSetupViewModel"
+             x:Class="M3u8Downloader_H.MultiMediaSetupView">
+  <Grid ColumnDefinitions="80,3*,35,*,35,*,100">
+      <TextBlock Text="请选择  视频" />
+      <ComboBox Grid.Column="1" ItemsSource="{Binding M3uStreams}" SelectedItem="{Binding SelectedStream}" />
+      <TextBlock Grid.Column="2" Text="音频 "/>
+      <ComboBox Grid.Column="3" ItemsSource="{Binding M3uAudios}" DisplayMemberBinding="{Binding Name}" SelectedItem="{Binding SelectedAudio}" />
+      <TextBlock Grid.Column="4" Text="字幕" />
+      <ComboBox Grid.Column="5" ItemsSource="{Binding M3uSubtitles}" DisplayMemberBinding="{Binding Name}" SelectedItem="{Binding SelectedSubtitle}" />
+      <Button Grid.Column="6" Width="80" Content="确定" Height="35"  Command="{Binding SubmitCommand}" />
+  </Grid>
+</UserControl>

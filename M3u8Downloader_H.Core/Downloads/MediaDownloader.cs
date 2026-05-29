@@ -1,11 +1,11 @@
 ﻿using M3u8Downloader_H.Abstractions.Common;
-using M3u8Downloader_H.Abstractions.Downloader;
 using M3u8Downloader_H.Abstractions.M3uDownloaders;
 using M3u8Downloader_H.Abstractions.Models;
 using M3u8Downloader_H.Abstractions.Settings;
 using M3u8Downloader_H.Combiners;
 using M3u8Downloader_H.Common.Models;
 using M3u8Downloader_H.Common.Utils;
+using M3u8Downloader_H.Core.Interfaces;
 using M3u8Downloader_H.Downloader;
 using System;
 using System.Threading;

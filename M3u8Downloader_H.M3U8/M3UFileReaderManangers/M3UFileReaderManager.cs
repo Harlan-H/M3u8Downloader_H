@@ -2,6 +2,7 @@
 using M3u8Downloader_H.Abstractions.M3u8;
 using M3u8Downloader_H.Abstractions.Models;
 using M3u8Downloader_H.Abstractions.Plugins.Download;
+using M3u8Downloader_H.Common.DownloadPrams;
 using M3u8Downloader_H.M3U8.Models;
 using System;
 using System.Collections.Generic;
@@ -50,28 +51,46 @@ namespace M3u8Downloader_H.M3U8.M3UFileReaderManangers
             throw new InvalidOperationException($"'{DownloadParam.RequestUrl.OriginalString}' 请求失败，请检查网络是否可以访问");
         }
 
-        public List<M3uFileInfoSource>? AutoHandleM3uFileInfo(IList<IM3uStreamInfo> Streams,IEnumerable<IM3uMediaManifest>? audios, IEnumerable<IM3uMediaManifest>? subtitls)
+        public IList<IM3uFileInfoSource>? AutoHandleM3uFileInfo(IM3uFileInfo m3UFileInfo)
         {
-            List<M3uFileInfoSource> m3UFileInfoSources = [];
-            var stream = Streams.Count > 1 ? Streams.OrderByDescending(s => s.Bandwidth).First() : Streams.Single();
-            m3UFileInfoSources.Add(new M3uFileInfoSource(stream.Uri));
-            if (stream.Audio is not null && audios is not null)
+            List<IM3uFileInfoSource> m3UFileInfoSources = [];
+            if (m3UFileInfo.Streams is null && m3UFileInfo.MediaFiles.Any())
             {
-                var medias = audios.Where(m => m.GroupId == stream.Audio).ToArray();
-                if (medias.Length > 1)
-                    return null;
+                m3UFileInfoSources.Add(new M3uFileInfoSource(m3UFileInfo));
+                return m3UFileInfoSources;
 
-                var audio = medias.Single();
-                m3UFileInfoSources.Add(new M3uFileInfoSource(audio.Uri, M3uType.AUDIO));
-            }
-            if(stream.Subtitles is not null && subtitls is not null)
+            }else if (m3UFileInfo.Streams is not null && m3UFileInfo.Streams.Any())
             {
-                var subtitlArr = subtitls.Where(m => m.GroupId == stream.Subtitles).ToArray();
-                if (subtitlArr.Length > 1)
-                    return null;
+                var stream = m3UFileInfo.Streams.Count > 1 ? m3UFileInfo.Streams.OrderByDescending(s => s.Bandwidth).First() : m3UFileInfo.Streams.Single();
+                m3UFileInfoSources.Add(new M3uFileInfoSource(stream.Uri));
 
-                var subtile = subtitls.Single();
-                m3UFileInfoSources.Add(new M3uFileInfoSource(subtile.Uri, M3uType.SUBTITLE));
+                if (stream.Audio is not null)
+                {
+                    var audios = m3UFileInfo.Medias?.Where(a => a.Type.ToUpper().Equals("AUDIO")).ToList();
+                    if(audios is not null)
+                    {
+                        var medias = audios.Where(m => m.GroupId == stream.Audio).ToArray();
+                        if (medias.Length > 1)
+                            return null;
+
+                        var audio = medias.Single();
+                        m3UFileInfoSources.Add(new M3uFileInfoSource(audio.Uri, M3uType.AUDIO));
+                    }
+                }
+                
+                if (stream.Subtitles is not null)
+                {
+                    var subtitls = m3UFileInfo.Medias?.Where(s => s.Type.ToUpper().Equals("SUBTITLES")).ToList();
+                    if (subtitls is not null)
+                    {
+                        var subtitlArr = subtitls.Where(m => m.GroupId == stream.Subtitles).ToArray();
+                        if (subtitlArr.Length > 1)
+                            return null;
+
+                        var subtile = subtitls.Single();
+                        m3UFileInfoSources.Add(new M3uFileInfoSource(subtile.Uri, M3uType.SUBTITLE));
+                    }
+                }
             }
             return m3UFileInfoSources;
         }
@@ -79,12 +98,12 @@ namespace M3u8Downloader_H.M3U8.M3UFileReaderManangers
         protected async Task<IM3uFileInfo> GetM3u8FileInfoInternal(Uri uri, IEnumerable<KeyValuePair<string, string>>? headers, CancellationToken cancellationToken = default)
         {
             await using Stream stream = await httpClientWrap.GetStreamAsync(uri, headers, cancellationToken);
-            IM3uFileInfo m3uFileInfo = await M3u8FileReader.GetM3u8FileInfo(stream);
-            if (m3uFileInfo.Streams != null && m3uFileInfo.Streams.Any())
-            {
-                IM3uStreamInfo m3UStreamInfo = m3uFileInfo.Streams.Count > 1 ? m3uFileInfo.Streams.OrderByDescending(s => s.Bandwidth).First() : m3uFileInfo.Streams.First();
-                return await GetM3u8FileInfoInternal(m3UStreamInfo.Uri, headers, cancellationToken);
-            }
+            IM3uFileInfo m3uFileInfo = await M3u8FileReader.GetM3u8FileInfo(uristream);
+//             if (m3uFileInfo.Streams != null && m3uFileInfo.Streams.Any())
+//             {
+//                 IM3uStreamInfo m3UStreamInfo = m3uFileInfo.Streams.Count > 1 ? m3uFileInfo.Streams.OrderByDescending(s => s.Bandwidth).First() : m3uFileInfo.Streams.First();
+//                 return await GetM3u8FileInfoInternal(m3UStreamInfo.Uri, headers, cancellationToken);
+//             }
             return m3uFileInfo;
         }
     }

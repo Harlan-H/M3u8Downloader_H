@@ -28,7 +28,7 @@ namespace M3u8Downloader_H.M3U8.AttributeReaders
                 {
                     case "URI":
                         {
-                            var relativeUri = new Uri( keyValuePair.Value);
+                            var relativeUri = new Uri( keyValuePair.Value.Trim(), UriKind.RelativeOrAbsolute);
                             m3UmediaManifest.Uri = relativeUri.IsAbsoluteUri ? relativeUri: new Uri(baseUri, relativeUri);
                         }
                         break;

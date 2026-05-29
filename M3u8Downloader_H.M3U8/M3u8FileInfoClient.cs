@@ -20,7 +20,7 @@ namespace M3u8Downloader_H.M3U8
             get
             {
                 IM3u8DownloadParam m3U8DownloadParam = (IM3u8DownloadParam)context.DownloadParam;
-                IM3uFileReader  m3UFileReader = new M3UFileReaderWithStream(m3U8DownloadParam.RequestUrl);
+                IM3uFileReader  m3UFileReader = new M3UFileReaderWithStream();
                 if (downloadPlugin is not null)
                 {
                     var reader = downloadPlugin.CreateM3uFileReader(m3UFileReader, context);
@@ -29,9 +29,12 @@ namespace M3u8Downloader_H.M3U8
                         m3UFileReader = reader;
                     }
                 }
-                else if (m3U8DownloadParam.RequestUrl.IsFile && m3U8DownloadParam.RequestUrl.OriginalString.EndsWith(".json"))
+                else if (m3U8DownloadParam.M3UFileInfoSources is not null 
+                    && m3U8DownloadParam.M3UFileInfoSources.Count == 1 
+                    && m3U8DownloadParam.M3UFileInfoSources[0].RequestUrl.IsFile 
+                    && m3U8DownloadParam.M3UFileInfoSources[0].RequestUrl.OriginalString.EndsWith(".json"))
                 {
-                    m3UFileReader = new M3UFileReaderWithJson(m3U8DownloadParam.RequestUrl);
+                    m3UFileReader = new M3UFileReaderWithJson();
                 }
                 m3UFileReader.InitAttributeReade(AttributeReaderRoot.Instance.AttributeReaders);
                 return m3UFileReader;
@@ -42,9 +45,9 @@ namespace M3u8Downloader_H.M3U8
 
     public partial class M3u8FileInfoClient
     {
-        public static IM3uFileReader CreateM3uFileReader(Uri requestUrl)
+        public static IM3uFileReader CreateM3uFileReader()
         {
-            M3UFileReaderWithStream m3UFileReader = new(requestUrl);
+            M3UFileReaderWithStream m3UFileReader = new();
             m3UFileReader.InitAttributeReade(AttributeReaderRoot.Instance.AttributeReaders);
             return m3UFileReader;
         }

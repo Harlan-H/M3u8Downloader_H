@@ -113,7 +113,7 @@ namespace M3u8Downloader_H.RestServer
                 }
 
 
-                IM3uFileInfo? m3UFileInfo = await M3u8FileInfoClient.CreateM3uFileReader(request.Url!).GetM3u8FileInfo(requestWithContent.Content);
+                IM3uFileInfo? m3UFileInfo = await M3u8FileInfoClient.CreateM3uFileReader().GetM3u8FileInfo(request.Url!,requestWithContent.Content);
                 if (m3UFileInfo is null)
                 {
                     response.Json(Response.Error("m3u8内容读取失败,请检查传入的参数是否有误"));
@@ -184,7 +184,7 @@ namespace M3u8Downloader_H.RestServer
                 }
 
                 requestWIthGetM3U8FileInfo.Validate();
-                IM3uFileInfo m3UFileInfo = await M3u8FileInfoClient.CreateM3uFileReader(requestWIthGetM3U8FileInfo.Url!).GetM3u8FileInfo(requestWIthGetM3U8FileInfo.Content);
+                IM3uFileInfo m3UFileInfo = await M3u8FileInfoClient.CreateM3uFileReader().GetM3u8FileInfo(requestWIthGetM3U8FileInfo.Url!,requestWIthGetM3U8FileInfo.Content);
                 Response<IM3uFileInfo> r = m3UFileInfo.MediaFiles != null && m3UFileInfo.MediaFiles.Any()
                                         ? new Response<IM3uFileInfo>(0, "解析成功", m3UFileInfo)
                                         : new Response<IM3uFileInfo>(1, "没有包含任何数据", null);

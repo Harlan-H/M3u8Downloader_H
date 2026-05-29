@@ -11,6 +11,8 @@ namespace M3u8Downloader_H.M3U8.AttributeReaders
     [M3U8Reader("#EXTINF", typeof(MediaAttributeReader))]
     internal class MediaAttributeReader : AttributeReader
     {
+        //"#EXT-X-PROGRAM-DATE-TIME" => https://p2.bdstatic.com/rtmp.liveshow.lss-user.baidubce.com/live/stream_bduid_5053309598_7538660179/merged_1658753298319_318594_681_2732.m3u8
+        private static readonly string[] skipFields = ["#EXT-X-PROGRAM-DATE-TIME", "#EXT-X-BITRATE"];
         private int currentIndex;
         private string CurrentIndex => $"{++currentIndex}.tmp";
 
@@ -48,10 +50,13 @@ namespace M3u8Downloader_H.M3U8.AttributeReaders
                 HandleRangeValue(m3UmediaInfo, CurrentValue);
                 CurrentValue = await GetNextValueAsync(reader);
             }
-            // https://p2.bdstatic.com/rtmp.liveshow.lss-user.baidubce.com/live/stream_bduid_5053309598_7538660179/merged_1658753298319_318594_681_2732.m3u8
-            if (reader.Current.StartsWith("#EXT-X-PROGRAM-DATE-TIME", StringComparison.InvariantCultureIgnoreCase))
+            
+            foreach (var field in skipFields)
             {
-                CurrentValue = await GetNextValueAsync(reader);
+                if (reader.Current.StartsWith(field, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    CurrentValue = await GetNextValueAsync(reader);
+                }
             }
 
             var relativeUri = new Uri(CurrentValue.Trim(), UriKind.RelativeOrAbsolute);

@@ -11,8 +11,9 @@ using System.Threading.Tasks;
 
 namespace M3u8Downloader_H.M3U8.M3UFileReaders
 {
-    internal sealed class M3UFileReaderWithJson(Uri baseUri) : IM3uFileReader
+    internal sealed class M3UFileReaderWithJson : IM3uFileReader
     {
+        private Uri baseUri = default!;
         private int currentIndex;
         private string CurrentTitle => $"{++currentIndex}.tmp";
 
@@ -22,8 +23,9 @@ namespace M3u8Downloader_H.M3U8.M3UFileReaders
         }
 
 
-        public Task<IM3uFileInfo> GetM3u8FileInfo(Stream stream)
+        public Task<IM3uFileInfo> GetM3u8FileInfo(Uri baseUri,Stream stream)
         {
+            this.baseUri = baseUri;
             M3UFileInfo? m3ufileInfo = JsonSerializer.Deserialize<M3UFileInfo>(stream) ?? throw new InvalidDataException("不能是空的m3u8数据");
 
             M3UKeyInfo? m3UKeyInfo = m3ufileInfo.Key as M3UKeyInfo;

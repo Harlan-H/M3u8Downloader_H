@@ -39,6 +39,7 @@ namespace M3u8Downloader_H.M3U8.Models
             Map = m3UFileInfo.Map;
             ProgramDateTime = m3UFileInfo.ProgramDateTime;
             Key = m3UFileInfo.Key;
+            Medias = [.. m3UFileInfo.Medias];
             Streams = [.. m3UFileInfo.Streams];
             MediaFiles = [.. m3UFileInfo.MediaFiles];
         }

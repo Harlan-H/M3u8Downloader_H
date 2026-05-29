@@ -17,7 +17,7 @@ namespace M3u8Downloader_H.Downloader.MediaDownloads
                 try
                 {
                     long fileSize = await httpClientWrap.TryGetContentLengthAsync(streamInfo.Url.OriginalString, _headers, cancellationToken) ?? throw new InvalidDataException("获取视频大小失败");
-                    streamInfo.SetFileSize(fileSize);
+                    streamInfo.FileSize = fileSize;
                     downloadContext.Log?.Info("获得文件大小是:{0}", new FileSize(fileSize).ToString());
                 }
                 catch (HttpRequestException ex) 

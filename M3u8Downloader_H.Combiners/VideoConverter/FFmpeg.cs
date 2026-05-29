@@ -4,9 +4,7 @@ using M3u8Downloader_H.Common.Extensions;
 using CliWrap.Builders;
 using M3u8Downloader_H.Abstractions.Common;
 using M3u8Downloader_H.Abstractions.Settings;
-using M3u8Downloader_H.Abstractions.M3u8;
 using M3u8Downloader_H.Combiners.Utils;
-using M3u8Downloader_H.Combiners.Extensions;
 using M3u8Downloader_H.Common.Utils;
 
 namespace M3u8Downloader_H.Combiners.VideoConverter
@@ -29,32 +27,19 @@ namespace M3u8Downloader_H.Combiners.VideoConverter
             await ConvertToMp4(arguments, dialogProgress,null, cancellationToken);
         }
 
-        public async ValueTask ConvertToMp4(IM3uFileInfo m3UFileInfo, IDialogProgress dialogProgress, CancellationToken cancellationToken = default)
+        public async ValueTask ConvertToMp4(IList<IM3uFileInfoSource> m3UFileInfoSources, IDialogProgress dialogProgress, CancellationToken cancellationToken = default)
         {
-            if (!m3UFileInfo.MediaFiles.Any())
-                throw new ArgumentException("m3u8文件内的文件不能为空");
-
-            PipeSource pipeSource = default!;
             var arguments = new ArgumentsBuilder();
-            if (m3UFileInfo.IsFile && m3UFileInfo.MediaFiles.First().Duration == 0)
+            foreach(var item in m3UFileInfoSources)
             {
-                arguments.Add("-f").Add("concat")
-                        .Add("-safe").Add(0);
-                pipeSource = PipeSource.Create(m3UFileInfo.GenerateConcatStream(CachePath));
-            }
-            else
-            {
-                arguments.Add("-f").Add("hls")
-                    //allowed_extensions必须在-i pipe:0之前执行否则会报错"If you wish to override this adjust allowed_extensions, you can set it to 'ALL' to allow all"
-                    .Add("-allowed_extensions").Add("ALL");
-                pipeSource = PipeSource.Create(m3UFileInfo.GenerateM3U8Stream(CachePath));
+                var index = Path.Combine(CachePath, item.CachePath, "index.m3u8");
+                arguments.Add("-allowed_extensions").Add("ALL")
+                    .Add("-i").Add(index);
             }
 
             arguments
-                .Add("-protocol_whitelist").Add("file,pipe")
-                .Add("-i").Add("pipe:0")
-                .Add("-bsf:a").Add("aac_adtstoasc");
-            await ConvertToMp4(arguments, dialogProgress, pipeSource, cancellationToken);
+                .Add("-f").Add("hls");
+            await ConvertToMp4(arguments, dialogProgress, null, cancellationToken);
         }
 
 
