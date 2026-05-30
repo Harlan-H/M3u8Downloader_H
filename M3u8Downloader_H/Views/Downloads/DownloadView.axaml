@@ -5,9 +5,9 @@
              xmlns:vm="using:M3u8Downloader_H.ViewModels.Downloads"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              xmlns:model="using:M3u8Downloader_H.Models"
+             xmlns:behaviors="using:M3u8Downloader_H.Behaviors"
              xmlns:commonmodel="using:M3u8Downloader_H.Common.Models"
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
-             xmlns:materialStyles="clr-namespace:Material.Styles.Themes;assembly=Material.Styles"
              xmlns:converters="using:M3u8Downloader_H.Converters"
              x:DataType="vm:DownloadViewModel"
              x:Class="M3u8Downloader_H.Views.Downloads.DownloadView">
@@ -194,6 +194,9 @@
                         </TextBlock>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
+             <Interaction.Behaviors>
+                 <behaviors:EnsureScrollingToBottomBehavior />
+             </Interaction.Behaviors>
             </ItemsControl>
         </Grid>
     </Panel>
