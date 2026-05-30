@@ -42,7 +42,7 @@
                         </TextBlock>
                     </ToolTip.Tip>
                     <TextBlock Text="超时时间: " Classes="MyTextBlock" />
-                    <Slider Height="20" IsSnapToTickEnabled="True" Minimum="1" Maximum="300" TickFrequency="1" Value="{Binding Timeouts}"  Classes="Discrete" />
+                    <Slider Height="20" IsSnapToTickEnabled="True" Minimum="1" Maximum="90" TickFrequency="1" Value="{Binding Timeouts}"  Classes="Discrete" />
                 </DockPanel>
 
                 <DockPanel Margin="8 0 8 0" ToolTip.Tip="视频保存路径，默认在当前程序目录下">

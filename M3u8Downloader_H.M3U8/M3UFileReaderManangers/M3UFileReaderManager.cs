@@ -79,7 +79,7 @@ namespace M3u8Downloader_H.M3U8.M3UFileReaderManangers
 
                         var audio = medias.Single();
                         m3UFileInfoSources.Add(new M3uFileInfoSource(audio.Uri, M3uType.AUDIO));
-                        stringBuilder.Append($"音频 {audio.Type} {audio.Language}  ");
+                        stringBuilder.Append($"音频 {audio.GroupId} {audio.Name} {audio.Language}  ");
                     }
                 }
                 
@@ -94,7 +94,7 @@ namespace M3u8Downloader_H.M3U8.M3UFileReaderManangers
 
                         var subtile = subtitls.Single();
                         m3UFileInfoSources.Add(new M3uFileInfoSource(subtile.Uri, M3uType.SUBTITLE));
-                        stringBuilder.AppendLine($"字幕 {subtile.Type} {subtile.Language}");
+                        stringBuilder.AppendLine($"字幕 {subtile.Name} {subtile.Language}");
                     }
                 }
                 context.Log.Info(stringBuilder.ToString());

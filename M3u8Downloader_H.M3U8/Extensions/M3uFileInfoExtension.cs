@@ -30,7 +30,7 @@ namespace M3u8Downloader_H.M3U8.Extensions
                     }
                     else
                     {
-                        await writer.WriteLineAsync($"#EXT-X-MAP:URI=\"file://{mapPath}\"");
+                        await writer.WriteLineAsync($"#EXT-X-MAP:URI=\"file:///{mapPath}\"");
                     }
                 }
 
@@ -46,7 +46,7 @@ namespace M3u8Downloader_H.M3U8.Extensions
                     }
                     else
                     {
-                        await writer.WriteLineAsync($"file://{mediaPath}");
+                        await writer.WriteLineAsync($"file:///{mediaPath}");
                     }
                 }
 
