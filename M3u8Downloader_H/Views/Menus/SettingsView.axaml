@@ -32,15 +32,6 @@
 
                
                 <DockPanel Margin="8 0 8 0">
-                    <ToolTip.Tip>
-                        <TextBlock>
-                            <Run Text="超时时间是，每次下载最大可等待时间(秒)" />
-                            <LineBreak/>
-                            <Run Text="比如120秒" />
-                            <LineBreak/>
-                            <Run Text="那么每次下载最大得等待时长都是120秒，但是前提是服务端不超时得情况下" />
-                        </TextBlock>
-                    </ToolTip.Tip>
                     <TextBlock Text="超时时间: " Classes="MyTextBlock" />
                     <Slider Height="20" IsSnapToTickEnabled="True" Minimum="1" Maximum="90" TickFrequency="1" Value="{Binding Timeouts}"  Classes="Discrete" />
                 </DockPanel>
