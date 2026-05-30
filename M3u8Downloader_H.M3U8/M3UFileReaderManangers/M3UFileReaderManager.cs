@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -54,6 +55,7 @@ namespace M3u8Downloader_H.M3U8.M3UFileReaderManangers
         public IList<IM3uFileInfoSource>? AutoHandleM3uFileInfo(IM3uFileInfo m3UFileInfo)
         {
             List<IM3uFileInfoSource> m3UFileInfoSources = [];
+
             if (m3UFileInfo.Streams is null && m3UFileInfo.MediaFiles.Any())
             {
                 m3UFileInfoSources.Add(new M3uFileInfoSource(m3UFileInfo));
@@ -61,8 +63,10 @@ namespace M3u8Downloader_H.M3U8.M3UFileReaderManangers
 
             }else if (m3UFileInfo.Streams is not null && m3UFileInfo.Streams.Any())
             {
+                StringBuilder stringBuilder = new();
                 var stream = m3UFileInfo.Streams.Count > 1 ? m3UFileInfo.Streams.OrderByDescending(s => s.Bandwidth).First() : m3UFileInfo.Streams.Single();
                 m3UFileInfoSources.Add(new M3uFileInfoSource(stream.Uri));
+                stringBuilder.Append($"自动选择 视频 {stream.Resolution} {stream.Codecs}  ");
 
                 if (stream.Audio is not null)
                 {
@@ -75,6 +79,7 @@ namespace M3u8Downloader_H.M3U8.M3UFileReaderManangers
 
                         var audio = medias.Single();
                         m3UFileInfoSources.Add(new M3uFileInfoSource(audio.Uri, M3uType.AUDIO));
+                        stringBuilder.Append($"音频 {audio.Type} {audio.Language}  ");
                     }
                 }
                 
@@ -89,8 +94,10 @@ namespace M3u8Downloader_H.M3U8.M3UFileReaderManangers
 
                         var subtile = subtitls.Single();
                         m3UFileInfoSources.Add(new M3uFileInfoSource(subtile.Uri, M3uType.SUBTITLE));
+                        stringBuilder.AppendLine($"字幕 {subtile.Type} {subtile.Language}");
                     }
                 }
+                context.Log.Info(stringBuilder.ToString());
             }
             return m3UFileInfoSources;
         }
@@ -98,12 +105,7 @@ namespace M3u8Downloader_H.M3U8.M3UFileReaderManangers
         protected async Task<IM3uFileInfo> GetM3u8FileInfoInternal(Uri uri, IEnumerable<KeyValuePair<string, string>>? headers, CancellationToken cancellationToken = default)
         {
             await using Stream stream = await httpClientWrap.GetStreamAsync(uri, headers, cancellationToken);
-            IM3uFileInfo m3uFileInfo = await M3u8FileReader.GetM3u8FileInfo(uristream);
-//             if (m3uFileInfo.Streams != null && m3uFileInfo.Streams.Any())
-//             {
-//                 IM3uStreamInfo m3UStreamInfo = m3uFileInfo.Streams.Count > 1 ? m3uFileInfo.Streams.OrderByDescending(s => s.Bandwidth).First() : m3uFileInfo.Streams.First();
-//                 return await GetM3u8FileInfoInternal(m3UStreamInfo.Uri, headers, cancellationToken);
-//             }
+            IM3uFileInfo m3uFileInfo = await M3u8FileReader.GetM3u8FileInfo(uri,stream);
             return m3uFileInfo;
         }
     }

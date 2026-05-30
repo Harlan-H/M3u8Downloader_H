@@ -7,6 +7,6 @@ namespace M3u8Downloader_H.Core.Interfaces
 {
     public interface IDownloader
     {
-        Task StartDownload(Action<int> StateAction,IDialogProgress dialogProgress, CancellationToken cancellationToken);
+        Task StartDownload(IDialogProgress dialogProgress, CancellationToken cancellationToken);
     }
 }

@@ -29,10 +29,7 @@ namespace M3u8Downloader_H.M3U8
                         m3UFileReader = reader;
                     }
                 }
-                else if (m3U8DownloadParam.M3UFileInfoSources is not null 
-                    && m3U8DownloadParam.M3UFileInfoSources.Count == 1 
-                    && m3U8DownloadParam.M3UFileInfoSources[0].RequestUrl.IsFile 
-                    && m3U8DownloadParam.M3UFileInfoSources[0].RequestUrl.OriginalString.EndsWith(".json"))
+                else if (m3U8DownloadParam.RequestUrl.OriginalString.EndsWith(".json"))
                 {
                     m3UFileReader = new M3UFileReaderWithJson();
                 }

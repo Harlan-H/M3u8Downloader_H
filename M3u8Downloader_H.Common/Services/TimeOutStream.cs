@@ -18,7 +18,7 @@ namespace M3u8Downloader_H.Common.Services
             var timeoutTask = Task.Delay(options.IdleTimeout,cancellationToken);
 
             var completed = await Task.WhenAny(readTask,timeoutTask);
-            if (completed != readTask)
+            if (completed.IsCompletedSuccessfully && completed != readTask)
             {
                 throw new TimeoutException($"数据读取超时 {options.IdleTimeout.TotalSeconds} 秒");
             }

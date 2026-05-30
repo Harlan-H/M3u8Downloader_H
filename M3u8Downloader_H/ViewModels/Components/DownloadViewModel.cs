@@ -63,6 +63,7 @@ namespace M3u8Downloader_H.ViewModels.Downloads
         [NotifyCanExecuteChangedFor(nameof(ShowFileCommand), nameof(CancelCommand), nameof(RestartCommand))]
         public partial DownloadStatus Status { get; set; }
 
+        public bool IsProgressIndeterminate => IsActive && Status < DownloadStatus.StartedVod;
 
         public DownloadViewModel(IDownloadParamBase DownloadParam)
         {
@@ -80,10 +81,6 @@ namespace M3u8Downloader_H.ViewModels.Downloads
             return result;
         }
 
-
-        public  bool IsProgressIndeterminate => IsActive && Status < DownloadStatus.StartedVod;
-
-
         public async void Start()
         {
             if (IsActive)
@@ -98,7 +95,10 @@ namespace M3u8Downloader_H.ViewModels.Downloads
                 using var semaphore = await throttlingSemaphore.AcquireAsync(cancellationTokenSource.Token);
 
                 downloadProgress ??= new(this);
-                await downloaderCoreClient.Downloader.StartDownload(s => Status = (DownloadStatus)s, downloadProgress, cancellationTokenSource.Token);
+                if (downloadParam is IM3u8DownloadParam)
+                    Status = DownloadStatus.Parsed;
+                
+                await downloaderCoreClient.Downloader.StartDownload(downloadProgress, cancellationTokenSource.Token);
                 Status = DownloadStatus.Completed;
             }
             catch (OperationCanceledException) when (cancellationTokenSource!.IsCancellationRequested)

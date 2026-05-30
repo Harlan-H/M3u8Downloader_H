@@ -23,9 +23,8 @@ namespace M3u8Downloader_H.Core.Downloads
 
         private bool _isDownloaded = false;
 
-        public async Task StartDownload(Action<int> StateAction, IDialogProgress dialogProgress, CancellationToken cancellationToken)
+        public async Task StartDownload(IDialogProgress dialogProgress, CancellationToken cancellationToken)
         {
-            StateAction.Invoke((int)DownloadStatus.Enqueued);
             using var acquire = dialogProgress.Acquire();
 
             await DownloadAsync(dialogProgress, cancellationToken);

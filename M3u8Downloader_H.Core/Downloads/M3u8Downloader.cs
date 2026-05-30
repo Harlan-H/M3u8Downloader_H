@@ -40,15 +40,14 @@ namespace M3u8Downloader_H.Core.Downloads
         private M3u8FileInfoClient m3U8FileInfoClient = default!;
         private DownloaderClient m3UDownloaderClient = default!;
         private M3uCombinerClient m3UCombinerClient = default!;
-        private readonly List<M3uFileInfoState> m3UFileInfoStates = [];
+        private List<M3uFileInfoState>? m3UFileInfoStates;
 
 
         private bool _isParsed = skipParse;
 
 
-        public async Task StartDownload(Action<int> StateAction,IDialogProgress dialogProgress, CancellationToken cancellationToken)
+        public async Task StartDownload(IDialogProgress dialogProgress, CancellationToken cancellationToken)
         {
-            StateAction.Invoke((int)DownloadStatus.Parsed);
             await GetM3U8FileInfo(cancellationToken);
 
             using var acquire = dialogProgress.Acquire();
@@ -74,32 +73,31 @@ namespace M3u8Downloader_H.Core.Downloads
             if (m3u8DownloadParam.RequestUrl.IsFile)
             {
                 var m3UFileInfo = await m3U8FileInfoClient.M3u8FileReader.GetM3u8FileInfo(m3u8DownloadParam.RequestUrl);
-                m3UFileInfoStates.Add(new M3uFileInfoState(new M3uFileInfoSource(m3u8DownloadParam.RequestUrl, m3UFileInfo)));
+                m3UFileInfoStates = [new M3uFileInfoState(new M3uFileInfoSource(m3u8DownloadParam.RequestUrl, m3UFileInfo))];
             }
             else
             {
-                if (m3U8DownloadParams.M3UFileInfoSources is null)
+                if (m3UFileInfoStates is null)
                 {
                     var reader = m3U8FileInfoClient.M3UFileReadManager;
                     var m3UFileInfo = await reader.GetM3u8FileInfo(cancellationToken);
-                    m3U8DownloadParams.M3UFileInfoSources = reader.AutoHandleM3uFileInfo(m3UFileInfo)
+                    var m3UFileInfoSources  = reader.AutoHandleM3uFileInfo(m3UFileInfo)
                                                 ?? await m3UFileInfoSourcesFactory(m3UFileInfo);
+
+                    m3UFileInfoStates = [.. m3UFileInfoSources.Select(m => new M3uFileInfoState(m))];
                 }
 
-                foreach (var item in m3U8DownloadParams.M3UFileInfoSources)
+                foreach (var item in m3UFileInfoStates)
                 {
-                    if(item.M3uFile is null)
+                    var m3ufileinfoSource = item.M3UFileInfoSource;
+                    if (m3ufileinfoSource.M3uFile is null)
                     {
-                        var m3UFileState = new M3uFileInfoState(item);
-                        m3UFileState.M3uReader ??= m3U8FileInfoClient.M3UFileReadManager;
-                        item.M3uFile = await m3UFileState.M3uReader.GetM3u8FileInfo(item.RequestUrl, cancellationToken);
-                        if (item.M3uFile is null || item.M3uFile.IsEmpty)
+                        item.M3uReader ??= m3U8FileInfoClient.M3UFileReadManager;
+                        m3ufileinfoSource.M3uFile = await item.M3uReader.GetM3u8FileInfo(m3ufileinfoSource.RequestUrl, cancellationToken);
+                        if (m3ufileinfoSource.M3uFile is null || m3ufileinfoSource.M3uFile.IsEmpty)
                         {
-                            throw new InvalidDataException("获取的m3u8数据为空");
+                            throw new InvalidDataException($"获取的数据为空,{m3ufileinfoSource.RequestUrl}");
                         }
-
-                        context.Log.Info("获取到{0},有 {1} 个", m3UFileState, item.M3uFile.MediaFiles.Count);
-                        m3UFileInfoStates.Add(m3UFileState);
                     }
                 }
             }
@@ -107,10 +105,10 @@ namespace M3u8Downloader_H.Core.Downloads
             if (m3UFileInfoStates.Count == 1)
             {
                 var m3uinfoState = m3UFileInfoStates.Single();
-                if (m3uinfoState.M3uFileInfoIsEmpty)
+                if (m3u8DownloadParam.M3UKeyInfo is not null)
                 { 
                     M3UFileInfo m3UFileInfo = (M3UFileInfo)m3uinfoState.M3UFileInfoSource.M3uFile!;
-                    m3UFileInfo.Key = m3u8DownloadParam.M3UKeyInfo!;
+                    m3UFileInfo.Key = m3u8DownloadParam.M3UKeyInfo;
                 }
             }
 
@@ -122,12 +120,12 @@ namespace M3u8Downloader_H.Core.Downloads
         {
             m3UDownloaderClient.DialogProgress = downloadProgress;
 
-            foreach (var stateItem in m3UFileInfoStates)
+            foreach (var stateItem in m3UFileInfoStates!)
             {
                 if (stateItem.IsDownloaded)
                     continue;
 
-                context.Log.Info("开始下载{0}数据", stateItem);
+                context.Log.Info("开始下载{0}数据,共 {1} 个", stateItem,stateItem.M3UFileInfoSource.M3uFile!.MediaFiles.Count);
                 stateItem.DownloadService ??= m3UDownloaderClient.CreateM3u8Downloader(stateItem.M3UFileInfoSource);
                 await stateItem.DownloadService.Initialization(stateItem.M3UFileInfoSource, cancellationToken);
                 await stateItem.DownloadService.StartDownload(stateItem.M3UFileInfoSource, cancellationToken);
@@ -137,7 +135,7 @@ namespace M3u8Downloader_H.Core.Downloads
 
         private async Task GenerateM3u8(CancellationToken cancellationToken)
         {
-            var m3u8FileInfoStates = m3UFileInfoStates.Where(m => m.M3UFileInfoSource.Type != M3uType.SUBTITLE)
+            var m3u8FileInfoStates = m3UFileInfoStates!.Where(m => m.M3UFileInfoSource.Type != M3uType.SUBTITLE)
                                     .ToList() ?? throw new InvalidOperationException("获取M3UFileInfoSource list失败");
 
             foreach (var stateItem in m3u8FileInfoStates)
@@ -153,13 +151,13 @@ namespace M3u8Downloader_H.Core.Downloads
 
         private async Task MergeAsync(IDialogProgress progress, CancellationToken cancellationToken)
         {
-            var m3UFileInfos = m3UFileInfoStates.Where(m => m.M3UFileInfoSource.Type != M3uType.SUBTITLE)
+            var m3UFileInfos = m3UFileInfoStates!.Where(m => m.M3UFileInfoSource.Type != M3uType.SUBTITLE)
                                                 .Select(m => m.M3UFileInfoSource)
                                                 .ToList() ?? throw new InvalidOperationException("获取M3UFileInfoSource list失败");
 
             await m3UCombinerClient.FFmpeg.ConvertToMp4(m3UFileInfos, progress, cancellationToken);
 
-            var subtitle = m3UFileInfoStates.FirstOrDefault(m => m.M3UFileInfoSource.Type == M3uType.SUBTITLE);
+            var subtitle = m3UFileInfoStates!.FirstOrDefault(m => m.M3UFileInfoSource.Type == M3uType.SUBTITLE);
             if(subtitle is not null && subtitle.M3UFileInfoSource.M3uFile is not null)
             {
                 var filePath = Path.Combine(m3U8DownloadParams.SavePath, m3U8DownloadParams.VideoName + subtitle.M3UFileInfoSource.Extension);
@@ -214,7 +212,7 @@ namespace M3u8Downloader_H.Core.Downloads
             };
 
             M3u8DownloadParams m3U8DownloadParams = (M3u8DownloadParams)context.DownloadParam;
-            m3U8Downloader.m3UFileInfoStates.Add(new M3uFileInfoState(new M3uFileInfoSource(m3U8DownloadParams.RequestUrl, m3UFileInfo)));
+            m3U8Downloader.m3UFileInfoStates = [new M3uFileInfoState(new M3uFileInfoSource(m3U8DownloadParams.RequestUrl, m3UFileInfo))];
             context.Log.Info("通过接口传入m3u8文件的视频流有{0}个,将跳过获取操作开始直接下载", m3UFileInfo.MediaFiles.Count);
             return m3U8Downloader;
         }

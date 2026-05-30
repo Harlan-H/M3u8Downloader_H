@@ -50,13 +50,13 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
                 }
                 catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
                 {
-                    context.Log?.Warn("{0} 请求超时，重试第{1}次", m3UMediaInfo.Uri.OriginalString, i + 1);
+                    context.Log?.Warn("请求超时,重试第{1}次 {0}", m3UMediaInfo.Uri.OriginalString, i + 1);
                     await Task.Delay(2000, cancellationToken);
                     continue;
                 }
                 catch (TimeoutException e)
                 {
-                    context.Log?.Warn("{0} {1} ，重试第{2}次", e.Message, m3UMediaInfo.Uri.OriginalString, i + 1);
+                    context.Log?.Warn("{1},重试第{2}次 {0}",  m3UMediaInfo.Uri.OriginalString, e.Message, i + 1);
                     await Task.Delay(2000, cancellationToken);
                     continue;
                 }
@@ -66,19 +66,19 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
                     {
                         throw new CryptographicException("解密失败,请确认key,iv是否正确");
                     }
-                    context.Log?.Warn("{0} 遇到异常:{1},重试第{2}次", m3UMediaInfo.Uri.OriginalString, ex.Message, i + 1);
+                    context.Log?.Warn("遇到异常:{1},重试第{2}次 {0}", m3UMediaInfo.Uri.OriginalString, ex.Message, i + 1);
                     await Task.Delay(2000, cancellationToken);
                     continue;
                 }
                 catch (IOException ioex)
                 {
-                    context.Log?.Warn("{0} 遇到io异常{1}，重试第{2}次", m3UMediaInfo.Uri.OriginalString, ioex.Message, i + 1);
+                    context.Log?.Warn("遇到io异常{1}，重试第{2}次 {0}", m3UMediaInfo.Uri.OriginalString, ioex.Message, i + 1);
                     await Task.Delay(2000, cancellationToken);
                     continue;
                 }
                 catch (HttpRequestException) when (context.DownloaderSetting.SkipRequestError)
                 {
-                    context.Log?.Warn("{0} 请求失败,以跳过错误，重试第{1}次", m3UMediaInfo.Uri.OriginalString, i + 1);
+                    context.Log?.Warn("请求失败,以跳过错误，重试第{1}次 {0}", m3UMediaInfo.Uri.OriginalString, i + 1);
                     await Task.Delay(2000, cancellationToken);
                     continue;
                 }
