@@ -2,9 +2,10 @@
 using M3u8Downloader_H.Abstractions.M3u8;
 using M3u8Downloader_H.Abstractions.Models;
 using M3u8Downloader_H.Abstractions.Plugins.Download;
+using M3u8Downloader_H.Common.DownloadPrams;
 using M3u8Downloader_H.Common.Extensions;
-using M3u8Downloader_H.M3U8.Models;
 using M3u8Downloader_H.Downloader.Extensions;
+using M3u8Downloader_H.M3U8.Models;
 using System.Net;
 
 namespace M3u8Downloader_H.Downloader.M3uDownloaders
@@ -16,6 +17,7 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
         private IM3uFileInfo? _m3uFileInfo;
         private float recordDuration;
         private long _index;
+        private string _cachePath = default!;
 
         protected IEnumerable<KeyValuePair<string, string>>? _headers => downloadContext.DownloadParam.Headers ?? downloadContext.DownloaderSetting.Headers;
 
@@ -25,7 +27,11 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
         public Func<IM3uMediaInfo, IEnumerable<KeyValuePair<string, string>>?, string, CancellationToken, Task<bool>> DownloadM3uMediaInfoFunc { get; set; } = default!;
 
         public ValueTask Initialization(IM3uFileInfoSource m3UFileInfoSource, CancellationToken cancellationToken = default)
-            => downloadService.Initialization(m3UFileInfoSource,cancellationToken);
+        {
+            _cachePath = Path.Combine(downloadContext.DownloadParam.CachePath, m3UFileInfoSource.CachePath);
+            return downloadService.Initialization(m3UFileInfoSource, cancellationToken);
+        }
+            
         
 
         private void AddMedias(IM3uFileInfo m3UFileinfo)
@@ -102,7 +108,7 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
         {
             foreach (var mediaFile in m3UFileInfo.MediaFiles)
             {
-                string mediaPath = Path.Combine(downloadContext.DownloadParam.CachePath, mediaFile.Title);
+                string mediaPath = Path.Combine(_cachePath, mediaFile.Title);
                 bool isSuccessful = await DownloadM3uMediaInfo(mediaFile, Headers,  mediaPath,  cancellationToken);
                 if(isSuccessful)
                 {
