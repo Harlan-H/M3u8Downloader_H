@@ -30,14 +30,13 @@ namespace M3u8Downloader_H.Plugin
 
         public async Task<List<OnlinePluginManifest>> InitPluginManifest(CancellationToken cancellationToken)
         {
-              return await RepositoryClient.InitPluginManifest(cancellationToken);
+             return await RepositoryClient.InitPluginManifest(cancellationToken);
         }
 
         public async Task UpdatePlugin(OnlinePluginManifest onlinePluginManifest, CancellationToken cancellationToken = default)
         {
             await RepositoryClient.DownloadPlugin(onlinePluginManifest.Release.DownloadUrl, cancellationToken);
             RegistryClient.UpdateVersionByKey(onlinePluginManifest.Key, onlinePluginManifest.Release.Version);
-            RegistryClient.Save(2);
         }
 
 
@@ -48,14 +47,24 @@ namespace M3u8Downloader_H.Plugin
 
         public void Load()
         {
-            RegistryClient.Load();
-            LoadPlugins();
+            RegistryClient.Load(); 
+        }
+
+        public async Task LoadPlugin()
+        {
+            await LoadPlugins();
 
             foreach (var item in plugins.Where(p => RegistryClient.IsEnable(p.PluginManifest)))
             {
                 item.LoadLibrary();
                 _activePlugins.Add(item);
             }
+        }
+
+
+        public void Save()
+        {
+            RegistryClient.Save();
         }
 
         public void DelPlugins(PluginHandle pluginHandle)
@@ -67,15 +76,15 @@ namespace M3u8Downloader_H.Plugin
                 File.Delete(state.FullName);
         }
 
-        private void LoadPlugins()
+        private async Task LoadPlugins()
         {
             var dir = new DirectoryInfo(_pluginDirPath);
             foreach (var fileinfo in dir.EnumerateFiles("*.zip"))
             {
                 var handle = new PluginHandle();
-                using var zip = ZipFile.OpenRead(fileinfo.FullName);
-                var manifest = handle.LoadManifest(zip);
-                handle.LoadAssembils(zip);
+                using var zip = await ZipFile.OpenReadAsync(fileinfo.FullName);
+                var manifest = await handle.LoadManifest(zip);
+                await handle.LoadAssembils(zip);
                 plugins.Add(handle);
                 RegistryClient.Register(manifest, fileinfo.FullName);
             }

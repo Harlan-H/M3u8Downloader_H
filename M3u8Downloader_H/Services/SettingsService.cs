@@ -1,4 +1,6 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using Avalonia;
+using Avalonia.Controls;
+using CommunityToolkit.Mvvm.ComponentModel;
 using M3u8Downloader_H.Abstractions.M3uDownloaders;
 using M3u8Downloader_H.Abstractions.Settings;
 using M3u8Downloader_H.Common.Services;
@@ -79,6 +81,8 @@ namespace M3u8Downloader_H.Services
         [ObservableProperty]
         public partial int Timeouts { get; set; } = 30;
 
+        public WindowSettings WindowSettings { get; set; } = default!;
+
         public SettingsService() : base(SerializerContext.Default,Path.Combine(StorageSpaceManager.GetConfigPath(), "Settings.dat"))
         {
             
@@ -148,5 +152,13 @@ namespace M3u8Downloader_H.Services
 
         public static bool operator ==(ProxyService proxyInfo, ProxyService proxyInfo1) => proxyInfo.Equals(proxyInfo1);
         public static bool operator !=(ProxyService proxyInfo, ProxyService proxyInfo1) => !(proxyInfo == proxyInfo1);
+    }
+
+
+    public class WindowSettings(double width, double height, WindowState state)
+    {
+        public double Width { get; set; } = width;
+        public double Height { get; set; } = height;
+        public WindowState State { get; set; } = state == WindowState.Minimized ? WindowState.Normal : state;
     }
 }

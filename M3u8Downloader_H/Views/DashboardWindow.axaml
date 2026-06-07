@@ -5,6 +5,7 @@
         xmlns:viewmodels="using:M3u8Downloader_H.ViewModels"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        WindowStartupLocation="CenterScreen"
         MinHeight="670"
         x:Class="M3u8Downloader_H.Views.DashboardWindow"
         x:DataType="viewmodels:DashboardWindowViewModel"
@@ -20,15 +21,6 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
-
-    <Interaction.Behaviors>
-        <LoadedTrigger>
-			<InvokeCommandAction Command="{Binding InitializeCommand}" />
-        </LoadedTrigger>
-        <EventTriggerBehavior EventName="Closing">
-			<InvokeCommandAction Command="{Binding ClosedCommand}" />
-        </EventTriggerBehavior>
-    </Interaction.Behaviors>
 
     <Grid ColumnDefinitions="200,*">
         <Grid RowDefinitions="*,30" Background="{StaticResource backGroundBrush}">

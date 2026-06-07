@@ -13,7 +13,7 @@ namespace M3u8Downloader_H.ViewModels
     internal partial class DashboardWindowViewModel : ViewModelBase
     {
         private readonly IServiceProvider serviceProvider;
-        private readonly MainWindowViewModel mainWindowViewModel ;
+        private readonly MainWindowViewModel mainWindowViewModel;
         public string Version { get; } = Program.VersionString;
 
         [ObservableProperty]
@@ -26,18 +26,14 @@ namespace M3u8Downloader_H.ViewModels
             CurrentViewModel = mainWindowViewModel;
         }
 
-
-        [RelayCommand]
-        private async Task InitializeAsync()
+        public override Task InitializeAsync()
         {
-            Debug.WriteLine("InitializeAsync");
-            await mainWindowViewModel.InitializeAsync();
-        }
+            if(_initialized)
+                return Task.CompletedTask;
 
-        [RelayCommand]
-        private  void Closed()
-        {
-            Debug.WriteLine("ClosedAsync");
+            NavigateTo(typeof(MainWindowViewModel));
+            _initialized = true;
+            return base.InitializeAsync();
         }
 
 

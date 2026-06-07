@@ -25,11 +25,11 @@ namespace M3u8Downloader_H.Plugin.Services
         public PluginManifest PluginManifest { get; private set; } = default!;
 
 
-        public PluginManifest LoadManifest(ZipArchive zip)
+        public async Task<PluginManifest> LoadManifest(ZipArchive zip)
         {
             var manifestFile = zip.GetEntry("manifest.json") ?? throw new InvalidDataException("没有manifest.json文件,无法加载插件");
 
-            using var manifestSteam = manifestFile.Open();
+            using var manifestSteam = await manifestFile.OpenAsync();
             var manifest = JsonSerializer.Deserialize(manifestSteam, PluginManifestContext.Default.PluginManifest)
                     ?? throw new InvalidDataException("manifest反序列失败");
 
@@ -37,15 +37,15 @@ namespace M3u8Downloader_H.Plugin.Services
             return manifest;
         }
 
-        public void LoadAssembils(ZipArchive zip)
+        public async Task LoadAssembils(ZipArchive zip)
         {
             foreach (var entry in zip.Entries)
             {
                 if(entry.FullName.EndsWith(".dll"))
                 {
-                    using var s = entry.Open();
+                    using var s = await entry.OpenAsync();
                     var ms = new MemoryStream();
-                    s.CopyTo(ms);
+                    await s.CopyToAsync(ms);
                     ms.Position = 0;
                     _assemblies[entry.Name] = ms;
                 }

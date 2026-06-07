@@ -1,6 +1,6 @@
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
-using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
 using M3u8Downloader_H.FrameWork;
 using M3u8Downloader_H.Plugin;
@@ -14,13 +14,20 @@ using M3u8Downloader_H.Views.Menus;
 using M3u8Downloader_H.Views.Windows;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
-using System.Linq;
+using System;
+using System.Runtime.InteropServices;
 
 namespace M3u8Downloader_H
 {
     public partial class App : Application
     {
+        private readonly SettingsService settingsService;
+        private readonly PluginManager pluginManager;
+
+        private Size? _restoreSize;
+        private PosixSignalRegistration? _sigtermRegistration;
         private readonly ServiceProvider _serviceProvider = default!;
+
 
         public App()
         {
@@ -53,6 +60,9 @@ namespace M3u8Downloader_H
 
             _serviceProvider = services.BuildServiceProvider();
 
+            pluginManager = _serviceProvider.GetRequiredService<PluginManager>();
+            settingsService = _serviceProvider.GetRequiredService<SettingsService>();
+
         }
         public override void Initialize()
         {
@@ -63,15 +73,78 @@ namespace M3u8Downloader_H
         {
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
-                desktop.MainWindow = new DashboardWindow
+                var viewModel = _serviceProvider.GetRequiredService<DashboardWindowViewModel>();
+                var dashboardWindow = new DashboardWindow
                 {
-                    DataContext = _serviceProvider.GetRequiredService<DashboardWindowViewModel>()
+                    DataContext = viewModel
                 };
+                desktop.MainWindow = dashboardWindow;
+                dashboardWindow.Loaded += async (_, _) => await viewModel.InitializeAsync();
+
+                var env = Environment.GetEnvironmentVariable("APP_MODE");
+                if (string.IsNullOrWhiteSpace(env))
+                {
+                    Desktop_Initialize(dashboardWindow);
+                    dashboardWindow.Resized += (_, resizeEvent) => DashboardWindow_Resized(dashboardWindow, resizeEvent);
+                    desktop.Exit +=  (_,_) => Desktop_Exit(dashboardWindow);
+                }
+                else if (!string.IsNullOrWhiteSpace(env) && env.Equals("Docker"))
+                {
+                    Desktop_Initialize();
+                    _sigtermRegistration = PosixSignalRegistration.Create(PosixSignal.SIGTERM, async context =>
+                    {
+                        Desktop_Exit();
+                    });
+                }
             }
 
             DataTemplates.Add(new ViewLocator(_serviceProvider));
             
             base.OnFrameworkInitializationCompleted();
+        }
+
+        private void DashboardWindow_Resized(Window window, WindowResizedEventArgs e)
+        {
+            if (window.WindowState != WindowState.Normal)
+                return;
+
+            if (e.Reason != WindowResizeReason.User)
+                return;
+
+            _restoreSize = e.ClientSize;
+        }
+
+        private void Desktop_Initialize(Window window)
+        {
+            Desktop_Initialize();
+            if (settingsService.WindowSettings is not null)
+            {
+                window.Width = settingsService.WindowSettings.Width;
+                window.Height = settingsService.WindowSettings.Height;
+                window.WindowState = settingsService.WindowSettings.State;
+            }
+        }
+
+        private void Desktop_Initialize()
+        {
+            settingsService.Load();
+            pluginManager.Load();
+        }
+
+ 
+        private void Desktop_Exit(Window window)
+        {
+            if(_restoreSize is Size restoreSize)
+            {
+                settingsService.WindowSettings = new WindowSettings(restoreSize.Width, restoreSize.Height, window.WindowState);
+            }
+            Desktop_Exit();
+        }
+
+        private void Desktop_Exit()
+        {
+            settingsService.Save();
+            pluginManager.Save();
         }
     }
 }

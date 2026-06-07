@@ -27,6 +27,7 @@ namespace M3u8Downloader_H.FrameWork
 
             var view = CreateView(param);
             view?.DataContext ??= viewModel;
+            view?.Loaded += async (_, _) => await viewModel.InitializeAsync();
 
             return view;
         }

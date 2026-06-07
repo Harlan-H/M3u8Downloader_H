@@ -31,14 +31,11 @@ namespace M3u8Downloader_H.Plugin.Services
             }
         }
 
-        public void Save(long sec = 10 )
+        public void Save()
         {
-            _ = debounceDispatcher.DebounceAsync(() => {
-
-                var pluginConfigFileInfo = new FileInfo(_pluginConfigPath);
-                using var fileStream = pluginConfigFileInfo.Create();
-                JsonSerializer.Serialize(fileStream, _states, PluginStateContext.Default.DictionaryStringPluginState);
-            }, TimeSpan.FromSeconds(sec));
+            var pluginConfigFileInfo = new FileInfo(_pluginConfigPath);
+            using var fileStream = pluginConfigFileInfo.Create();
+            JsonSerializer.Serialize(fileStream, _states, PluginStateContext.Default.DictionaryStringPluginState);
         }
 
         public PluginState? TryGetPluginStateByKey(string key)
@@ -67,7 +64,6 @@ namespace M3u8Downloader_H.Plugin.Services
         public void Toggle(PluginManifest pluginManifest, bool enable)
         {
             _states[pluginManifest.Key].Enabled = enable;
-            Save();
         }
 
         public void Register(PluginManifest manifest,string pluginFullName)
@@ -81,7 +77,6 @@ namespace M3u8Downloader_H.Plugin.Services
                     FullName = pluginFullName,
                     CurrentVersion = manifest.Release.Version
                 };
-                Save();
             }
         }
 
@@ -90,7 +85,6 @@ namespace M3u8Downloader_H.Plugin.Services
             if(_states.TryGetValue(manifest.Key,out PluginState? state))
             {
                 _states.Remove(manifest.Key);
-                Save();
                 return state;
             }
             return null;

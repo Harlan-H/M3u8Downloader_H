@@ -46,6 +46,7 @@ namespace M3u8Downloader_H.ViewModels.Menus
 
         public MainWindowViewModel(SettingsService settingsService, PluginManager pluginManager)
         {
+            
             this.settingsService = settingsService;
             this.pluginManager = pluginManager;
             viewModelManager = new(settingsService);
@@ -108,22 +109,23 @@ namespace M3u8Downloader_H.ViewModels.Menus
             return appCommandService;
         }
 
-        public Task InitializeAsync()
+        public override async Task InitializeAsync()
         {
+            if (_initialized)
+                return;
+
             try
             {
-                settingsService.Load();
-                pluginManager.Load();
-
                 httpListenService.Run(i => HttpServicePort = i);
                 httpListenService.Initialization(appCommandService);
+
+                await pluginManager.LoadPlugin();
+                _initialized = true;
             }
             catch (Exception ex) {
                 Notifications.Info($"初始化失敗\n {ex}");
             }
-            return Task.FromResult(0);
         }
-
 
 
         private void EnqueueDownload(DownloadViewModel download)
@@ -135,8 +137,8 @@ namespace M3u8Downloader_H.ViewModels.Menus
                 return;
             }
 
-            Downloads.Insert(0, download);
             download.Start();
+            Downloads.Insert(0, download);
         }
 
         [RelayCommand]
