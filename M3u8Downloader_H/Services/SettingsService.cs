@@ -1,5 +1,6 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Xaml.Interactions.Custom;
 using CommunityToolkit.Mvvm.ComponentModel;
 using M3u8Downloader_H.Abstractions.M3uDownloaders;
 using M3u8Downloader_H.Abstractions.Settings;
@@ -152,10 +153,10 @@ namespace M3u8Downloader_H.Services
     }
 
 
-    public class WindowSettings(double width, double height, WindowState state)
+    public class WindowSettings(WindowState state)
     {
-        public double Width { get; set; } = width;
-        public double Height { get; set; } = height;
+        public double Width { get; set; }
+        public double Height { get; set; }
         public WindowState State { get; set; } = state == WindowState.Minimized ? WindowState.Normal : state;
     }
 }

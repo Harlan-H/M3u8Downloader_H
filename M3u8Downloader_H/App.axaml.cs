@@ -117,10 +117,12 @@ namespace M3u8Downloader_H
         private void Desktop_Initialize(Window window)
         {
             Desktop_Initialize();
-            if (settingsService.WindowSettings is not null)
+            if(settingsService.WindowSettings is not null)
             {
-                window.Width = settingsService.WindowSettings.Width;
-                window.Height = settingsService.WindowSettings.Height;
+                if (settingsService.WindowSettings.Width > 0)
+                    window.Width = settingsService.WindowSettings.Width;
+                if (settingsService.WindowSettings.Height > 0)
+                    window.Height = settingsService.WindowSettings.Height;
                 window.WindowState = settingsService.WindowSettings.State;
             }
         }
@@ -134,10 +136,14 @@ namespace M3u8Downloader_H
  
         private void Desktop_Exit(Window window)
         {
+            var windowSettings = new WindowSettings(window.WindowState);
             if(_restoreSize is Size restoreSize)
             {
-                settingsService.WindowSettings = new WindowSettings(restoreSize.Width, restoreSize.Height, window.WindowState);
+                windowSettings.Width = restoreSize.Width;
+                windowSettings.Height = restoreSize.Height;
             }
+            settingsService.WindowSettings = windowSettings;
+
             Desktop_Exit();
         }
 
