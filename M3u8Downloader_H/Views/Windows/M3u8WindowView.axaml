@@ -6,7 +6,6 @@
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:windows="using:M3u8Downloader_H.ViewModels.Windows"
              xmlns:behavior="using:M3u8Downloader_H.Behaviors"
-            xmlns:system="clr-namespace:System;assembly=System.Runtime"
              x:DataType="windows:M3u8WindowViewModel"
              x:Class="M3u8Downloader_H.Views.Windows.M3u8WindowView">
     
