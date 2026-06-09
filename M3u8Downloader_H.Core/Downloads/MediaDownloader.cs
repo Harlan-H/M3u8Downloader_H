@@ -41,7 +41,7 @@ namespace M3u8Downloader_H.Core.Downloads
             if (_isDownloaded)
                 return;
 
-            var hanlder = mediaDownloadParam.IsVideoStream ? progressManager.CreateLiveHandler() : progressManager.CreateVodHandler();
+            var hanlder = mediaDownloadParam.IsVideoStream ? progressManager.CreateVodHandler() : progressManager.CreateLiveHandler();
             using var acquire = hanlder.Acquire();
 
             m3UDownloaderClient.DialogProgress = hanlder.ToReporter();
