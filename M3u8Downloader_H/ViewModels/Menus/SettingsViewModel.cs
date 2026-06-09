@@ -23,7 +23,7 @@ namespace M3u8Downloader_H.ViewModels.Menus
         public partial SettingsService SettingsServiceClone { get; private set; } 
 
         [ObservableProperty]
-        public partial string[] Formats { get; private set; } = { "mp4" };
+        public partial string[] Formats { get; private set; } = { "mp4","ts","mkv" };
 
         [ObservableProperty]
         public partial ProxyService ProxyInfo { get; set; }

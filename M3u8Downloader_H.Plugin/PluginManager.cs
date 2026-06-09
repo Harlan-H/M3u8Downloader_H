@@ -61,7 +61,6 @@ namespace M3u8Downloader_H.Plugin
             }
         }
 
-
         public void Save()
         {
             RegistryClient.Save();

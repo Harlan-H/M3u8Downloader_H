@@ -59,9 +59,6 @@ namespace M3u8Downloader_H.Services
         [ObservableProperty]
         public partial bool IsResetName { get; set; } = true;
 
-        [JsonIgnore]
-        public string Separator { get; set; } = "----";
-
         [ObservableProperty]
         [JsonPropertyName("Proxy")]
         public partial ProxyService ProxyInfo { get; set; } = new();

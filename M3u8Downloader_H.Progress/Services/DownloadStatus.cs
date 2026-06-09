@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace M3u8Downloader_H.Common.Models
+namespace M3u8Downloader_H.Progress.Services
 {
     public enum DownloadStatus
     {
@@ -12,6 +12,7 @@ namespace M3u8Downloader_H.Common.Models
         Parsed,
         StartedLive,
         StartedVod,
+        Merging,
         Completed,
         Failed,
         Canceled

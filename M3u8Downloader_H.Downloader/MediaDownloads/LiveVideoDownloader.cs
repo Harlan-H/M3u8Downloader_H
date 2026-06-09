@@ -11,7 +11,6 @@ namespace M3u8Downloader_H.Downloader.MediaDownloads
         public override async Task DownloadAsync(IStreamInfo streamInfo, CancellationToken cancellationToken = default)
         {
             await base.DownloadAsync(streamInfo, cancellationToken);
-            DialogProgress.SetDownloadStatus(true);
             updated = false;
 
             downloadContext.Log?.Info("直播录制开始");
@@ -31,11 +30,7 @@ namespace M3u8Downloader_H.Downloader.MediaDownloads
 
         protected override void UpdateProgress(long total, long? filesize)
         {
-            if(updated is false && total > 0)
-            {
-                DialogProgress.IncProgressNum(true);
-                updated = true;
-            }
+            DialogProgress.Report(1);
         }
     }
 }

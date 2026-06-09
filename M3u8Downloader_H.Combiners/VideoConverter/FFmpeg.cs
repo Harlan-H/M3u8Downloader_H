@@ -6,6 +6,8 @@ using M3u8Downloader_H.Abstractions.Common;
 using M3u8Downloader_H.Abstractions.Settings;
 using M3u8Downloader_H.Combiners.Utils;
 using M3u8Downloader_H.Common.Utils;
+using M3u8Downloader_H.Progress.Interfaces;
+using M3u8Downloader_H.Progress.Extensions;
 
 namespace M3u8Downloader_H.Combiners.VideoConverter
 {
@@ -15,7 +17,7 @@ namespace M3u8Downloader_H.Combiners.VideoConverter
 
         private static readonly string _filePath = StorageSpaceManager.GetFFmpegPath();
 
-        public async ValueTask ConvertToMp4(IList<IStreamInfo> medias, IDialogProgress dialogProgress,CancellationToken cancellationToken = default)
+        public async ValueTask ConvertToMp4(IList<IStreamInfo> medias, IProgress<double> progress,CancellationToken cancellationToken = default)
         {
             var arguments = new ArgumentsBuilder();
             foreach (var item in medias)
@@ -24,10 +26,10 @@ namespace M3u8Downloader_H.Combiners.VideoConverter
             }
             arguments.Add("-allowed_extensions").Add("ALL");
 
-            await ConvertToMp4(arguments, dialogProgress,null, cancellationToken);
+            await ConvertToMp4(arguments, progress, null, cancellationToken);
         }
 
-        public async ValueTask ConvertToMp4(IList<IM3uFileInfoSource> m3UFileInfoSources, IDialogProgress dialogProgress, CancellationToken cancellationToken = default)
+        public async ValueTask ConvertToMp4(IList<IM3uFileInfoSource> m3UFileInfoSources, IProgress<double> progress, CancellationToken cancellationToken = default)
         {
             var arguments = new ArgumentsBuilder();
             foreach(var item in m3UFileInfoSources)
@@ -39,11 +41,11 @@ namespace M3u8Downloader_H.Combiners.VideoConverter
 
             arguments
                 .Add("-f").Add("hls");
-            await ConvertToMp4(arguments, dialogProgress, null, cancellationToken);
+            await ConvertToMp4(arguments, progress, null, cancellationToken);
         }
 
 
-        private async ValueTask ConvertToMp4(ArgumentsBuilder argumentsBuilder, IDialogProgress dialogProgress,PipeSource? pipe, CancellationToken cancellationToken = default)
+        private async ValueTask ConvertToMp4(ArgumentsBuilder argumentsBuilder, IProgress<double> progress, PipeSource? pipe, CancellationToken cancellationToken = default)
         {
             argumentsBuilder
                      .Add("-f").Add(Settings.SelectedFormat)
@@ -57,7 +59,7 @@ namespace M3u8Downloader_H.Combiners.VideoConverter
 
             DirEx.CreateDirecotry(DownloadParams.SavePath);
 
-            await ExecuteAsync(argumentsBuilder.Build(), dialogProgress, pipe, cancellationToken);
+            await ExecuteAsync(argumentsBuilder.Build(), progress, pipe, cancellationToken);
         }
 
         private async ValueTask ExecuteAsync(

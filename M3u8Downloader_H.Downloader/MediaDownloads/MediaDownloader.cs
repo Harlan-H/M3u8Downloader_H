@@ -33,8 +33,7 @@ namespace M3u8Downloader_H.Downloader.MediaDownloads
 
         public override async Task DownloadAsync(IStreamInfo streamInfo, CancellationToken cancellationToken = default)
         {
-            await base.DownloadAsync(streamInfo,cancellationToken);
-            DialogProgress.SetDownloadStatus(false);
+            await base.DownloadAsync(streamInfo, cancellationToken);
 
             downloadContext.Log?.Info("【{0}】开始下载", streamInfo.Title);
             await SetVideoSize(streamInfo, cancellationToken);

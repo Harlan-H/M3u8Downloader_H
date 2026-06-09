@@ -1,6 +1,7 @@
 ﻿using M3u8Downloader_H.Abstractions.Common;
 using M3u8Downloader_H.Abstractions.Models;
 using M3u8Downloader_H.Downloader.Extensions;
+using M3u8Downloader_H.Progress.Interfaces;
 using System.Buffers;
 using System.Net.Http.Headers;
 
@@ -12,7 +13,7 @@ namespace M3u8Downloader_H.Downloader.MediaDownloads
         protected readonly IHttpClientWrapper httpClientWrap = downloadContext.HttpClient;
         private bool _firstTimeToRun = true;
         private readonly IMediaDownloadParam DownloadParam = (IMediaDownloadParam)downloadContext.DownloadParam;
-        internal IDialogProgress DialogProgress { get; set; } = default!;
+        internal IProgressReporter DialogProgress { get; set; } = default!;
 
         protected IEnumerable<KeyValuePair<string, string>>? _headers => DownloadParam.Headers ?? downloadContext.DownloaderSetting.Headers;
 

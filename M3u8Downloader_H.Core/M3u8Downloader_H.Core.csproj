@@ -17,6 +17,7 @@
     <ProjectReference Include="..\M3u8Downloader_H.Downloader\M3u8Downloader_H.Downloader.csproj" />
     <ProjectReference Include="..\M3u8Downloader_H.M3U8\M3u8Downloader_H.M3U8.csproj" />
     <ProjectReference Include="..\M3u8Downloader_H.Plugin\M3u8Downloader_H.Plugin.csproj" />
+    <ProjectReference Include="..\M3u8Downloader_H.Progress\M3u8Downloader_H.Progress.csproj" />
   </ItemGroup>
 
 </Project>

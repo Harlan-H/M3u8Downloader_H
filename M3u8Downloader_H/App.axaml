@@ -4,8 +4,6 @@
              xmlns:dialogHostAvalonia="clr-namespace:DialogHostAvalonia;assembly=DialogHost.Avalonia"
              xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:materialStyles="clr-namespace:Material.Styles.Themes;assembly=Material.Styles"
-             xmlns:assists="clr-namespace:Material.Styles.Assists;assembly=Material.Styles"
-             xmlns:local="using:M3u8Downloader_H"
              Name="M3u8Downloader_H"
              RequestedThemeVariant="Default">
 

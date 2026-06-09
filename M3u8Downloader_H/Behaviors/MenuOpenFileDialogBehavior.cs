@@ -1,16 +1,8 @@
-﻿using Avalonia;
-using Avalonia.Controls;
+﻿using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.LogicalTree;
-using Avalonia.Platform.Storage;
-using Avalonia.Xaml.Interactions.Core;
-using Avalonia.Xaml.Interactivity;
-using System;
-using System.Collections.Generic;
 
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace M3u8Downloader_H.Behaviors;
 

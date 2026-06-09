@@ -6,11 +6,12 @@ using M3u8Downloader_H.Common.DownloadPrams;
 using M3u8Downloader_H.Common.Extensions;
 using M3u8Downloader_H.Downloader.Extensions;
 using M3u8Downloader_H.M3U8.Models;
+using M3u8Downloader_H.Progress.Interfaces;
 using System.Net;
 
 namespace M3u8Downloader_H.Downloader.M3uDownloaders
 {
-    internal class LiveM3uDownloader(IDownloadService downloadService, IDownloadContext downloadContext, IDialogProgress DialogProgress) : IDownloadService
+    internal class LiveM3uDownloader(IDownloadService downloadService, IDownloadContext downloadContext, IProgressReporter DialogProgress) : IDownloadService
     {
         private static readonly Random _rand = Random.Shared;
         private bool _firstTimeToRun = true;
@@ -74,8 +75,6 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
 
         public async Task StartDownload(IM3uFileInfoSource m3UFileInfoSource,  CancellationToken cancellationToken = default)
         {
-            DialogProgress.SetDownloadStatus(true);
-
             downloadContext.Log?.Info("直播录制开始");
             _m3uFileInfo ??= m3UFileInfoSource.M3uFile;
 

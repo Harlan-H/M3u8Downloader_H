@@ -7,6 +7,8 @@ using M3u8Downloader_H.Common.Models;
 using M3u8Downloader_H.Common.Utils;
 using M3u8Downloader_H.Core.Interfaces;
 using M3u8Downloader_H.Downloader;
+using M3u8Downloader_H.Progress.Extensions;
+using M3u8Downloader_H.Progress.Interfaces;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,35 +25,41 @@ namespace M3u8Downloader_H.Core.Downloads
 
         private bool _isDownloaded = false;
 
-        public async Task StartDownload(IDialogProgress dialogProgress, CancellationToken cancellationToken)
+        public async Task StartDownload(IProgressManager progressManager, CancellationToken cancellationToken)
         {
-            using var acquire = dialogProgress.Acquire();
+            await DownloadAsync(progressManager, cancellationToken);
 
-            await DownloadAsync(dialogProgress, cancellationToken);
-
-            await MergeAsync(dialogProgress, cancellationToken);
+            await MergeAsync(progressManager, cancellationToken);
 
             IMergeSetting mergeSetting = (IMergeSetting)downloaderSetting;
             if (mergeSetting.IsCleanUp)
                 DirectoryEx.DeleteCache(mediaDownloadParam.CachePath);
         }
 
-        private async Task DownloadAsync(IDialogProgress downloadProgress, CancellationToken cancellationToken)
+        private async Task DownloadAsync(IProgressManager progressManager, CancellationToken cancellationToken)
         {
             if (_isDownloaded)
                 return;
 
-            m3UDownloaderClient.DialogProgress = downloadProgress;
+            var hanlder = mediaDownloadParam.IsVideoStream ? progressManager.CreateLiveHandler() : progressManager.CreateVodHandler();
+            using var acquire = hanlder.Acquire();
+
+            m3UDownloaderClient.DialogProgress = hanlder.ToReporter();
             foreach (var media in mediaDownloadParam.Medias)
             {
                 await m3UDownloaderClient.MediaDownloader.DownloadAsync(media, cancellationToken);
             }
             _isDownloaded = true;
+            hanlder.Clear();
         }
 
-        private async Task MergeAsync(IDialogProgress downloadProgress, CancellationToken cancellationToken)
+        private async Task MergeAsync(IProgressManager progressManager, CancellationToken cancellationToken)
         {
-            await m3UCombinerClient.FFmpeg.ConvertToMp4(mediaDownloadParam.Medias, downloadProgress, cancellationToken);
+            var hanlder = progressManager.CreateMergerHandler();
+            using var acquire = hanlder.Acquire();
+
+            await m3UCombinerClient.FFmpeg.ConvertToMp4(mediaDownloadParam.Medias, hanlder.ToReporter(), cancellationToken);
+            hanlder.Clear();
         }
 
     }

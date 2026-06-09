@@ -4,6 +4,7 @@ using M3u8Downloader_H.Abstractions.Models;
 using M3u8Downloader_H.Abstractions.Plugins.Download;
 using M3u8Downloader_H.Downloader.Extensions;
 using M3u8Downloader_H.Downloader.Utils;
+using M3u8Downloader_H.Progress.Interfaces;
 using System.Security.Cryptography;
 
 namespace M3u8Downloader_H.Downloader.M3uDownloaders
@@ -14,7 +15,7 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
         private readonly Lock balanceLock = new();
         private readonly Lock countLock = new();
         private readonly IDownloadContext context;
-        private readonly IDialogProgress dialogProgress;
+        private readonly IProgressReporter dialogProgress;
         private int downloadedCount;
         private int CurIndex = -1;
         private string _cachePath = default!;
@@ -27,7 +28,7 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
 
         private bool _isFmp4 = false;
 
-        public M3u8Downloader(IDownloadContext context, IDialogProgress DialogProgress)
+        public M3u8Downloader(IDownloadContext context, IProgressReporter DialogProgress)
         {
             dialogProgress = DialogProgress;
             this.context = context;
@@ -71,7 +72,6 @@ namespace M3u8Downloader_H.Downloader.M3uDownloaders
                 throw new InvalidDataException($"获取的 {m3UFileInfoSource.RequestUrl} 数据为空,已经停止下载");
             
             var m3UFileInfo = m3UFileInfoSource.M3uFile;
-            dialogProgress.SetDownloadStatus(false);
 
             await DownloadMapInfoAsync(m3UFileInfo.Map, cancellationToken);
 

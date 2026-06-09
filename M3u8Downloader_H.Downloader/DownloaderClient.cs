@@ -5,6 +5,7 @@ using M3u8Downloader_H.Abstractions.M3u8;
 using M3u8Downloader_H.Common.Extensions;
 using M3u8Downloader_H.Abstractions.Models;
 using M3u8Downloader_H.Abstractions.Plugins.Download;
+using M3u8Downloader_H.Progress.Interfaces;
 
 
 namespace M3u8Downloader_H.Downloader
@@ -13,7 +14,7 @@ namespace M3u8Downloader_H.Downloader
     {
         private DownloaderBase? _mediaDownloader;
 
-        public IDialogProgress DialogProgress { get; set; } = default!;
+        public IProgressReporter DialogProgress { get; set; } = default!;
         public IM3uFileInfo M3UFileInfo { get; set; } = default!;
         public Func<CancellationToken, Task<IM3uFileInfo>> GetLiveFileInfoFunc { get; set; } = default!;
 

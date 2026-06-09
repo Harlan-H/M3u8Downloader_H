@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Globalization;
-using System.Net.Sockets;
-using System.Net;
 using M3u8Downloader_H.Utils;
 
 namespace M3u8Downloader_H.Converters

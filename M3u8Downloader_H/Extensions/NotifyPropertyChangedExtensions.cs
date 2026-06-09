@@ -1,11 +1,8 @@
 ﻿using M3u8Downloader_H.Utils;
 using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Text;
 
 namespace M3u8Downloader_H.Extensions;
 

@@ -12,6 +12,7 @@ using M3u8Downloader_H.Messages;
 using M3u8Downloader_H.Models;
 using M3u8Downloader_H.Plugin;
 using M3u8Downloader_H.Plugin.Services;
+using M3u8Downloader_H.Progress.Services;
 using M3u8Downloader_H.RestServer;
 using M3u8Downloader_H.Services;
 using M3u8Downloader_H.Utils;

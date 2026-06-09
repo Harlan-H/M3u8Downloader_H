@@ -1,25 +1,27 @@
-﻿using System;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
-using M3u8Downloader_H.Abstractions.Common;
+﻿using M3u8Downloader_H.Abstractions.Common;
 using M3u8Downloader_H.Abstractions.M3u8;
 using M3u8Downloader_H.Abstractions.Models;
 using M3u8Downloader_H.Abstractions.Plugins.Download;
 using M3u8Downloader_H.Abstractions.Settings;
 using M3u8Downloader_H.Combiners;
+using M3u8Downloader_H.Common.DownloadPrams;
 using M3u8Downloader_H.Common.Extensions;
-using M3u8Downloader_H.M3U8.Models;
 using M3u8Downloader_H.Common.Models;
 using M3u8Downloader_H.Common.Utils;
+using M3u8Downloader_H.Core.Interfaces;
 using M3u8Downloader_H.Downloader;
 using M3u8Downloader_H.M3U8;
 using M3u8Downloader_H.M3U8.Extensions;
-using System.Linq;
-using System.Collections.Generic;
-using M3u8Downloader_H.Core.Interfaces;
-using M3u8Downloader_H.Common.DownloadPrams;
 using M3u8Downloader_H.M3U8.M3UFileReaderManangers;
+using M3u8Downloader_H.M3U8.Models;
+using M3u8Downloader_H.Progress.Extensions;
+using M3u8Downloader_H.Progress.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace M3u8Downloader_H.Core.Downloads
 {
@@ -45,17 +47,18 @@ namespace M3u8Downloader_H.Core.Downloads
 
         private bool _isParsed = skipParse;
 
+        private bool IsVod => m3UFileInfoStates is not null && m3UFileInfoStates[0].M3UFileInfoSource.M3uFile!.IsVod();
 
-        public async Task StartDownload(IDialogProgress dialogProgress, CancellationToken cancellationToken)
+
+        public async Task StartDownload(IProgressManager progressManager, CancellationToken cancellationToken)
         {
             await GetM3U8FileInfo(cancellationToken);
 
-            using var acquire = dialogProgress.Acquire();
-            await DownloadAsync(dialogProgress, cancellationToken);
+            await DownloadAsync(progressManager, cancellationToken);
 
             await GenerateM3u8(cancellationToken);
 
-            await MergeAsync(dialogProgress, cancellationToken);
+            await MergeAsync(progressManager, cancellationToken);
 
             IMergeSetting mergeSetting = (IMergeSetting)context.DownloaderSetting;
             if (mergeSetting.IsCleanUp)
@@ -116,9 +119,13 @@ namespace M3u8Downloader_H.Core.Downloads
         }
 
 
-        private async Task DownloadAsync(IDialogProgress downloadProgress, CancellationToken cancellationToken)
+
+        private async Task DownloadAsync(IProgressManager downloadProgress, CancellationToken cancellationToken)
         {
-            m3UDownloaderClient.DialogProgress = downloadProgress;
+            IProgressHandler progressHandler = IsVod ? downloadProgress.CreateVodHandler() : downloadProgress.CreateHlsHandler();
+            using var acquire = progressHandler.Acquire();
+
+            m3UDownloaderClient.DialogProgress = progressHandler.ToReporter();
 
             foreach (var stateItem in m3UFileInfoStates!)
             {
@@ -131,6 +138,7 @@ namespace M3u8Downloader_H.Core.Downloads
                 await stateItem.DownloadService.StartDownload(stateItem.M3UFileInfoSource, cancellationToken);
                 stateItem.IsDownloaded = true;
             }
+            progressHandler.Clear();
         }
 
         private async Task GenerateM3u8(CancellationToken cancellationToken)
@@ -149,13 +157,16 @@ namespace M3u8Downloader_H.Core.Downloads
             }
         }
 
-        private async Task MergeAsync(IDialogProgress progress, CancellationToken cancellationToken)
+        private async Task MergeAsync(IProgressManager progress, CancellationToken cancellationToken)
         {
+            var handler = progress.CreateMergerHandler();
+            using var acquire = handler.Acquire();
+
             var m3UFileInfos = m3UFileInfoStates!.Where(m => m.M3UFileInfoSource.Type != M3uType.SUBTITLE)
                                                 .Select(m => m.M3UFileInfoSource)
                                                 .ToList() ?? throw new InvalidOperationException("获取M3UFileInfoSource list失败");
 
-            await m3UCombinerClient.FFmpeg.ConvertToMp4(m3UFileInfos, progress, cancellationToken);
+            await m3UCombinerClient.FFmpeg.ConvertToMp4(m3UFileInfos, handler.ToReporter(), cancellationToken);
 
             var subtitle = m3UFileInfoStates!.FirstOrDefault(m => m.M3UFileInfoSource.Type == M3uType.SUBTITLE);
             if(subtitle is not null && subtitle.M3UFileInfoSource.M3uFile is not null)
@@ -172,6 +183,7 @@ namespace M3u8Downloader_H.Core.Downloads
                     await reader.CopyToAsync(file, cancellationToken);
                 }
             }
+            handler.Clear();
         }
     }
 

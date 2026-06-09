@@ -1,15 +1,11 @@
-﻿using Avalonia.Threading;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using M3u8Downloader_H.Abstractions.Common;
 using M3u8Downloader_H.Abstractions.M3u8;
-using M3u8Downloader_H.Common.DownloadPrams;
-using M3u8Downloader_H.Common.Models;
 using M3u8Downloader_H.Core;
-using M3u8Downloader_H.Core.Downloads;
 using M3u8Downloader_H.Extensions;
-using M3u8Downloader_H.M3U8.Models;
 using M3u8Downloader_H.Models;
+using M3u8Downloader_H.Progress.Services;
 using M3u8Downloader_H.Utils;
 using M3u8Downloader_H.ViewModels.Components;
 using System;
@@ -21,7 +17,6 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Timers;
 
 namespace M3u8Downloader_H.ViewModels.Downloads
 {
@@ -30,7 +25,6 @@ namespace M3u8Downloader_H.ViewModels.Downloads
         private readonly ThrottlingSemaphore throttlingSemaphore = ThrottlingSemaphore.Instance;
         private readonly IDownloadParamBase downloadParam;
         private CancellationTokenSource? cancellationTokenSource;
-        protected DownloadProgress? downloadProgress;
 
         public DownloaderCoreClient downloaderCoreClient = default!;
 
@@ -48,10 +42,8 @@ namespace M3u8Downloader_H.ViewModels.Downloads
         public partial Uri RequestUrl { get; set; } = default!;
         [ObservableProperty]
         public partial string VideoName { get; set; } = default!;
-        [ObservableProperty]
-        public partial double ProgressNum { get; set; }
-        [ObservableProperty]
-        public partial long DownloadRateBytes { get; set; } = -1;
+
+        public ProgressManager ProgressManager { get; set; } 
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(IsProgressIndeterminate))]
@@ -69,6 +61,7 @@ namespace M3u8Downloader_H.ViewModels.Downloads
         {
             downloadParam = DownloadParam;
             Log = new(Logs);
+            ProgressManager = new ProgressManager(status => Status = status);
         }
 
         public async Task<IList<IM3uFileInfoSource>> GetM3uFileInfoState(IM3uFileInfo m3UFileInfo)
@@ -94,11 +87,10 @@ namespace M3u8Downloader_H.ViewModels.Downloads
                 cancellationTokenSource = new CancellationTokenSource();
                 using var semaphore = await throttlingSemaphore.AcquireAsync(cancellationTokenSource.Token);
 
-                downloadProgress ??= new(this);
                 if (downloadParam is IM3u8DownloadParam)
                     Status = DownloadStatus.Parsed;
                 
-                await downloaderCoreClient.Downloader.StartDownload(downloadProgress, cancellationTokenSource.Token);
+                await downloaderCoreClient.Downloader.StartDownload(ProgressManager, cancellationTokenSource.Token);
                 Status = DownloadStatus.Completed;
             }
             catch (OperationCanceledException) when (cancellationTokenSource!.IsCancellationRequested)
@@ -114,7 +106,7 @@ namespace M3u8Downloader_H.ViewModels.Downloads
             finally
             {
                 IsActive = false;
-                downloadProgress?.Clear();
+                ProgressManager.Clear();
                 cancellationTokenSource?.Dispose();
             }
         }
@@ -189,62 +181,6 @@ namespace M3u8Downloader_H.ViewModels.Downloads
         public override int GetHashCode() => StringComparer.Ordinal.GetHashCode(downloadParam.CachePath);
         public static bool operator ==(DownloadViewModel downloadviewmode, DownloadViewModel downloadviewmode1) => downloadviewmode.Equals(downloadviewmode1);
         public static bool operator !=(DownloadViewModel downloadviewmode, DownloadViewModel downloadviewmode1) => !(downloadviewmode == downloadviewmode1);
-    }
-
-
-    public partial class DownloadViewModel
-    {
-        protected class DownloadProgress(DownloadViewModel downloadViewModel) : IDialogProgress
-        {
-            private readonly TimerContainer timerContainer = TimerContainer.Instance;
-            private long _lastBytes;
-            private long _countBytes;
-            private double _currentProgress;
-            private bool _isIncProgressNum = false;
-
-            public void Clear()
-            {
-                _countBytes = 0;
-                _lastBytes = 0;
-                _currentProgress = 0;
-                downloadViewModel.DownloadRateBytes = -1;
-            }
-
-            private void OnTimedEvent(Object? source, ElapsedEventArgs e)
-            {
-                long tmpBytes = _countBytes;
-                downloadViewModel.DownloadRateBytes = tmpBytes - _lastBytes;
-                _lastBytes = tmpBytes;
-
-                if (_isIncProgressNum)
-                    downloadViewModel.ProgressNum = _currentProgress++;
-                else
-                    downloadViewModel.ProgressNum = _currentProgress;
-            }
-
-            public IDisposable Acquire() => timerContainer.AddTimerCallback(OnTimedEvent);
-
-            public void Report(long value)
-            {
-                Interlocked.Add(ref _countBytes, value);
-            }
-
-            public void Report(double value)
-            {
-                _currentProgress = value;
-            }
-
-            public void SetDownloadStatus(bool IsLiveDownloading)
-            {
-                downloadViewModel.Status = IsLiveDownloading ? DownloadStatus.StartedLive : DownloadStatus.StartedVod;
-            }
-
-            public void IncProgressNum(bool isInc)
-            {
-                _isIncProgressNum = true;
-                _currentProgress = 0;
-            }
-        }
     }
 }
 
