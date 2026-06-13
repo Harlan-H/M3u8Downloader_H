@@ -106,9 +106,6 @@ jobs:
         ${{ steps.get_desc.outputs.release_body }}
         
         # 
-          - [更多更新内容](https://github.com/Harlan-H/M3u8Downloader_H/blob/master/Changelog.md)
-      
-        # 
           | 名称 | 描述 | 
           |-------|-------|
           | [M3u8Downloader_H-win-x64](https://github.com/Harlan-H/M3u8Downloader_H/releases/download/${{github.ref_name}}/M3u8Downloader_H-win-x64.zip) |win 64位版本和singleFile版本的区别是文件多 | 
