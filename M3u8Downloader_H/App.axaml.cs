@@ -136,13 +136,16 @@ namespace M3u8Downloader_H
  
         private void Desktop_Exit(Window window)
         {
-            var windowSettings = new WindowSettings(window.WindowState);
-            if(_restoreSize is Size restoreSize)
+            if (settingsService.WindowSettings is null)
+                settingsService.WindowSettings = new WindowSettings(window.WindowState);
+            else
+                settingsService.WindowSettings.State = window.WindowState;
+
+            if (_restoreSize is Size restoreSize)
             {
-                windowSettings.Width = restoreSize.Width;
-                windowSettings.Height = restoreSize.Height;
+                settingsService.WindowSettings.Width = restoreSize.Width;
+                settingsService.WindowSettings.Height = restoreSize.Height;
             }
-            settingsService.WindowSettings = windowSettings;
 
             Desktop_Exit();
         }

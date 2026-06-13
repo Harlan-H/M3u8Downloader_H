@@ -1,6 +1,8 @@
 <UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:components="using:M3u8Downloader_H.ViewModels.Components"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:design="using:System.ComponentModel.Design"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              xmlns:vm="using:M3u8Downloader_H.ViewModels.Windows"
@@ -16,40 +18,50 @@
         </Style>
     </UserControl.Styles>
     <Panel>
-        <StackPanel IsVisible="{Binding !PluginOnlineItems.Count}" Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center">
-			<ProgressBar 
-                 Classes.loading="{Binding State,Converter={x:Static converters:EqualityConverter.IsNotEqual},ConverterParameter={x:Static model:LoadState.Loading}}"
-                Classes="circular" Height="100" Width="100">
-                <ProgressBar.Styles>
-                    <Style Selector="ProgressBar">
-						<Setter Property="IsIndeterminate" Value="true"/>
+       <StackPanel IsVisible="{Binding !PluginOnlineItems.Count}"  
+                        Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center" >
+			    <ProgressBar IsVisible="{Binding State,
+                        Converter={x:Static converters:EqualityConverter.IsEqual},
+                        ConverterParameter={x:Static model:LoadState.Loading}}" 
+                        Classes="circular" Height="100" Width="100" IsIndeterminate="True" />
 
-                        <Style Selector="^.loading">
-							<Setter Property="IsIndeterminate" Value="False" />
-                        </Style>
-                    </Style>
-					
-                </ProgressBar.Styles>
-            </ProgressBar>
-            <TextBlock 
-                    Classes.loading="{Binding State,Converter={x:Static converters:EqualityConverter.IsEqual},ConverterParameter={x:Static model:LoadState.Loading}}"
-                    Classes.error="{Binding State,Converter={x:Static converters:EqualityConverter.IsEqual},ConverterParameter={x:Static model:LoadState.Failed}}">
-                <TextBlock.Styles>
-					<Style Selector="TextBlock.loading">
-						<Setter Property="Text" Value="正在获取数据,请稍后" />
-                    </Style>
-                    <Style Selector="TextBlock.error" >
-						<Setter Property="Text" Value="{Binding ErrorString,StringFormat=获取数据失败 请确认是否可以访问到github 请尝试使用带有github加速的软件或者在设置中配置代理后再次点击此页面&#10;{0}}" />
-                        <Setter Property="Foreground" Value="red" />
-                    </Style>
-                </TextBlock.Styles>
-            </TextBlock>
-        </StackPanel>
+                <TextBlock  IsVisible="{Binding State,
+                        Converter={x:Static converters:EqualityConverter.IsEqual},
+                        ConverterParameter={x:Static model:LoadState.Loading}}" 
+                       
+                        Text="正在获取数据,请稍后" />
+
+                <TextBlock IsVisible="{Binding State,
+                        Converter={x:Static converters:EqualityConverter.IsEqual},
+                        ConverterParameter={x:Static model:LoadState.Failed}}"
+                    Foreground="Red" HorizontalAlignment="Center">
+                    <Run Text="{Binding ErrorString}" />
+                    <LineBreak />
+                    <Run Text="获取数据失败 请确认是否可以访问到github" />
+                    <LineBreak />
+                    <Run Text="请尝试使用带有github加速的软件或者在设置中配置代理后再次点击此页面" />
+                    <LineBreak />
+                    <Run Text="或者点击右边的Github进行在线下载：" />
+                        <InlineUIContainer >
+                            <HyperlinkButton
+                                Content="GitHub"
+                                Margin="0,0,0,-4.5"
+                                Command="{Binding ExploreCommand}"
+                                CommandParameter="https://github.com/Harlan-H/M3u8Downloader_H.Plugins"/>
+                        </InlineUIContainer>
+                   
+
+                </TextBlock>
+            </StackPanel>
+            <StackPanel 
+                        >
+
+                </StackPanel>
 
       <ItemsControl IsVisible="{Binding PluginOnlineItems.Count}" ItemsSource="{Binding PluginOnlineItems}"
                      ScrollViewer.VerticalScrollBarVisibility="Auto">
 	      <ItemsControl.ItemTemplate>
-		      <DataTemplate>
+		      <DataTemplate x:DataType="components:PluginOnlineItem" >
                   <Border BorderThickness="0,0,0,1" BorderBrush="Gray" Height="35">
 			          <Grid ColumnDefinitions="150,3*,50,50,*,*,auto,40" >
 				          <TextBlock Text="{Binding Title}" />

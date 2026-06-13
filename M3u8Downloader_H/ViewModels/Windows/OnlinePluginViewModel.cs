@@ -1,9 +1,11 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using M3u8Downloader_H.Models;
 using M3u8Downloader_H.Plugin;
 using M3u8Downloader_H.ViewModels.Components;
 using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -47,8 +49,19 @@ namespace M3u8Downloader_H.ViewModels.Windows
             catch(Exception ex)
             {
                 State = LoadState.Failed;
-                ErrorString = ex.ToString();
+                ErrorString = ex.Message;
             }
+        }
+
+        [RelayCommand]
+        private void Explore(string str)
+        {
+
+            ProcessStartInfo processStartInfo = new(str)
+            {
+                UseShellExecute = true
+            };
+            Process.Start(processStartInfo);
         }
     }
 }
