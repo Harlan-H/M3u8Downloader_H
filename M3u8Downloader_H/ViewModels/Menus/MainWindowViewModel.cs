@@ -6,6 +6,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using M3u8Downloader_H.Common.Models;
+using M3u8Downloader_H.Exceptions;
 using M3u8Downloader_H.Extensions;
 using M3u8Downloader_H.FrameWork;
 using M3u8Downloader_H.Messages;
@@ -126,10 +127,7 @@ namespace M3u8Downloader_H.ViewModels.Menus
         {
             var existingDownloads = Downloads.FirstOrDefault(d => d == download);
             if (existingDownloads is not null)
-            {
-                Notifications.Info($"{download.VideoName} 已经在下载列表中!");
-                return;
-            }
+                throw new DownloadExistsException($"{download.VideoName} 已经在下载列表中!");
 
             if(Dispatcher.UIThread.CheckAccess())
                 download.Start();
