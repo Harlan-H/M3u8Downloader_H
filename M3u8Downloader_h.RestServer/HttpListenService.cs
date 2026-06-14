@@ -15,6 +15,7 @@ namespace M3u8Downloader_H.RestServer
 {
     public class HttpListenService
     {
+        private readonly int _defaultPort = 65432;
         private readonly char _DirectorySeparatorChar = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? '/' : '\\';
         private readonly HttpListen httpListen = new();
         private IAppCommandService AppCommandService = default!;
@@ -41,18 +42,13 @@ namespace M3u8Downloader_H.RestServer
 
         public void Run(Action<int> SetPortAction)
         {
-            for (int i = 65432; i > 65400; i--)
+            try
             {
-                try
-                {
-                    httpListen.Run($"http://+:{i}/");
-                    SetPortAction(i);
-                    break;
-                }
-                catch (HttpListenerException)
-                {
-                    continue;
-                }
+                httpListen.Run($"http://+:{_defaultPort}/");
+                SetPortAction(_defaultPort);
+            }
+            catch (HttpListenerException)
+            {
             }
         }
 
