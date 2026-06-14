@@ -80,26 +80,19 @@ namespace M3u8Downloader_H.ViewModels.Menus
                 (http, param, downloadPlugin) =>
                 {
                     param.CompleteAttribute(settingsService);
-                    Dispatcher.UIThread.Post(() =>
-                    {
-                        m3U8WindowViewModel.ProcessM3u8Download(http,param, downloadPlugin);
-                    });
+                    m3U8WindowViewModel.ProcessM3u8Download(http, param, downloadPlugin);
                 },
                 (http, param, fileinfo, downloadPlugin) =>
                 {
                     param.CompleteAttribute(settingsService);
-                    Dispatcher.UIThread.Post(() =>
-                    {
-                        m3U8WindowViewModel.ProcessM3u8Download(http,param, fileinfo, downloadPlugin);
-                    });
+                    m3U8WindowViewModel.ProcessM3u8Download(http,param, fileinfo, downloadPlugin);
+                   
                 },
                 (http,param) =>
                 {
                     param.CompleteAttribute(settingsService);
-                    Dispatcher.UIThread.Post(() =>
-                    {
-                        mediaWindowViewModel.ProcessMediaDownload(http,param);
-                    });
+                    mediaWindowViewModel.ProcessMediaDownload(http,param);
+
                 });
 
             WeakReferenceMessenger.Default.Register<GetAppComandServiceMessage>(this, (r, m) =>
@@ -138,7 +131,11 @@ namespace M3u8Downloader_H.ViewModels.Menus
                 return;
             }
 
-            download.Start();
+            if(Dispatcher.UIThread.CheckAccess())
+                download.Start();
+            else
+                Dispatcher.UIThread.Post(() => download.Start());
+                      
             Downloads.Insert(0, download);
         }
 

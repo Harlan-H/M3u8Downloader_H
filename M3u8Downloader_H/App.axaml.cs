@@ -81,14 +81,13 @@ namespace M3u8Downloader_H
                 desktop.MainWindow = dashboardWindow;
                 dashboardWindow.Loaded += async (_, _) => await viewModel.InitializeAsync();
 
-                var env = Environment.GetEnvironmentVariable("APP_MODE");
-                if (string.IsNullOrWhiteSpace(env))
+                if (!Program.InDocker)
                 {
                     Desktop_Initialize(dashboardWindow);
                     dashboardWindow.Resized += (_, resizeEvent) => DashboardWindow_Resized(dashboardWindow, resizeEvent);
                     desktop.Exit +=  (_,_) => Desktop_Exit(dashboardWindow);
                 }
-                else if (!string.IsNullOrWhiteSpace(env) && env.Equals("Docker"))
+                else
                 {
                     Desktop_Initialize();
                     _sigtermRegistration = PosixSignalRegistration.Create(PosixSignal.SIGTERM, async context =>

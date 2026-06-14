@@ -24,7 +24,7 @@ namespace M3u8Downloader_H.ViewModels.Downloads
     {
         private readonly ThrottlingSemaphore throttlingSemaphore = ThrottlingSemaphore.Instance;
         private readonly IDownloadParamBase downloadParam;
-        private CancellationTokenSource? cancellationTokenSource;
+        private CancellationTokenSource cancellationTokenSource = default!;
 
         public DownloaderCoreClient downloaderCoreClient = default!;
 
@@ -107,7 +107,7 @@ namespace M3u8Downloader_H.ViewModels.Downloads
             {
                 IsActive = false;
                 ProgressManager.Clear();
-                cancellationTokenSource?.Dispose();
+                cancellationTokenSource.Dispose();
             }
         }
 
@@ -129,12 +129,12 @@ namespace M3u8Downloader_H.ViewModels.Downloads
         public bool CanCancel => IsActive && Status != DownloadStatus.Canceled;
 
         [RelayCommand(CanExecute = nameof(CanCancel))]
-        private void Cancel()
+        private async Task Cancel()
         {
             if (!CanCancel)
                 return;
 
-            cancellationTokenSource?.Cancel();
+            await cancellationTokenSource.CancelAsync();
         }
 
         private bool CanRestart => !IsActive && Status != DownloadStatus.Completed;

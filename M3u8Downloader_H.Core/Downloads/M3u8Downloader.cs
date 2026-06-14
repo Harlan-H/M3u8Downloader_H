@@ -38,7 +38,7 @@ namespace M3u8Downloader_H.Core.Downloads
         Func<IM3uFileInfo, Task<IList<IM3uFileInfoSource>>> m3UFileInfoSourcesFactory,
         bool skipParse) : IDownloader
     {
-        private readonly M3u8DownloadParams m3U8DownloadParams = (M3u8DownloadParams)context.DownloadParam;
+        private readonly IDownloadParamBase m3U8DownloadParams = context.DownloadParam;
         private M3u8FileInfoClient m3U8FileInfoClient = default!;
         private DownloaderClient m3UDownloaderClient = default!;
         private M3uCombinerClient m3UCombinerClient = default!;
@@ -133,7 +133,7 @@ namespace M3u8Downloader_H.Core.Downloads
                     continue;
 
                 context.Log.Info("开始下载{0}数据,共 {1} 个", stateItem,stateItem.M3UFileInfoSource.M3uFile!.MediaFiles.Count);
-                stateItem.DownloadService ??= m3UDownloaderClient.CreateM3u8Downloader(stateItem.M3UFileInfoSource);
+                stateItem.DownloadService = m3UDownloaderClient.CreateM3u8Downloader(stateItem.M3UFileInfoSource);
                 await stateItem.DownloadService.Initialization(stateItem.M3UFileInfoSource, cancellationToken);
                 await stateItem.DownloadService.StartDownload(stateItem.M3UFileInfoSource, cancellationToken);
                 stateItem.IsDownloaded = true;
@@ -217,14 +217,13 @@ namespace M3u8Downloader_H.Core.Downloads
             IM3uFileInfo m3UFileInfo
             )
         {
-            M3u8Downloader m3U8Downloader = new(context,null!,true)
+            M3u8Downloader m3U8Downloader = new(context, null!, true)
             {
                 m3UDownloaderClient = new DownloaderClient(context, downloadPlugin),
                 m3UCombinerClient = new M3uCombinerClient(context.Log, context.DownloadParam, (IMergeSetting)context.DownloaderSetting),
-            };
 
-            M3u8DownloadParams m3U8DownloadParams = (M3u8DownloadParams)context.DownloadParam;
-            m3U8Downloader.m3UFileInfoStates = [new M3uFileInfoState(new M3uFileInfoSource(m3U8DownloadParams.RequestUrl, m3UFileInfo))];
+                m3UFileInfoStates = [new M3uFileInfoState(new M3uFileInfoSource(m3UFileInfo))]
+            };
             context.Log.Info("通过接口传入m3u8文件的视频流有{0}个,将跳过获取操作开始直接下载", m3UFileInfo.MediaFiles.Count);
             return m3U8Downloader;
         }

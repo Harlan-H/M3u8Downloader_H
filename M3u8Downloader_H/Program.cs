@@ -12,6 +12,14 @@ namespace M3u8Downloader_H
         public static Version Version { get; } = Assembly.GetName().Version!;
         public static string VersionString { get; } = $"v{Version.ToString(3)}";
 
+        public static bool InDocker { 
+            get 
+            {
+                var env = Environment.GetEnvironmentVariable("APP_MODE");
+                return !string.IsNullOrWhiteSpace(env) && env.Equals("Docker");
+            } 
+        }
+
         // Initialization code. Don't use any Avalonia, third-party APIs or any
         // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
         // yet and stuff might break.

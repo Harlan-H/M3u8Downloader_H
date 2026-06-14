@@ -16,7 +16,9 @@ namespace M3u8Downloader_H.RestServer.Models
         public string? Key { get; set; }
         public string? Iv { get; set; }
 
-        public IM3u8DownloadParam ToM3u8DownloadParams()
-            => new M3u8DownloadParams(RequestUrl, VideoName, SavePath, "mp4", Headers, Method, Key, Iv);
     }
+
+    [JsonSourceGenerationOptions(PropertyNameCaseInsensitive = true)]
+    [JsonSerializable(typeof(RequestWithURI))]
+    internal partial class RequestWithURIContext : JsonSerializerContext;
 }

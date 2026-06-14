@@ -11,4 +11,8 @@ namespace M3u8Downloader_H.RestServer.Models
         [JsonPropertyName("baseurl")]
         public Uri? Url { get; set; }
     }
+
+    [JsonSourceGenerationOptions(PropertyNameCaseInsensitive = true)]
+    [JsonSerializable(typeof(RequestWithContent))]
+    internal partial class RequestWithContentContext : JsonSerializerContext;
 }

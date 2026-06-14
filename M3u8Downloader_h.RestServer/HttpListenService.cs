@@ -5,6 +5,8 @@ using M3u8Downloader_H.M3U8.Extensions;
 using M3u8Downloader_H.RestServer.Extensions;
 using M3u8Downloader_H.RestServer.Models;
 using M3u8Downloader_H.RestServer.Utils;
+using System.Diagnostics;
+using System.IO.Pipelines;
 using System.Net;
 using System.Runtime.InteropServices;
 using System.Text.Json;
@@ -17,13 +19,14 @@ namespace M3u8Downloader_H.RestServer
         private readonly HttpListen httpListen = new();
         private IAppCommandService AppCommandService = default!;
 
-        private readonly JsonSerializerOptions jsonSerializerOptions;
+       // private readonly JsonSerializerOptions jsonSerializerOptions;
         private readonly static HttpListenService instance = new();
         
         public static HttpListenService Instance => instance;
         private HttpListenService()
         {
-            jsonSerializerOptions = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
+            //jsonSerializerOptions = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
+            httpListen.RegisterService("CatCatch", DownloadByCatCatch);
             httpListen.RegisterService("downloadmedias", DownloadMedias);
             httpListen.RegisterService("downloadbyurl", DownloadByUrl);
             httpListen.RegisterService("downloadbycontent", DownloadByContent);
@@ -53,11 +56,58 @@ namespace M3u8Downloader_H.RestServer
             }
         }
 
+
+        private async void DownloadByCatCatch(HttpListenerRequest request, HttpListenerResponse response)
+        {
+            try
+            {
+                RequestWithCatch? requestWithCatch = JsonSerializer.Deserialize(request.InputStream, RequestWithCatchContext.Default.RequestWithCatch);
+                if (requestWithCatch is null)
+                {
+                    response.Json(Response.Error("序列化失败"));
+                    return;
+                }
+
+                if(!requestWithCatch.Action.Equals("catch"))
+                    return;
+
+                string ext;
+                if(requestWithCatch.Data.Count == 1)
+                    ext = requestWithCatch.Data.Single().Ext;
+                else if (requestWithCatch.Data.Count > 1)
+                    ext = requestWithCatch.Data[0].Ext;
+                else
+                {
+                    response.Json(Response.Error("data不能为空"));
+                    return;
+                }
+
+
+                if(ext.Equals("m3u8"))
+                {
+                    var downloadParam = RequestWithCatch.ToM3u8DownloadParams(requestWithCatch.Data[0]);
+                    AppCommandService.DownloadByUrl(null, downloadParam, null);
+                }
+                else
+                {
+                    var downloadParam = RequestWithCatch.ToMediaDownloadParams(requestWithCatch.Data);
+                    AppCommandService.DownloadMedia(null, downloadParam);
+                }
+
+                response.Json(Response.Success());
+            }
+            catch (Exception e)
+            {
+                response.Json(Response.Error($"请求失败,{e.Message}"));
+            }
+        }
+
+
         private void DownloadMedias(HttpListenerRequest request, HttpListenerResponse response)
         {
             try
             {
-                RequestWithMediaUri? requestWithMediaUri = JsonSerializer.Deserialize<RequestWithMediaUri>(request.InputStream, jsonSerializerOptions);
+                RequestWithMediaUri? requestWithMediaUri = JsonSerializer.Deserialize(request.InputStream, RequestWithMediaUriContext.Default.RequestWithMediaUri);
                 if (requestWithMediaUri is null)
                 {
                     response.Json(Response.Error("序列化失败"));
@@ -81,7 +131,7 @@ namespace M3u8Downloader_H.RestServer
         {
             try
             {
-                RequestWithURI? requestWithURI = JsonSerializer.Deserialize<RequestWithURI>(request.InputStream, jsonSerializerOptions);
+                RequestWithURI? requestWithURI = JsonSerializer.Deserialize(request.InputStream, RequestWithURIContext.Default.RequestWithURI);
                 if(requestWithURI is null)
                 {
                     response.Json(Response.Error("序列化失败"));
@@ -105,7 +155,7 @@ namespace M3u8Downloader_H.RestServer
         {
             try
             {
-                RequestWithContent? requestWithContent = JsonSerializer.Deserialize<RequestWithContent>(request.InputStream, jsonSerializerOptions);
+                RequestWithContent? requestWithContent = JsonSerializer.Deserialize(request.InputStream, RequestWithContentContext.Default.RequestWithContent);
                 if (requestWithContent is null)
                 {
                     response.Json(Response.Error("序列化失败"));
@@ -150,7 +200,7 @@ namespace M3u8Downloader_H.RestServer
         {
             try
             {
-                RequestWithM3u8FileInfo? requestWithM3U8FileInfo = JsonSerializer.Deserialize<RequestWithM3u8FileInfo>(request.InputStream, jsonSerializerOptions);
+                RequestWithM3u8FileInfo? requestWithM3U8FileInfo = JsonSerializer.Deserialize(request.InputStream, RequestWithM3u8FileInfoContext.Default.RequestWithM3u8FileInfo);
                 if (requestWithM3U8FileInfo is null)
                 {
                     response.Json(Response.Error("序列化失败"));
@@ -176,7 +226,7 @@ namespace M3u8Downloader_H.RestServer
         {
             try
             {
-                RequestWithGetM3u8FileInfo? requestWIthGetM3U8FileInfo = JsonSerializer.Deserialize<RequestWithGetM3u8FileInfo>(request.InputStream, jsonSerializerOptions);
+                RequestWithGetM3u8FileInfo? requestWIthGetM3U8FileInfo = JsonSerializer.Deserialize(request.InputStream, RequestWithGetM3u8FileInfoContext.Default.RequestWithGetM3u8FileInfo);
                 if (requestWIthGetM3U8FileInfo is null)
                 {
                     response.Json(Response.Error("序列化失败"));

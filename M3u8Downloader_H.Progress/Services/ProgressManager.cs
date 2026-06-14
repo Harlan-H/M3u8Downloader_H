@@ -14,11 +14,8 @@ namespace M3u8Downloader_H.Progress.Services
             get => field;
             set
             {
-                if (field != value)
-                {
-                    ChangeStatus(value);
-                    field = value;
-                }
+                ChangeStatus(value);
+                field = value;
             }
         }
 

@@ -11,15 +11,10 @@ namespace M3u8Downloader_H.RestServer.Models
     {
         [JsonPropertyName("content")]
         [Required(ExceptionMsg = "m3UFileInfo解析失败")]
-        public IM3uFileInfo M3UFileInfos { get; set; } = default!;
-
-        public IDownloadParamBase ToDownloadParam()
-        {
-            if (!M3UFileInfos.MediaFiles.Any())
-                throw new ArgumentException("m3u8的数据不能为空");
-
-            return new DownloadParamsBase(M3UFileInfos.MediaFiles[0].Uri, VideoName, SavePath, "mp4", Headers);
-        }
-   
+        public IM3uFileInfo M3UFileInfos { get; set; } = default!;   
     }
+
+    [JsonSourceGenerationOptions(PropertyNameCaseInsensitive = true)]
+    [JsonSerializable(typeof(RequestWithM3u8FileInfo))]
+    internal partial class RequestWithM3u8FileInfoContext : JsonSerializerContext;
 }
